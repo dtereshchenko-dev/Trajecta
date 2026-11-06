@@ -1,0 +1,1740 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ades version="2022">
+  <!-- Diagnostic ESA RWO replay, not a replacement for the original measurements. Only obsTime, ra and dec were replaced by the printed ESA RWO values. The same 78 selected observations and 11 ESA-assigned rmsRA/rmsDec pairs are retained from the verified weight-replay input. Original source files remain unchanged. -->
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNQ0j65r0000Dy99010000001</obsID>
+    <trkID>00000FK1kc</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>F52</stn>
+    <obsTime>2020-10-17T05:08:54.096000Z</obsTime>
+    <ra>301.873945833333333</ra>
+    <dec>-19.455100000000000</dec>
+    
+    
+    <astCat>Gaia2</astCat>
+    <mag>20.85</mag>
+    <rmsMag>0.22</rmsMag>
+    <band>G</band>
+    <logSNR>-0.19</logSNR>
+    <seeing>1.5</seeing>
+    <ref>MPS  1307461</ref>
+    <subFmt>A17</subFmt>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN43rl0r0000Dw5L010000001</obsID>
+    <trkID>00000FGOAv</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2020-11-05T03:33:16.531200Z</obsTime>
+    <ra>10.824416666666667</ra>
+    <dec>8.676805555555556</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>21.43</mag>
+    <rmsMag>0.297</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.747</logSNR>
+    <rmsFit>0.117</rmsFit>
+    <nStars>5331</nStars>
+    <ref>MPS  1294449</ref>
+    <disc>*</disc>
+    <subFmt>A17</subFmt>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN43rl0r0000Dw5L010000002</obsID>
+    <trkID>00000FGOAv</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2020-11-05T03:42:32.083200Z</obsTime>
+    <ra>10.833958333333333</ra>
+    <dec>8.681916666666667</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>20.92</mag>
+    <rmsMag>0.276</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.860</logSNR>
+    <rmsFit>0.126</rmsFit>
+    <nStars>5331</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN43rl0r0000Dw5L010000003</obsID>
+    <trkID>00000FGOAv</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2020-11-05T03:49:55.833600Z</obsTime>
+    <ra>10.841583333333333</ra>
+    <dec>8.685944444444444</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>20.85</mag>
+    <rmsMag>0.272</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.922</logSNR>
+    <rmsFit>0.113</rmsFit>
+    <nStars>5331</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN43rl0r0000Dw5L010000004</obsID>
+    <trkID>00000FGOAv</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2020-11-05T03:57:18.720000Z</obsTime>
+    <ra>10.849291666666667</ra>
+    <dec>8.689888888888889</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>20.73</mag>
+    <rmsMag>0.298</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.751</logSNR>
+    <rmsFit>0.117</rmsFit>
+    <nStars>5331</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN47fw470000Dw6W010000001</obsID>
+    <trkID>00000FGQ6U</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>I52</stn>
+    <obsTime>2020-11-05T07:53:29.097600Z</obsTime>
+    <ra>11.092041666666667</ra>
+    <dec>8.812583333333333</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>21.09</mag>
+    <rmsMag>0.516</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.579</logSNR>
+    <rmsFit>0.122</rmsFit>
+    <nStars>568</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <notes>Km</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN47fw470000Dw6W010000002</obsID>
+    <trkID>00000FGQ6U</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>I52</stn>
+    <obsTime>2020-11-05T07:58:55.689600Z</obsTime>
+    <ra>11.098000000000000</ra>
+    <dec>8.815333333333333</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>20.67</mag>
+    <rmsMag>0.477</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.470</logSNR>
+    <rmsFit>0.127</rmsFit>
+    <nStars>568</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <notes>Km</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN47fw470000Dw6W010000003</obsID>
+    <trkID>00000FGQ6U</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>I52</stn>
+    <obsTime>2020-11-05T08:04:22.195200Z</obsTime>
+    <ra>11.103708333333333</ra>
+    <dec>8.817916666666667</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>20.96</mag>
+    <rmsMag>0.454</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.536</logSNR>
+    <rmsFit>0.125</rmsFit>
+    <nStars>568</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <notes>Km</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN4JyJ010000DwAT010000001</obsID>
+    <trkID>00000FGdV7</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-05T20:28:52.896000Z</obsTime>
+    <ra>12.064000000000000</ra>
+    <dec>9.182222222222222</dec>
+    <astCat>Gaia2</astCat>
+    <mag>20.9</mag>
+    <band>z</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN4JyJ010000DwAT010000002</obsID>
+    <trkID>00000FGdV7</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-05T20:32:38.400000Z</obsTime>
+    <ra>12.067875000000000</ra>
+    <dec>9.184138888888889</dec>
+    <astCat>Gaia2</astCat>
+    <mag>21.0</mag>
+    <band>z</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN4JyJ010000DwAT010000003</obsID>
+    <trkID>00000FGdV7</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-05T20:36:23.040000Z</obsTime>
+    <ra>12.071791666666667</ra>
+    <dec>9.185916666666667</dec>
+    <astCat>Gaia2</astCat>
+    <mag>20.4</mag>
+    <band>z</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN52ZM010000DwBH010000001</obsID>
+    <trkID>00000FGdWa</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2020-11-06T02:15:32.832000Z</obsTime>
+    <ra>12.490333333333333</ra>
+    <dec>9.362833333333333</dec>
+    <astCat>UCAC3</astCat>
+    <mag>20.7</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN52ZM010000DwBH010000002</obsID>
+    <trkID>00000FGdWa</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2020-11-06T02:23:56.198400Z</obsTime>
+    <ra>12.498583333333333</ra>
+    <dec>9.367055555555556</dec>
+    <astCat>UCAC3</astCat>
+    <mag>21.0</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>C3R6EA2</trkSub>
+    <obsID>LN52ZM010000DwBH010000003</obsID>
+    <trkID>00000FGdWa</trkID>
+    <trkMPC>C3R6EA2</trkMPC>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2020-11-06T02:33:01.728000Z</obsTime>
+    <ra>12.507458333333333</ra>
+    <dec>9.371444444444444</dec>
+    <astCat>UCAC3</astCat>
+    <mag>21.1</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN7Iht010000DwNo010000001</obsID>
+    <trkID>00000FGx8h</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-08T19:36:35.712000Z</obsTime>
+    <ra>16.693375000000000</ra>
+    <dec>11.037750000000000</dec>
+    <astCat>Gaia2</astCat>
+    <mag>21.4</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN7Iht010000DwNo010000002</obsID>
+    <trkID>00000FGx8h</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-08T19:41:25.152000Z</obsTime>
+    <ra>16.697458333333333</ra>
+    <dec>11.039638888888889</dec>
+    <astCat>Gaia2</astCat>
+    <mag>21.8</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN7Iht010000DwNo010000003</obsID>
+    <trkID>00000FGx8h</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-08T19:46:15.456000Z</obsTime>
+    <ra>16.701375000000000</ra>
+    <dec>11.041500000000000</dec>
+    <astCat>Gaia2</astCat>
+    <mag>21.6</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN7Iht010000DwNo010000004</obsID>
+    <trkID>00000FGx8h</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-08T19:51:12.672000Z</obsTime>
+    <ra>16.705291666666667</ra>
+    <dec>11.043333333333333</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.1</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN8IMD000000DwRR010000001</obsID>
+    <trkID>00000FH1UC</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-09T18:35:39.264000Z</obsTime>
+    <ra>17.998791666666667</ra>
+    <dec>11.537166666666667</dec>
+    <astCat>Gaia2</astCat>
+    <mag>21.8</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN8IMD000000DwRR010000002</obsID>
+    <trkID>00000FH1UC</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-09T18:40:39.072000Z</obsTime>
+    <ra>18.002625000000000</ra>
+    <dec>11.538972222222222</dec>
+    <astCat>Gaia2</astCat>
+    <mag>21.9</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN8IMD000000DwRR010000003</obsID>
+    <trkID>00000FH1UC</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>033</stn>
+    <prog>01</prog>
+    <obsTime>2020-11-09T18:45:38.880000Z</obsTime>
+    <ra>18.006750000000000</ra>
+    <dec>11.540888888888889</dec>
+    <astCat>Gaia2</astCat>
+    <mag>21.8</mag>
+    <band>V</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN96MX000000DwT3010000001</obsID>
+    <trkID>00000FH4bN</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-10T06:08:33.216000Z</obsTime>
+    <ra>18.588458333333333</ra>
+    <dec>11.789972222222222</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN96MX000000DwT3010000002</obsID>
+    <trkID>00000FH4bN</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-10T06:16:04.224000Z</obsTime>
+    <ra>18.593500000000000</ra>
+    <dec>11.792527777777778</dec>
+    <astCat>USNOB1</astCat>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LN96MX000000DwT3010000003</obsID>
+    <trkID>00000FH4bN</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-10T06:23:36.096000Z</obsTime>
+    <ra>18.598708333333333</ra>
+    <dec>11.794777777777778</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.3</mag>
+    <band>R</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNB0IjBJ0000DwfI010000001</obsID>
+    <trkID>00000FHXVe</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>T12</stn>
+    <obsTime>2020-11-11T04:35:24.864000Z</obsTime>
+    <ra>19.791841666666667</ra>
+    <dec>12.227163888888889</dec>
+    
+    
+    <astCat>Gaia2</astCat>
+    <mag>21.54</mag>
+    <rmsMag>0.12</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>1.3</photAp>
+    <logSNR>0.94</logSNR>
+    <seeing>1.4</seeing>
+    <exp>180.0</exp>
+    <rmsFit>0.067</rmsFit>
+    <nStars>28</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0181 0.0090 O: 0.0702 0.0527</remarks>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNB0IjBJ0000DwfI010000002</obsID>
+    <trkID>00000FHXVe</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>T12</stn>
+    <obsTime>2020-11-11T04:39:05.097600Z</obsTime>
+    <ra>19.794441666666667</ra>
+    <dec>12.228411111111111</dec>
+    
+    
+    <astCat>Gaia2</astCat>
+    <mag>21.614</mag>
+    <rmsMag>0.087</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>1.1</photAp>
+    <logSNR>1.09</logSNR>
+    <seeing>1.2</seeing>
+    <exp>180.0</exp>
+    <rmsFit>0.070</rmsFit>
+    <nStars>37</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0158 0.0084 O: 0.0439 0.0307</remarks>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNA6tb000000Dwb2010000001</obsID>
+    <trkID>00000FHMkn</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-11T06:28:33.312000Z</obsTime>
+    <ra>19.831666666666667</ra>
+    <dec>12.255388888888889</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.2</mag>
+    <band>R</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNA6tb000000Dwb2010000002</obsID>
+    <trkID>00000FHMkn</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-11T06:37:18.624000Z</obsTime>
+    <ra>19.837208333333333</ra>
+    <dec>12.258138888888889</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.3</mag>
+    <band>R</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNA6tb000000Dwb2010000003</obsID>
+    <trkID>00000FHMkn</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-11T06:46:05.664000Z</obsTime>
+    <ra>19.842916666666667</ra>
+    <dec>12.260555555555556</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.4</mag>
+    <band>R</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNBFYt000000DwjW010000001</obsID>
+    <trkID>00000FHYDJ</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2020-11-12T04:38:36.067200Z</obsTime>
+    <ra>20.888845833333333</ra>
+    <dec>12.691738888888889</dec>
+    <rmsRA>0.02</rmsRA>
+    <rmsDec>0.02</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>21.8</mag>
+    <band>G</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNBFYt000000DwjW010000002</obsID>
+    <trkID>00000FHYDJ</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2020-11-12T04:42:29.952000Z</obsTime>
+    <ra>20.891204166666667</ra>
+    <dec>12.692758333333333</dec>
+    <rmsRA>0.02</rmsRA>
+    <rmsDec>0.02</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>21.8</mag>
+    <band>G</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNBFYt000000DwjW010000003</obsID>
+    <trkID>00000FHYDJ</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2020-11-12T04:45:44.611200Z</obsTime>
+    <ra>20.893175000000000</ra>
+    <dec>12.693600000000000</dec>
+    <rmsRA>0.02</rmsRA>
+    <rmsDec>0.02</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>21.8</mag>
+    <band>G</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNC7UN010000Dwni010000001</obsID>
+    <trkID>00000FHa2I</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-13T06:37:49.728000Z</obsTime>
+    <ra>22.076708333333333</ra>
+    <dec>13.068833333333333</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNC7UN010000Dwni010000002</obsID>
+    <trkID>00000FHa2I</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-13T06:58:34.752000Z</obsTime>
+    <ra>22.088416666666667</ra>
+    <dec>13.073861111111111</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.7</mag>
+    <band>R</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNC7UN010000Dwni010000003</obsID>
+    <trkID>00000FHa2I</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-13T07:19:22.368000Z</obsTime>
+    <ra>22.100333333333333</ra>
+    <dec>13.078861111111111</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.6</mag>
+    <band>R</band>
+    <ref>MPS  1294449</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNDI1j010000Dwx801000000N</obsID>
+    <trkID>00000FHyQq</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2020-11-14T02:44:35.520000Z</obsTime>
+    <ra>22.962291666666667</ra>
+    <dec>13.366361111111111</dec>
+    <astCat>UCAC3</astCat>
+    <mag>22.1</mag>
+    <band>V</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNDI1j010000Dwx801000000O</obsID>
+    <trkID>00000FHyQq</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2020-11-14T02:59:00.902400Z</obsTime>
+    <ra>22.970125000000000</ra>
+    <dec>13.370000000000000</dec>
+    <astCat>UCAC3</astCat>
+    <mag>22.3</mag>
+    <band>V</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNDI1j010000Dwx801000000P</obsID>
+    <trkID>00000FHyQq</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2020-11-14T03:11:04.761600Z</obsTime>
+    <ra>22.976666666666667</ra>
+    <dec>13.373055555555556</dec>
+    <astCat>UCAC3</astCat>
+    <mag>22.3</mag>
+    <band>V</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LND4CI7N0000Dws2010000001</obsID>
+    <trkID>00000FHkwn</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>V06</stn>
+    <obsTime>2020-11-14T03:56:10.464000Z</obsTime>
+    <ra>23.016250000000000</ra>
+    <dec>13.388750000000000</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>21.91</mag>
+    <rmsMag>0.431</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.358</logSNR>
+    <rmsFit>0.184</rmsFit>
+    <nStars>53</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <notes>Km</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LND4CI7N0000Dws2010000002</obsID>
+    <trkID>00000FHkwn</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>V06</stn>
+    <obsTime>2020-11-14T04:00:44.438400Z</obsTime>
+    <ra>23.018833333333333</ra>
+    <dec>13.389944444444444</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>22.05</mag>
+    <rmsMag>0.409</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.409</logSNR>
+    <rmsFit>0.211</rmsFit>
+    <nStars>53</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <notes>Km</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LND4CI7N0000Dws2010000003</obsID>
+    <trkID>00000FHkwn</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>V06</stn>
+    <obsTime>2020-11-14T04:05:18.153600Z</obsTime>
+    <ra>23.021291666666667</ra>
+    <dec>13.391111111111111</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>21.72</mag>
+    <rmsMag>0.322</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.556</logSNR>
+    <rmsFit>0.183</rmsFit>
+    <nStars>53</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <notes>Km</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LND4CI7N0000Dws2010000004</obsID>
+    <trkID>00000FHkwn</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>V06</stn>
+    <obsTime>2020-11-14T04:09:51.955200Z</obsTime>
+    <ra>23.023625000000000</ra>
+    <dec>13.392305555555556</dec>
+    
+    
+    <rmsCorr>0.0</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>21.77</mag>
+    <rmsMag>0.329</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <logSNR>0.610</logSNR>
+    <rmsFit>0.151</rmsFit>
+    <nStars>53</nStars>
+    <ref>MPS  1294449</ref>
+    <subFmt>A17</subFmt>
+    <notes>Km</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNNKL1010000DxzD010000001</obsID>
+    <trkID>00000FJkvo</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2020-11-14T04:53:08.448000Z</obsTime>
+    <ra>23.046458333333333</ra>
+    <dec>13.403111111111111</dec>
+    <astCat>Gaia2</astCat>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNNKL1010000DxzD010000002</obsID>
+    <trkID>00000FJkvo</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2020-11-14T05:00:32.544000Z</obsTime>
+    <ra>23.050208333333333</ra>
+    <dec>13.404666666666667</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.4</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNNKL1010000DxzD010000003</obsID>
+    <trkID>00000FJkvo</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2020-11-14T05:15:19.872000Z</obsTime>
+    <ra>23.057833333333333</ra>
+    <dec>13.408500000000000</dec>
+    <astCat>Gaia2</astCat>
+    <mag>21.6</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNE6kq010000Dwzv010000001</obsID>
+    <trkID>00000FHyW9</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-15T06:03:53.280000Z</obsTime>
+    <ra>24.054291666666667</ra>
+    <dec>13.754305555555556</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.5</mag>
+    <band>R</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNE6kq010000Dwzv010000002</obsID>
+    <trkID>00000FHyW9</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-15T06:24:24.480000Z</obsTime>
+    <ra>24.064208333333333</ra>
+    <dec>13.759166666666667</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.7</mag>
+    <band>R</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNE6kq010000Dwzv010000003</obsID>
+    <trkID>00000FHyW9</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-15T06:44:52.224000Z</obsTime>
+    <ra>24.074625000000000</ra>
+    <dec>13.762944444444444</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.6</mag>
+    <band>R</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNF80M010000Dx5W010000001</obsID>
+    <trkID>00000FIBGg</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2020-11-16T06:54:46.656000Z</obsTime>
+    <ra>24.999500000000000</ra>
+    <dec>14.074972222222222</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.9</mag>
+    <band>R</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNG7VC000000DxD1010000001</obsID>
+    <trkID>00000FIRLM</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2020-11-17T05:47:53.376000Z</obsTime>
+    <ra>25.845166666666667</ra>
+    <dec>14.351722222222222</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.0</mag>
+    <band>R</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNG7VC000000DxD1010000002</obsID>
+    <trkID>00000FIRLM</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2020-11-17T06:24:33.120000Z</obsTime>
+    <ra>25.861291666666667</ra>
+    <dec>14.358500000000000</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.1</mag>
+    <band>R</band>
+    <ref>MPS  1300461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNO851010000Dy1B010000001</obsID>
+    <trkID>00000FJl8X</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>05</prog>
+    <obsTime>2020-11-18T01:56:42.028800Z</obsTime>
+    <ra>26.580279166666667</ra>
+    <dec>14.575947222222222</dec>
+    <rmsRA>0.08</rmsRA>
+    <rmsDec>0.08</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>22.1</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNO851010000Dy1B010000002</obsID>
+    <trkID>00000FJl8X</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>05</prog>
+    <obsTime>2020-11-18T01:57:27.561600Z</obsTime>
+    <ra>26.580629166666667</ra>
+    <dec>14.576100000000000</dec>
+    <rmsRA>0.08</rmsRA>
+    <rmsDec>0.08</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>21.7</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNO851010000Dy1B010000003</obsID>
+    <trkID>00000FJl8X</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>05</prog>
+    <obsTime>2020-11-18T01:58:13.180800Z</obsTime>
+    <ra>26.580995833333333</ra>
+    <dec>14.576305555555556</dec>
+    <rmsRA>0.08</rmsRA>
+    <rmsDec>0.08</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>22.1</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNO851010000Dy1B010000004</obsID>
+    <trkID>00000FJl8X</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>05</prog>
+    <obsTime>2020-11-18T01:58:58.800000Z</obsTime>
+    <ra>26.581366666666667</ra>
+    <dec>14.576441666666667</dec>
+    <rmsRA>0.08</rmsRA>
+    <rmsDec>0.08</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>21.9</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNH4Z0000000DxJY010000001</obsID>
+    <trkID>00000FIo4d</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-18T02:54:48.960000Z</obsTime>
+    <ra>26.608125000000000</ra>
+    <dec>14.589916666666667</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.5</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNH4Z0000000DxJY010000002</obsID>
+    <trkID>00000FIo4d</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-18T03:18:32.832000Z</obsTime>
+    <ra>26.618625000000000</ra>
+    <dec>14.594750000000000</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.5</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNH4Z0000000DxJY010000003</obsID>
+    <trkID>00000FIo4d</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-18T03:42:16.704000Z</obsTime>
+    <ra>26.628958333333333</ra>
+    <dec>14.599555555555556</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.4</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNI43n000000DxPW010000001</obsID>
+    <trkID>00000FIxZT</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-19T02:09:14.400000Z</obsTime>
+    <ra>27.391666666666667</ra>
+    <dec>14.837666666666667</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.3</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNI43n000000DxPW010000002</obsID>
+    <trkID>00000FIxZT</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-19T02:32:56.544000Z</obsTime>
+    <ra>27.402208333333333</ra>
+    <dec>14.842333333333333</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.7</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNJ6S2010000DxXN010000001</obsID>
+    <trkID>00000FJ8nf</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-20T06:03:04.032000Z</obsTime>
+    <ra>28.255083333333333</ra>
+    <dec>15.120194444444444</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.8</mag>
+    <band>R</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNJ6S2010000DxXN010000002</obsID>
+    <trkID>00000FJ8nf</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-20T06:15:59.040000Z</obsTime>
+    <ra>28.260041666666667</ra>
+    <dec>15.122277777777778</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.4</mag>
+    <band>R</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNJ6S2010000DxXN010000003</obsID>
+    <trkID>00000FJ8nf</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-20T06:28:54.048000Z</obsTime>
+    <ra>28.264958333333333</ra>
+    <dec>15.124277777777778</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.6</mag>
+    <band>R</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNN2gq010000Dxvw010000007</obsID>
+    <trkID>00000FJgTT</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>807</stn>
+    <prog>0W</prog>
+    <obsTime>2020-11-21T01:56:02.112000Z</obsTime>
+    <ra>28.879208333333333</ra>
+    <dec>15.344138888888889</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.3</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNN2gq010000Dxvw010000008</obsID>
+    <trkID>00000FJgTT</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>807</stn>
+    <prog>0W</prog>
+    <obsTime>2020-11-21T02:20:11.904000Z</obsTime>
+    <ra>28.888125000000000</ra>
+    <dec>15.347944444444444</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.2</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNN2gq010000Dxvw010000009</obsID>
+    <trkID>00000FJgTT</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>807</stn>
+    <prog>0W</prog>
+    <obsTime>2020-11-21T02:43:23.808000Z</obsTime>
+    <ra>28.896583333333333</ra>
+    <dec>15.351555555555556</dec>
+    <astCat>Gaia2</astCat>
+    <mag>22.2</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNL5mx000000Dxke010000001</obsID>
+    <trkID>00000FJMeJ</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-22T04:16:34.752000Z</obsTime>
+    <ra>29.663875000000000</ra>
+    <dec>15.545222222222222</dec>
+    <astCat>USNOB1</astCat>
+    <mag>22.4</mag>
+    <band>R</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNL5mx000000Dxke010000002</obsID>
+    <trkID>00000FJMeJ</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-22T04:59:40.704000Z</obsTime>
+    <ra>29.679375000000000</ra>
+    <dec>15.551555555555556</dec>
+    <astCat>USNOB1</astCat>
+    <mag>23.4</mag>
+    <band>R</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNN3FV1r0000Dxw4010000001</obsID>
+    <trkID>00000FJgTu</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>0C</prog>
+    <obsTime>2020-11-22T06:39:52.416000Z</obsTime>
+    <ra>29.715208333333333</ra>
+    <dec>15.564083333333333</dec>
+    
+    
+    <rmsCorr>0.01</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>22.7</mag>
+    <rmsMag>0.2</rmsMag>
+    <band>r</band>
+    <photCat>USNOA2</photCat>
+    <photAp>5</photAp>
+    <ref>MPS  1307461</ref>
+    <subFmt>A17</subFmt>
+    <uncTime>0.25</uncTime>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNN3FV1r0000Dxw4010000002</obsID>
+    <trkID>00000FJgTu</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>0C</prog>
+    <obsTime>2020-11-22T06:41:05.856000Z</obsTime>
+    <ra>29.715625000000000</ra>
+    <dec>15.564250000000000</dec>
+    
+    
+    <rmsCorr>0.01</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>22.7</mag>
+    <rmsMag>0.2</rmsMag>
+    <band>r</band>
+    <photCat>USNOA2</photCat>
+    <photAp>5</photAp>
+    <ref>MPS  1307461</ref>
+    <subFmt>A17</subFmt>
+    <uncTime>0.25</uncTime>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNN3FV1r0000Dxw4010000003</obsID>
+    <trkID>00000FJgTu</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>0C</prog>
+    <obsTime>2020-11-22T06:43:25.824000Z</obsTime>
+    <ra>29.716458333333333</ra>
+    <dec>15.564500000000000</dec>
+    
+    
+    <rmsCorr>0.01</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>22.7</mag>
+    <rmsMag>0.2</rmsMag>
+    <band>r</band>
+    <photCat>USNOA2</photCat>
+    <photAp>5</photAp>
+    <ref>MPS  1307461</ref>
+    <subFmt>A17</subFmt>
+    <uncTime>0.25</uncTime>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNN3FV1r0000Dxw4010000004</obsID>
+    <trkID>00000FJgTu</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>0C</prog>
+    <obsTime>2020-11-22T06:44:39.264000Z</obsTime>
+    <ra>29.716875000000000</ra>
+    <dec>15.564694444444444</dec>
+    
+    
+    <rmsCorr>0.01</rmsCorr>
+    <astCat>Gaia2</astCat>
+    <mag>22.4</mag>
+    <rmsMag>0.2</rmsMag>
+    <band>r</band>
+    <photCat>USNOA2</photCat>
+    <photAp>5</photAp>
+    <ref>MPS  1307461</ref>
+    <subFmt>A17</subFmt>
+    <uncTime>0.25</uncTime>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNM4bA000000Dxqk010000001</obsID>
+    <trkID>00000FJWVo</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-23T02:37:59.808000Z</obsTime>
+    <ra>30.315125000000000</ra>
+    <dec>15.733777777777778</dec>
+    <astCat>USNOB1</astCat>
+    <mag>21.7</mag>
+    <band>R</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNM4bA000000Dxqk010000002</obsID>
+    <trkID>00000FJWVo</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>291</stn>
+    <obsTime>2020-11-23T03:10:18.624000Z</obsTime>
+    <ra>30.326875000000000</ra>
+    <dec>15.738916666666667</dec>
+    <astCat>USNOB1</astCat>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNrBhI000000E0Bz010000001</obsID>
+    <trkID>00000FOisT</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2020-12-04T01:36:36.403200Z</obsTime>
+    <ra>36.699000000000000</ra>
+    <dec>17.496666666666667</dec>
+    <rmsRA>0.07</rmsRA>
+    <rmsDec>0.07</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>23.8</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNrBhI000000E0Bz010000002</obsID>
+    <trkID>00000FOisT</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2020-12-04T01:39:44.582400Z</obsTime>
+    <ra>36.699820833333333</ra>
+    <dec>17.496972222222222</dec>
+    <rmsRA>0.07</rmsRA>
+    <rmsDec>0.07</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.1</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNrBhI000000E0Bz010000003</obsID>
+    <trkID>00000FOisT</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2020-12-04T01:44:10.608000Z</obsTime>
+    <ra>36.700979166666667</ra>
+    <dec>17.497375000000000</dec>
+    <rmsRA>0.08</rmsRA>
+    <rmsDec>0.08</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.1</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2020 VV</provID>
+    <trkSub>K20V00V</trkSub>
+    <obsID>LNlDQt010000DzjN010000001</obsID>
+    <trkID>00000FNRcU</trkID>
+    <trkMPC>K20V00V</trkMPC>
+    <mode>CCD</mode>
+    <stn>G37</stn>
+    <prog>05</prog>
+    <obsTime>2020-12-17T07:50:48.393600Z</obsTime>
+    <ra>43.158012500000000</ra>
+    <dec>18.963991666666667</dec>
+    <rmsRA>0.20</rmsRA>
+    <rmsDec>0.20</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.2</mag>
+    <band>G</band>
+    <ref>MPS  1307461</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+</ades>

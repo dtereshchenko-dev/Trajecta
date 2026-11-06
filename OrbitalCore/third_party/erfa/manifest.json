@@ -1,0 +1,151 @@
+{
+  "upstream": "https://github.com/liberfa/erfa",
+  "tag": "v2.0.1",
+  "commit": "9915ba38c9365f8b0738269b8c2ac1fdd5f8dee3",
+  "archive_url": "https://codeload.github.com/liberfa/erfa/tar.gz/9915ba38c9365f8b0738269b8c2ac1fdd5f8dee3",
+  "archive_sha256": "f6f3613d7d78a7cc9f2bbe5a859c8fe94e73feb5db2ca9688363f597ee985a40",
+  "entry_points": [
+    "eraXys06a",
+    "eraC2ixys",
+    "eraEra00",
+    "eraSp00",
+    "eraPom00",
+    "eraC2tcio"
+  ],
+  "source_count": 35,
+  "dependencies": {
+    "eraAnp": [],
+    "eraBpn2xy": [],
+    "eraC2ixys": [
+      "eraIr",
+      "eraRy",
+      "eraRz"
+    ],
+    "eraC2tcio": [
+      "eraCr",
+      "eraRxr",
+      "eraRz"
+    ],
+    "eraCp": [],
+    "eraCr": [
+      "eraCp"
+    ],
+    "eraEra00": [
+      "eraAnp"
+    ],
+    "eraFad03": [],
+    "eraFae03": [],
+    "eraFaf03": [],
+    "eraFaju03": [],
+    "eraFal03": [],
+    "eraFalp03": [],
+    "eraFama03": [],
+    "eraFame03": [],
+    "eraFaom03": [],
+    "eraFapa03": [],
+    "eraFasa03": [],
+    "eraFaur03": [],
+    "eraFave03": [],
+    "eraFw2m": [
+      "eraIr",
+      "eraRx",
+      "eraRz"
+    ],
+    "eraIr": [],
+    "eraNut00a": [
+      "eraFae03",
+      "eraFaf03",
+      "eraFaju03",
+      "eraFal03",
+      "eraFama03",
+      "eraFame03",
+      "eraFaom03",
+      "eraFapa03",
+      "eraFasa03",
+      "eraFaur03",
+      "eraFave03"
+    ],
+    "eraNut06a": [
+      "eraNut00a"
+    ],
+    "eraObl06": [],
+    "eraPfw06": [
+      "eraObl06"
+    ],
+    "eraPnm06a": [
+      "eraFw2m",
+      "eraNut06a",
+      "eraPfw06"
+    ],
+    "eraPom00": [
+      "eraIr",
+      "eraRx",
+      "eraRy",
+      "eraRz"
+    ],
+    "eraRx": [],
+    "eraRxr": [
+      "eraCr"
+    ],
+    "eraRy": [],
+    "eraRz": [],
+    "eraS06": [
+      "eraFad03",
+      "eraFae03",
+      "eraFaf03",
+      "eraFal03",
+      "eraFalp03",
+      "eraFaom03",
+      "eraFapa03",
+      "eraFave03"
+    ],
+    "eraSp00": [],
+    "eraXys06a": [
+      "eraBpn2xy",
+      "eraPnm06a",
+      "eraS06"
+    ]
+  },
+  "files_sha256": {
+    "LICENSE": "b1858f9a263f22c438a455a32945da51a31a0ae25a21055da13bb7ed57cc3b51",
+    "src/anp.c": "41f132914547ce4137edf024bc809fd7dfed3e0f5ff5b38f22313c884e8978e3",
+    "src/bpn2xy.c": "8771bc7db7aeb18f8d9d6fc258d5a28db55e05f3345df0564b4c71a20cc01dfb",
+    "src/c2ixys.c": "8b220605ef6bb81757b53e5ee7df638e9a0c834d0d8fb8a312d2a603f4877f36",
+    "src/c2tcio.c": "1a219863130bcb49ae67f424264776339aea8db5fdd0e716dbff660fbdd65a44",
+    "src/cp.c": "5173afc0a536e2b27f45ca55e3ee28116d007b7750a0d631c57631f417b3993b",
+    "src/cr.c": "9d9be7e696b8ddf00847c24eb9be01da00bf8099f652bc07053d535f1135fc25",
+    "src/era00.c": "91c092c322d070305ba02873005bcb03110d7c26674fbdc7105477c50543ffb5",
+    "src/erfa.h": "9549553b95ca2fbbcdcabcc69d82fb3cdd376c28b03c2793200138ff55727088",
+    "src/erfam.h": "0da6313033aacf9c64533a7e74be49ecda97b4aaa87e134f98287e4ff279886f",
+    "src/fad03.c": "e4f280ff76de95e9a71e19ef9aef3732fa7b04012ca23e3d43691173c66dc2dd",
+    "src/fae03.c": "087d3cc3f175ba33db2c47b9d4ed448ca1986554449cbae0a68daa2bd91f106d",
+    "src/faf03.c": "f58a0dc1fc1595af02e906c7d08da3e8e941a66b3ac6df9047a1718db314b3b6",
+    "src/faju03.c": "f52443bc80596d3aa03811c54a8ea90aad4e25dea1a361aa9ea885f311815a28",
+    "src/fal03.c": "0bc94f25a7722de16379f9311da74e9b132e9db52db4e597f7d24e9060529779",
+    "src/falp03.c": "8ceb012c045ec672bc63cd85260c8e45d0eebf67ae09bce68d520bde625879c1",
+    "src/fama03.c": "2e76a446a5136526778d63aa05f840538560bfc11318b71ff78716f042ed2b3a",
+    "src/fame03.c": "661c2cbdd428cc1bd392b5d089832183a4158037f2418f1f752f702cc3d1dbfd",
+    "src/faom03.c": "d101f54bc44c92786cc91daa9700625f17d7e83226adc9787e0fe100e148aa49",
+    "src/fapa03.c": "26fcc8d0b26d349e0a827ea315759c92660b55baa954d4aa2f931e213173f6a0",
+    "src/fasa03.c": "70b6c589dc1a81226d813b4db738e4409083083b4eed2b659f3e3c913ea9dc35",
+    "src/faur03.c": "6374bdcf987b20ca2103965a05a1ecb3b5e2502b6065459d834170495fab02e3",
+    "src/fave03.c": "8652237b8d7b6558ed911edfc55f714b519e9491a90c9f0f739f884e1693c505",
+    "src/fw2m.c": "480d1ae7780566980b8f80f4c6daa2be330a80e99861d892dc5a9f7b11da47c0",
+    "src/ir.c": "55e3325cd77770315f20dfdee5e7028f56b7bfb97be966db922abcc8885091f1",
+    "src/nut00a.c": "a1538ec0277745db974ab76ca4b678a7602249bccecf9474e2b0268f9c2032ef",
+    "src/nut06a.c": "819c36a689c28e50aaf71ec6d9774da5130df09657a07ab07520ae3712414d07",
+    "src/obl06.c": "550260874d5e5fa3be77296b85b92c54c726fee6fbb1bb44748d04c17ffb37c2",
+    "src/pfw06.c": "085f49861026fab98633d8479795090b3278a0d246a938ebdf10fde326ef1987",
+    "src/pnm06a.c": "ea1814a86aad0895b6f1d5a48ef0308474df1f8fcf27abe6c0293165d8367b99",
+    "src/pom00.c": "19182ef9805c998ed46ec6304a6fb2e869856b85a97cb2391e3e1ec26687f043",
+    "src/rx.c": "b740bba3cce0502620662f6e667369734f6adf56064919394ae1ae3ae3e70c64",
+    "src/rxr.c": "0737e2241086119b642bd0be2e7fadc4b7aa27454ff7561be8a74379772a2912",
+    "src/ry.c": "50c7f3e5a6065c896c7de0aca28bbf8f4c4624445a5675f08463b0d6a2392f02",
+    "src/rz.c": "d4ef2eb4a9744617b510c2370ba5ff5f3c0acaafb07a0eb6138c6f2128005bcc",
+    "src/s06.c": "6ad19dd59c3150d9f065b3f76d254c1cf3adb0cb6bacd6422c1dc6b6f14122ea",
+    "src/sp00.c": "120c1363c7f912272ed689ca186df1d16f3a8f8992dd7b981c94e9cba4a8980a",
+    "src/xys06a.c": "a0b87f7a16b843254d11df469ce3b809cd44155611e361b25580ea6d4086f6ae"
+  },
+  "upstream_test_sha256": "8a92d0099c48df31ca566bea881c19497dc295dba58dba7136cc2f8443c31f15",
+  "modifications": "None; selected upstream source/header/license bytes are unchanged."
+}

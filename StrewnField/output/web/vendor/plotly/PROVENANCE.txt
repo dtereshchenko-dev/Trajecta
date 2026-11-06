@@ -1,0 +1,6 @@
+Plotly.js 3.1.0, full minified distribution (including scatterpolar).
+Source: https://cdn.plot.ly/plotly-3.1.0.min.js
+License: MIT, see LICENSE and the distribution's embedded notices.
+SHA-256: 122e3be346d66616944d0b83eaaf7242581508c3c1cfa0995a17af0d83eff770
+
+This replaces the basic distribution; it is not an additional runtime library.

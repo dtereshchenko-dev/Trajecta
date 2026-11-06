@@ -1,0 +1,6715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ades version="2022">
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LXeLNy010000ElN1010000001</obsID>
+    <trkID>00000GfoY8</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>I41</stn>
+    <obsTime>2010-09-01T07:47:35.203Z</obsTime>
+    <ra>344.88288</ra>
+    <dec>14.30783</dec>
+    <astCat>Gaia3</astCat>
+    <mag>20.7</mag>
+    <band>r</band>
+    <ref>MPS  1623752</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>Z</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LXeLNy010000ElN1010000002</obsID>
+    <trkID>00000GfoY8</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>I41</stn>
+    <obsTime>2010-09-01T08:50:28.464Z</obsTime>
+    <ra>344.85642</ra>
+    <dec>14.30072</dec>
+    <astCat>Gaia3</astCat>
+    <mag>21.3</mag>
+    <band>r</band>
+    <ref>MPS  1623752</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>Z</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LHqCUL010000DN4r010000001</obsID>
+    <trkID>00000ETXDm</trkID>
+    <mode>CCD</mode>
+    <stn>F51</stn>
+    <obsTime>2010-09-03T11:50:18.442Z</obsTime>
+    <ra>344.732837</ra>
+    <dec>13.807317</dec>
+    <astCat>Gaia2</astCat>
+    <mag>20.50</mag>
+    <band>G</band>
+    <ref>MPS  1101573</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LHqCUL010000DN4r010000002</obsID>
+    <trkID>00000ETXDm</trkID>
+    <mode>CCD</mode>
+    <stn>F51</stn>
+    <obsTime>2010-09-03T12:05:40.416Z</obsTime>
+    <ra>344.722783</ra>
+    <dec>13.802644</dec>
+    <astCat>Gaia2</astCat>
+    <mag>20.42</mag>
+    <band>G</band>
+    <ref>MPS  1101573</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO49U40100004S00010000001</obsID>
+    <trkID>000000KinV</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T09:42:52.128Z</obsTime>
+    <ra>344.43958</ra>
+    <dec>12.64442</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.4</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <disc>*</disc>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO49U40100004S00010000002</obsID>
+    <trkID>000000KinV</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T09:52:50.880Z</obsTime>
+    <ra>344.43087</ra>
+    <dec>12.63681</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.3</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO49U40100004S00010000003</obsID>
+    <trkID>000000KinV</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T10:02:52.224Z</obsTime>
+    <ra>344.42233</ra>
+    <dec>12.62911</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.3</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4ANF0000004S0d010000001</obsID>
+    <trkID>000000KjQB</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-05T10:30:56.160Z</obsTime>
+    <ra>344.39408</ra>
+    <dec>12.59933</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4ANF0000004S0d010000002</obsID>
+    <trkID>000000KjQB</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-05T10:41:10.464Z</obsTime>
+    <ra>344.38683</ra>
+    <dec>12.59103</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.8</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4ANF0000004S0d010000003</obsID>
+    <trkID>000000KjQB</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-05T10:52:34.752Z</obsTime>
+    <ra>344.37912</ra>
+    <dec>12.58167</dec>
+    <astCat>USNOB1</astCat>
+    <mag>19.0</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4ANF0000004S0d010000004</obsID>
+    <trkID>000000KjQB</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-05T11:01:13.152Z</obsTime>
+    <ra>344.37354</ra>
+    <dec>12.57453</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.7</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4B5k0100004S1A010000001</obsID>
+    <trkID>000000KkLj</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-05T11:28:40.800Z</obsTime>
+    <ra>344.35729</ra>
+    <dec>12.55139</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.8</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4B5k0100004S1A010000002</obsID>
+    <trkID>000000KkLj</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-05T11:35:57.120Z</obsTime>
+    <ra>344.35338</ra>
+    <dec>12.54519</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.7</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4B5k0100004S1A010000003</obsID>
+    <trkID>000000KkLj</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-05T11:42:09.504Z</obsTime>
+    <ra>344.35029</ra>
+    <dec>12.53981</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.6</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4BY20100004S1W010000001</obsID>
+    <trkID>000000Kki3</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T11:42:37.152Z</obsTime>
+    <ra>344.35183</ra>
+    <dec>12.54739</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.1</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4BY20100004S1W010000002</obsID>
+    <trkID>000000Kki3</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T11:43:22.080Z</obsTime>
+    <ra>344.35138</ra>
+    <dec>12.54675</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.1</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4BY20100004S1W010000003</obsID>
+    <trkID>000000Kki3</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T11:44:06.144Z</obsTime>
+    <ra>344.35092</ra>
+    <dec>12.54606</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.1</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4BY20100004S1W010000004</obsID>
+    <trkID>000000Kki3</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T11:44:50.208Z</obsTime>
+    <ra>344.35050</ra>
+    <dec>12.54550</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.3</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4B5k0100004S1A010000004</obsID>
+    <trkID>000000KkLj</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-05T11:46:54.624Z</obsTime>
+    <ra>344.34792</ra>
+    <dec>12.53572</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.8</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4BZF0100004S1X010000001</obsID>
+    <trkID>000000Kki4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T11:52:16.032Z</obsTime>
+    <ra>344.34642</ra>
+    <dec>12.53908</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.2</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4BZF0100004S1X010000002</obsID>
+    <trkID>000000Kki4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T11:53:00.960Z</obsTime>
+    <ra>344.34612</ra>
+    <dec>12.53844</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.0</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4BZF0100004S1X010000003</obsID>
+    <trkID>000000Kki4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T11:53:45.888Z</obsTime>
+    <ra>344.34567</ra>
+    <dec>12.53778</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.1</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4BZF0100004S1X010000004</obsID>
+    <trkID>000000Kki4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2010-09-05T11:54:29.952Z</obsTime>
+    <ra>344.34537</ra>
+    <dec>12.53717</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.0</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4GGF0100004S5p010000001</obsID>
+    <trkID>000000Ku9H</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-05T15:55:39.360Z</obsTime>
+    <ra>344.39779</ra>
+    <dec>12.64317</dec>
+    <astCat>UCAC2</astCat>
+    <mag>19.1</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4GGF0100004S5p010000002</obsID>
+    <trkID>000000Ku9H</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-05T16:02:28.896Z</obsTime>
+    <ra>344.39092</ra>
+    <dec>12.63761</dec>
+    <astCat>UCAC2</astCat>
+    <mag>18.9</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4InY0100004S7U010000001</obsID>
+    <trkID>000000KuuN</trkID>
+    <mode>CCD</mode>
+    <stn>300</stn>
+    <obsTime>2010-09-05T17:25:11.712Z</obsTime>
+    <ra>344.36350</ra>
+    <dec>12.30428</dec>
+    <astCat>USNOB1</astCat>
+    <mag>19.2</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4InY0100004S7U010000002</obsID>
+    <trkID>000000KuuN</trkID>
+    <mode>CCD</mode>
+    <stn>300</stn>
+    <obsTime>2010-09-05T17:32:16.800Z</obsTime>
+    <ra>344.35687</ra>
+    <dec>12.29789</dec>
+    <astCat>USNOB1</astCat>
+    <mag>19.3</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4InY0100004S7U010000003</obsID>
+    <trkID>000000KuuN</trkID>
+    <mode>CCD</mode>
+    <stn>300</stn>
+    <obsTime>2010-09-05T17:35:48.480Z</obsTime>
+    <ra>344.35354</ra>
+    <dec>12.29489</dec>
+    <astCat>USNOB1</astCat>
+    <mag>19.3</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4InY0100004S7U010000004</obsID>
+    <trkID>000000KuuN</trkID>
+    <mode>CCD</mode>
+    <stn>300</stn>
+    <obsTime>2010-09-05T17:39:21.024Z</obsTime>
+    <ra>344.35000</ra>
+    <dec>12.29142</dec>
+    <astCat>USNOB1</astCat>
+    <mag>19.3</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4IY40100004S7I010000001</obsID>
+    <trkID>000000KusN</trkID>
+    <mode>CCD</mode>
+    <stn>118</stn>
+    <obsTime>2010-09-05T18:46:24.672Z</obsTime>
+    <ra>344.62812</ra>
+    <dec>12.17358</dec>
+    <astCat>UCAC3</astCat>
+    <mag>19.1</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4IY40100004S7I010000002</obsID>
+    <trkID>000000KusN</trkID>
+    <mode>CCD</mode>
+    <stn>118</stn>
+    <obsTime>2010-09-05T18:52:53.472Z</obsTime>
+    <ra>344.62479</ra>
+    <dec>12.16908</dec>
+    <astCat>UCAC3</astCat>
+    <mag>19.5</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4IY40100004S7I010000003</obsID>
+    <trkID>000000KusN</trkID>
+    <mode>CCD</mode>
+    <stn>118</stn>
+    <obsTime>2010-09-05T18:59:22.272Z</obsTime>
+    <ra>344.62117</ra>
+    <dec>12.16439</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.7</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4IY40100004S7I010000004</obsID>
+    <trkID>000000KusN</trkID>
+    <mode>CCD</mode>
+    <stn>118</stn>
+    <obsTime>2010-09-05T19:05:52.800Z</obsTime>
+    <ra>344.61742</ra>
+    <dec>12.16000</dec>
+    <astCat>UCAC3</astCat>
+    <mag>19.5</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4IY40100004S7I010000005</obsID>
+    <trkID>000000KusN</trkID>
+    <mode>CCD</mode>
+    <stn>118</stn>
+    <obsTime>2010-09-05T19:12:22.464Z</obsTime>
+    <ra>344.61392</ra>
+    <dec>12.15525</dec>
+    <astCat>UCAC3</astCat>
+    <mag>19.3</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4JeT0100004S7u010000001</obsID>
+    <trkID>000000Kv3V</trkID>
+    <mode>CCD</mode>
+    <stn>A74</stn>
+    <obsTime>2010-09-05T19:59:36.384Z</obsTime>
+    <ra>344.59637</ra>
+    <dec>12.11125</dec>
+    <astCat>UCAC3</astCat>
+    <mag>20.2</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4JeT0100004S7u010000002</obsID>
+    <trkID>000000Kv3V</trkID>
+    <mode>CCD</mode>
+    <stn>A74</stn>
+    <obsTime>2010-09-05T20:16:33.312Z</obsTime>
+    <ra>344.58521</ra>
+    <dec>12.09833</dec>
+    <astCat>UCAC3</astCat>
+    <mag>19.7</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>RR88888</trkSub>
+    <obsID>KO4JeT0100004S7u010000003</obsID>
+    <trkID>000000Kv3V</trkID>
+    <mode>CCD</mode>
+    <stn>A74</stn>
+    <obsTime>2010-09-05T20:32:28.032Z</obsTime>
+    <ra>344.57417</ra>
+    <dec>12.08608</dec>
+    <astCat>UCAC3</astCat>
+    <mag>19.5</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO4MFM0000004SAL010000001</obsID>
+    <trkID>000000KwVV</trkID>
+    <mode>CCD</mode>
+    <stn>157</stn>
+    <obsTime>2010-09-05T21:06:13.248Z</obsTime>
+    <ra>344.55250</ra>
+    <dec>12.09106</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.4</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO4MFM0000004SAL010000002</obsID>
+    <trkID>000000KwVV</trkID>
+    <mode>CCD</mode>
+    <stn>157</stn>
+    <obsTime>2010-09-05T21:09:38.016Z</obsTime>
+    <ra>344.54925</ra>
+    <dec>12.08839</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.5</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO4LHg0100004S9H010000001</obsID>
+    <trkID>000000Kvla</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-05T21:26:53.088Z</obsTime>
+    <ra>344.55508</ra>
+    <dec>12.03478</dec>
+    <astCat>UCAC3</astCat>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO4LHg0100004S9H010000002</obsID>
+    <trkID>000000Kvla</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-05T22:23:54.528Z</obsTime>
+    <ra>344.50946</ra>
+    <dec>11.98753</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.5</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO51fI0100004SCU010000001</obsID>
+    <trkID>000000KyBp</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T00:56:11.328Z</obsTime>
+    <ra>344.32862</ra>
+    <dec>11.84808</dec>
+    <astCat>CMC14</astCat>
+    <mag>18.1</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO51fI0100004SCU010000002</obsID>
+    <trkID>000000KyBp</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T01:01:55.200Z</obsTime>
+    <ra>344.32325</ra>
+    <dec>11.84211</dec>
+    <astCat>CMC14</astCat>
+    <mag>18.1</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO51fI0100004SCU010000003</obsID>
+    <trkID>000000KyBp</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T01:07:20.064Z</obsTime>
+    <ra>344.31817</ra>
+    <dec>11.83625</dec>
+    <astCat>CMC14</astCat>
+    <mag>18.2</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO51fI0100004SCU010000004</obsID>
+    <trkID>000000KyBp</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T01:12:24.192Z</obsTime>
+    <ra>344.31317</ra>
+    <dec>11.83072</dec>
+    <astCat>CMC14</astCat>
+    <mag>18.2</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO51fI0100004SCU010000005</obsID>
+    <trkID>000000KyBp</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T01:17:47.328Z</obsTime>
+    <ra>344.30804</ra>
+    <dec>11.82494</dec>
+    <astCat>CMC14</astCat>
+    <mag>17.9</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO51fI0100004SCU010000006</obsID>
+    <trkID>000000KyBp</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T01:28:18.912Z</obsTime>
+    <ra>344.29850</ra>
+    <dec>11.81344</dec>
+    <astCat>CMC14</astCat>
+    <mag>18.1</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO59OC0000004SJo010000001</obsID>
+    <trkID>000000L3Y1</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T01:33:25.632Z</obsTime>
+    <ra>344.29379</ra>
+    <dec>11.80761</dec>
+    <astCat>CMC14</astCat>
+    <mag>18.4</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO59OC0000004SJo010000002</obsID>
+    <trkID>000000L3Y1</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T01:38:31.488Z</obsTime>
+    <ra>344.28917</ra>
+    <dec>11.80189</dec>
+    <astCat>CMC14</astCat>
+    <mag>18.1</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO59OC0000004SJo010000003</obsID>
+    <trkID>000000L3Y1</trkID>
+    <mode>CCD</mode>
+    <stn>B82</stn>
+    <obsTime>2010-09-06T01:43:36.480Z</obsTime>
+    <ra>344.28446</ra>
+    <dec>11.79631</dec>
+    <astCat>CMC14</astCat>
+    <mag>18.2</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO55TE0000004SGC010000001</obsID>
+    <trkID>000000L161</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-06T05:02:52.512Z</obsTime>
+    <ra>344.48508</ra>
+    <dec>11.65564</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.1</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO55TE0000004SGC010000002</obsID>
+    <trkID>000000L161</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-06T05:24:07.776Z</obsTime>
+    <ra>344.45992</ra>
+    <dec>11.63419</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.0</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO55TE0000004SGC010000003</obsID>
+    <trkID>000000L161</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-06T05:43:03.072Z</obsTime>
+    <ra>344.43646</ra>
+    <dec>11.61467</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.0</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO575q0000004SHg010000001</obsID>
+    <trkID>000000L2tS</trkID>
+    <mode>CCD</mode>
+    <stn>H11</stn>
+    <obsTime>2010-09-06T07:05:47.616Z</obsTime>
+    <ra>344.33442</ra>
+    <dec>11.53331</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.4</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO575q0000004SHg010000002</obsID>
+    <trkID>000000L2tS</trkID>
+    <mode>CCD</mode>
+    <stn>H11</stn>
+    <obsTime>2010-09-06T07:07:07.968Z</obsTime>
+    <ra>344.33233</ra>
+    <dec>11.53153</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.8</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO575q0000004SHg010000003</obsID>
+    <trkID>000000L2tS</trkID>
+    <mode>CCD</mode>
+    <stn>H11</stn>
+    <obsTime>2010-09-06T07:08:31.776Z</obsTime>
+    <ra>344.33038</ra>
+    <dec>11.53014</dec>
+    <astCat>USNOB1</astCat>
+    <mag>18.8</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO60Oc0100004SUx01000001P</obsID>
+    <trkID>000000LCvt</trkID>
+    <mode>CCD</mode>
+    <stn>704</stn>
+    <obsTime>2010-09-06T07:10:30.144Z</obsTime>
+    <ra>344.31646</ra>
+    <dec>11.51783</dec>
+    <astCat>USNOA2</astCat>
+    <mag>19.5</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO60Oc0100004SUx01000001Q</obsID>
+    <trkID>000000LCvt</trkID>
+    <mode>CCD</mode>
+    <stn>704</stn>
+    <obsTime>2010-09-06T07:27:14.112Z</obsTime>
+    <ra>344.29279</ra>
+    <dec>11.49767</dec>
+    <astCat>USNOA2</astCat>
+    <mag>19.6</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO60Oc0100004SUx01000001R</obsID>
+    <trkID>000000LCvt</trkID>
+    <mode>CCD</mode>
+    <stn>704</stn>
+    <obsTime>2010-09-06T07:43:59.808Z</obsTime>
+    <ra>344.26937</ra>
+    <dec>11.47719</dec>
+    <astCat>USNOA2</astCat>
+    <mag>19.4</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO60Oc0100004SUx01000001S</obsID>
+    <trkID>000000LCvt</trkID>
+    <mode>CCD</mode>
+    <stn>704</stn>
+    <obsTime>2010-09-06T08:00:48.096Z</obsTime>
+    <ra>344.24596</ra>
+    <dec>11.45581</dec>
+    <astCat>USNOA2</astCat>
+    <mag>20.2</mag>
+    <band>V</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000001</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:06:44.928Z</obsTime>
+    <ra>344.17996</ra>
+    <dec>11.43644</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.8</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000002</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:08:27.744Z</obsTime>
+    <ra>344.17783</ra>
+    <dec>11.43444</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000003</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:10:01.920Z</obsTime>
+    <ra>344.17596</ra>
+    <dec>11.43231</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000004</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:11:21.408Z</obsTime>
+    <ra>344.17437</ra>
+    <dec>11.43053</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.8</mag>
+    <band>R</band>
+    <ref>MPS   347218</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000005</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:14:36.672Z</obsTime>
+    <ra>344.17008</ra>
+    <dec>11.42625</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000006</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:15:48.384Z</obsTime>
+    <ra>344.16871</ra>
+    <dec>11.42464</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000007</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:16:49.728Z</obsTime>
+    <ra>344.16725</ra>
+    <dec>11.42333</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO60Oc0100004SUx01000001T</obsID>
+    <trkID>000000LCvt</trkID>
+    <mode>CCD</mode>
+    <stn>704</stn>
+    <obsTime>2010-09-06T08:17:34.656Z</obsTime>
+    <ra>344.22233</ra>
+    <dec>11.43428</dec>
+    <astCat>USNOA2</astCat>
+    <mag>19.5</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000008</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:17:58.848Z</obsTime>
+    <ra>344.16592</ra>
+    <dec>11.42183</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH010000009</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:19:53.760Z</obsTime>
+    <ra>344.16371</ra>
+    <dec>11.41911</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO57uI0000004SIH01000000A</obsID>
+    <trkID>000000L3Np</trkID>
+    <mode>CCD</mode>
+    <stn>H45</stn>
+    <obsTime>2010-09-06T08:21:28.800Z</obsTime>
+    <ra>344.16171</ra>
+    <dec>11.41714</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO59Y10000004SJt010000001</obsID>
+    <trkID>000000L3YH</trkID>
+    <mode>CCD</mode>
+    <stn>H15</stn>
+    <obsTime>2010-09-06T09:06:55.584Z</obsTime>
+    <ra>344.14925</ra>
+    <dec>11.37208</dec>
+    <astCat>UCAC3</astCat>
+    <mag>19.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO59Y10000004SJt010000002</obsID>
+    <trkID>000000L3YH</trkID>
+    <mode>CCD</mode>
+    <stn>H15</stn>
+    <obsTime>2010-09-06T09:08:18.528Z</obsTime>
+    <ra>344.14738</ra>
+    <dec>11.37031</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO59Y10000004SJt010000003</obsID>
+    <trkID>000000L3YH</trkID>
+    <mode>CCD</mode>
+    <stn>H15</stn>
+    <obsTime>2010-09-06T09:09:39.744Z</obsTime>
+    <ra>344.14571</ra>
+    <dec>11.36836</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO59Y10000004SJt010000004</obsID>
+    <trkID>000000L3YH</trkID>
+    <mode>CCD</mode>
+    <stn>H15</stn>
+    <obsTime>2010-09-06T09:11:00.960Z</obsTime>
+    <ra>344.14383</ra>
+    <dec>11.36647</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000001</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:02:21.005Z</obsTime>
+    <ra>344.11050</ra>
+    <dec>11.21122</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000002</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:05:53.981Z</obsTime>
+    <ra>344.10479</ra>
+    <dec>11.20589</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000003</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:08:11.962Z</obsTime>
+    <ra>344.10113</ra>
+    <dec>11.20242</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000004</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:11:15.994Z</obsTime>
+    <ra>344.09625</ra>
+    <dec>11.19781</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000005</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:14:18.038Z</obsTime>
+    <ra>344.09158</ra>
+    <dec>11.19331</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000006</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:17:12.998Z</obsTime>
+    <ra>344.08696</ra>
+    <dec>11.18889</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000007</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:20:15.043Z</obsTime>
+    <ra>344.08221</ra>
+    <dec>11.18417</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000008</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:23:15.014Z</obsTime>
+    <ra>344.07758</ra>
+    <dec>11.17969</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc010000009</obsID>
+    <trkID>000000MBt6</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-06T12:26:12.998Z</obsTime>
+    <ra>344.07296</ra>
+    <dec>11.17517</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO5HLa0000004SQc010000001</obsID>
+    <trkID>000000LC2Z</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-06T14:15:01.728Z</obsTime>
+    <ra>344.18858</ra>
+    <dec>11.32119</dec>
+    <astCat>UCAC2</astCat>
+    <mag>18.2</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO5HLa0000004SQc010000002</obsID>
+    <trkID>000000LC2Z</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-06T14:21:33.120Z</obsTime>
+    <ra>344.17779</ra>
+    <dec>11.31192</dec>
+    <astCat>UCAC2</astCat>
+    <mag>18.5</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO5LiU0100004STq010000001</obsID>
+    <trkID>000000LCoM</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-06T22:44:36.960Z</obsTime>
+    <ra>344.11096</ra>
+    <dec>9.93631</dec>
+    <astCat>UCAC3</astCat>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO5LiU0100004STq010000002</obsID>
+    <trkID>000000LCoM</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-06T22:47:21.120Z</obsTime>
+    <ra>344.10696</ra>
+    <dec>9.93058</dec>
+    <astCat>UCAC3</astCat>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO5LiU0100004STq010000003</obsID>
+    <trkID>000000LCoM</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-06T22:52:26.112Z</obsTime>
+    <ra>344.09938</ra>
+    <dec>9.92000</dec>
+    <astCat>UCAC3</astCat>
+    <mag>18.1</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO602r0100004SUY010000001</obsID>
+    <trkID>000000LCqT</trkID>
+    <mode>CCD</mode>
+    <stn>470</stn>
+    <obsTime>2010-09-06T23:55:47.712Z</obsTime>
+    <ra>343.91829</ra>
+    <dec>9.84069</dec>
+    <astCat>NOMAD</astCat>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO602r0100004SUY010000002</obsID>
+    <trkID>000000LCqT</trkID>
+    <mode>CCD</mode>
+    <stn>470</stn>
+    <obsTime>2010-09-06T23:56:59.424Z</obsTime>
+    <ra>343.91563</ra>
+    <dec>9.83792</dec>
+    <astCat>NOMAD</astCat>
+    <mag>17.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO602r0100004SUY010000003</obsID>
+    <trkID>000000LCqT</trkID>
+    <mode>CCD</mode>
+    <stn>470</stn>
+    <obsTime>2010-09-06T23:58:09.408Z</obsTime>
+    <ra>343.91392</ra>
+    <dec>9.83517</dec>
+    <astCat>NOMAD</astCat>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO63Ny0100004SYB010000001</obsID>
+    <trkID>000000LJXS</trkID>
+    <mode>CCD</mode>
+    <stn>850</stn>
+    <obsTime>2010-09-07T02:25:56.640Z</obsTime>
+    <ra>344.20058</ra>
+    <dec>9.51181</dec>
+    <astCat>UCAC2</astCat>
+    <mag>17.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO63Ny0100004SYB010000002</obsID>
+    <trkID>000000LJXS</trkID>
+    <mode>CCD</mode>
+    <stn>850</stn>
+    <obsTime>2010-09-07T02:47:01.536Z</obsTime>
+    <ra>344.16792</ra>
+    <dec>9.46314</dec>
+    <astCat>UCAC2</astCat>
+    <mag>17.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO63Ny0100004SYB010000003</obsID>
+    <trkID>000000LJXS</trkID>
+    <mode>CCD</mode>
+    <stn>850</stn>
+    <obsTime>2010-09-07T03:06:38.304Z</obsTime>
+    <ra>344.13483</ra>
+    <dec>9.41675</dec>
+    <astCat>UCAC2</astCat>
+    <mag>17.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO63Ny0100004SYB010000004</obsID>
+    <trkID>000000LJXS</trkID>
+    <mode>CCD</mode>
+    <stn>850</stn>
+    <obsTime>2010-09-07T03:26:35.808Z</obsTime>
+    <ra>344.09904</ra>
+    <dec>9.36842</dec>
+    <astCat>UCAC2</astCat>
+    <mag>17.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO66200100004Sb9010000001</obsID>
+    <trkID>000000LL6c</trkID>
+    <mode>CCD</mode>
+    <stn>G56</stn>
+    <obsTime>2010-09-07T06:10:11.712Z</obsTime>
+    <ra>343.98550</ra>
+    <dec>8.89750</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.1</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO66200100004Sb9010000002</obsID>
+    <trkID>000000LL6c</trkID>
+    <mode>CCD</mode>
+    <stn>G56</stn>
+    <obsTime>2010-09-07T06:13:42.528Z</obsTime>
+    <ra>343.97817</ra>
+    <dec>8.88753</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO66200100004Sb9010000003</obsID>
+    <trkID>000000LL6c</trkID>
+    <mode>CCD</mode>
+    <stn>G56</stn>
+    <obsTime>2010-09-07T06:17:13.344Z</obsTime>
+    <ra>343.97096</ra>
+    <dec>8.87742</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6Bni0000004SgH010000001</obsID>
+    <trkID>000000LTw9</trkID>
+    <mode>CCD</mode>
+    <stn>H06</stn>
+    <prog>0W</prog>
+    <obsTime>2010-09-07T06:18:12.096Z</obsTime>
+    <ra>343.86450</ra>
+    <dec>8.91797</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6Bni0000004SgH010000002</obsID>
+    <trkID>000000LTw9</trkID>
+    <mode>CCD</mode>
+    <stn>H06</stn>
+    <prog>0W</prog>
+    <obsTime>2010-09-07T06:20:11.328Z</obsTime>
+    <ra>343.85979</ra>
+    <dec>8.91228</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO66200100004Sb9010000004</obsID>
+    <trkID>000000LL6c</trkID>
+    <mode>CCD</mode>
+    <stn>G56</stn>
+    <obsTime>2010-09-07T06:20:44.160Z</obsTime>
+    <ra>343.96363</ra>
+    <dec>8.86736</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KR2Ccf0100005A1p010000003</obsID>
+    <trkID>0000017qsm</trkID>
+    <mode>CCD</mode>
+    <stn>H06</stn>
+    <prog>0W</prog>
+    <obsTime>2010-09-07T06:26:34.944Z</obsTime>
+    <ra>343.84442</ra>
+    <dec>8.89328</dec>
+    <astCat>USNOA2</astCat>
+    <mag>17.1</mag>
+    <band>R</band>
+    <ref>MPS   372124</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KR2Ccf0100005A1p010000004</obsID>
+    <trkID>0000017qsm</trkID>
+    <mode>CCD</mode>
+    <stn>H06</stn>
+    <prog>0W</prog>
+    <obsTime>2010-09-07T06:30:31.680Z</obsTime>
+    <ra>343.83483</ra>
+    <dec>8.88175</dec>
+    <astCat>USNOA2</astCat>
+    <mag>17.1</mag>
+    <band>R</band>
+    <ref>MPS   372124</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6JH40100004Slf01000000B</obsID>
+    <trkID>000000LamJ</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-07T06:33:12.038Z</obsTime>
+    <ra>343.70746</ra>
+    <dec>8.82239</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.7</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6JH40100004Slf01000000C</obsID>
+    <trkID>000000LamJ</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-07T06:38:07.958Z</obsTime>
+    <ra>343.69617</ra>
+    <dec>8.80706</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.7</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6JH40100004Slf01000000D</obsID>
+    <trkID>000000LamJ</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-07T06:42:31.997Z</obsTime>
+    <ra>343.68608</ra>
+    <dec>8.79339</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.5</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6JH40100004Slf01000000E</obsID>
+    <trkID>000000LamJ</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-07T06:50:17.693Z</obsTime>
+    <ra>343.66825</ra>
+    <dec>8.76900</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.6</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6JH40100004Slf01000000F</obsID>
+    <trkID>000000LamJ</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-07T06:54:10.109Z</obsTime>
+    <ra>343.65938</ra>
+    <dec>8.75675</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.6</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6JH40100004Slf01000000G</obsID>
+    <trkID>000000LamJ</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-07T06:58:33.888Z</obsTime>
+    <ra>343.64937</ra>
+    <dec>8.74281</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.7</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6JH40100004Slf01000000H</obsID>
+    <trkID>000000LamJ</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-07T07:02:10.320Z</obsTime>
+    <ra>343.64104</ra>
+    <dec>8.73133</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.7</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO70fX0000004Sow010000001</obsID>
+    <trkID>000000Lc7x</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-07T10:36:08.064Z</obsTime>
+    <ra>343.25479</ra>
+    <dec>8.02244</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.1</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO70fX0000004Sow010000002</obsID>
+    <trkID>000000Lc7x</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-07T10:41:16.512Z</obsTime>
+    <ra>343.24417</ra>
+    <dec>8.00203</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO70fX0000004Sow010000003</obsID>
+    <trkID>000000Lc7x</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-07T10:46:13.728Z</obsTime>
+    <ra>343.23408</ra>
+    <dec>7.98214</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO70fX0000004Sow010000004</obsID>
+    <trkID>000000Lc7x</trkID>
+    <mode>CCD</mode>
+    <stn>H01</stn>
+    <obsTime>2010-09-07T10:54:40.032Z</obsTime>
+    <ra>343.21721</ra>
+    <dec>7.94814</dec>
+    <astCat>USNOB1</astCat>
+    <mag>17.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LHqCUL010000DN4r010000003</obsID>
+    <trkID>00000ETXDn</trkID>
+    <mode>CCD</mode>
+    <stn>F51</stn>
+    <obsTime>2010-09-07T11:07:57.677Z</obsTime>
+    <ra>343.483592</ra>
+    <dec>8.048353</dec>
+    <astCat>Gaia2</astCat>
+    <mag>16.40</mag>
+    <band>G</band>
+    <ref>MPS  1101573</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LHqCUL010000DN4r010000004</obsID>
+    <trkID>00000ETXDn</trkID>
+    <mode>CCD</mode>
+    <stn>F51</stn>
+    <obsTime>2010-09-07T11:25:39.446Z</obsTime>
+    <ra>343.429129</ra>
+    <dec>7.979081</dec>
+    <astCat>Gaia2</astCat>
+    <ref>MPS  1101573</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO70VJ0100004Son010000001</obsID>
+    <trkID>000000Lc7F</trkID>
+    <mode>CCD</mode>
+    <stn>379</stn>
+    <obsTime>2010-09-07T13:32:50.208Z</obsTime>
+    <ra>343.62829</ra>
+    <dec>7.31919</dec>
+    <astCat>UCAC3</astCat>
+    <mag>17.5</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO70VJ0100004Son010000002</obsID>
+    <trkID>000000Lc7F</trkID>
+    <mode>CCD</mode>
+    <stn>379</stn>
+    <obsTime>2010-09-07T13:35:04.128Z</obsTime>
+    <ra>343.62196</ra>
+    <dec>7.30925</dec>
+    <astCat>UCAC3</astCat>
+    <mag>17.6</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO70VJ0100004Son010000003</obsID>
+    <trkID>000000Lc7F</trkID>
+    <mode>CCD</mode>
+    <stn>379</stn>
+    <obsTime>2010-09-07T13:37:18.048Z</obsTime>
+    <ra>343.61525</ra>
+    <dec>7.29956</dec>
+    <astCat>UCAC3</astCat>
+    <mag>17.6</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO70VJ0100004Son010000004</obsID>
+    <trkID>000000Lc7F</trkID>
+    <mode>CCD</mode>
+    <stn>379</stn>
+    <obsTime>2010-09-07T13:42:36.864Z</obsTime>
+    <ra>343.59987</ra>
+    <dec>7.27611</dec>
+    <astCat>UCAC3</astCat>
+    <mag>17.9</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6EmD0100004SiH010000001</obsID>
+    <trkID>000000LWrk</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-07T13:56:46.608Z</obsTime>
+    <ra>343.45650</ra>
+    <dec>7.86994</dec>
+    <astCat>UCAC2</astCat>
+    <mag>17.1</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6EmD0100004SiH010000002</obsID>
+    <trkID>000000LWrk</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-07T13:57:18.662Z</obsTime>
+    <ra>343.45471</ra>
+    <dec>7.86761</dec>
+    <astCat>UCAC2</astCat>
+    <mag>16.9</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6EmD0100004SiH010000003</obsID>
+    <trkID>000000LWrk</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-07T13:57:54.000Z</obsTime>
+    <ra>343.45292</ra>
+    <dec>7.86517</dec>
+    <astCat>UCAC2</astCat>
+    <mag>17.0</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6EmD0100004SiH010000004</obsID>
+    <trkID>000000LWrk</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-07T13:58:27.350Z</obsTime>
+    <ra>343.45112</ra>
+    <dec>7.86286</dec>
+    <astCat>UCAC2</astCat>
+    <mag>16.9</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6EmD0100004SiH010000005</obsID>
+    <trkID>000000LWrk</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-07T13:59:00.096Z</obsTime>
+    <ra>343.44933</ra>
+    <dec>7.86053</dec>
+    <astCat>UCAC2</astCat>
+    <mag>17.0</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6Jf90100004Slu010000001</obsID>
+    <trkID>000000Lamw</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-07T20:42:32.918Z</obsTime>
+    <ra>343.36204</ra>
+    <dec>4.67847</dec>
+    <astCat>UCAC3</astCat>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6Jf90100004Slu010000002</obsID>
+    <trkID>000000Lamw</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-07T20:45:56.650Z</obsTime>
+    <ra>343.35312</ra>
+    <dec>4.65367</dec>
+    <astCat>UCAC3</astCat>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO6Jf90100004Slu010000003</obsID>
+    <trkID>000000Lamw</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-07T20:49:23.837Z</obsTime>
+    <ra>343.34392</ra>
+    <dec>4.62836</dec>
+    <astCat>UCAC3</astCat>
+    <mag>16.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO72cG0100004Sqi010000001</obsID>
+    <trkID>000000LfKO</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-07T23:34:39.014Z</obsTime>
+    <ra>342.77096</ra>
+    <dec>3.25319</dec>
+    <astCat>UCAC3</astCat>
+    <mag>16.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO72cG0100004Sqi010000002</obsID>
+    <trkID>000000LfKO</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-07T23:36:24.941Z</obsTime>
+    <ra>342.76363</ra>
+    <dec>3.23661</dec>
+    <astCat>UCAC3</astCat>
+    <mag>16.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO72cG0100004Sqi010000003</obsID>
+    <trkID>000000LfKO</trkID>
+    <mode>CCD</mode>
+    <stn>J95</stn>
+    <obsTime>2010-09-07T23:38:26.160Z</obsTime>
+    <ra>342.75521</ra>
+    <dec>3.21747</dec>
+    <astCat>UCAC3</astCat>
+    <mag>16.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO73nH0100004Srg010000001</obsID>
+    <trkID>000000Lg8a</trkID>
+    <mode>CCD</mode>
+    <stn>I77</stn>
+    <obsTime>2010-09-07T23:54:05.760Z</obsTime>
+    <ra>343.24917</ra>
+    <dec>4.05083</dec>
+    <astCat>UCAC2</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO73nH0100004Srg010000002</obsID>
+    <trkID>000000Lg8a</trkID>
+    <mode>CCD</mode>
+    <stn>I77</stn>
+    <obsTime>2010-09-07T23:58:08.544Z</obsTime>
+    <ra>343.23217</ra>
+    <dec>4.01536</dec>
+    <astCat>UCAC2</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000001</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:52:53.760Z</obsTime>
+    <ra>342.77942</ra>
+    <dec>3.10794</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000002</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:53:00.672Z</obsTime>
+    <ra>342.77875</ra>
+    <dec>3.10650</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000003</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:53:07.584Z</obsTime>
+    <ra>342.77812</ra>
+    <dec>3.10536</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000004</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:53:16.224Z</obsTime>
+    <ra>342.77763</ra>
+    <dec>3.10417</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000005</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:53:23.136Z</obsTime>
+    <ra>342.77671</ra>
+    <dec>3.10269</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000006</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:53:36.960Z</obsTime>
+    <ra>342.77575</ra>
+    <dec>3.10036</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000007</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:53:43.008Z</obsTime>
+    <ra>342.77508</ra>
+    <dec>3.09917</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000008</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:53:49.920Z</obsTime>
+    <ra>342.77442</ra>
+    <dec>3.09800</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000009</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:53:55.104Z</obsTime>
+    <ra>342.77392</ra>
+    <dec>3.09700</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000A</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:54:15.840Z</obsTime>
+    <ra>342.77221</ra>
+    <dec>3.09331</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000B</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:54:22.752Z</obsTime>
+    <ra>342.77175</ra>
+    <dec>3.09214</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000C</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:54:29.664Z</obsTime>
+    <ra>342.77096</ra>
+    <dec>3.09100</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000D</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:54:44.352Z</obsTime>
+    <ra>342.76979</ra>
+    <dec>3.08858</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000E</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:54:51.264Z</obsTime>
+    <ra>342.76933</ra>
+    <dec>3.08728</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000F</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:55:05.088Z</obsTime>
+    <ra>342.76808</ra>
+    <dec>3.08492</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000G</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:55:12.000Z</obsTime>
+    <ra>342.76754</ra>
+    <dec>3.08356</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000H</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:55:18.912Z</obsTime>
+    <ra>342.76687</ra>
+    <dec>3.08250</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000I</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:55:24.960Z</obsTime>
+    <ra>342.76633</ra>
+    <dec>3.08136</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000J</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:55:31.872Z</obsTime>
+    <ra>342.76562</ra>
+    <dec>3.08000</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000K</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:55:38.784Z</obsTime>
+    <ra>342.76508</ra>
+    <dec>3.07872</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000L</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:56:00.384Z</obsTime>
+    <ra>342.76354</ra>
+    <dec>3.07533</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000M</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:56:14.208Z</obsTime>
+    <ra>342.76221</ra>
+    <dec>3.07283</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000N</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:56:21.120Z</obsTime>
+    <ra>342.76158</ra>
+    <dec>3.07172</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000O</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:56:34.080Z</obsTime>
+    <ra>342.76042</ra>
+    <dec>3.06919</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.2</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000P</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:56:40.992Z</obsTime>
+    <ra>342.75979</ra>
+    <dec>3.06803</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000Q</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:56:47.904Z</obsTime>
+    <ra>342.75925</ra>
+    <dec>3.06675</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000R</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:00.864Z</obsTime>
+    <ra>342.75821</ra>
+    <dec>3.06436</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.1</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000S</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:06.912Z</obsTime>
+    <ra>342.75750</ra>
+    <dec>3.06311</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000T</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:13.824Z</obsTime>
+    <ra>342.75683</ra>
+    <dec>3.06197</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000U</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:20.736Z</obsTime>
+    <ra>342.75608</ra>
+    <dec>3.06069</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000V</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:27.648Z</obsTime>
+    <ra>342.75558</ra>
+    <dec>3.05950</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000W</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:35.424Z</obsTime>
+    <ra>342.75504</ra>
+    <dec>3.05828</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000X</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:42.336Z</obsTime>
+    <ra>342.75450</ra>
+    <dec>3.05706</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000Y</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:49.248Z</obsTime>
+    <ra>342.75371</ra>
+    <dec>3.05572</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000Z</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:57:56.160Z</obsTime>
+    <ra>342.75308</ra>
+    <dec>3.05469</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000a</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:58:03.072Z</obsTime>
+    <ra>342.75254</ra>
+    <dec>3.05336</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000b</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:58:09.984Z</obsTime>
+    <ra>342.75200</ra>
+    <dec>3.05217</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000c</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:58:16.896Z</obsTime>
+    <ra>342.75146</ra>
+    <dec>3.05086</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000d</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:58:36.768Z</obsTime>
+    <ra>342.74958</ra>
+    <dec>3.04725</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000e</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:58:50.592Z</obsTime>
+    <ra>342.74833</ra>
+    <dec>3.04489</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000f</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:59:19.104Z</obsTime>
+    <ra>342.74592</ra>
+    <dec>3.03997</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000g</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:59:26.016Z</obsTime>
+    <ra>342.74542</ra>
+    <dec>3.03894</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000h</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:59:32.928Z</obsTime>
+    <ra>342.74471</ra>
+    <dec>3.03761</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000i</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T01:59:45.888Z</obsTime>
+    <ra>342.74371</ra>
+    <dec>3.03514</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000j</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:00:06.624Z</obsTime>
+    <ra>342.74171</ra>
+    <dec>3.03125</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000k</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:00:14.400Z</obsTime>
+    <ra>342.74108</ra>
+    <dec>3.02994</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000l</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:00:21.312Z</obsTime>
+    <ra>342.74042</ra>
+    <dec>3.02881</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000m</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:00:29.088Z</obsTime>
+    <ra>342.73979</ra>
+    <dec>3.02750</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000n</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:00:36.000Z</obsTime>
+    <ra>342.73908</ra>
+    <dec>3.02614</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000o</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:00:42.912Z</obsTime>
+    <ra>342.73842</ra>
+    <dec>3.02494</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000p</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:00:57.600Z</obsTime>
+    <ra>342.73721</ra>
+    <dec>3.02225</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000q</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:01:06.240Z</obsTime>
+    <ra>342.73663</ra>
+    <dec>3.02100</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000r</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:01:13.152Z</obsTime>
+    <ra>342.73608</ra>
+    <dec>3.01983</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000s</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:01:20.064Z</obsTime>
+    <ra>342.73533</ra>
+    <dec>3.01856</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000t</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:01:26.976Z</obsTime>
+    <ra>342.73467</ra>
+    <dec>3.01722</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000u</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:01:41.664Z</obsTime>
+    <ra>342.73338</ra>
+    <dec>3.01458</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000v</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:01:48.576Z</obsTime>
+    <ra>342.73283</ra>
+    <dec>3.01358</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000w</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:01:56.352Z</obsTime>
+    <ra>342.73217</ra>
+    <dec>3.01228</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000x</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:02:02.400Z</obsTime>
+    <ra>342.73163</ra>
+    <dec>3.01078</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000y</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:02:16.224Z</obsTime>
+    <ra>342.73033</ra>
+    <dec>3.00825</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000000z</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:02:23.136Z</obsTime>
+    <ra>342.72962</ra>
+    <dec>3.00719</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7F5D0000004T1R010000001</obsID>
+    <trkID>000000LrKG</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-08T02:02:26.765Z</obsTime>
+    <ra>343.03783</ra>
+    <dec>1.82981</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.5</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000010</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:02:30.048Z</obsTime>
+    <ra>342.72912</ra>
+    <dec>3.00572</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000011</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:02:37.824Z</obsTime>
+    <ra>342.72829</ra>
+    <dec>3.00453</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000012</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:02:51.648Z</obsTime>
+    <ra>342.72717</ra>
+    <dec>3.00194</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000013</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:03:04.608Z</obsTime>
+    <ra>342.72592</ra>
+    <dec>2.99936</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000014</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:03:20.160Z</obsTime>
+    <ra>342.72463</ra>
+    <dec>2.99689</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000015</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:03:27.072Z</obsTime>
+    <ra>342.72396</ra>
+    <dec>2.99553</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000016</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:03:33.984Z</obsTime>
+    <ra>342.72325</ra>
+    <dec>2.99428</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000017</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:03:40.896Z</obsTime>
+    <ra>342.72279</ra>
+    <dec>2.99297</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000018</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:03:48.672Z</obsTime>
+    <ra>342.72217</ra>
+    <dec>2.99178</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000019</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:03:55.584Z</obsTime>
+    <ra>342.72158</ra>
+    <dec>2.99042</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001A</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:04:04.224Z</obsTime>
+    <ra>342.72083</ra>
+    <dec>2.98917</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001B</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:04:18.048Z</obsTime>
+    <ra>342.71967</ra>
+    <dec>2.98667</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001C</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:04:24.960Z</obsTime>
+    <ra>342.71892</ra>
+    <dec>2.98525</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.8</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7F5D0000004T1R010000002</obsID>
+    <trkID>000000LrKG</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-08T02:04:36.278Z</obsTime>
+    <ra>343.02983</ra>
+    <dec>1.80494</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.7</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7F5D0000004T1R010000003</obsID>
+    <trkID>000000LrKG</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-08T02:06:29.894Z</obsTime>
+    <ra>343.02267</ra>
+    <dec>1.78267</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.4</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7F5D0000004T1R010000004</obsID>
+    <trkID>000000LrKG</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-08T02:11:35.318Z</obsTime>
+    <ra>343.00313</ra>
+    <dec>1.72283</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.5</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7F5D0000004T1R010000005</obsID>
+    <trkID>000000LrKG</trkID>
+    <mode>CCD</mode>
+    <stn>H21</stn>
+    <obsTime>2010-09-08T02:14:30.710Z</obsTime>
+    <ra>342.99196</ra>
+    <dec>1.68817</dec>
+    <astCat>USNOB1</astCat>
+    <mag>16.1</mag>
+    <band>V</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO73nH0100004Srg010000003</obsID>
+    <trkID>000000Lg8a</trkID>
+    <mode>CCD</mode>
+    <stn>I77</stn>
+    <obsTime>2010-09-08T02:38:41.280Z</obsTime>
+    <ra>342.35275</ra>
+    <dec>2.38042</dec>
+    <astCat>UCAC2</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO73nH0100004Srg010000004</obsID>
+    <trkID>000000Lg8a</trkID>
+    <mode>CCD</mode>
+    <stn>I77</stn>
+    <obsTime>2010-09-08T02:41:39.264Z</obsTime>
+    <ra>342.33325</ra>
+    <dec>2.34550</dec>
+    <astCat>UCAC2</astCat>
+    <mag>14.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001D</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:57:23.616Z</obsTime>
+    <ra>342.41733</ra>
+    <dec>2.38844</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001E</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:57:31.392Z</obsTime>
+    <ra>342.41658</ra>
+    <dec>2.38717</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001F</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:57:35.712Z</obsTime>
+    <ra>342.41608</ra>
+    <dec>2.38586</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.2</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001G</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:57:42.624Z</obsTime>
+    <ra>342.41533</ra>
+    <dec>2.38461</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001H</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:57:50.400Z</obsTime>
+    <ra>342.41479</ra>
+    <dec>2.38347</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001I</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:57:55.584Z</obsTime>
+    <ra>342.41404</ra>
+    <dec>2.38217</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001J</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:03.360Z</obsTime>
+    <ra>342.41362</ra>
+    <dec>2.38086</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001K</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:09.408Z</obsTime>
+    <ra>342.41292</ra>
+    <dec>2.37964</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001L</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:14.592Z</obsTime>
+    <ra>342.41229</ra>
+    <dec>2.37839</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001M</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:22.368Z</obsTime>
+    <ra>342.41154</ra>
+    <dec>2.37708</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001N</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:26.688Z</obsTime>
+    <ra>342.41092</ra>
+    <dec>2.37592</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001O</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:35.328Z</obsTime>
+    <ra>342.41033</ra>
+    <dec>2.37456</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001P</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:41.376Z</obsTime>
+    <ra>342.40958</ra>
+    <dec>2.37331</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001Q</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:47.424Z</obsTime>
+    <ra>342.40900</ra>
+    <dec>2.37214</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001R</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:58:54.336Z</obsTime>
+    <ra>342.40837</ra>
+    <dec>2.37094</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001S</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:00.384Z</obsTime>
+    <ra>342.40771</ra>
+    <dec>2.36961</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001T</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:04.704Z</obsTime>
+    <ra>342.40704</ra>
+    <dec>2.36839</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001U</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:11.616Z</obsTime>
+    <ra>342.40642</ra>
+    <dec>2.36719</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001V</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:19.392Z</obsTime>
+    <ra>342.40587</ra>
+    <dec>2.36583</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001W</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:24.576Z</obsTime>
+    <ra>342.40517</ra>
+    <dec>2.36461</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.2</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001X</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:32.352Z</obsTime>
+    <ra>342.40450</ra>
+    <dec>2.36331</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001Y</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:38.400Z</obsTime>
+    <ra>342.40387</ra>
+    <dec>2.36222</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001Z</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:45.312Z</obsTime>
+    <ra>342.40325</ra>
+    <dec>2.36081</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001a</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:51.360Z</obsTime>
+    <ra>342.40254</ra>
+    <dec>2.35964</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001b</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T02:59:55.680Z</obsTime>
+    <ra>342.40196</ra>
+    <dec>2.35833</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001c</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:02.592Z</obsTime>
+    <ra>342.40138</ra>
+    <dec>2.35722</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001d</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:10.368Z</obsTime>
+    <ra>342.40071</ra>
+    <dec>2.35589</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001e</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:16.416Z</obsTime>
+    <ra>342.39996</ra>
+    <dec>2.35467</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001f</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:23.328Z</obsTime>
+    <ra>342.39942</ra>
+    <dec>2.35342</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001g</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:29.376Z</obsTime>
+    <ra>342.39875</ra>
+    <dec>2.35214</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001h</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:36.288Z</obsTime>
+    <ra>342.39808</ra>
+    <dec>2.35078</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001i</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:40.608Z</obsTime>
+    <ra>342.39746</ra>
+    <dec>2.34961</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001j</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:48.384Z</obsTime>
+    <ra>342.39683</ra>
+    <dec>2.34844</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001k</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:00:55.296Z</obsTime>
+    <ra>342.39617</ra>
+    <dec>2.34700</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001l</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:01.344Z</obsTime>
+    <ra>342.39554</ra>
+    <dec>2.34581</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001m</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:07.392Z</obsTime>
+    <ra>342.39483</ra>
+    <dec>2.34456</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001n</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:14.304Z</obsTime>
+    <ra>342.39425</ra>
+    <dec>2.34342</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001o</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:20.352Z</obsTime>
+    <ra>342.39367</ra>
+    <dec>2.34211</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001p</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:26.400Z</obsTime>
+    <ra>342.39296</ra>
+    <dec>2.34083</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001q</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:33.312Z</obsTime>
+    <ra>342.39237</ra>
+    <dec>2.33964</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001r</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:39.360Z</obsTime>
+    <ra>342.39171</ra>
+    <dec>2.33825</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001s</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:43.680Z</obsTime>
+    <ra>342.39117</ra>
+    <dec>2.33708</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001t</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:49.728Z</obsTime>
+    <ra>342.39046</ra>
+    <dec>2.33575</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001u</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:01:56.640Z</obsTime>
+    <ra>342.38983</ra>
+    <dec>2.33458</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001v</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:01.824Z</obsTime>
+    <ra>342.38908</ra>
+    <dec>2.33328</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001w</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:08.736Z</obsTime>
+    <ra>342.38846</ra>
+    <dec>2.33206</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001x</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:15.648Z</obsTime>
+    <ra>342.38771</ra>
+    <dec>2.33075</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001y</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:21.696Z</obsTime>
+    <ra>342.38713</ra>
+    <dec>2.32950</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000001z</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:27.744Z</obsTime>
+    <ra>342.38658</ra>
+    <dec>2.32828</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000020</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:34.656Z</obsTime>
+    <ra>342.38592</ra>
+    <dec>2.32711</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000021</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:39.840Z</obsTime>
+    <ra>342.38525</ra>
+    <dec>2.32575</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000022</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:46.752Z</obsTime>
+    <ra>342.38458</ra>
+    <dec>2.32450</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000023</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:53.664Z</obsTime>
+    <ra>342.38396</ra>
+    <dec>2.32319</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000024</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:02:59.712Z</obsTime>
+    <ra>342.38329</ra>
+    <dec>2.32192</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000025</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:06.624Z</obsTime>
+    <ra>342.38262</ra>
+    <dec>2.32072</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000026</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:12.672Z</obsTime>
+    <ra>342.38204</ra>
+    <dec>2.31944</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000027</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:19.584Z</obsTime>
+    <ra>342.38142</ra>
+    <dec>2.31828</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000028</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:25.632Z</obsTime>
+    <ra>342.38075</ra>
+    <dec>2.31694</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv010000029</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:30.816Z</obsTime>
+    <ra>342.38008</ra>
+    <dec>2.31564</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002A</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:38.592Z</obsTime>
+    <ra>342.37954</ra>
+    <dec>2.31439</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002B</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:44.640Z</obsTime>
+    <ra>342.37879</ra>
+    <dec>2.31308</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002C</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:50.688Z</obsTime>
+    <ra>342.37817</ra>
+    <dec>2.31194</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002D</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:03:57.600Z</obsTime>
+    <ra>342.37750</ra>
+    <dec>2.31064</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002E</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:08.832Z</obsTime>
+    <ra>342.37621</ra>
+    <dec>2.30814</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002F</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:15.744Z</obsTime>
+    <ra>342.37563</ra>
+    <dec>2.30683</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347219</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002G</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:22.656Z</obsTime>
+    <ra>342.37483</ra>
+    <dec>2.30550</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002H</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:28.704Z</obsTime>
+    <ra>342.37433</ra>
+    <dec>2.30425</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002I</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:35.616Z</obsTime>
+    <ra>342.37367</ra>
+    <dec>2.30306</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002J</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:41.664Z</obsTime>
+    <ra>342.37292</ra>
+    <dec>2.30189</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002K</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:47.712Z</obsTime>
+    <ra>342.37238</ra>
+    <dec>2.30064</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002L</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:54.624Z</obsTime>
+    <ra>342.37179</ra>
+    <dec>2.29928</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002M</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:04:59.808Z</obsTime>
+    <ra>342.37092</ra>
+    <dec>2.29794</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002N</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:05:07.584Z</obsTime>
+    <ra>342.37037</ra>
+    <dec>2.29681</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002O</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:05:13.632Z</obsTime>
+    <ra>342.36996</ra>
+    <dec>2.29556</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002P</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:05:19.680Z</obsTime>
+    <ra>342.36904</ra>
+    <dec>2.29422</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002Q</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:05:26.592Z</obsTime>
+    <ra>342.36837</ra>
+    <dec>2.29306</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.3</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002R</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:05:32.640Z</obsTime>
+    <ra>342.36783</ra>
+    <dec>2.29181</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002S</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:05:44.736Z</obsTime>
+    <ra>342.36654</ra>
+    <dec>2.28919</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002T</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:05:59.424Z</obsTime>
+    <ra>342.36525</ra>
+    <dec>2.28667</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002U</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:10.656Z</obsTime>
+    <ra>342.36396</ra>
+    <dec>2.28417</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002V</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:18.432Z</obsTime>
+    <ra>342.36325</ra>
+    <dec>2.28286</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002W</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:22.752Z</obsTime>
+    <ra>342.36262</ra>
+    <dec>2.28156</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002X</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:29.664Z</obsTime>
+    <ra>342.36196</ra>
+    <dec>2.28025</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002Y</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:36.576Z</obsTime>
+    <ra>342.36129</ra>
+    <dec>2.27903</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002Z</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:41.760Z</obsTime>
+    <ra>342.36071</ra>
+    <dec>2.27772</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002a</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:47.808Z</obsTime>
+    <ra>342.36000</ra>
+    <dec>2.27653</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002b</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:53.856Z</obsTime>
+    <ra>342.35938</ra>
+    <dec>2.27511</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.2</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002c</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:06:59.904Z</obsTime>
+    <ra>342.35875</ra>
+    <dec>2.27394</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002d</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:07:06.816Z</obsTime>
+    <ra>342.35813</ra>
+    <dec>2.27267</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO744n0000004Srv01000002e</obsID>
+    <trkID>000000Lg8w</trkID>
+    <mode>CCD</mode>
+    <stn>844</stn>
+    <obsTime>2010-09-08T03:07:12.864Z</obsTime>
+    <ra>342.35737</ra>
+    <dec>2.27142</dec>
+    <astCat>USNOB1</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc01000000A</obsID>
+    <trkID>000000MBt7</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-08T09:23:40.502Z</obsTime>
+    <ra>341.12983</ra>
+    <dec>-5.87072</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.8</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc01000000B</obsID>
+    <trkID>000000MBt7</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-08T09:24:38.736Z</obsTime>
+    <ra>341.11867</ra>
+    <dec>-5.89828</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.8</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO8JZr0100004TOc01000000C</obsID>
+    <trkID>000000MBt7</trkID>
+    <mode>CCD</mode>
+    <stn>F65</stn>
+    <prog>06</prog>
+    <obsTime>2010-09-08T09:25:31.958Z</obsTime>
+    <ra>341.10842</ra>
+    <dec>-5.92353</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.7</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO9GNM0000004Tg6010000001</obsID>
+    <trkID>000000MW2Q</trkID>
+    <mode>VID</mode>
+    <stn>415</stn>
+    <obsTime>2010-09-08T10:23:29.731Z</obsTime>
+    <ra>341.55838</ra>
+    <dec>-6.10925</dec>
+    <astCat>UCAC3</astCat>
+    <mag>14.6</mag>
+    <band>V</band>
+    <ref>MPS   348176</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7BVT0000004SyW010000001</obsID>
+    <trkID>000000LoD9</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-08T10:41:17.894Z</obsTime>
+    <ra>341.43988</ra>
+    <dec>-6.78356</dec>
+    <astCat>UCAC2</astCat>
+    <mag>14.6</mag>
+    <band>V</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7BVT0000004SyW010000002</obsID>
+    <trkID>000000LoD9</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-08T10:41:42.605Z</obsTime>
+    <ra>341.43575</ra>
+    <dec>-6.79725</dec>
+    <astCat>UCAC2</astCat>
+    <mag>14.8</mag>
+    <band>V</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7BVT0000004SyW010000003</obsID>
+    <trkID>000000LoD9</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-08T10:42:07.747Z</obsTime>
+    <ra>341.43167</ra>
+    <dec>-6.81103</dec>
+    <astCat>UCAC2</astCat>
+    <mag>14.9</mag>
+    <band>V</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO7BVT0000004SyW010000004</obsID>
+    <trkID>000000LoD9</trkID>
+    <mode>CCD</mode>
+    <stn>E12</stn>
+    <obsTime>2010-09-08T10:42:33.062Z</obsTime>
+    <ra>341.42750</ra>
+    <dec>-6.82500</dec>
+    <astCat>UCAC2</astCat>
+    <mag>14.8</mag>
+    <band>V</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KOq0Lb0000004etn010000001</obsID>
+    <trkID>000000YgnK</trkID>
+    <mode>CCD</mode>
+    <stn>E28</stn>
+    <obsTime>2010-09-08T11:11:42.144Z</obsTime>
+    <ra>341.05954</ra>
+    <dec>-7.76839</dec>
+    <astCat>UCAC2</astCat>
+    <mag>13.3</mag>
+    <band>R</band>
+    <ref>MPS   351474</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KOq0Lb0000004etn010000002</obsID>
+    <trkID>000000YgnK</trkID>
+    <mode>CCD</mode>
+    <stn>E28</stn>
+    <obsTime>2010-09-08T11:17:09.600Z</obsTime>
+    <ra>340.99608</ra>
+    <dec>-7.96575</dec>
+    <astCat>UCAC2</astCat>
+    <mag>13.2</mag>
+    <band>R</band>
+    <ref>MPS   351474</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000001</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:19:50.477Z</obsTime>
+    <ra>340.44246</ra>
+    <dec>-7.81742</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.2</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000002</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:20:20.458Z</obsTime>
+    <ra>340.43604</ra>
+    <dec>-7.83539</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.3</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000003</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:20:50.525Z</obsTime>
+    <ra>340.42962</ra>
+    <dec>-7.85347</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.2</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000004</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:21:20.506Z</obsTime>
+    <ra>340.42321</ra>
+    <dec>-7.87161</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.3</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000005</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:21:50.486Z</obsTime>
+    <ra>340.41667</ra>
+    <dec>-7.88981</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.2</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000006</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:22:20.467Z</obsTime>
+    <ra>340.41033</ra>
+    <dec>-7.90783</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.3</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000007</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:22:50.534Z</obsTime>
+    <ra>340.40383</ra>
+    <dec>-7.92606</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.1</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000008</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:23:20.515Z</obsTime>
+    <ra>340.39738</ra>
+    <dec>-7.94431</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.0</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10F12F</trkSub>
+    <obsID>KO7C9z0100004Sz2010000009</obsID>
+    <trkID>000000LoMj</trkID>
+    <mode>CCD</mode>
+    <stn>474</stn>
+    <obsTime>2010-09-08T11:23:50.496Z</obsTime>
+    <ra>340.39092</ra>
+    <dec>-7.96244</dec>
+    <astCat>USNOB1</astCat>
+    <mag>14.2</mag>
+    <band>R</band>
+    <ref>MPS   347220</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KOq0Lb0000004etn010000003</obsID>
+    <trkID>000000YgnK</trkID>
+    <mode>CCD</mode>
+    <stn>E28</stn>
+    <obsTime>2010-09-08T11:27:04.896Z</obsTime>
+    <ra>340.87617</ra>
+    <dec>-8.33314</dec>
+    <astCat>UCAC2</astCat>
+    <mag>13.4</mag>
+    <band>R</band>
+    <ref>MPS   351474</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KOq0Lb0000004etn010000004</obsID>
+    <trkID>000000YgnK</trkID>
+    <mode>CCD</mode>
+    <stn>E28</stn>
+    <obsTime>2010-09-08T11:29:47.328Z</obsTime>
+    <ra>340.84262</ra>
+    <dec>-8.43522</dec>
+    <astCat>UCAC2</astCat>
+    <mag>13.3</mag>
+    <band>R</band>
+    <ref>MPS   351474</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO9GNM0000004Tg6010000002</obsID>
+    <trkID>000000MW2Q</trkID>
+    <mode>VID</mode>
+    <stn>415</stn>
+    <obsTime>2010-09-08T11:43:01.430Z</obsTime>
+    <ra>340.69521</ra>
+    <dec>-8.89353</dec>
+    <astCat>UCAC3</astCat>
+    <mag>14.6</mag>
+    <band>V</band>
+    <ref>MPS   348176</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO9GNM0000004Tg6010000003</obsID>
+    <trkID>000000MW2Q</trkID>
+    <mode>VID</mode>
+    <stn>415</stn>
+    <obsTime>2010-09-08T12:16:58.397Z</obsTime>
+    <ra>340.22079</ra>
+    <dec>-10.29803</dec>
+    <astCat>UCAC3</astCat>
+    <mag>14.4</mag>
+    <band>V</band>
+    <ref>MPS   348176</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO9GNM0000004Tg6010000004</obsID>
+    <trkID>000000MW2Q</trkID>
+    <mode>VID</mode>
+    <stn>415</stn>
+    <obsTime>2010-09-08T12:20:32.150Z</obsTime>
+    <ra>340.16708</ra>
+    <dec>-10.45425</dec>
+    <astCat>UCAC3</astCat>
+    <mag>14.2</mag>
+    <band>V</band>
+    <ref>MPS   348176</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>KO9GNM0000004Tg6010000005</obsID>
+    <trkID>000000MW2Q</trkID>
+    <mode>VID</mode>
+    <stn>415</stn>
+    <obsTime>2010-09-08T12:21:17.597Z</obsTime>
+    <ra>340.15533</ra>
+    <dec>-10.48761</dec>
+    <astCat>UCAC3</astCat>
+    <mag>14.2</mag>
+    <band>V</band>
+    <ref>MPS   348176</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHCpBBL0000Epbx010000001</obsID>
+    <trkID>00000GkMUV</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T09</stn>
+    <obsTime>2011-05-30T08:49:52.40Z</obsTime>
+    <ra>239.641921</ra>
+    <dec>-15.963076</dec>
+    <rmsRA>0.060</rmsRA>
+    <rmsDec>0.059</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>26.45</mag>
+    <rmsMag>0.21</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.9</photAp>
+    <logSNR>0.71</logSNR>
+    <seeing>1.0</seeing>
+    <exp>2160.0</exp>
+    <rmsFit>0.016</rmsFit>
+    <nStars>411</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <notes>K</notes>
+    <remarks>S: 0.0022 0.0013 O: 0.0595 0.0590   From a stack of nine 240 sec exposures.  Time corresponds to the second exposure.</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHBsM8h0000EpbP010000001</obsID>
+    <trkID>00000GkM4G</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T14</stn>
+    <obsTime>2022-08-03T08:43:47.13Z</obsTime>
+    <ra>309.715756</ra>
+    <dec>-13.657891</dec>
+    <rmsRA>0.065</rmsRA>
+    <rmsDec>0.065</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.83</mag>
+    <rmsMag>0.28</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>1.1</photAp>
+    <logSNR>0.58</logSNR>
+    <seeing>1.3</seeing>
+    <exp>359.9</exp>
+    <rmsFit>0.050</rmsFit>
+    <nStars>338</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0140 0.0121 O: 0.0636 0.0636</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHBsM8h0000EpbP010000002</obsID>
+    <trkID>00000GkM4G</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T14</stn>
+    <obsTime>2022-08-03T08:50:31.56Z</obsTime>
+    <ra>309.711424</ra>
+    <dec>-13.658941</dec>
+    <rmsRA>0.09</rmsRA>
+    <rmsDec>0.09</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.38</mag>
+    <rmsMag>0.16</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>1.0</photAp>
+    <logSNR>0.83</logSNR>
+    <seeing>1.1</seeing>
+    <exp>359.9</exp>
+    <rmsFit>0.049</rmsFit>
+    <nStars>346</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0128 0.0118 O: 0.0899 0.0898</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHBsM8h0000EpbP020000001</obsID>
+    <trkID>00000GkM4H</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T14</stn>
+    <obsTime>2022-08-04T10:46:43.10Z</obsTime>
+    <ra>308.809753</ra>
+    <dec>-13.898809</dec>
+    <rmsRA>0.052</rmsRA>
+    <rmsDec>0.053</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.54</mag>
+    <rmsMag>0.12</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.9</photAp>
+    <logSNR>0.94</logSNR>
+    <seeing>1.0</seeing>
+    <exp>720.0</exp>
+    <rmsFit>0.048</rmsFit>
+    <nStars>364</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <notes>K</notes>
+    <remarks>S: 0.0065 0.0062 O: 0.0520 0.0523   From a stack of two 360 sec exposures.  Time corresponds to the last of these exposures.</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHBsM8h0000EpbP020000002</obsID>
+    <trkID>00000GkM4H</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T14</stn>
+    <obsTime>2022-08-04T10:53:27.47Z</obsTime>
+    <ra>308.805219</ra>
+    <dec>-13.899840</dec>
+    <rmsRA>0.052</rmsRA>
+    <rmsDec>0.053</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.51</mag>
+    <rmsMag>0.18</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.9</photAp>
+    <logSNR>0.79</logSNR>
+    <seeing>1.1</seeing>
+    <exp>360.0</exp>
+    <rmsFit>0.046</rmsFit>
+    <nStars>347</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0058 0.0061 O: 0.0520 0.0523</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHBsM8h0000EpbP030000001</obsID>
+    <trkID>00000GkM4H</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T14</stn>
+    <obsTime>2022-08-04T12:22:00.75Z</obsTime>
+    <ra>308.746062</ra>
+    <dec>-13.913055</dec>
+    <rmsRA>0.079</rmsRA>
+    <rmsDec>0.077</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.50</mag>
+    <rmsMag>0.15</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.7</photAp>
+    <logSNR>0.87</logSNR>
+    <seeing>0.8</seeing>
+    <exp>360.0</exp>
+    <rmsFit>0.053</rmsFit>
+    <nStars>334</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0232 0.0164 O: 0.0751 0.0748</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHBsM8h0000EpbP030000002</obsID>
+    <trkID>00000GkM4H</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T14</stn>
+    <obsTime>2022-08-04T12:28:45.06Z</obsTime>
+    <ra>308.741613</ra>
+    <dec>-13.914025</dec>
+    <rmsRA>0.063</rmsRA>
+    <rmsDec>0.061</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.44</mag>
+    <rmsMag>0.13</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.7</photAp>
+    <logSNR>0.92</logSNR>
+    <seeing>0.8</seeing>
+    <exp>360.0</exp>
+    <rmsFit>0.058</rmsFit>
+    <nStars>352</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0209 0.0140 O: 0.0599 0.0599</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHBsM8h0000EpbP040000001</obsID>
+    <trkID>00000GkM4I</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T14</stn>
+    <obsTime>2022-08-05T09:14:51.63Z</obsTime>
+    <ra>308.015156</ra>
+    <dec>-14.114638</dec>
+    <rmsRA>0.049</rmsRA>
+    <rmsDec>0.049</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.57</mag>
+    <rmsMag>0.16</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.8</photAp>
+    <logSNR>0.83</logSNR>
+    <seeing>0.9</seeing>
+    <exp>360.0</exp>
+    <rmsFit>0.045</rmsFit>
+    <nStars>364</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0056 0.0061 O: 0.0485 0.0486</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHBsM8h0000EpbP040000002</obsID>
+    <trkID>00000GkM4I</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>T14</stn>
+    <obsTime>2022-08-05T09:21:36.15Z</obsTime>
+    <ra>308.010470</ra>
+    <dec>-14.115756</dec>
+    <rmsRA>0.049</rmsRA>
+    <rmsDec>0.049</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.48</mag>
+    <rmsMag>0.14</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.7</photAp>
+    <logSNR>0.90</logSNR>
+    <seeing>0.8</seeing>
+    <exp>360.0</exp>
+    <rmsFit>0.046</rmsFit>
+    <nStars>373</nStars>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <remarks>S: 0.0050 0.0062 O: 0.0486 0.0486</remarks>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHHuy2q0000Epeg010000001</obsID>
+    <trkID>00000GkPeD</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2022-08-23T01:05:26.31Z</obsTime>
+    <ra>288.126100</ra>
+    <dec>-19.028531</dec>
+    <rmsRA>0.07</rmsRA>
+    <rmsDec>0.07</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.5</mag>
+    <rmsMag>0.19</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>1.1</photAp>
+    <logSNR>0.75</logSNR>
+    <seeing>0.8</seeing>
+    <exp>15</exp>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHHuy2q0000Epeg010000002</obsID>
+    <trkID>00000GkPeD</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2022-08-23T01:09:18.29Z</obsTime>
+    <ra>288.122093</ra>
+    <dec>-19.029357</dec>
+    <rmsRA>0.06</rmsRA>
+    <rmsDec>0.05</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.9</mag>
+    <rmsMag>0.25</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>1.1</photAp>
+    <logSNR>0.61</logSNR>
+    <seeing>0.7</seeing>
+    <exp>15</exp>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHHuy2q0000Epeg010000003</obsID>
+    <trkID>00000GkPeE</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2022-08-23T23:51:00.03Z</obsTime>
+    <ra>286.866443</ra>
+    <dec>-19.299465</dec>
+    <rmsRA>0.09</rmsRA>
+    <rmsDec>0.09</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>24.9</mag>
+    <rmsMag>0.17</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.9</photAp>
+    <logSNR>0.80</logSNR>
+    <seeing>0.6</seeing>
+    <exp>165</exp>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <notes>K</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHHuy2q0000Epeg010000004</obsID>
+    <trkID>00000GkPeE</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2022-08-24T00:12:04.82Z</obsTime>
+    <ra>286.844398</ra>
+    <dec>-19.303989</dec>
+    <rmsRA>0.08</rmsRA>
+    <rmsDec>0.08</rmsDec>
+    <astCat>Gaia2</astCat>
+    <logSNR>0.72</logSNR>
+    <seeing>0.8</seeing>
+    <exp>165</exp>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <notes>KI</notes>
+  </optical>
+  <optical>
+    <provID>2010 RF12</provID>
+    <trkSub>K10R12F</trkSub>
+    <obsID>LYHHuy2q0000Epeg010000005</obsID>
+    <trkID>00000GkPeE</trkID>
+    <trkMPC>K10R12F</trkMPC>
+    <mode>CCD</mode>
+    <stn>309</stn>
+    <prog>0F</prog>
+    <obsTime>2022-08-24T00:33:21.39Z</obsTime>
+    <ra>286.822075</ra>
+    <dec>-19.308470</dec>
+    <rmsRA>0.08</rmsRA>
+    <rmsDec>0.08</rmsDec>
+    <astCat>Gaia2</astCat>
+    <mag>25.1</mag>
+    <rmsMag>0.13</rmsMag>
+    <band>G</band>
+    <photCat>Gaia2</photCat>
+    <photAp>0.9</photAp>
+    <logSNR>0.96</logSNR>
+    <seeing>0.7</seeing>
+    <exp>165</exp>
+    <ref>MPS  1644432</ref>
+    <subFmt>A17</subFmt>
+    <notes>K</notes>
+  </optical>
+</ades>

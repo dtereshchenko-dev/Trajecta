@@ -1,0 +1,8 @@
+include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/TrajectaVersion.cmake)
+find_package(CURL 7.85 REQUIRED)
+add_library(TrajectaHttp STATIC HttpClient.cpp HttpClient.h)
+target_compile_features(TrajectaHttp PUBLIC cxx_std_20)
+target_compile_definitions(TrajectaHttp PRIVATE "TRAJECTA_VERSION=\"${TRAJECTA_VERSION}\"")
+target_include_directories(TrajectaHttp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(TrajectaHttp PUBLIC CURL::libcurl)
+set_target_properties(TrajectaHttp PROPERTIES POSITION_INDEPENDENT_CODE ON)

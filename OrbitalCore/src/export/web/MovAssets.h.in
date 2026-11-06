@@ -1,0 +1,5 @@
+#pragma once
+namespace orbital_core::hazard::mov_assets {
+inline constexpr unsigned char html[] = {@MOV_HTML_BYTES@};
+inline constexpr unsigned char script[] = {@MOV_SCRIPT_BYTES@};
+}

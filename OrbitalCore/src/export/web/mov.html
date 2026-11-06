@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MOV report</title>
+    <style>
+      __LEAFLET_CSS__
+    </style>
+    <style>
+      __REPORT_CSS__
+    </style>
+    <style>
+      #range-plot {
+        width: 100%;
+        height: 440px;
+        display: block;
+        touch-action: none;
+      }
+      .table-wrap {
+        max-height: 520px;
+      }
+      #warnings {
+        white-space: pre-line;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        font-size: 12px;
+      }
+      .legend i {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        margin-right: 6px;
+        border-radius: 50%;
+      }
+      #selected {
+        min-height: 24px;
+      }
+      button {
+        min-width: 34px;
+      }
+      @media (max-width: 600px) {
+        #range-plot {
+          height: 330px;
+        }
+        .metrics {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media print {
+        body > header,
+        body > main,
+        body > footer {
+          display: block !important;
+        }
+        header nav,
+        .toolbar,
+        .topline > button,
+        .leaflet-control-zoom {
+          display: none !important;
+        }
+        .view {
+          display: none;
+        }
+        .view.active {
+          display: block;
+        }
+        .table-wrap {
+          max-height: none;
+          overflow: visible;
+        }
+        body > header {
+          padding: 0 0 3mm;
+        }
+        body > main {
+          padding: 0;
+        }
+        body > footer {
+          padding: 2mm 0 0;
+        }
+        h2 {
+          margin: 0 0 2mm;
+        }
+        #map-print-frame {
+          position: relative;
+          overflow: hidden;
+          width: var(--print-frame-width, 100%);
+          height: var(--print-frame-height, 105mm);
+        }
+        #map-print-frame > #map {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: var(--print-map-width, 100%);
+          height: var(--print-map-height, 105mm);
+          min-height: 0;
+          transform: scale(var(--print-map-scale, 1));
+          transform-origin: top left;
+        }
+        #map-note {
+          margin: 2mm 0;
+          line-height: 1.3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="topline">
+        <div>
+          <h1>MOV</h1>
+          <div id="subtitle" class="muted"></div>
+        </div>
+        <button id="print">Print / PDF</button>
+      </div>
+      <nav role="tablist" aria-label="Report sections">
+        <button role="tab" data-view="overview" aria-selected="true">
+          Manifold</button
+        ><button role="tab" data-view="field" aria-selected="false">Map</button
+        ><button role="tab" data-view="nodes" aria-selected="false">
+          Nodes
+        </button>
+      </nav>
+    </header>
+    <main>
+      <div id="warnings" class="notice"></div>
+      <section id="overview" class="view active" role="tabpanel">
+        <h2>Manifold Of Variations</h2>
+        <div id="metrics" class="metrics"></div>
+        <div id="statistics" class="metadata"></div>
+        <div class="toolbar">
+          <label
+            ><input id="log-range" type="checkbox" />Logarithmic range</label
+          ><label
+            ><input id="preliminary" type="checkbox" />Preliminary grid</label
+          >
+        </div>
+        <canvas
+          id="range-plot"
+          aria-label="Range and range-rate sampling"
+          role="img"
+        ></canvas>
+        <div id="selected" class="metadata"></div>
+        <div class="legend">
+          <span><i style="background: #ed5551"></i>Boundary crossing</span
+          ><span><i style="background: #07808a"></i>Complete, no crossing</span
+          ><span
+            ><i style="background: #bf8a28"></i>Unresolved / Earth-bound</span
+          ><span><i style="background: #a6b1b7"></i>Outside selection</span>
+        </div>
+        <details>
+          <summary>Configuration and provenance</summary>
+          <pre id="configuration"></pre>
+        </details>
+      </section>
+      <section id="field" class="view" role="tabpanel">
+        <h2 id="map-title">Boundary crossings</h2>
+        <div class="toolbar">
+          <label
+            ><input id="imagery" type="checkbox" checked />Surface
+            imagery</label
+          ><label><input id="coordinates" type="checkbox" checked />Grid</label
+          ><button id="fit" title="Fit crossings" aria-label="Fit crossings">
+            &#x26F6;
+          </button>
+        </div>
+        <div id="map-print-frame"><div id="map"></div></div>
+        <div id="map-note" class="metadata"></div>
+      </section>
+      <section id="nodes" class="view" role="tabpanel">
+        <h2>MOV nodes</h2>
+        <div class="toolbar">
+          <label
+            >Status<select id="filter">
+              <option value="all">All nodes</option>
+              <option value="crossing">Boundary crossings</option>
+              <option value="failed">Failed fits / propagation</option>
+              <option value="selected">Weighted nodes</option>
+            </select></label
+          ><span id="count"></span>
+        </div>
+        <div id="node-table" class="table-wrap"></div>
+        <div class="toolbar">
+          <button id="previous" title="Previous page">&#8592;</button
+          ><span id="page-count"></span
+          ><button id="next" title="Next page">&#8594;</button>
+        </div>
+      </section>
+    </main>
+    <footer>
+      MOV | Numerical archive: result.json | UTC display, MJD TDB source epochs
+    </footer>
+    <script>
+      __LEAFLET_JS__;
+    </script>
+    <script>
+      __GRATICULE_JS__;
+    </script>
+    <script>
+      __MAP_HELPERS__;
+    </script>
+    <script id="mov-data" type="application/json">
+      __DATA__
+    </script>
+    <script>
+      __VIEWER_JS__;
+    </script>
+    <!-- __LICENSES__ -->
+  </body>
+</html>

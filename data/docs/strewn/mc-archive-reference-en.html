@@ -1,0 +1,2323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MC Archive | Trajecta</title>
+    <style>
+      :root {
+        font-family:
+          system-ui,
+          Segoe UI,
+          sans-serif;
+        color: #243239;
+        background: #fff;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      header,
+      main,
+      footer {
+        max-width: 1320px;
+        margin: auto;
+        padding: 24px 32px;
+      }
+      header {
+        border-bottom: 2px solid #117c80;
+      }
+      h1 {
+        font-size: 30px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 23px;
+        margin: 36px 0 12px;
+      }
+      h3 {
+        font-size: 18px;
+        margin: 24px 0 8px;
+      }
+      p {
+        max-width: 1100px;
+      }
+      a {
+        color: #086d82;
+      }
+      a,
+      p,
+      li {
+        overflow-wrap: anywhere;
+      }
+      .subtitle {
+        margin: 4px 0 18px;
+        color: #526670;
+      }
+      .language {
+        float: right;
+      }
+      nav {
+        display: flex;
+        gap: 10px 22px;
+        flex-wrap: wrap;
+        padding: 12px 0;
+      }
+      code,
+      pre {
+        font:
+          13px ui-monospace,
+          Consolas,
+          monospace;
+      }
+      code {
+        overflow-wrap: anywhere;
+      }
+      pre {
+        padding: 16px;
+        border-left: 3px solid #117c80;
+        background: #f3f7f7;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        margin: 12px 0 24px;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid #d8e1e4;
+        padding: 10px 12px;
+        overflow-wrap: anywhere;
+      }
+      th {
+        font-size: 13px;
+        background: #edf4f4;
+      }
+      td {
+        font-size: 14px;
+      }
+      th:nth-child(1) {
+        width: 29%;
+      }
+      th:nth-child(2) {
+        width: 24%;
+      }
+      th:nth-child(3) {
+        width: 47%;
+      }
+      .inventory th:first-child {
+        width: 25%;
+      }
+      .inventory th:last-child {
+        width: 75%;
+      }
+      .codes th:first-child {
+        width: 34%;
+      }
+      .codes th:last-child {
+        width: 66%;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      section {
+        scroll-margin-top: 16px;
+      }
+      li {
+        margin: 8px 0;
+      }
+      .purpose {
+        font-weight: 600;
+      }
+      .flow {
+        border-left: 3px solid #b17e29;
+        padding-left: 16px;
+      }
+      footer {
+        margin-top: 36px;
+        border-top: 1px solid #d8e1e4;
+        color: #526670;
+        font-size: 13px;
+      }
+      @media (max-width: 700px) {
+        header,
+        main,
+        footer {
+          padding: 18px;
+        }
+        h1 {
+          font-size: 25px;
+        }
+        .language {
+          float: none;
+          display: block;
+          margin-bottom: 12px;
+        }
+        .fields {
+          min-width: 760px;
+        }
+        nav {
+          gap: 10px 16px;
+        }
+      }
+      @media print {
+        @page {
+          size: A4 landscape;
+          margin: 12mm;
+        }
+        header,
+        main,
+        footer {
+          max-width: none;
+          padding: 0;
+        }
+        nav,
+        .language {
+          display: none;
+        }
+        h2,
+        h3 {
+          break-after: avoid;
+        }
+        tr {
+          break-inside: avoid;
+        }
+        thead {
+          display: table-header-group;
+        }
+        .table-wrap {
+          overflow: visible;
+        }
+        .fields {
+          min-width: 0;
+        }
+        td {
+          font-size: 10pt;
+        }
+        code {
+          font-size: 9pt;
+        }
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="language" lang="ru" href="mc-archive-reference-ru.html"
+        >Русский</a
+      >
+      <h1>MC Archive</h1>
+      <p class="subtitle">File contents and format reference</p>
+      <nav aria-label="Archive Contents">
+        <a href="#request">request.json</a><a href="#result">result.json</a
+        ><a href="#entries">entries.json</a><a href="#manifest">manifest.json</a
+        ><a href="#handoff">handoff.json</a
+        ><a href="#atmosphere">atmosphere.json</a>
+      </nav>
+    </header>
+    <main>
+      <section id="contents">
+        <h2>Archive Contents</h2>
+        <p>
+          The MC archive records the setup and results of orbital Monte Carlo,
+          together with entry states for subsequent atmospheric simulation. Each
+          run directory represents one orbital run. Atmospheric realizations,
+          breakups and impacts are stored in a separate result directory.
+        </p>
+        <pre>
+MC/
+  run-&lt;id&gt;/
+    request.json
+    result.json
+    entries.json
+    manifest.json
+    handoff.json
+    atmosphere.json</pre
+        >
+        <p>
+          request, result, entries, handoff and manifest are created by the
+          orbital exporter. atmosphere is added during atmospheric job
+          preparation; it may not yet exist immediately after a purely orbital
+          export.
+        </p>
+        <table class="inventory">
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <a href="#request"><code>request.json</code></a>
+              </td>
+              <td>
+                Initial conditions and settings of the orbital Monte Carlo
+                calculation.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#result"><code>result.json</code></a>
+              </td>
+              <td>
+                Numerical orbital MC result: counters and boundary crossings.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#entries"><code>entries.json</code></a>
+              </td>
+              <td>Ready-to-use atmospheric entry states in SI units.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#manifest"><code>manifest.json</code></a>
+              </td>
+              <td>
+                Orbital calculation status and readiness for the next stage.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#handoff"><code>handoff.json</code></a>
+              </td>
+              <td>Entry-state handoff description for external consumers.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#atmosphere"><code>atmosphere.json</code></a>
+              </td>
+              <td>
+                Editable job configuration for the next atmospheric Monte Carlo
+                run.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section class="file-section" id="request">
+        <h2>request.json</h2>
+        <p class="purpose">
+          Initial conditions and settings of the orbital Monte Carlo
+          calculation.
+        </p>
+        <p>
+          Contains the nominal state, full covariance, sampling settings and
+          propagation settings.
+        </p>
+        <h3>General</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Request schema version, not the application version.</td>
+              </tr>
+              <tr data-field="object">
+                <td><code>object</code></td>
+                <td><code>string</code></td>
+                <td>
+                  Object designation, used for identification and the report
+                  title.
+                </td>
+              </tr>
+              <tr data-field="sampling_kind">
+                <td><code>sampling_kind</code></td>
+                <td><code>state_covariance | parameter_covariance</code></td>
+                <td>
+                  Sampling source: six state components, or the state together
+                  with fitted nongravitational parameters. The latter also has
+                  dimension 6 when no nongravitational parameters are fitted.
+                </td>
+              </tr>
+              <tr data-field="external_ephemerides_embedded">
+                <td><code>external_ephemerides_embedded</code></td>
+                <td><code>boolean: false</code></td>
+                <td>
+                  External ephemerides are not embedded in these JSON files.
+                  They are required separately to repeat orbital propagation.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>nominal: nominal state</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="nominal.frame">
+                <td><code>nominal.frame</code></td>
+                <td><code>string: heliocentric ECLM J2000</code></td>
+                <td>
+                  Heliocentric J2000 ecliptic frame. Specifies the origin and
+                  orientation of the state vectors.
+                </td>
+              </tr>
+              <tr data-field="nominal.epoch_mjd_tdb">
+                <td><code>nominal.epoch_mjd_tdb</code></td>
+                <td><code>number; MJD TDB</code></td>
+                <td>
+                  State epoch. JD = MJD + 2400000.5; TDB must not be interpreted
+                  as UTC.
+                </td>
+              </tr>
+              <tr data-field="nominal.position_au">
+                <td><code>nominal.position_au</code></td>
+                <td><code>number[3]; AU</code></td>
+                <td>Position [x,y,z] at the stated epoch.</td>
+              </tr>
+              <tr data-field="nominal.velocity_au_day">
+                <td><code>nominal.velocity_au_day</code></td>
+                <td><code>number[3]; AU/day</code></td>
+                <td>
+                  Velocity [vx,vy,vz]. Conversion from internal velocity units
+                  has already been applied.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>covariance: uncertainty</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="covariance.matrix">
+                <td><code>covariance.matrix</code></td>
+                <td><code>number[n][n]; n = 6 ... 10</code></td>
+                <td>
+                  Full covariance matrix, including correlations. Diagonal
+                  entries are variances, not standard deviations. Each Cij has
+                  the product of the units of parameters i and j.
+                </td>
+              </tr>
+              <tr data-field="covariance.parameter_order">
+                <td><code>covariance.parameter_order</code></td>
+                <td><code>string[n]</code></td>
+                <td>
+                  Row and column order: x_au, y_au, z_au, vx_au_day, vy_au_day,
+                  vz_au_day, followed by selected a1_au_day2, a2_au_day2,
+                  a3_au_day2 and dt_day.
+                </td>
+              </tr>
+              <tr data-field="covariance.objective_scale_already_applied">
+                <td><code>covariance.objective_scale_already_applied</code></td>
+                <td><code>number &gt; 0</code></td>
+                <td>
+                  Covariance multiplier already applied before MC. Standard
+                  deviations scale by its square root. Do not apply it to matrix
+                  again.
+                </td>
+              </tr>
+              <tr data-field="covariance.additional_scale">
+                <td><code>covariance.additional_scale</code></td>
+                <td><code>number: 1</code></td>
+                <td>
+                  Provenance field: the current exporter writes 1. It is not a
+                  separate sampler control.
+                </td>
+              </tr>
+              <tr data-field="covariance.valid">
+                <td><code>covariance.valid</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Validation of dimensions, finite values, positive diagonal,
+                  symmetry and spectrum. Asymmetry tolerance: 1e-10 times the
+                  matrix norm; minimum allowed correlation-matrix eigenvalue:
+                  -1e-10.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>non_grav: nongravitational model</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="non_grav.enabled">
+                <td><code>non_grav.enabled</code></td>
+                <td><code>boolean</code></td>
+                <td>Whether nongravitational acceleration is enabled.</td>
+              </tr>
+              <tr data-field="non_grav.model">
+                <td><code>non_grav.model</code></td>
+                <td><code>integer: 0 ... 5</code></td>
+                <td>
+                  0: None; 1: MarsdenH2O; 2: MarsdenCO; 3: InverseSquare; 4:
+                  Yarkovsky (A2); 5: InverseSquareDT.
+                </td>
+              </tr>
+              <tr data-field="non_grav.fit_mask">
+                <td><code>non_grav.fit_mask</code></td>
+                <td><code>integer; bit mask</code></td>
+                <td>
+                  Fitted parameters: A1=1, A2=2, A3=4, DT=8; combine bits as
+                  needed. Zero means no fitted NG parameters. Allowed bits
+                  depend on the model; fixed coefficients need not be included.
+                </td>
+              </tr>
+              <tr data-field="non_grav.a1_au_day2">
+                <td><code>non_grav.a1_au_day2</code></td>
+                <td><code>number; AU/day^2</code></td>
+                <td>Nominal radial coefficient A1.</td>
+              </tr>
+              <tr data-field="non_grav.a2_au_day2">
+                <td><code>non_grav.a2_au_day2</code></td>
+                <td><code>number; AU/day^2</code></td>
+                <td>Nominal transverse coefficient A2.</td>
+              </tr>
+              <tr data-field="non_grav.a3_au_day2">
+                <td><code>non_grav.a3_au_day2</code></td>
+                <td><code>number; AU/day^2</code></td>
+                <td>Nominal coefficient A3 normal to the orbital plane.</td>
+              </tr>
+              <tr data-field="non_grav.dt_day">
+                <td><code>non_grav.dt_day</code></td>
+                <td><code>number; day</code></td>
+                <td>
+                  Time shift in the activity law for models that support it. Not
+                  a correction to observation epochs.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>monte_carlo: orbital sampling</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="monte_carlo.clones">
+                <td><code>monte_carlo.clones</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Requested number of orbital clones. Not the number of
+                  atmospheric realizations or fragments.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.seed">
+                <td><code>monte_carlo.seed</code></td>
+                <td><code>uint64</code></td>
+                <td>
+                  Clone-generation seed. Preserve integer precision;
+                  reproduction also requires the same RNG algorithm.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.rng">
+                <td><code>monte_carlo.rng</code></td>
+                <td><code>string</code></td>
+                <td>
+                  Algorithm identifier: SplitMix64 keyed Box-Muller; clone ID
+                  and parameter index. Describes deterministic random-number
+                  keys for each clone and parameter.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.altitude_km">
+                <td><code>monte_carlo.altitude_km</code></td>
+                <td><code>number &gt;= 0; km</code></td>
+                <td>
+                  Orbital stopping boundary. A positive value specifies geodetic
+                  altitude; zero preserves the legacy spherical boundary. The UI
+                  atmospheric handoff requires 100 km.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.noise_sigma_mult">
+                <td><code>monte_carlo.noise_sigma_mult</code></td>
+                <td><code>number</code></td>
+                <td>
+                  Sampling standard-deviation multiplier in the general API:
+                  positive values scale the covariance factor; nonpositive
+                  values are treated as 1. The UI uses 1. Distinct from scaling
+                  already applied to matrix.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.noise_sigma_mult_applies">
+                <td><code>monte_carlo.noise_sigma_mult_applies</code></td>
+                <td><code>boolean: false</code></td>
+                <td>
+                  The current exporter always writes false; this is not a
+                  sampler control.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.openmp_max_threads">
+                <td><code>monte_carlo.openmp_max_threads</code></td>
+                <td><code>integer &gt;= 1</code></td>
+                <td>
+                  OpenMP maximum thread count at export time, not a measured
+                  concurrency count. Builds without OpenMP write 1.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>propagation: dynamics and events</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="propagation.integrator">
+                <td><code>propagation.integrator</code></td>
+                <td><code>RA15 | IAS15</code></td>
+                <td>Selected orbital integrator.</td>
+              </tr>
+              <tr data-field="propagation.accuracy">
+                <td><code>propagation.accuracy</code></td>
+                <td><code>number &gt; 0</code></td>
+                <td>
+                  Accuracy parameter of the selected integrator. Not a position
+                  error in metres; RA15 and IAS15 use different criteria.
+                </td>
+              </tr>
+              <tr data-field="propagation.step_days">
+                <td><code>propagation.step_days</code></td>
+                <td><code>number; day</code></td>
+                <td>
+                  Initial orbital integration step. Internal steps are adaptive;
+                  this is not an output interval or maximum step.
+                </td>
+              </tr>
+              <tr data-field="propagation.planet_mask">
+                <td><code>propagation.planet_mask</code></td>
+                <td><code>integer; bit mask</code></td>
+                <td>
+                  Bits 0–7: Mercury, Venus, Earth, Mars, Jupiter, Saturn,
+                  Uranus, Neptune; 8–10: Ceres, Pallas, Vesta in the fallback
+                  Keplerian model; 11: Moon. This mask does not disable the Sun.
+                  Available SB441 asteroids are enabled separately.
+                </td>
+              </tr>
+              <tr data-field="propagation.sb441">
+                <td><code>propagation.sb441</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  With true and an available SPK source, all 16 SB441-N16
+                  asteroids are used independently of bits 8–10. Otherwise the
+                  masked fallback trio is used. Ephemeris files are not embedded
+                  here.
+                </td>
+              </tr>
+              <tr data-field="propagation.encounter_points">
+                <td><code>propagation.encounter_points</code></td>
+                <td><code>integer</code></td>
+                <td>
+                  Step-refinement setting near encounters. Not a clone count or
+                  impact count.
+                </td>
+              </tr>
+              <tr data-field="propagation.earth_encounter_radius_au">
+                <td><code>propagation.earth_encounter_radius_au</code></td>
+                <td><code>number &gt; 0; AU</code></td>
+                <td>
+                  Earth encounter neighbourhood radius used for step control.
+                  Not the Earth radius or entry altitude.
+                </td>
+              </tr>
+              <tr data-field="propagation.inactive_interior_mass_policy">
+                <td><code>propagation.inactive_interior_mass_policy</code></td>
+                <td><code>integer: 0 | 1</code></td>
+                <td>
+                  0: ExplicitOnly, explicitly enabled perturbations only. 1:
+                  SmoothCentralMass, smooth inclusion of disabled
+                  interior-planet masses in the central mass.
+                </td>
+              </tr>
+              <tr data-field="propagation.event_window_days">
+                <td><code>propagation.event_window_days</code></td>
+                <td><code>number: 1; day</code></td>
+                <td>
+                  Half-width of the crossing association window around a nominal
+                  event: plus or minus one day.
+                </td>
+              </tr>
+              <tr data-field="propagation.events">
+                <td><code>propagation.events</code></td>
+                <td><code>object[]</code></td>
+                <td>
+                  Nominal close approaches. Array order defines event indices in
+                  result.json and the order of hits_per_event.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].planet">
+                <td><code>propagation.events[].planet</code></td>
+                <td><code>integer: 0 ... 8</code></td>
+                <td>
+                  Body identifier, not a bit mask: 0 Mercury, 1 Venus, 2 Earth,
+                  3 Mars, 4 Jupiter, 5 Saturn, 6 Uranus, 7 Neptune, 8 Moon.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].epoch_mjd_tdb">
+                <td><code>propagation.events[].epoch_mjd_tdb</code></td>
+                <td><code>number; MJD TDB</code></td>
+                <td>
+                  Nominal encounter epoch, not an individual clone entry time.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].distance_au">
+                <td><code>propagation.events[].distance_au</code></td>
+                <td><code>number &gt;= 0; AU</code></td>
+                <td>
+                  Distance from the object to the target body centre at the
+                  nominal event, not altitude above its surface.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].position_au">
+                <td><code>propagation.events[].position_au</code></td>
+                <td><code>number[3]; AU</code></td>
+                <td>
+                  Heliocentric object position at the event, in the J2000 axes
+                  of orbital propagation.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].velocity_au_day">
+                <td><code>propagation.events[].velocity_au_day</code></td>
+                <td><code>number[3]; AU/day</code></td>
+                <td>Heliocentric object velocity in the same axes.</td>
+              </tr>
+              <tr data-field="propagation.events[].planet_position_au">
+                <td><code>propagation.events[].planet_position_au</code></td>
+                <td><code>number[3]; AU</code></td>
+                <td>
+                  Heliocentric target-body position at the same epoch. Subtract
+                  positions to obtain the relative vector.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].planet_velocity_au_day">
+                <td>
+                  <code>propagation.events[].planet_velocity_au_day</code>
+                </td>
+                <td><code>number[3]; AU/day</code></td>
+                <td>
+                  Heliocentric target-body velocity. Subtract velocities to
+                  obtain the relative inertial velocity.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>physical: photometry</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="physical.absolute_magnitude">
+                <td><code>physical.absolute_magnitude</code></td>
+                <td><code>number | null</code></td>
+                <td>
+                  Absolute magnitude H. Null means no estimate; this is not
+                  apparent brightness. Used to infer size from H and albedo.
+                </td>
+              </tr>
+              <tr data-field="physical.albedo">
+                <td><code>physical.albedo</code></td>
+                <td><code>number | null; 0 &lt; p &lt;= 1</code></td>
+                <td>
+                  Albedo recorded in the orbital archive. A valid number is
+                  required for general handoff readiness. Atmospheric MC uses
+                  its own albedo distribution from atmosphere.json.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="result">
+        <h2>result.json</h2>
+        <p class="purpose">
+          Numerical orbital MC result: counters and boundary crossings.
+        </p>
+        <p>
+          crossings contains confirmed crossings only, not all initial clones or
+          step-by-step trajectories. A successfully propagated clone need not
+          cross the boundary. The probability describes the selected boundary,
+          not meteorite survival on the ground.
+        </p>
+        <h3>Summary</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Result schema version.</td>
+              </tr>
+              <tr data-field="altitude_km">
+                <td><code>altitude_km</code></td>
+                <td><code>number &gt;= 0; km</code></td>
+                <td>
+                  Boundary represented by the records. Corresponds to
+                  request.monte_carlo.altitude_km.
+                </td>
+              </tr>
+              <tr data-field="attempted">
+                <td><code>attempted</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  In covariance MC, initialized to the requested clone count.
+                  After cancellation, it is not an exact count of attempts
+                  actually started.
+                </td>
+              </tr>
+              <tr data-field="completed">
+                <td><code>completed</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  Successfully propagated clones, including those with no
+                  crossing. Denominator of the empirical probability.
+                </td>
+              </tr>
+              <tr data-field="failed">
+                <td><code>failed</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  Clones with propagation or processing failures. Do not count
+                  them as physical misses.
+                </td>
+              </tr>
+              <tr data-field="cancelled">
+                <td><code>cancelled</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Whether the calculation was cancelled. A true value may
+                  accompany partial results.
+                </td>
+              </tr>
+              <tr data-field="any_crossing_clones">
+                <td><code>any_crossing_clones</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  Number of distinct clones with at least one crossing among the
+                  selected events.
+                </td>
+              </tr>
+              <tr data-field="hits_per_event">
+                <td><code>hits_per_event</code></td>
+                <td><code>integer[]</code></td>
+                <td>
+                  Crossing counts for each event in request.propagation.events
+                  order. The sum may exceed any_crossing_clones.
+                </td>
+              </tr>
+              <tr data-field="empirical_crossing_probability">
+                <td><code>empirical_crossing_probability</code></td>
+                <td><code>number; 0 ... 1</code></td>
+                <td>
+                  any_crossing_clones/completed when completed&gt;0; otherwise
+                  0. A value of 1 does not guarantee surviving fragments on the
+                  ground.
+                </td>
+              </tr>
+              <tr data-field="crossings">
+                <td><code>crossings</code></td>
+                <td><code>object[]</code></td>
+                <td>
+                  Boundary crossings. May be empty, partial, or include multiple
+                  events for one clone.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>crossings[]: crossing record</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="crossings[].clone">
+                <td><code>crossings[].clone</code></td>
+                <td><code>integer; 0 ... clones-1</code></td>
+                <td>
+                  Clone index in the generator. Do not substitute the array row
+                  index.
+                </td>
+              </tr>
+              <tr data-field="crossings[].event">
+                <td><code>crossings[].event</code></td>
+                <td><code>integer; 0 ... events.length-1</code></td>
+                <td>Index into request.propagation.events.</td>
+              </tr>
+              <tr data-field="crossings[].planet">
+                <td><code>crossings[].planet</code></td>
+                <td><code>integer: 0 ... 8</code></td>
+                <td>
+                  Target body; the same enum as
+                  request.propagation.events[].planet.
+                </td>
+              </tr>
+              <tr data-field="crossings[].epoch_mjd_tdb">
+                <td><code>crossings[].epoch_mjd_tdb</code></td>
+                <td><code>number; MJD TDB</code></td>
+                <td>Refined crossing epoch in the orbital time scale.</td>
+              </tr>
+              <tr data-field="crossings[].epoch_mjd_utc">
+                <td><code>crossings[].epoch_mjd_utc</code></td>
+                <td><code>number; MJD UTC</code></td>
+                <td>
+                  The same instant in UTC, used by the atmospheric stage and
+                  weather selection.
+                </td>
+              </tr>
+              <tr data-field="crossings[].body_fixed_valid">
+                <td><code>crossings[].body_fixed_valid</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Whether body-fixed coordinates were obtained. False blocks
+                  atmospheric entry readiness.
+                </td>
+              </tr>
+              <tr data-field="crossings[].position_body_fixed_km">
+                <td><code>crossings[].position_body_fixed_km</code></td>
+                <td><code>number[3]; km</code></td>
+                <td>
+                  Body-centred position [x,y,z] in rotating axes. For Earth, the
+                  exported ECEF transformation model applies.
+                </td>
+              </tr>
+              <tr data-field="crossings[].velocity_body_fixed_km_s">
+                <td><code>crossings[].velocity_body_fixed_km_s</code></td>
+                <td><code>number[3]; km/s</code></td>
+                <td>
+                  Coordinate derivative in rotating axes, including frame
+                  rotation. Multiplied by 1000 for entries.
+                </td>
+              </tr>
+              <tr data-field="crossings[].latitude_deg">
+                <td><code>crossings[].latitude_deg</code></td>
+                <td><code>number; degree</code></td>
+                <td>
+                  Latitude derived from position. Geodetic WGS84 for Earth; the
+                  corresponding ellipsoid or sphere for other bodies.
+                </td>
+              </tr>
+              <tr data-field="crossings[].longitude_deg">
+                <td><code>crossings[].longitude_deg</code></td>
+                <td><code>number; degree</code></td>
+                <td>
+                  Body-fixed longitude, east-positive, approximately in
+                  [-180,180].
+                </td>
+              </tr>
+              <tr data-field="crossings[].relative_speed_km_s">
+                <td><code>crossings[].relative_speed_km_s</code></td>
+                <td><code>number &gt;= 0; km/s</code></td>
+                <td>
+                  Inertial speed relative to the target body. Not air-relative
+                  speed and not necessarily the norm of the body-fixed velocity.
+                </td>
+              </tr>
+              <tr data-field="crossings[].diagnostic_miss_km">
+                <td><code>crossings[].diagnostic_miss_km</code></td>
+                <td><code>number | null; km</code></td>
+                <td>
+                  Local two-body estimate of pericentre distance from the body
+                  centre. Not a surface miss distance or the crossing criterion.
+                  Null represents a nonfinite estimate.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="entries">
+        <h2>entries.json</h2>
+        <p class="purpose">
+          Ready-to-use atmospheric entry states in SI units.
+        </p>
+        <p>
+          Used with input.kind=state_samples. The UI accepts a complete set of
+          unique inbound Earth states at 100 km for one event. Exported orbital
+          entries have equal weights; no weight field is written. Partial
+          duplication of result.json is intentional: the atmospheric module
+          reads a self-contained entry format.
+        </p>
+        <h3>Dataset metadata</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Entry-state schema version.</td>
+              </tr>
+              <tr data-field="frame">
+                <td><code>frame</code></td>
+                <td><code>string: ECEF</code></td>
+                <td>
+                  Position and velocity use geocentric rotating axes, not
+                  inertial axes.
+                </td>
+              </tr>
+              <tr data-field="frame_model">
+                <td><code>frame_model</code></td>
+                <td><code>string</code></td>
+                <td>
+                  Transformation provenance captured when MC is calculated.
+                  Identifies the applied chain, polar motion and EOP profile
+                  separately. The current path uses IAU1976/1980, IAU1982
+                  UT1/GAST, finals2000A with UTC fallback, and no polar motion.
+                  External results without provenance are labelled unknown (not
+                  recorded).
+                </td>
+              </tr>
+              <tr data-field="altitude_km">
+                <td><code>altitude_km</code></td>
+                <td><code>number &gt;= 0; km</code></td>
+                <td>
+                  Orbital boundary altitude. The UI requires 100; each position
+                  is also checked against this height within 1 m.
+                </td>
+              </tr>
+              <tr data-field="boundary">
+                <td><code>boundary</code></td>
+                <td><code>WGS84 geodetic height | legacy sphere</code></td>
+                <td>
+                  Stopping-surface definition: geodetic height when
+                  altitude_km&gt;0, legacy sphere when it is zero.
+                </td>
+              </tr>
+              <tr data-field="entries">
+                <td><code>entries</code></td>
+                <td><code>object[]</code></td>
+                <td>
+                  Entry states. Completeness is checked against the requested
+                  orbital clone count.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>entries[]: one state</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="entries[].id">
+                <td><code>entries[].id</code></td>
+                <td><code>uint64</code></td>
+                <td>
+                  Unique entry key: cloneIndex × event count + eventIndex.
+                  Equals the clone index for one event. Referenced by
+                  atmospheric realization entry_id.
+                </td>
+              </tr>
+              <tr data-field="entries[].epoch_mjd_utc">
+                <td><code>entries[].epoch_mjd_utc</code></td>
+                <td><code>number; MJD UTC</code></td>
+                <td>
+                  Entry time. Preserve float64 precision; conversion to rounded
+                  JD can lose precision.
+                </td>
+              </tr>
+              <tr data-field="entries[].position_ecef_m">
+                <td><code>entries[].position_ecef_m</code></td>
+                <td><code>number[3]; m</code></td>
+                <td>
+                  Position [x,y,z]. Corresponds to result position_body_fixed_km
+                  multiplied by 1000.
+                </td>
+              </tr>
+              <tr data-field="entries[].velocity_ecef_mps">
+                <td><code>entries[].velocity_ecef_mps</code></td>
+                <td><code>number[3]; m/s</code></td>
+                <td>
+                  Velocity [vx,vy,vz] in rotating axes; wind has not yet been
+                  subtracted.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="manifest">
+        <h2>manifest.json</h2>
+        <p class="purpose">
+          Orbital calculation status and readiness for the next stage.
+        </p>
+        <p>
+          Written last among the five orbital export files. A complete status
+          alone does not imply a valid atmospheric handoff: readiness flags must
+          also be checked. UI preparation checks schema_version, status and
+          entry_states_ready.
+        </p>
+        <h3>Status fields</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Manifest schema version.</td>
+              </tr>
+              <tr data-field="status">
+                <td><code>status</code></td>
+                <td><code>complete | partial | cancelled</code></td>
+                <td>
+                  cancelled after cancellation; otherwise partial if failures
+                  occurred or the completed count is incomplete; otherwise
+                  complete. This exporter does not write running or failed.
+                </td>
+              </tr>
+              <tr data-field="entry_states_ready">
+                <td><code>entry_states_ready</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Covariance, completeness, identifier, geometry and
+                  inbound-state checks passed. Availability of H/albedo is not
+                  included in this flag.
+                </td>
+              </tr>
+              <tr data-field="atmospheric_input_ready">
+                <td><code>atmospheric_input_ready</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  General readiness: valid entries plus finite H and albedo
+                  0&lt;p≤1. The UI checks H separately and uses its own albedo
+                  distribution.
+                </td>
+              </tr>
+              <tr data-field="automatic_launch">
+                <td><code>automatic_launch</code></td>
+                <td><code>boolean: false</code></td>
+                <td>
+                  Writing the archive does not automatically start atmospheric
+                  simulation. This field is not a launch command.
+                </td>
+              </tr>
+              <tr data-field="blocked_reasons">
+                <td><code>blocked_reasons</code></td>
+                <td><code>string[]</code></td>
+                <td>
+                  Blocking reason codes listed below. An empty array means no
+                  reasons; multiple distinct codes may be present.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="handoff">
+        <h2>handoff.json</h2>
+        <p class="purpose">
+          Entry-state handoff description for external consumers.
+        </p>
+        <p>
+          Contains references, readiness and photometry, duplicating parts of
+          request and manifest. It is not a complete StrewnCLI job. Current
+          UI/Strewn preparation reads request, manifest and entries directly;
+          handoff provides an explicit transfer description for external
+          integration.
+        </p>
+        <h3>Handoff fields</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Handoff schema version.</td>
+              </tr>
+              <tr data-field="kind">
+                <td><code>kind</code></td>
+                <td><code>string: atmospheric_input</code></td>
+                <td>Type of dataset being handed off.</td>
+              </tr>
+              <tr data-field="ready">
+                <td><code>ready</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Matches manifest.atmospheric_input_ready, including
+                  photometric validation.
+                </td>
+              </tr>
+              <tr data-field="automatic_launch">
+                <td><code>automatic_launch</code></td>
+                <td><code>boolean: false</code></td>
+                <td>The handoff does not imply automatic execution.</td>
+              </tr>
+              <tr data-field="input.kind">
+                <td><code>input.kind</code></td>
+                <td><code>string: state_samples</code></td>
+                <td>Input is a collection of states.</td>
+              </tr>
+              <tr data-field="input.path">
+                <td><code>input.path</code></td>
+                <td><code>string: entries.json</code></td>
+                <td>Path to entry states relative to the handoff directory.</td>
+              </tr>
+              <tr data-field="physical.absolute_magnitude">
+                <td><code>physical.absolute_magnitude</code></td>
+                <td><code>number | null</code></td>
+                <td>H from request.physical.</td>
+              </tr>
+              <tr data-field="physical.albedo">
+                <td><code>physical.albedo</code></td>
+                <td><code>number | null</code></td>
+                <td>
+                  Albedo from request.physical, not the atmospheric MC
+                  distribution.
+                </td>
+              </tr>
+              <tr data-field="source_request">
+                <td><code>source_request</code></td>
+                <td><code>string: request.json</code></td>
+                <td>Path to the original orbital calculation provenance.</td>
+              </tr>
+              <tr data-field="blocked_reasons">
+                <td><code>blocked_reasons</code></td>
+                <td><code>string[]</code></td>
+                <td>The same blocking reasons as in manifest.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="atmosphere">
+        <h2>atmosphere.json</h2>
+        <p class="purpose">
+          Editable job configuration for the next atmospheric Monte Carlo run.
+        </p>
+        <p>
+          Created during atmospheric preparation and may change between runs. It
+          does not replace launch.json and job.json of a completed atmospheric
+          run. Relative paths resolve from this file&#39;s directory. Unknown
+          configuration keys are rejected. The general loader supports more
+          options than the UI panel.
+        </p>
+        <h3>Root and input</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1 | 2</code></td>
+                <td>
+                  Atmospheric job version. New jobs use 2. The
+                  retain_mass_remainder default is false in version 1 and true
+                  in version 2; an explicit physics value overrides it.
+                </td>
+              </tr>
+              <tr data-field="input.kind">
+                <td><code>input.kind</code></td>
+                <td><code>state_samples | fixed_state</code></td>
+                <td>
+                  Orbital MC uses state_samples with path. fixed_state uses
+                  state. orbit_solution is handled by the separate StrewnOrbit
+                  adapter.
+                </td>
+              </tr>
+              <tr data-field="input.path">
+                <td><code>input.path</code></td>
+                <td><code>string; path</code></td>
+                <td>
+                  Required for state_samples. Absolute or relative path to a
+                  state file. Must not coexist with state.
+                </td>
+              </tr>
+              <tr data-field="environment_directory">
+                <td><code>environment_directory</code></td>
+                <td><code>string; path; optional</code></td>
+                <td>
+                  Shared source and cache directory. Defaults to
+                  output_directory/inputs when omitted. The path does not embed
+                  environment data.
+                </td>
+              </tr>
+              <tr data-field="output_directory">
+                <td><code>output_directory</code></td>
+                <td><code>string; path</code></td>
+                <td>
+                  New result directory; must not exist or must be empty.
+                  Required for direct fixed_state/state_samples execution. The
+                  UI allocates a new folder for each run.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>environment: environment preparation</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="environment.mode">
+                <td><code>environment.mode</code></td>
+                <td><code>automatic | file | remote | idealized</code></td>
+                <td>
+                  automatic obtains NOAA GFS, Copernicus DEM and EGM2008; file
+                  reads a snapshot; remote downloads prepared JSON; idealized
+                  uses a standard atmosphere without wind. Mode-specific fields
+                  are listed later.
+                </td>
+              </tr>
+              <tr data-field="environment.margin_km">
+                <td><code>environment.margin_km</code></td>
+                <td><code>number; 1 ... 500 km</code></td>
+                <td>
+                  Automatic coverage margin around entries and straight-line
+                  ground intersections. Default 25. Explicit bounds_deg
+                  specifies the region directly.
+                </td>
+              </tr>
+              <tr data-field="environment.terrain_step_deg">
+                <td><code>environment.terrain_step_deg</code></td>
+                <td><code>number; 0.001 ... 0.1 degree</code></td>
+                <td>
+                  Output terrain grid spacing, default 0.02 degrees. Not the DEM
+                  native resolution.
+                </td>
+              </tr>
+              <tr data-field="environment.timeout_seconds">
+                <td><code>environment.timeout_seconds</code></td>
+                <td><code>integer; 1 ... 3600 s</code></td>
+                <td>
+                  Network request timeout. Defaults: automatic 120, remote 60.
+                  Not flight duration or realization timeout.
+                </td>
+              </tr>
+              <tr data-field="environment.max_download_bytes">
+                <td><code>environment.max_download_bytes</code></td>
+                <td><code>integer; 1 ... 1073741824 byte</code></td>
+                <td>
+                  Limit on an individual downloaded chunk or resource. Defaults:
+                  automatic 256 MiB, remote 64 MiB. Not a total archive size
+                  limit.
+                </td>
+              </tr>
+              <tr data-field="environment.offline">
+                <td><code>environment.offline</code></td>
+                <td><code>boolean; automatic</code></td>
+                <td>
+                  True prohibits downloading missing sources: use cached or
+                  explicitly supplied local data. Default false.
+                </td>
+              </tr>
+              <tr data-field="environment.on_unavailable">
+                <td><code>environment.on_unavailable</code></td>
+                <td><code>error | idealized; automatic</code></td>
+                <td>
+                  Default error stops preparation when real environment data are
+                  unavailable. idealized permits an explicitly labelled
+                  replacement with standard atmosphere and constant terrain.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>physics: physical model and fragment representation</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="physics.phase">
+                <td><code>physics.phase</code></td>
+                <td><code>entry | dark_flight</code></td>
+                <td>
+                  Default entry enables ablation and breakup at speeds at or
+                  above luminous_speed_mps. dark_flight starts without either
+                  mechanism.
+                </td>
+              </tr>
+              <tr data-field="physics.ram_pressure">
+                <td><code>physics.ram_pressure</code></td>
+                <td><code>rho_v2 | half_rho_v2</code></td>
+                <td>
+                  Pressure compared with strength: rho*Vr^2 or 0.5*rho*Vr^2,
+                  where Vr is air-relative. Default rho_v2. Strength values must
+                  use the same convention.
+                </td>
+              </tr>
+              <tr data-field="physics.fragment_shape">
+                <td><code>physics.fragment_shape</code></td>
+                <td><code>sphere | brick_area_only | cone_area_only</code></td>
+                <td>
+                  Default sphere. Nonspherical variants change cross-sectional
+                  area, without modelling attitude or full nonspherical
+                  aerodynamics.
+                </td>
+              </tr>
+              <tr data-field="physics.min_mass_kg">
+                <td><code>physics.min_mass_kg</code></td>
+                <td><code>number &gt; 0; kg</code></td>
+                <td>
+                  Minimum mass of an individually resolved fragment, default
+                  0.001. Smaller mass remains in the mass accounting but is not
+                  followed as ordinary trajectories.
+                </td>
+              </tr>
+              <tr data-field="physics.luminous_speed_mps">
+                <td><code>physics.luminous_speed_mps</code></td>
+                <td><code>number &gt; 0; m/s</code></td>
+                <td>
+                  Air-relative speed threshold for ablation and breakup, default
+                  3000. A model switch, not an observed luminous endpoint.
+                </td>
+              </tr>
+              <tr data-field="physics.weibull_alpha">
+                <td><code>physics.weibull_alpha</code></td>
+                <td><code>number &gt;= 0</code></td>
+                <td>
+                  Strength scaling exponent:
+                  S_child=min(S_cap,S_parent*(M_parent/m_child)^alpha). Default
+                  0.2.
+                </td>
+              </tr>
+              <tr data-field="physics.strength_cap_pa">
+                <td><code>physics.strength_cap_pa</code></td>
+                <td><code>number &gt; 0; Pa</code></td>
+                <td>
+                  Child-fragment strength cap, default 330000000 Pa. Not the
+                  initial body strength.
+                </td>
+              </tr>
+              <tr data-field="physics.lateral_coefficient">
+                <td><code>physics.lateral_coefficient</code></td>
+                <td><code>number &gt;= 0</code></td>
+                <td>
+                  Coefficient under the square root in the lateral
+                  separation-speed scale, default 1. Zero disables this kick;
+                  multiplying it by four doubles the speed scale.
+                </td>
+              </tr>
+              <tr data-field="physics.dust_at_every_breakup">
+                <td><code>physics.dust_at_every_breakup</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Default true applies the dust fraction at every breakup. False
+                  applies it only to the original generation-0 body.
+                </td>
+              </tr>
+              <tr data-field="physics.individual_fragments">
+                <td><code>physics.individual_fragments</code></td>
+                <td><code>integer[2] &gt;= 0</code></td>
+                <td>
+                  Largest individually tracked fragments before tail grouping:
+                  [first breakup, later breakups]. Default [30,10]. Does not
+                  prescribe total fragment count.
+                </td>
+              </tr>
+              <tr data-field="physics.bins_per_decade">
+                <td><code>physics.bins_per_decade</code></td>
+                <td><code>integer[2]; each 1 ... 1000</code></td>
+                <td>
+                  Tail mass bins per log10(m) decade: [first breakup, later
+                  breakups]. Default [4,2].
+                </td>
+              </tr>
+              <tr data-field="physics.representatives_per_bin">
+                <td><code>physics.representatives_per_bin</code></td>
+                <td><code>integer; 1 ... 1024</code></td>
+                <td>
+                  Representative directions per mass bin, capped by its fragment
+                  count. Multiplicities may be fractional. Defaults: API 1, new
+                  UI configuration 3.
+                </td>
+              </tr>
+              <tr data-field="physics.max_particles">
+                <td><code>physics.max_particles</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  Tracked trajectory limit. Zero disables it; the UI uses zero.
+                  Positive limits are supported by the CLI; a limit-reached
+                  realization is incomplete.
+                </td>
+              </tr>
+              <tr data-field="physics.retain_mass_remainder">
+                <td><code>physics.retain_mass_remainder</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Retain the final remainder fragment when the next mass
+                  exhausts the budget and the remainder is at least min_mass.
+                  The unresolved small-fragment tail is not combined into a
+                  large fragment. The default depends on schema_version.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>integration: numerical controls</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="integration.relative_tolerance">
+                <td><code>integration.relative_tolerance</code></td>
+                <td><code>number &gt; 0</code></td>
+                <td>
+                  Relative local-error tolerance, default 1e-8. Used together
+                  with absolute tolerances.
+                </td>
+              </tr>
+              <tr data-field="integration.position_tolerance_m">
+                <td><code>integration.position_tolerance_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Absolute position-component tolerance, default 0.01. Not a
+                  guarantee of final impact-location accuracy.
+                </td>
+              </tr>
+              <tr data-field="integration.velocity_tolerance_mps">
+                <td><code>integration.velocity_tolerance_mps</code></td>
+                <td><code>number &gt; 0; m/s</code></td>
+                <td>Absolute velocity-component tolerance, default 0.0001.</td>
+              </tr>
+              <tr data-field="integration.mass_tolerance_kg">
+                <td><code>integration.mass_tolerance_kg</code></td>
+                <td><code>number &gt; 0; kg</code></td>
+                <td>
+                  Absolute mass tolerance, default 1e-9. Not the minimum
+                  fragment mass threshold.
+                </td>
+              </tr>
+              <tr data-field="integration.initial_step_s">
+                <td><code>integration.initial_step_s</code></td>
+                <td><code>number &gt; 0; s</code></td>
+                <td>
+                  Initial segment step, default 0.02. Must lie between
+                  min_step_s and max_step_s.
+                </td>
+              </tr>
+              <tr data-field="integration.min_step_s">
+                <td><code>integration.min_step_s</code></td>
+                <td><code>number &gt; 0; s</code></td>
+                <td>
+                  Minimum step, default 1e-10. Requiring a smaller step causes
+                  integration failure.
+                </td>
+              </tr>
+              <tr data-field="integration.max_step_s">
+                <td><code>integration.max_step_s</code></td>
+                <td><code>number &gt;= initial_step_s; s</code></td>
+                <td>Maximum step, default 5.</td>
+              </tr>
+              <tr data-field="integration.max_flight_time_s">
+                <td><code>integration.max_flight_time_s</code></td>
+                <td><code>number &gt; 0; s</code></td>
+                <td>
+                  Simulated-time limit for one segment measured from fragment
+                  birth, default 3000. Not the total cascade age or wall-clock
+                  runtime.
+                </td>
+              </tr>
+              <tr data-field="integration.max_step_attempts">
+                <td><code>integration.max_step_attempts</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Maximum step attempts per segment, including rejected steps;
+                  default 1000000.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>monte_carlo: atmospheric sampling</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="monte_carlo.seed">
+                <td><code>monte_carlo.seed</code></td>
+                <td><code>uint64</code></td>
+                <td>
+                  Seed for entry selection, physical parameters and separation
+                  kicks. A separate generator from the orbital RNG. API default:
+                  20230213; the UI initially uses the orbital MC seed.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.runs">
+                <td><code>monte_carlo.runs</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Maximum realizations. Defaults: API 200, new UI configuration
+                  1000. Convergence may stop execution earlier; this count need
+                  not match entries.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.workers">
+                <td><code>monte_carlo.workers</code></td>
+                <td><code>integer; 1 ... 1024</code></td>
+                <td>
+                  Parallel workers, default 15. In normal execution, fixed-seed
+                  results do not depend on worker count. Not the orbital OpenMP
+                  setting.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.run_timeout_s">
+                <td><code>monte_carlo.run_timeout_s</code></td>
+                <td><code>number; 0 &lt; value &lt;= 86400 s</code></td>
+                <td>
+                  Wall-clock limit for one realization and its cascade,
+                  excluding queue wait. Default 300. Zero does not disable it;
+                  exceeding the limit makes the realization incomplete.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence">
+                <td><code>monte_carlo.convergence</code></td>
+                <td><code>object | null; optional</code></td>
+                <td>
+                  Early-stopping configuration. Null or omission disables it.
+                  The UI uses an object.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>monte_carlo.convergence: convergence grid</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="monte_carlo.convergence.threshold">
+                <td><code>monte_carlo.convergence.threshold</code></td>
+                <td><code>number; 0 &lt; value &lt;= 1</code></td>
+                <td>
+                  Jensen–Shannon divergence threshold using log2, not its square
+                  root; default 0.02. Both count and mass maps must pass. It
+                  does not mean 2% result error.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.batch_size">
+                <td><code>monte_carlo.convergence.batch_size</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Check interval in completed realizations, default 50. The
+                  first accumulated map establishes the comparison baseline.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.consecutive_checks">
+                <td><code>monte_carlo.convergence.consecutive_checks</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Required consecutive successful checks, default 3. A failed
+                  check resets the counter.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.center_deg">
+                <td><code>monte_carlo.convergence.center_deg</code></td>
+                <td><code>number[2]; degree</code></td>
+                <td>
+                  Required centre [latitude,longitude]: |lat|&lt;89,
+                  |lon|&lt;=180. Independent of the report map centre.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.half_size_km">
+                <td><code>monte_carlo.convergence.half_size_km</code></td>
+                <td><code>number[2] &gt; 0; km</code></td>
+                <td>
+                  Half-extents [north–south,east–west], default [14,20]. At
+                  least two cells per axis, at most 4 million total. Impacts
+                  outside the grid prevent convergence certification.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.cell_m">
+                <td><code>monte_carlo.convergence.cell_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Convergence-grid cell size, API default 25; the UI adjusts it
+                  for coverage. Distinct from maps.cell_m.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.kernel_sigma_m">
+                <td><code>monte_carlo.convergence.kernel_sigma_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Fixed convergence-KDE sigma, default 60; its ratio to cell_m
+                  must not exceed 64. Independent of the adaptive report map.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>monte_carlo.parameters: distributions</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="monte_carlo.parameters.size.absolute_magnitude">
+                <td>
+                  <code>monte_carlo.parameters.size.absolute_magnitude</code>
+                </td>
+                <td><code>number</code></td>
+                <td>
+                  H for photometric size. D=1329e3*10^(-H/5)/sqrt(albedo)
+                  metres; mass is pi*rho*D^3/6. The UI reads H from request.
+                  Mutually exclusive with mass_kg or diameter_m.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.size.albedo">
+                <td><code>monte_carlo.parameters.size.albedo</code></td>
+                <td><code>number[3]: [min,mode,max]</code></td>
+                <td>
+                  Triangular distribution: 0&lt;min&lt;=mode&lt;=max&lt;=1.
+                  Equal values fix albedo. Required with H; not a uniform range.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.density_kg_m3">
+                <td><code>monte_carlo.parameters.density_kg_m3</code></td>
+                <td><code>number | number[2]; kg/m^3</code></td>
+                <td>
+                  Positive density: a scalar fixes the value; [min,max]
+                  specifies a uniform draw. Affects mass and ballistics.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.strong_strength_pa">
+                <td><code>monte_carlo.parameters.strong_strength_pa</code></td>
+                <td><code>number | number[2]; Pa</code></td>
+                <td>
+                  Positive initial strength of the strong branch, selected with
+                  probability 1-weak_probability. Ranges are uniform.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.weak_strength_pa">
+                <td><code>monte_carlo.parameters.weak_strength_pa</code></td>
+                <td><code>number | number[2]; Pa</code></td>
+                <td>
+                  Positive initial strength of the weak branch, selected with
+                  probability weak_probability. Not sampled at zero probability,
+                  but still validated.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.weak_probability">
+                <td><code>monte_carlo.parameters.weak_probability</code></td>
+                <td><code>number; 0 ... 1</code></td>
+                <td>
+                  Weak-branch probability: zero selects only strong, one only
+                  weak, otherwise a mixture. The UI uses zero.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.ablation_kg_j">
+                <td><code>monte_carlo.parameters.ablation_kg_j</code></td>
+                <td><code>number | number[2]; kg/J; &gt;= 0</code></td>
+                <td>
+                  Coefficient sigma in dm/dt=-0.5*sigma*rho_air*A*Vr^3 when
+                  ablation is enabled. Uniform range or fixed value; zero
+                  disables this mass-loss mechanism.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.dust_fraction">
+                <td><code>monte_carlo.parameters.dust_fraction</code></td>
+                <td><code>number | number[2]; 0 ... 1</code></td>
+                <td>
+                  Parent mass fraction assigned to dust at applicable breakups.
+                  Uniform range; one leaves zero mass for discrete children.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.largest_fraction">
+                <td><code>monte_carlo.parameters.largest_fraction</code></td>
+                <td><code>number | number[2]; 0 &lt; value &lt; 1</code></td>
+                <td>
+                  Largest fragment fraction of mass after dust removal. Uniform
+                  range or scalar.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.beta">
+                <td><code>monte_carlo.parameters.beta</code></td>
+                <td><code>number | number[2]; 0 &lt; value &lt; 1</code></td>
+                <td>
+                  Exponent of the cumulative power-law mass generator. Controls
+                  the mass distribution and fragment count; ranges are uniform.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.wind_scale">
+                <td><code>monte_carlo.parameters.wind_scale</code></td>
+                <td><code>number | number[2]; &gt;= 0</code></td>
+                <td>
+                  Wind-vector multiplier. Zero disables wind, one preserves it;
+                  ranges are uniform.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.drag_scale">
+                <td><code>monte_carlo.parameters.drag_scale</code></td>
+                <td><code>number | number[2]; &gt;= 0</code></td>
+                <td>
+                  Multiplier of Cd(M). One preserves the baseline model, zero
+                  disables this drag; ranges are uniform.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>maps: report and GIS output</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="maps">
+                <td><code>maps</code></td>
+                <td><code>object | null; optional</code></td>
+                <td>
+                  An object enables the report and GIS export; omission or null
+                  disables them. Numerical results are preserved independently
+                  of rendering success.
+                </td>
+              </tr>
+              <tr data-field="maps.title">
+                <td><code>maps.title</code></td>
+                <td><code>string</code></td>
+                <td>
+                  Report title, default Strewn field. The UI uses the object
+                  designation.
+                </td>
+              </tr>
+              <tr data-field="maps.method">
+                <td><code>maps.method</code></td>
+                <td><code>adaptive | fixed</code></td>
+                <td>
+                  KDE method. Default adaptive; Scott is not a selectable mode.
+                </td>
+              </tr>
+              <tr data-field="maps.cell_m">
+                <td><code>maps.cell_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Requested map cell size, default 25. With auto_cell_size, the
+                  effective cell may be larger.
+                </td>
+              </tr>
+              <tr data-field="maps.auto_cell_size">
+                <td><code>maps.auto_cell_size</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Default true permits grid coarsening for memory/FFT limits.
+                  Unrelated to animation speed or physical dynamics.
+                </td>
+              </tr>
+              <tr data-field="maps.fixed_sigma_m">
+                <td><code>maps.fixed_sigma_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Fixed-KDE sigma, default 60. In adaptive mode it also provides
+                  a degenerate-sample fallback and contributes to
+                  coverage/memory estimates.
+                </td>
+              </tr>
+              <tr data-field="maps.adaptive_alpha">
+                <td><code>maps.adaptive_alpha</code></td>
+                <td><code>number; 0 ... 1</code></td>
+                <td>
+                  Local kernel-width adaptation exponent, default 0.5. Not
+                  applied in fixed mode.
+                </td>
+              </tr>
+              <tr data-field="maps.adaptive_limits">
+                <td><code>maps.adaptive_limits</code></td>
+                <td><code>number[2]; 0 &lt; min &lt; max &lt;= 10</code></td>
+                <td>
+                  Bounds on the local bandwidth multiplier, default [0.2,5].
+                </td>
+              </tr>
+              <tr data-field="maps.adaptive_classes">
+                <td><code>maps.adaptive_classes</code></td>
+                <td><code>integer; 1 ... 32</code></td>
+                <td>Discrete adaptive-bandwidth classes, default 16.</td>
+              </tr>
+              <tr data-field="maps.center_deg">
+                <td><code>maps.center_deg</code></td>
+                <td><code>number[2] | null; degree</code></td>
+                <td>
+                  Fixed centre [latitude,longitude], |lat|&lt;85, |lon|&lt;=180.
+                  Null or omission enables automatic field coverage.
+                </td>
+              </tr>
+              <tr data-field="maps.half_size_km">
+                <td><code>maps.half_size_km</code></td>
+                <td><code>number[2]; 0 &lt; each &lt;= 1000 km</code></td>
+                <td>
+                  Half-extents [north–south,east–west], default [14,20]. With an
+                  automatic centre, effective coverage is derived from impacts
+                  rather than this pair.
+                </td>
+              </tr>
+              <tr data-field="maps.basemap">
+                <td><code>maps.basemap</code></td>
+                <td><code>none | esri_imagery</code></td>
+                <td>
+                  Basemap: API default none, new UI configuration esri_imagery.
+                  Does not affect the integration environment.
+                </td>
+              </tr>
+              <tr data-field="maps.offline">
+                <td><code>maps.offline</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Basemap offline policy. True disables online tiles; false
+                  permits network tiles with embedded fallback. Separate from
+                  environment.offline.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="blocking">
+        <h2>Blocking Reasons</h2>
+        <p>
+          manifest.blocked_reasons and handoff.blocked_reasons use the same
+          codes. An empty array means no blocking reasons.
+        </p>
+        <div class="table-wrap">
+          <table class="codes">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>invalid_input_covariance</code></td>
+                <td>
+                  Invalid covariance dimensions, finite values, diagonal,
+                  symmetry or spectrum.
+                </td>
+              </tr>
+              <tr>
+                <td><code>fitted_non_grav_covariance_not_sampled</code></td>
+                <td>
+                  state_covariance selected despite fitted nongravitational
+                  parameters.
+                </td>
+              </tr>
+              <tr>
+                <td><code>cancelled</code></td>
+                <td>MC was cancelled.</td>
+              </tr>
+              <tr>
+                <td><code>incomplete_clones</code></td>
+                <td>
+                  attempted or completed differs from the requested clone count.
+                </td>
+              </tr>
+              <tr>
+                <td><code>failed_clones</code></td>
+                <td>Clone failures are present.</td>
+              </tr>
+              <tr>
+                <td><code>not_all_clones_crossed</code></td>
+                <td>Not all requested clones crossed the boundary.</td>
+              </tr>
+              <tr>
+                <td><code>requires_100_km_entry_boundary</code></td>
+                <td>
+                  The boundary is not 100 km, or request and result altitudes
+                  differ.
+                </td>
+              </tr>
+              <tr>
+                <td><code>inconsistent_event_counts</code></td>
+                <td>
+                  hits_per_event size or values disagree with events and
+                  crossing records.
+                </td>
+              </tr>
+              <tr>
+                <td><code>invalid_clone_or_event_id</code></td>
+                <td>Clone or event index is out of range.</td>
+              </tr>
+              <tr>
+                <td><code>multiple_crossings_per_clone</code></td>
+                <td>One clone has multiple crossing records.</td>
+              </tr>
+              <tr>
+                <td><code>non_earth_crossing</code></td>
+                <td>The crossing or event target is not Earth.</td>
+              </tr>
+              <tr>
+                <td><code>invalid_entry_state</code></td>
+                <td>Invalid body-fixed state, vectors or epochs.</td>
+              </tr>
+              <tr>
+                <td><code>entry_height_mismatch</code></td>
+                <td>
+                  Height recovered from position differs from the requested
+                  height by more than 1 m.
+                </td>
+              </tr>
+              <tr>
+                <td><code>entry_not_inbound</code></td>
+                <td>
+                  Invalid geodetic conversion or non-inbound vertical velocity.
+                </td>
+              </tr>
+              <tr>
+                <td><code>inconsistent_clone_count</code></td>
+                <td>Distinct clone count differs from any_crossing_clones.</td>
+              </tr>
+              <tr>
+                <td><code>requires_one_encounter</code></td>
+                <td>Crossings do not belong to exactly one encounter.</td>
+              </tr>
+              <tr>
+                <td><code>incomplete_entry_states</code></td>
+                <td>
+                  Prepared entry count differs from the requested clone count.
+                </td>
+              </tr>
+              <tr>
+                <td><code>missing_H_or_albedo</code></td>
+                <td>
+                  Finite H or valid albedo 0&lt;p&lt;=1 is missing. This reason
+                  does not reset the previously computed entry_states_ready.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="options">
+        <h2>Additional atmosphere.json Options</h2>
+        <p>
+          These fields depend on the selected mode and may be absent from UI
+          configurations. Environment modes accept different sets of keys; keys
+          cannot be freely transferred between modes.
+        </p>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="input.state">
+                <td><code>input.state</code></td>
+                <td><code>object; fixed_state</code></td>
+                <td>
+                  One entry object instead of input.path. Uses the same epoch,
+                  position, velocity and id fields as entries[].
+                </td>
+              </tr>
+              <tr data-field="environment.bounds_deg">
+                <td><code>environment.bounds_deg</code></td>
+                <td><code>number[4]; degree; automatic</code></td>
+                <td>
+                  Bounds [south,north,west,east]: ordered, latitudes in
+                  [-85,85], longitudes in [-179.5,179.5], each span &lt;=30
+                  degrees. Must cover entries and estimated ground
+                  intersections.
+                </td>
+              </tr>
+              <tr data-field="environment.cycle_mjd_utc">
+                <td><code>environment.cycle_mjd_utc</code></td>
+                <td><code>number; MJD UTC; automatic</code></td>
+                <td>
+                  Explicit GFS cycle; validity is checked by the source.
+                  Mutually exclusive with gfs_file.
+                </td>
+              </tr>
+              <tr data-field="environment.gfs_file">
+                <td><code>environment.gfs_file</code></td>
+                <td><code>string; path; automatic</code></td>
+                <td>
+                  Local GFS GRIB instead of network source selection. Mutually
+                  exclusive with cycle_mjd_utc.
+                </td>
+              </tr>
+              <tr data-field="environment.path">
+                <td><code>environment.path</code></td>
+                <td><code>string; path; file</code></td>
+                <td>
+                  Required path to a prepared environment JSON snapshot.
+                  Supports atmospheric replay without downloads.
+                </td>
+              </tr>
+              <tr data-field="environment.weather_url">
+                <td><code>environment.weather_url</code></td>
+                <td><code>string; HTTP(S); remote</code></td>
+                <td>Required URL of prepared atmosphere JSON, not raw GRIB.</td>
+              </tr>
+              <tr data-field="environment.terrain_url">
+                <td><code>environment.terrain_url</code></td>
+                <td><code>string; HTTP(S); remote</code></td>
+                <td>Required URL of prepared terrain JSON.</td>
+              </tr>
+              <tr data-field="environment.ground_height_wgs84_m">
+                <td><code>environment.ground_height_wgs84_m</code></td>
+                <td><code>number; m; idealized</code></td>
+                <td>
+                  Constant WGS84 surface height, default 0. Wind is absent.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.size.mass_kg">
+                <td><code>monte_carlo.parameters.size.mass_kg</code></td>
+                <td><code>number | number[2]; kg; &gt; 0</code></td>
+                <td>
+                  Direct initial mass: fixed or uniform. Alternative to diameter
+                  and H/albedo; choose exactly one size mode.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.size.diameter_m">
+                <td><code>monte_carlo.parameters.size.diameter_m</code></td>
+                <td><code>number | number[2]; m; &gt; 0</code></td>
+                <td>
+                  Initial diameter: fixed or uniform. Mass is pi*rho*D^3/6.
+                  Mutually exclusive with mass_kg or H/albedo.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="compatibility">
+        <h2>Compatibility and Import</h2>
+        <p>
+          The following are legacy fields and alternative forms accepted by
+          general atmospheric import. UI orbital handoff preparation requires a
+          stricter 100 km entry format.
+        </p>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type and Allowed Values</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="entries[].weight">
+                <td><code>entries[].weight</code></td>
+                <td><code>number &gt;= 0; optional</code></td>
+                <td>
+                  New orbital exports omit this field; absence means 1. Legacy
+                  weight:1 is accepted. General atmospheric import supports
+                  nonunit weights with a positive sum; the UI handoff requires
+                  unit weights. Not fragment multiplicity.
+                </td>
+              </tr>
+              <tr data-field="manifest.probability_scope">
+                <td><code>manifest.probability_scope</code></td>
+                <td><code>string; legacy</code></td>
+                <td>
+                  Legacy explanatory probability-scope string. No longer written
+                  or used by the loader.
+                </td>
+              </tr>
+              <tr data-field="entries.frame_model">
+                <td><code>entries.frame_model</code></td>
+                <td><code>string; legacy</code></td>
+                <td>
+                  Older archives may contain IAU1976/1980 UT1/GAST, no polar
+                  motion without an EOP profile. The profile cannot be reliably
+                  recovered from this string alone.
+                </td>
+              </tr>
+              <tr data-field="epoch_jd_utc">
+                <td><code>epoch_jd_utc</code></td>
+                <td><code>number; JD UTC</code></td>
+                <td>
+                  General import accepts this instead of epoch_mjd_utc, never
+                  alongside it. Converted by subtracting 2400000.5.
+                </td>
+              </tr>
+              <tr data-field="latitude_deg">
+                <td><code>latitude_deg</code></td>
+                <td><code>number; degree</code></td>
+                <td>
+                  Alternative geodetic input, together with longitude_deg,
+                  height_wgs84_m and velocity_enu_mps instead of the ECEF vector
+                  pair.
+                </td>
+              </tr>
+              <tr data-field="longitude_deg">
+                <td><code>longitude_deg</code></td>
+                <td><code>number; degree</code></td>
+                <td>Longitude of alternative geodetic input, east-positive.</td>
+              </tr>
+              <tr data-field="height_wgs84_m">
+                <td><code>height_wgs84_m</code></td>
+                <td><code>number; m</code></td>
+                <td>
+                  Alternative entry height above WGS84. Not height above local
+                  ground or DEM orthometric height.
+                </td>
+              </tr>
+              <tr data-field="velocity_enu_mps">
+                <td><code>velocity_enu_mps</code></td>
+                <td><code>number[3]; m/s</code></td>
+                <td>
+                  Alternative entry velocity [east,north,up], converted to ECEF.
+                  Geodetic and ECEF fields must not be mixed.
+                </td>
+              </tr>
+              <tr data-field="r_itrs / v_itrs / jd_utc">
+                <td><code>r_itrs / v_itrs / jd_utc</code></td>
+                <td><code>number[3] / number[3] / number</code></td>
+                <td>
+                  Legacy entry file without schema_version: position in metres,
+                  velocity in m/s, epoch in JD UTC. Accepted by the general
+                  loader, not by UI orbital handoff preparation.
+                </td>
+              </tr>
+              <tr data-field="maps.image_width">
+                <td><code>maps.image_width</code></td>
+                <td><code>integer; 800 ... 4096; legacy</code></td>
+                <td>
+                  Legacy raster width, default 1600. Accepted but unused by the
+                  current HTML renderer and omitted on re-export.
+                </td>
+              </tr>
+              <tr data-field="maps.font_file">
+                <td><code>maps.font_file</code></td>
+                <td><code>string; path; legacy</code></td>
+                <td>
+                  Legacy raster font path. Accepted but unused by the current
+                  HTML renderer and omitted on re-export.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

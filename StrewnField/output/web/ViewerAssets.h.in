@@ -1,0 +1,15 @@
+#pragma once
+#include <string_view>
+namespace strewn::output::assets {
+inline constexpr unsigned char leaflet[] = {@LEAFLET_BYTES@};
+inline constexpr unsigned char plotly[] = {@PLOTLY_BYTES@};
+inline constexpr std::string_view css = R"STREWN(@LEAFLET_CSS@)STREWN";
+inline constexpr std::string_view license = R"STREWN(@LEAFLET_LICENSE@)STREWN";
+inline constexpr unsigned char html[] = {@VIEWER_HTML_BYTES@};
+inline constexpr unsigned char script[] = {@VIEWER_BYTES@};
+inline constexpr std::string_view reportScript = R"STREWN(@REPORT_JS@)STREWN";
+inline constexpr std::string_view printScript = R"STREWN(@PRINT_JS@)STREWN";
+inline constexpr std::string_view graticuleScript = R"STREWN(@GRATICULE_JS@)STREWN";
+inline constexpr std::string_view trajectoryScript = R"STREWN(@TRAJECTORY_JS@)STREWN";
+inline constexpr std::string_view mapFlightScript = R"STREWN(@MAP_FLIGHT_JS@)STREWN";
+}

@@ -1,0 +1,190 @@
+# ============================================================================
+# Local formatter configuration
+# ============================================================================
+/.clang-format
+/.clang-format-ignore
+
+# ============================================================================
+# Build output
+# ============================================================================
+build/
+build-*/
+out/
+cmake-build-*/
+Debug/
+Release/
+x64/
+Win32/
+bin/
+lib/
+obj/
+
+# ============================================================================
+# CMake artifacts
+# ============================================================================
+CMakeCache.txt
+CMakeUserPresets.json
+compile_commands.json
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Testing/
+_deps/
+Makefile
+*.cmake
+!CMakeLists.txt
+!cmake/*.cmake
+!/StrewnField/cmake/DeployRaster.cmake
+
+# ============================================================================
+# Qt / Qt Creator
+# ============================================================================
+*.pro.user
+*.pro.user.*
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+.qtc_clangd/
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+.qmake.stash
+.qmake.cache
+Makefile.Debug
+Makefile.Release
+
+# ============================================================================
+# Visual Studio
+# ============================================================================
+.vs/
+*.vcxproj.user
+*.sln.docstates
+*.suo
+*.ncb
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+enc_temp_folder/
+ipch/
+
+# ============================================================================
+# Visual Studio Code / JetBrains
+# ============================================================================
+.vscode/
+.idea/
+*.code-workspace
+cmake-build-*/
+
+# ============================================================================
+# Compiled binaries & intermediate
+# ============================================================================
+*.exe
+*.dll
+*.so
+*.so.*
+*.dylib
+*.lib
+*.a
+*.la
+*.lo
+*.pdb
+*.ilk
+*.exp
+*.map
+*.obj
+*.o
+*.tlog
+*.idb
+*.iobj
+*.ipdb
+*.manifest
+*.rsp
+
+# ============================================================================
+# Large data files (ephemerides, debias catalogs) — globally ignored.
+# These are external binary blobs (hundreds of MB each) — document their
+# sources in README and either auto-download in CMake or require manual
+# placement.  Typical sizes: linux_p1550p2650.440 ~98MB,
+# sb441-n16 ~616MB, bias.dat ~50MB.
+# ============================================================================
+*.bsp
+*.440
+*.430
+*.421
+bias.dat
+tiles.dat
+/data/debias_fcct14/xcat.bias_fcct14
+/data/debias/efcc18.dat
+/data/debias/fcct14.dat
+/data/debias/efcc18_tiles.dat
+# …but keep lightweight companions — MPC observatory list, full docs/,
+# examples/ (MPEC test cases), and any README inside data/:
+!data/obs.txt
+!data/docs/
+!data/docs/**
+!data/examples/
+!data/examples/**
+!data/**/*.md
+!data/**/README*
+
+# ============================================================================
+# Logs & profiling output
+# ============================================================================
+*.log
+log/
+logs/
+*.prof
+*.heap
+callgrind.out.*
+gmon.out
+
+# ============================================================================
+# OS / editor temp
+# ============================================================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+
+# ============================================================================
+# Test output
+# ============================================================================
+*.gcov
+*.gcda
+*.gcno
+coverage/
+coverage.info
+.coverage
+
+# ============================================================================
+# Local overrides (user-specific, not for repo)
+# ============================================================================
+*.local
+.env
+.env.local
+local_settings.cmake
+
+# ============================================================================
+# Tooling / agent caches (not for repo)
+# ============================================================================
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.codex/
+.claude/
+.aider*
+.copilot/

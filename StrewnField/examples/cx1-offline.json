@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "input": {
+    "kind": "fixed_state",
+    "state": {
+      "epoch_mjd_utc": 59988.12445925,
+      "position_ecef_m": [4179152.863690586, -10624.947282299632, 4933491.564257128],
+      "velocity_ecef_mps": [-5419.164662910808, 9001.11978369383, -9278.15694611344]
+    }
+  },
+  "environment": {"mode": "idealized", "ground_height_wgs84_m": 0},
+  "physics": {"phase": "entry", "max_particles": 0},
+  "monte_carlo": {
+    "seed": 20230213,
+    "runs": 200,
+    "workers": 15,
+    "run_timeout_s": 300,
+    "parameters": {
+      "size": {"diameter_m": 0.72},
+      "density_kg_m3": 3300,
+      "weak_probability": 0,
+      "wind_scale": 1
+    }
+  },
+  "output_directory": "../../output/strewn/cx1-offline-pilot"
+}

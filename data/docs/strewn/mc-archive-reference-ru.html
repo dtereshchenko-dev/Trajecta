@@ -1,0 +1,2356 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Архив MC | Trajecta</title>
+    <style>
+      :root {
+        font-family:
+          system-ui,
+          Segoe UI,
+          sans-serif;
+        color: #243239;
+        background: #fff;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      header,
+      main,
+      footer {
+        max-width: 1320px;
+        margin: auto;
+        padding: 24px 32px;
+      }
+      header {
+        border-bottom: 2px solid #117c80;
+      }
+      h1 {
+        font-size: 30px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 23px;
+        margin: 36px 0 12px;
+      }
+      h3 {
+        font-size: 18px;
+        margin: 24px 0 8px;
+      }
+      p {
+        max-width: 1100px;
+      }
+      a {
+        color: #086d82;
+      }
+      a,
+      p,
+      li {
+        overflow-wrap: anywhere;
+      }
+      .subtitle {
+        margin: 4px 0 18px;
+        color: #526670;
+      }
+      .language {
+        float: right;
+      }
+      nav {
+        display: flex;
+        gap: 10px 22px;
+        flex-wrap: wrap;
+        padding: 12px 0;
+      }
+      code,
+      pre {
+        font:
+          13px ui-monospace,
+          Consolas,
+          monospace;
+      }
+      code {
+        overflow-wrap: anywhere;
+      }
+      pre {
+        padding: 16px;
+        border-left: 3px solid #117c80;
+        background: #f3f7f7;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        margin: 12px 0 24px;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid #d8e1e4;
+        padding: 10px 12px;
+        overflow-wrap: anywhere;
+      }
+      th {
+        font-size: 13px;
+        background: #edf4f4;
+      }
+      td {
+        font-size: 14px;
+      }
+      th:nth-child(1) {
+        width: 29%;
+      }
+      th:nth-child(2) {
+        width: 24%;
+      }
+      th:nth-child(3) {
+        width: 47%;
+      }
+      .inventory th:first-child {
+        width: 25%;
+      }
+      .inventory th:last-child {
+        width: 75%;
+      }
+      .codes th:first-child {
+        width: 34%;
+      }
+      .codes th:last-child {
+        width: 66%;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      section {
+        scroll-margin-top: 16px;
+      }
+      li {
+        margin: 8px 0;
+      }
+      .purpose {
+        font-weight: 600;
+      }
+      .flow {
+        border-left: 3px solid #b17e29;
+        padding-left: 16px;
+      }
+      footer {
+        margin-top: 36px;
+        border-top: 1px solid #d8e1e4;
+        color: #526670;
+        font-size: 13px;
+      }
+      @media (max-width: 700px) {
+        header,
+        main,
+        footer {
+          padding: 18px;
+        }
+        h1 {
+          font-size: 25px;
+        }
+        .language {
+          float: none;
+          display: block;
+          margin-bottom: 12px;
+        }
+        .fields {
+          min-width: 760px;
+        }
+        nav {
+          gap: 10px 16px;
+        }
+      }
+      @media print {
+        @page {
+          size: A4 landscape;
+          margin: 12mm;
+        }
+        header,
+        main,
+        footer {
+          max-width: none;
+          padding: 0;
+        }
+        nav,
+        .language {
+          display: none;
+        }
+        h2,
+        h3 {
+          break-after: avoid;
+        }
+        tr {
+          break-inside: avoid;
+        }
+        thead {
+          display: table-header-group;
+        }
+        .table-wrap {
+          overflow: visible;
+        }
+        .fields {
+          min-width: 0;
+        }
+        td {
+          font-size: 10pt;
+        }
+        code {
+          font-size: 9pt;
+        }
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="language" lang="en" href="mc-archive-reference-en.html"
+        >English</a
+      >
+      <h1>Архив MC</h1>
+      <p class="subtitle">Состав файлов и справочник форматов</p>
+      <nav aria-label="Состав архива">
+        <a href="#request">request.json</a><a href="#result">result.json</a
+        ><a href="#entries">entries.json</a><a href="#manifest">manifest.json</a
+        ><a href="#handoff">handoff.json</a
+        ><a href="#atmosphere">atmosphere.json</a>
+      </nav>
+    </header>
+    <main>
+      <section id="contents">
+        <h2>Состав архива</h2>
+        <p>
+          Архив MC сохраняет постановку и результаты орбитального Monte Carlo, а
+          также входные состояния для последующего атмосферного расчёта. Один
+          каталог run соответствует одному орбитальному запуску. Атмосферные
+          реализации, распады и падения сохраняются в отдельной папке
+          результатов.
+        </p>
+        <pre>
+MC/
+  run-&lt;id&gt;/
+    request.json
+    result.json
+    entries.json
+    manifest.json
+    handoff.json
+    atmosphere.json</pre
+        >
+        <p>
+          request, result, entries, handoff и manifest создаются орбитальным
+          экспортёром. atmosphere добавляется при подготовке атмосферного
+          задания; сразу после чисто орбитального экспорта этого файла может ещё
+          не быть.
+        </p>
+        <table class="inventory">
+          <thead>
+            <tr>
+              <th>Файл</th>
+              <th>Назначение</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <a href="#request"><code>request.json</code></a>
+              </td>
+              <td>Исходные данные и настройки орбитального Monte Carlo.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#result"><code>result.json</code></a>
+              </td>
+              <td>
+                Численный результат орбитального MC: счётчики и пересечения
+                границы.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#entries"><code>entries.json</code></a>
+              </td>
+              <td>
+                Готовые состояния входа для атмосферного расчёта, в единицах СИ.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#manifest"><code>manifest.json</code></a>
+              </td>
+              <td>
+                Статус орбитального расчёта и готовность входов к следующему
+                этапу.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#handoff"><code>handoff.json</code></a>
+              </td>
+              <td>Описание передачи входных состояний внешнему потребителю.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="#atmosphere"><code>atmosphere.json</code></a>
+              </td>
+              <td>
+                Редактируемое задание следующего атмосферного Monte Carlo.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section class="file-section" id="request">
+        <h2>request.json</h2>
+        <p class="purpose">
+          Исходные данные и настройки орбитального Monte Carlo.
+        </p>
+        <p>
+          Содержит номинальное состояние, полную ковариацию, параметры выборки и
+          распространения.
+        </p>
+        <h3>Общие сведения</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Версия схемы запроса, не версия приложения.</td>
+              </tr>
+              <tr data-field="object">
+                <td><code>object</code></td>
+                <td><code>string</code></td>
+                <td>
+                  Обозначение объекта. Используется для идентификации и
+                  заголовка отчёта.
+                </td>
+              </tr>
+              <tr data-field="sampling_kind">
+                <td><code>sampling_kind</code></td>
+                <td><code>state_covariance | parameter_covariance</code></td>
+                <td>
+                  Источник выборки: шесть компонент состояния либо состояние
+                  совместно с оцениваемыми негравитационными параметрами. Во
+                  втором режиме при отсутствии таких параметров размерность
+                  также равна 6.
+                </td>
+              </tr>
+              <tr data-field="external_ephemerides_embedded">
+                <td><code>external_ephemerides_embedded</code></td>
+                <td><code>boolean: false</code></td>
+                <td>
+                  Внешние эфемериды в эти JSON не вложены. Для повторного
+                  орбитального распространения требуются отдельно.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>nominal: номинальное состояние</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="nominal.frame">
+                <td><code>nominal.frame</code></td>
+                <td><code>string: heliocentric ECLM J2000</code></td>
+                <td>
+                  Гелиоцентрическая эклиптическая система J2000. Определяет
+                  начало и ориентацию осей векторов.
+                </td>
+              </tr>
+              <tr data-field="nominal.epoch_mjd_tdb">
+                <td><code>nominal.epoch_mjd_tdb</code></td>
+                <td><code>number; MJD TDB</code></td>
+                <td>
+                  Эпоха состояния. JD = MJD + 2400000.5; шкалу TDB нельзя
+                  подменять UTC.
+                </td>
+              </tr>
+              <tr data-field="nominal.position_au">
+                <td><code>nominal.position_au</code></td>
+                <td><code>number[3]; AU</code></td>
+                <td>Положение [x,y,z] на указанную эпоху.</td>
+              </tr>
+              <tr data-field="nominal.velocity_au_day">
+                <td><code>nominal.velocity_au_day</code></td>
+                <td><code>number[3]; AU/day</code></td>
+                <td>
+                  Скорость [vx,vy,vz]. В экспортируемом значении преобразование
+                  из внутренних единиц уже выполнено.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>covariance: неопределённость</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="covariance.matrix">
+                <td><code>covariance.matrix</code></td>
+                <td><code>number[n][n]; n = 6 ... 10</code></td>
+                <td>
+                  Полная ковариационная матрица, включая корреляции. Диагональ
+                  содержит дисперсии, а не сигмы. Единицы Cij равны произведению
+                  единиц параметров i и j.
+                </td>
+              </tr>
+              <tr data-field="covariance.parameter_order">
+                <td><code>covariance.parameter_order</code></td>
+                <td><code>string[n]</code></td>
+                <td>
+                  Порядок строк и столбцов: x_au, y_au, z_au, vx_au_day,
+                  vy_au_day, vz_au_day; затем выбранные a1_au_day2, a2_au_day2,
+                  a3_au_day2, dt_day.
+                </td>
+              </tr>
+              <tr data-field="covariance.objective_scale_already_applied">
+                <td><code>covariance.objective_scale_already_applied</code></td>
+                <td><code>number &gt; 0</code></td>
+                <td>
+                  Множитель ковариации, уже применённый перед MC. Для сигм
+                  соответствующий множитель равен квадратному корню. Повторно
+                  применять к matrix нельзя.
+                </td>
+              </tr>
+              <tr data-field="covariance.additional_scale">
+                <td><code>covariance.additional_scale</code></td>
+                <td><code>number: 1</code></td>
+                <td>
+                  Паспортное поле: текущий экспорт записывает 1. Не является
+                  отдельным переключателем генератора.
+                </td>
+              </tr>
+              <tr data-field="covariance.valid">
+                <td><code>covariance.valid</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Проверка размерности, конечности, положительных диагоналей,
+                  симметрии и спектра. Допуск асимметрии: 1e-10 нормы матрицы;
+                  минимум собственных значений корреляционной матрицы: -1e-10.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>non_grav: негравитационная модель</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="non_grav.enabled">
+                <td><code>non_grav.enabled</code></td>
+                <td><code>boolean</code></td>
+                <td>Включено ли негравитационное ускорение.</td>
+              </tr>
+              <tr data-field="non_grav.model">
+                <td><code>non_grav.model</code></td>
+                <td><code>integer: 0 ... 5</code></td>
+                <td>
+                  0: None; 1: MarsdenH2O; 2: MarsdenCO; 3: InverseSquare; 4:
+                  Yarkovsky (A2); 5: InverseSquareDT.
+                </td>
+              </tr>
+              <tr data-field="non_grav.fit_mask">
+                <td><code>non_grav.fit_mask</code></td>
+                <td><code>integer; bit mask</code></td>
+                <td>
+                  Оцениваемые параметры: A1=1, A2=2, A3=4, DT=8; комбинации
+                  складываются. 0 означает отсутствие оцениваемых NG-параметров.
+                  Допустимая маска зависит от модели; фиксированные коэффициенты
+                  не обязаны входить в маску.
+                </td>
+              </tr>
+              <tr data-field="non_grav.a1_au_day2">
+                <td><code>non_grav.a1_au_day2</code></td>
+                <td><code>number; AU/day^2</code></td>
+                <td>Номинальный радиальный коэффициент A1.</td>
+              </tr>
+              <tr data-field="non_grav.a2_au_day2">
+                <td><code>non_grav.a2_au_day2</code></td>
+                <td><code>number; AU/day^2</code></td>
+                <td>Номинальный поперечный коэффициент A2.</td>
+              </tr>
+              <tr data-field="non_grav.a3_au_day2">
+                <td><code>non_grav.a3_au_day2</code></td>
+                <td><code>number; AU/day^2</code></td>
+                <td>
+                  Номинальный коэффициент A3 по нормали к плоскости орбиты.
+                </td>
+              </tr>
+              <tr data-field="non_grav.dt_day">
+                <td><code>non_grav.dt_day</code></td>
+                <td><code>number; day</code></td>
+                <td>
+                  Сдвиг времени в законе активности для моделей, которые его
+                  поддерживают. Не поправка к эпохам наблюдений.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>monte_carlo: орбитальная выборка</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="monte_carlo.clones">
+                <td><code>monte_carlo.clones</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Запрошенное число орбитальных клонов. Не число атмосферных
+                  реализаций или осколков.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.seed">
+                <td><code>monte_carlo.seed</code></td>
+                <td><code>uint64</code></td>
+                <td>
+                  Seed генерации клонов. Хранить как целое без потери точности;
+                  для воспроизведения также нужен тот же алгоритм RNG.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.rng">
+                <td><code>monte_carlo.rng</code></td>
+                <td><code>string</code></td>
+                <td>
+                  Идентификатор алгоритма: SplitMix64 keyed Box-Muller; clone ID
+                  and parameter index. Описывает детерминированную привязку
+                  случайных чисел к клону и параметру.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.altitude_km">
+                <td><code>monte_carlo.altitude_km</code></td>
+                <td><code>number &gt;= 0; km</code></td>
+                <td>
+                  Граница остановки орбитального распространения. Положительное
+                  значение задаёт геодезическую высоту; 0 сохраняет старую
+                  сферическую границу. Для передачи в атмосферный MC через UI
+                  требуется 100 км.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.noise_sigma_mult">
+                <td><code>monte_carlo.noise_sigma_mult</code></td>
+                <td><code>number</code></td>
+                <td>
+                  Множитель сигм выборки в общем API: положительное значение
+                  применяется к фактору ковариации, неположительное заменяется
+                  на 1. UI задаёт 1. Не путать с уже применённым масштабом
+                  matrix.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.noise_sigma_mult_applies">
+                <td><code>monte_carlo.noise_sigma_mult_applies</code></td>
+                <td><code>boolean: false</code></td>
+                <td>
+                  Текущий экспорт жёстко записывает false; это не управление
+                  генератором.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.openmp_max_threads">
+                <td><code>monte_carlo.openmp_max_threads</code></td>
+                <td><code>integer &gt;= 1</code></td>
+                <td>
+                  Максимум потоков OpenMP на момент экспорта, а не измеренное
+                  число одновременно работавших потоков. Без OpenMP записывается
+                  1.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>propagation: динамика и события</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="propagation.integrator">
+                <td><code>propagation.integrator</code></td>
+                <td><code>RA15 | IAS15</code></td>
+                <td>Выбранный орбитальный интегратор.</td>
+              </tr>
+              <tr data-field="propagation.accuracy">
+                <td><code>propagation.accuracy</code></td>
+                <td><code>number &gt; 0</code></td>
+                <td>
+                  Параметр точности выбранного интегратора. Значение не является
+                  погрешностью положения в метрах; критерии RA15 и IAS15
+                  различаются.
+                </td>
+              </tr>
+              <tr data-field="propagation.step_days">
+                <td><code>propagation.step_days</code></td>
+                <td><code>number; day</code></td>
+                <td>
+                  Начальный шаг орбитального интегратора. Внутренние шаги
+                  адаптивны; поле не задаёт интервал записи или верхний предел
+                  шага.
+                </td>
+              </tr>
+              <tr data-field="propagation.planet_mask">
+                <td><code>propagation.planet_mask</code></td>
+                <td><code>integer; bit mask</code></td>
+                <td>
+                  Биты 0–7: Mercury, Venus, Earth, Mars, Jupiter, Saturn,
+                  Uranus, Neptune; 8–10: Ceres, Pallas, Vesta в резервной
+                  кеплеровской модели; 11: Moon. Солнце этой маской не
+                  отключается. При доступном SB441 его астероиды включаются
+                  отдельно.
+                </td>
+              </tr>
+              <tr data-field="propagation.sb441">
+                <td><code>propagation.sb441</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  При true и доступном SPK-источнике используются 16 астероидов
+                  SB441-N16 независимо от битов 8–10. Иначе действует резервная
+                  тройка по маске. Файлы эфемерид здесь не вложены.
+                </td>
+              </tr>
+              <tr data-field="propagation.encounter_points">
+                <td><code>propagation.encounter_points</code></td>
+                <td><code>integer</code></td>
+                <td>
+                  Настройка сгущения шагов около сближения. Не число клонов или
+                  точек падения.
+                </td>
+              </tr>
+              <tr data-field="propagation.earth_encounter_radius_au">
+                <td><code>propagation.earth_encounter_radius_au</code></td>
+                <td><code>number &gt; 0; AU</code></td>
+                <td>
+                  Радиус окрестности Земли для управления шагом около сближения.
+                  Не радиус Земли и не высота входа.
+                </td>
+              </tr>
+              <tr data-field="propagation.inactive_interior_mass_policy">
+                <td><code>propagation.inactive_interior_mass_policy</code></td>
+                <td><code>integer: 0 | 1</code></td>
+                <td>
+                  0: ExplicitOnly, только явно включённые возмущения. 1:
+                  SmoothCentralMass, плавный учёт масс отключённых внутренних
+                  планет в центральной массе.
+                </td>
+              </tr>
+              <tr data-field="propagation.event_window_days">
+                <td><code>propagation.event_window_days</code></td>
+                <td><code>number: 1; day</code></td>
+                <td>
+                  Полуширина окна привязки пересечения к номинальному событию:
+                  плюс-минус одни сутки.
+                </td>
+              </tr>
+              <tr data-field="propagation.events">
+                <td><code>propagation.events</code></td>
+                <td><code>object[]</code></td>
+                <td>
+                  Номинальные сближения. Порядок массива задаёт индексы event в
+                  result.json и порядок hits_per_event.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].planet">
+                <td><code>propagation.events[].planet</code></td>
+                <td><code>integer: 0 ... 8</code></td>
+                <td>
+                  Идентификатор тела, не битовая маска: 0 Mercury, 1 Venus, 2
+                  Earth, 3 Mars, 4 Jupiter, 5 Saturn, 6 Uranus, 7 Neptune, 8
+                  Moon.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].epoch_mjd_tdb">
+                <td><code>propagation.events[].epoch_mjd_tdb</code></td>
+                <td><code>number; MJD TDB</code></td>
+                <td>
+                  Эпоха номинального сближения, не время входа отдельного клона.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].distance_au">
+                <td><code>propagation.events[].distance_au</code></td>
+                <td><code>number &gt;= 0; AU</code></td>
+                <td>
+                  Расстояние от объекта до центра целевого тела в номинальном
+                  событии, не высота над поверхностью.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].position_au">
+                <td><code>propagation.events[].position_au</code></td>
+                <td><code>number[3]; AU</code></td>
+                <td>
+                  Гелиоцентрическое положение объекта в событии, в осях
+                  орбитального распространения J2000.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].velocity_au_day">
+                <td><code>propagation.events[].velocity_au_day</code></td>
+                <td><code>number[3]; AU/day</code></td>
+                <td>Гелиоцентрическая скорость объекта в тех же осях.</td>
+              </tr>
+              <tr data-field="propagation.events[].planet_position_au">
+                <td><code>propagation.events[].planet_position_au</code></td>
+                <td><code>number[3]; AU</code></td>
+                <td>
+                  Гелиоцентрическое положение целевого тела в ту же эпоху.
+                  Разность положений даёт относительный вектор.
+                </td>
+              </tr>
+              <tr data-field="propagation.events[].planet_velocity_au_day">
+                <td>
+                  <code>propagation.events[].planet_velocity_au_day</code>
+                </td>
+                <td><code>number[3]; AU/day</code></td>
+                <td>
+                  Гелиоцентрическая скорость целевого тела. Разность скоростей
+                  даёт относительную инерциальную скорость.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>physical: фотометрия</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="physical.absolute_magnitude">
+                <td><code>physical.absolute_magnitude</code></td>
+                <td><code>number | null</code></td>
+                <td>
+                  Абсолютная звёздная величина H. null означает отсутствие
+                  оценки; не путать с видимой яркостью. Используется для размера
+                  тела по H и альбедо.
+                </td>
+              </tr>
+              <tr data-field="physical.albedo">
+                <td><code>physical.albedo</code></td>
+                <td><code>number | null; 0 &lt; p &lt;= 1</code></td>
+                <td>
+                  Альбедо орбитального архива. Для общей готовности handoff
+                  требуется допустимое число. Атмосферный MC использует
+                  собственное распределение альбедо из atmosphere.json.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="result">
+        <h2>result.json</h2>
+        <p class="purpose">
+          Численный результат орбитального MC: счётчики и пересечения границы.
+        </p>
+        <p>
+          crossings содержит только подтверждённые пересечения, а не все
+          начальные клоны или их пошаговые траектории. Успешное распространение
+          клона не обязательно заканчивается пересечением. Вероятность относится
+          к выбранной границе, а не к выживанию метеоритов на земле.
+        </p>
+        <h3>Сводка</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Версия схемы результата.</td>
+              </tr>
+              <tr data-field="altitude_km">
+                <td><code>altitude_km</code></td>
+                <td><code>number &gt;= 0; km</code></td>
+                <td>
+                  Граница, к которой относятся записи. Соответствует
+                  request.monte_carlo.altitude_km.
+                </td>
+              </tr>
+              <tr data-field="attempted">
+                <td><code>attempted</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  В covariance MC инициализируется запрошенным числом клонов.
+                  При отмене не является точным счётчиком реально начатых
+                  попыток.
+                </td>
+              </tr>
+              <tr data-field="completed">
+                <td><code>completed</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  Успешно распространённые клоны, включая клоны без пересечений.
+                  Знаменатель эмпирической вероятности.
+                </td>
+              </tr>
+              <tr data-field="failed">
+                <td><code>failed</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  Клоны с ошибкой распространения или обработки. Не трактовать
+                  их как физические промахи.
+                </td>
+              </tr>
+              <tr data-field="cancelled">
+                <td><code>cancelled</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Был ли расчёт отменён. При true файл может содержать частичные
+                  результаты.
+                </td>
+              </tr>
+              <tr data-field="any_crossing_clones">
+                <td><code>any_crossing_clones</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  Число уникальных клонов с хотя бы одним пересечением среди
+                  выбранных событий.
+                </td>
+              </tr>
+              <tr data-field="hits_per_event">
+                <td><code>hits_per_event</code></td>
+                <td><code>integer[]</code></td>
+                <td>
+                  Число пересечений по каждому событию в порядке
+                  request.propagation.events. Сумма может превышать
+                  any_crossing_clones.
+                </td>
+              </tr>
+              <tr data-field="empirical_crossing_probability">
+                <td><code>empirical_crossing_probability</code></td>
+                <td><code>number; 0 ... 1</code></td>
+                <td>
+                  any_crossing_clones/completed при completed&gt;0; иначе 0.
+                  Значение 1 не гарантирует падения выживших фрагментов на
+                  землю.
+                </td>
+              </tr>
+              <tr data-field="crossings">
+                <td><code>crossings</code></td>
+                <td><code>object[]</code></td>
+                <td>
+                  Пересечения границы. Возможны пустой массив, частичный
+                  результат и несколько событий одного клона.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>crossings[]: запись пересечения</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="crossings[].clone">
+                <td><code>crossings[].clone</code></td>
+                <td><code>integer; 0 ... clones-1</code></td>
+                <td>
+                  Индекс клона в генераторе. Не заменять индексом строки
+                  массива.
+                </td>
+              </tr>
+              <tr data-field="crossings[].event">
+                <td><code>crossings[].event</code></td>
+                <td><code>integer; 0 ... events.length-1</code></td>
+                <td>Индекс события request.propagation.events.</td>
+              </tr>
+              <tr data-field="crossings[].planet">
+                <td><code>crossings[].planet</code></td>
+                <td><code>integer: 0 ... 8</code></td>
+                <td>
+                  Целевое тело; тот же enum, что в
+                  request.propagation.events[].planet.
+                </td>
+              </tr>
+              <tr data-field="crossings[].epoch_mjd_tdb">
+                <td><code>crossings[].epoch_mjd_tdb</code></td>
+                <td><code>number; MJD TDB</code></td>
+                <td>
+                  Уточнённая эпоха пересечения в орбитальной шкале времени.
+                </td>
+              </tr>
+              <tr data-field="crossings[].epoch_mjd_utc">
+                <td><code>crossings[].epoch_mjd_utc</code></td>
+                <td><code>number; MJD UTC</code></td>
+                <td>
+                  Тот же физический момент в UTC; используется атмосферным
+                  этапом и выбором погоды.
+                </td>
+              </tr>
+              <tr data-field="crossings[].body_fixed_valid">
+                <td><code>crossings[].body_fixed_valid</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Получены ли координаты во вращающейся системе тела. false
+                  блокирует готовность атмосферного входа.
+                </td>
+              </tr>
+              <tr data-field="crossings[].position_body_fixed_km">
+                <td><code>crossings[].position_body_fixed_km</code></td>
+                <td><code>number[3]; km</code></td>
+                <td>
+                  Положение [x,y,z] от центра тела во вращающихся осях. Для
+                  Земли используется экспортируемая модель ECEF.
+                </td>
+              </tr>
+              <tr data-field="crossings[].velocity_body_fixed_km_s">
+                <td><code>crossings[].velocity_body_fixed_km_s</code></td>
+                <td><code>number[3]; km/s</code></td>
+                <td>
+                  Производная координат во вращающихся осях, с учётом вращения
+                  системы. Для entries умножается на 1000.
+                </td>
+              </tr>
+              <tr data-field="crossings[].latitude_deg">
+                <td><code>crossings[].latitude_deg</code></td>
+                <td><code>number; degree</code></td>
+                <td>
+                  Широта, производная от положения. Для Земли геодезическая
+                  WGS84; для других тел используется их эллипсоид или сфера.
+                </td>
+              </tr>
+              <tr data-field="crossings[].longitude_deg">
+                <td><code>crossings[].longitude_deg</code></td>
+                <td><code>number; degree</code></td>
+                <td>
+                  Долгота во вращающейся системе, восток положительный, около
+                  диапазона [-180,180].
+                </td>
+              </tr>
+              <tr data-field="crossings[].relative_speed_km_s">
+                <td><code>crossings[].relative_speed_km_s</code></td>
+                <td><code>number &gt;= 0; km/s</code></td>
+                <td>
+                  Модуль инерциальной скорости относительно целевого тела. Не
+                  скорость относительно ветра и не обязательно норма body-fixed
+                  скорости.
+                </td>
+              </tr>
+              <tr data-field="crossings[].diagnostic_miss_km">
+                <td><code>crossings[].diagnostic_miss_km</code></td>
+                <td><code>number | null; km</code></td>
+                <td>
+                  Локальная двухтельная оценка расстояния перицентра от центра
+                  тела. Не промах относительно поверхности и не критерий
+                  пересечения. null означает нечисловую оценку.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="entries">
+        <h2>entries.json</h2>
+        <p class="purpose">
+          Готовые состояния входа для атмосферного расчёта, в единицах СИ.
+        </p>
+        <p>
+          Файл передаётся как input.kind=state_samples. UI принимает полный
+          набор уникальных входящих земных состояний на 100 км для одного
+          события. Все экспортируемые орбитальные входы имеют одинаковый вес;
+          поле weight не записывается. Дублирование части result.json
+          намеренное: атмосферный модуль читает самостоятельный формат входа.
+        </p>
+        <h3>Описание набора</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Версия схемы входных состояний.</td>
+              </tr>
+              <tr data-field="frame">
+                <td><code>frame</code></td>
+                <td><code>string: ECEF</code></td>
+                <td>
+                  Положение и скорость заданы в геоцентрических вращающихся
+                  осях, не в инерциальных.
+                </td>
+              </tr>
+              <tr data-field="frame_model">
+                <td><code>frame_model</code></td>
+                <td><code>string</code></td>
+                <td>
+                  Описание преобразования, записанное при расчёте MC. Называет
+                  применённую цепочку, полярное движение и профиль EOP отдельно.
+                  Текущий путь использует IAU1976/1980, UT1/GAST IAU1982,
+                  finals2000A с резервом UTC и не применяет полярное движение.
+                  При отсутствии происхождения во внешнем результате: unknown
+                  (not recorded).
+                </td>
+              </tr>
+              <tr data-field="altitude_km">
+                <td><code>altitude_km</code></td>
+                <td><code>number &gt;= 0; km</code></td>
+                <td>
+                  Высота границы орбитального этапа. Для UI требуется 100;
+                  высота каждого вектора дополнительно проверяется с допуском 1
+                  м.
+                </td>
+              </tr>
+              <tr data-field="boundary">
+                <td><code>boundary</code></td>
+                <td><code>WGS84 geodetic height | legacy sphere</code></td>
+                <td>
+                  Определение поверхности остановки: геодезическая высота при
+                  altitude_km&gt;0, старая сфера при 0.
+                </td>
+              </tr>
+              <tr data-field="entries">
+                <td><code>entries</code></td>
+                <td><code>object[]</code></td>
+                <td>
+                  Входные состояния. Полнота проверяется относительно
+                  запрошенного числа орбитальных клонов.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>entries[]: одно состояние</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="entries[].id">
+                <td><code>entries[].id</code></td>
+                <td><code>uint64</code></td>
+                <td>
+                  Уникальный ключ входа: cloneIndex × число событий +
+                  eventIndex. При одном событии совпадает с индексом клона.
+                  Связан с entry_id атмосферной реализации.
+                </td>
+              </tr>
+              <tr data-field="entries[].epoch_mjd_utc">
+                <td><code>entries[].epoch_mjd_utc</code></td>
+                <td><code>number; MJD UTC</code></td>
+                <td>
+                  Момент входа. Хранить с точностью float64; перевод в
+                  округлённый JD может потерять точность.
+                </td>
+              </tr>
+              <tr data-field="entries[].position_ecef_m">
+                <td><code>entries[].position_ecef_m</code></td>
+                <td><code>number[3]; m</code></td>
+                <td>
+                  Положение [x,y,z]. Соответствует position_body_fixed_km из
+                  result, умноженному на 1000.
+                </td>
+              </tr>
+              <tr data-field="entries[].velocity_ecef_mps">
+                <td><code>entries[].velocity_ecef_mps</code></td>
+                <td><code>number[3]; m/s</code></td>
+                <td>
+                  Скорость [vx,vy,vz] во вращающихся осях; ветер ещё не вычтен.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="manifest">
+        <h2>manifest.json</h2>
+        <p class="purpose">
+          Статус орбитального расчёта и готовность входов к следующему этапу.
+        </p>
+        <p>
+          Записывается последним среди пяти файлов орбитального экспорта. Статус
+          complete сам по себе не означает корректную атмосферную передачу:
+          необходимо учитывать флаги готовности. Подготовка в UI проверяет
+          schema_version, status и entry_states_ready.
+        </p>
+        <h3>Поля статуса</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Версия схемы manifest.</td>
+              </tr>
+              <tr data-field="status">
+                <td><code>status</code></td>
+                <td><code>complete | partial | cancelled</code></td>
+                <td>
+                  cancelled при отмене; иначе partial при ошибках или неполном
+                  числе завершённых клонов; иначе complete. Этот экспорт не
+                  записывает running или failed.
+                </td>
+              </tr>
+              <tr data-field="entry_states_ready">
+                <td><code>entry_states_ready</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Все проверки ковариации, полноты, идентификаторов, геометрии и
+                  входящих состояний пройдены. Наличие H/альбедо в этот флаг не
+                  входит.
+                </td>
+              </tr>
+              <tr data-field="atmospheric_input_ready">
+                <td><code>atmospheric_input_ready</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Общая готовность: корректные entries плюс конечный H и альбедо
+                  0&lt;p≤1. UI проверяет H отдельно и использует собственное
+                  распределение альбедо.
+                </td>
+              </tr>
+              <tr data-field="automatic_launch">
+                <td><code>automatic_launch</code></td>
+                <td><code>boolean: false</code></td>
+                <td>
+                  Запись архива сама по себе не запускает атмосферный расчёт.
+                  Поле не является командой запуска.
+                </td>
+              </tr>
+              <tr data-field="blocked_reasons">
+                <td><code>blocked_reasons</code></td>
+                <td><code>string[]</code></td>
+                <td>
+                  Коды причин блокировки из таблицы ниже. Пустой массив означает
+                  отсутствие причин; возможно несколько кодов без повторов.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="handoff">
+        <h2>handoff.json</h2>
+        <p class="purpose">
+          Описание передачи входных состояний внешнему потребителю.
+        </p>
+        <p>
+          Содержит ссылки, готовность и фотометрию, дублирующие части request и
+          manifest. Не является полным заданием StrewnCLI. В текущем пути
+          UI/Strewn подготовка читает request, manifest и entries напрямую;
+          handoff предназначен для явного описания передачи и внешней
+          интеграции.
+        </p>
+        <h3>Поля передачи</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1</code></td>
+                <td>Версия схемы передачи.</td>
+              </tr>
+              <tr data-field="kind">
+                <td><code>kind</code></td>
+                <td><code>string: atmospheric_input</code></td>
+                <td>Тип передаваемого набора.</td>
+              </tr>
+              <tr data-field="ready">
+                <td><code>ready</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Повторяет manifest.atmospheric_input_ready, включая проверку
+                  фотометрии.
+                </td>
+              </tr>
+              <tr data-field="automatic_launch">
+                <td><code>automatic_launch</code></td>
+                <td><code>boolean: false</code></td>
+                <td>Передача не подразумевает автоматического запуска.</td>
+              </tr>
+              <tr data-field="input.kind">
+                <td><code>input.kind</code></td>
+                <td><code>string: state_samples</code></td>
+                <td>Вход представлен набором состояний.</td>
+              </tr>
+              <tr data-field="input.path">
+                <td><code>input.path</code></td>
+                <td><code>string: entries.json</code></td>
+                <td>Путь к входам относительно каталога handoff.</td>
+              </tr>
+              <tr data-field="physical.absolute_magnitude">
+                <td><code>physical.absolute_magnitude</code></td>
+                <td><code>number | null</code></td>
+                <td>H из request.physical.</td>
+              </tr>
+              <tr data-field="physical.albedo">
+                <td><code>physical.albedo</code></td>
+                <td><code>number | null</code></td>
+                <td>
+                  Альбедо из request.physical, а не распределение атмосферного
+                  MC.
+                </td>
+              </tr>
+              <tr data-field="source_request">
+                <td><code>source_request</code></td>
+                <td><code>string: request.json</code></td>
+                <td>Путь к паспорту исходного орбитального расчёта.</td>
+              </tr>
+              <tr data-field="blocked_reasons">
+                <td><code>blocked_reasons</code></td>
+                <td><code>string[]</code></td>
+                <td>Те же причины блокировки, что в manifest.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="file-section" id="atmosphere">
+        <h2>atmosphere.json</h2>
+        <p class="purpose">
+          Редактируемое задание следующего атмосферного Monte Carlo.
+        </p>
+        <p>
+          Создаётся при подготовке атмосферного этапа и может изменяться между
+          запусками. Не заменяет launch.json и job.json уже выполненного
+          атмосферного расчёта. Относительные пути разрешаются от каталога этого
+          файла. Неизвестные конфигурационные ключи отклоняются. Общий загрузчик
+          поддерживает больше вариантов, чем панель UI.
+        </p>
+        <h3>Корень и вход</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="schema_version">
+                <td><code>schema_version</code></td>
+                <td><code>integer: 1 | 2</code></td>
+                <td>
+                  Версия атмосферного задания. Новые задания: 2. В версии 1
+                  retain_mass_remainder по умолчанию false, в 2 true; явное поле
+                  physics переопределяет это значение.
+                </td>
+              </tr>
+              <tr data-field="input.kind">
+                <td><code>input.kind</code></td>
+                <td><code>state_samples | fixed_state</code></td>
+                <td>
+                  Для орбитального MC используется state_samples с path.
+                  fixed_state использует state. orbit_solution обслуживается
+                  отдельным адаптером StrewnOrbit.
+                </td>
+              </tr>
+              <tr data-field="input.path">
+                <td><code>input.path</code></td>
+                <td><code>string; path</code></td>
+                <td>
+                  Обязателен для state_samples. Абсолютный путь или
+                  относительный путь к файлу состояний. Не допускается вместе с
+                  state.
+                </td>
+              </tr>
+              <tr data-field="environment_directory">
+                <td><code>environment_directory</code></td>
+                <td><code>string; path; optional</code></td>
+                <td>
+                  Общий каталог источников и кэша. При отсутствии используется
+                  output_directory/inputs. Путь не содержит самих данных среды.
+                </td>
+              </tr>
+              <tr data-field="output_directory">
+                <td><code>output_directory</code></td>
+                <td><code>string; path</code></td>
+                <td>
+                  Каталог нового результата; должен отсутствовать или быть
+                  пустым. Обязателен для прямого fixed_state/state_samples
+                  запуска. UI выделяет новую папку при каждом запуске.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>environment: подготовка среды</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="environment.mode">
+                <td><code>environment.mode</code></td>
+                <td><code>automatic | file | remote | idealized</code></td>
+                <td>
+                  automatic получает NOAA GFS, Copernicus DEM и EGM2008; file
+                  читает готовый снимок; remote загружает подготовленные JSON;
+                  idealized использует стандартную атмосферу без ветра.
+                  Дополнительные поля режимов приведены далее.
+                </td>
+              </tr>
+              <tr data-field="environment.margin_km">
+                <td><code>environment.margin_km</code></td>
+                <td><code>number; 1 ... 500 km</code></td>
+                <td>
+                  Запас автоматического охвата вокруг входов и прямолинейных
+                  пересечений земли. По умолчанию 25. Явный bounds_deg задаёт
+                  область напрямую.
+                </td>
+              </tr>
+              <tr data-field="environment.terrain_step_deg">
+                <td><code>environment.terrain_step_deg</code></td>
+                <td><code>number; 0.001 ... 0.1 degree</code></td>
+                <td>
+                  Шаг выходной сетки рельефа, по умолчанию 0.02°. Не нативное
+                  разрешение DEM.
+                </td>
+              </tr>
+              <tr data-field="environment.timeout_seconds">
+                <td><code>environment.timeout_seconds</code></td>
+                <td><code>integer; 1 ... 3600 s</code></td>
+                <td>
+                  Сетевой таймаут запроса. По умолчанию automatic: 120, remote:
+                  60. Не время полёта и не таймаут реализации.
+                </td>
+              </tr>
+              <tr data-field="environment.max_download_bytes">
+                <td><code>environment.max_download_bytes</code></td>
+                <td><code>integer; 1 ... 1073741824 byte</code></td>
+                <td>
+                  Лимит отдельной загружаемой порции или ресурса. По умолчанию
+                  automatic: 256 MiB, remote: 64 MiB. Не ограничивает общий
+                  размер архива.
+                </td>
+              </tr>
+              <tr data-field="environment.offline">
+                <td><code>environment.offline</code></td>
+                <td><code>boolean; automatic</code></td>
+                <td>
+                  true запрещает скачивание отсутствующих источников:
+                  используется кэш или явно заданный локальный источник. По
+                  умолчанию false.
+                </td>
+              </tr>
+              <tr data-field="environment.on_unavailable">
+                <td><code>environment.on_unavailable</code></td>
+                <td><code>error | idealized; automatic</code></td>
+                <td>
+                  По умолчанию error: отсутствие реальной среды останавливает
+                  подготовку. idealized разрешает явно помеченную замену
+                  стандартной атмосферой и постоянной поверхностью.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>physics: физика и представление фрагментов</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="physics.phase">
+                <td><code>physics.phase</code></td>
+                <td><code>entry | dark_flight</code></td>
+                <td>
+                  По умолчанию entry: абляция и распады разрешены при скорости
+                  не ниже luminous_speed_mps. dark_flight начинает расчёт без
+                  них.
+                </td>
+              </tr>
+              <tr data-field="physics.ram_pressure">
+                <td><code>physics.ram_pressure</code></td>
+                <td><code>rho_v2 | half_rho_v2</code></td>
+                <td>
+                  Давление для сравнения с прочностью: ρVr² или ½ρVr², где Vr
+                  относительно воздуха. По умолчанию rho_v2. Значения прочности
+                  должны соответствовать этому соглашению.
+                </td>
+              </tr>
+              <tr data-field="physics.fragment_shape">
+                <td><code>physics.fragment_shape</code></td>
+                <td><code>sphere | brick_area_only | cone_area_only</code></td>
+                <td>
+                  По умолчанию sphere. Несферические варианты меняют площадь
+                  сечения, но не моделируют ориентацию или полную несферическую
+                  аэродинамику.
+                </td>
+              </tr>
+              <tr data-field="physics.min_mass_kg">
+                <td><code>physics.min_mass_kg</code></td>
+                <td><code>number &gt; 0; kg</code></td>
+                <td>
+                  Минимальная масса отдельного учитываемого фрагмента, по
+                  умолчанию 0.001. Более мелкая масса учитывается в балансе, но
+                  не ведётся обычными траекториями.
+                </td>
+              </tr>
+              <tr data-field="physics.luminous_speed_mps">
+                <td><code>physics.luminous_speed_mps</code></td>
+                <td><code>number &gt; 0; m/s</code></td>
+                <td>
+                  Порог относительной скорости для абляции и распадов, по
+                  умолчанию 3000. Модельный переключатель, не наблюдаемая
+                  граница свечения.
+                </td>
+              </tr>
+              <tr data-field="physics.weibull_alpha">
+                <td><code>physics.weibull_alpha</code></td>
+                <td><code>number &gt;= 0</code></td>
+                <td>
+                  Показатель усиления прочности при уменьшении массы:
+                  S_child=min(S_cap,S_parent*(M_parent/m_child)^alpha). По
+                  умолчанию 0.2.
+                </td>
+              </tr>
+              <tr data-field="physics.strength_cap_pa">
+                <td><code>physics.strength_cap_pa</code></td>
+                <td><code>number &gt; 0; Pa</code></td>
+                <td>
+                  Предел прочности дочерних фрагментов, по умолчанию 330000000
+                  Па. Не начальная прочность тела.
+                </td>
+              </tr>
+              <tr data-field="physics.lateral_coefficient">
+                <td><code>physics.lateral_coefficient</code></td>
+                <td><code>number &gt;= 0</code></td>
+                <td>
+                  Коэффициент под корнем в масштабе поперечной скорости разлёта,
+                  по умолчанию 1. Ноль отключает этот импульс; увеличение в
+                  четыре раза удваивает масштаб скорости.
+                </td>
+              </tr>
+              <tr data-field="physics.dust_at_every_breakup">
+                <td><code>physics.dust_at_every_breakup</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  По умолчанию true: доля пыли применяется при каждом распаде.
+                  false: только при распаде исходного тела поколения 0.
+                </td>
+              </tr>
+              <tr data-field="physics.individual_fragments">
+                <td><code>physics.individual_fragments</code></td>
+                <td><code>integer[2] &gt;= 0</code></td>
+                <td>
+                  Число крупнейших индивидуальных фрагментов до группировки
+                  хвоста: [первый распад, последующие]. По умолчанию [30,10]. Не
+                  задаёт полное число осколков.
+                </td>
+              </tr>
+              <tr data-field="physics.bins_per_decade">
+                <td><code>physics.bins_per_decade</code></td>
+                <td><code>integer[2]; each 1 ... 1000</code></td>
+                <td>
+                  Число массовых интервалов на декаду log10(m) для хвоста:
+                  [первый распад, последующие]. По умолчанию [4,2].
+                </td>
+              </tr>
+              <tr data-field="physics.representatives_per_bin">
+                <td><code>physics.representatives_per_bin</code></td>
+                <td><code>integer; 1 ... 1024</code></td>
+                <td>
+                  Число направлений-представителей в массовом интервале, не
+                  более числа его осколков. Кратности могут быть дробными. По
+                  умолчанию API: 1, новый UI-конфиг: 3.
+                </td>
+              </tr>
+              <tr data-field="physics.max_particles">
+                <td><code>physics.max_particles</code></td>
+                <td><code>integer &gt;= 0</code></td>
+                <td>
+                  Лимит числа учитываемых траекторий. 0 отключает лимит; UI
+                  устанавливает 0. Положительное значение поддерживается CLI;
+                  достигшая лимита реализация неполна.
+                </td>
+              </tr>
+              <tr data-field="physics.retain_mass_remainder">
+                <td><code>physics.retain_mass_remainder</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Сохранять последний остаточный фрагмент, если следующая масса
+                  исчерпывает бюджет и остаток не меньше min_mass. Мелкий
+                  недоразрешённый хвост не объединяется в большой осколок.
+                  Значение по умолчанию зависит от schema_version.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>integration: численные допуски</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="integration.relative_tolerance">
+                <td><code>integration.relative_tolerance</code></td>
+                <td><code>number &gt; 0</code></td>
+                <td>
+                  Относительная часть допуска локальной ошибки, по умолчанию
+                  1e-8. Совместно используется с абсолютными допусками.
+                </td>
+              </tr>
+              <tr data-field="integration.position_tolerance_m">
+                <td><code>integration.position_tolerance_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Абсолютный допуск компоненты положения, по умолчанию 0.01. Не
+                  гарантия точности конечного места падения.
+                </td>
+              </tr>
+              <tr data-field="integration.velocity_tolerance_mps">
+                <td><code>integration.velocity_tolerance_mps</code></td>
+                <td><code>number &gt; 0; m/s</code></td>
+                <td>
+                  Абсолютный допуск компоненты скорости, по умолчанию 0.0001.
+                </td>
+              </tr>
+              <tr data-field="integration.mass_tolerance_kg">
+                <td><code>integration.mass_tolerance_kg</code></td>
+                <td><code>number &gt; 0; kg</code></td>
+                <td>
+                  Абсолютный допуск по массе, по умолчанию 1e-9. Не порог
+                  минимальной массы.
+                </td>
+              </tr>
+              <tr data-field="integration.initial_step_s">
+                <td><code>integration.initial_step_s</code></td>
+                <td><code>number &gt; 0; s</code></td>
+                <td>
+                  Стартовый шаг участка, по умолчанию 0.02. Должен лежать между
+                  min_step_s и max_step_s.
+                </td>
+              </tr>
+              <tr data-field="integration.min_step_s">
+                <td><code>integration.min_step_s</code></td>
+                <td><code>number &gt; 0; s</code></td>
+                <td>
+                  Минимальный шаг, по умолчанию 1e-10. Если требуемый шаг
+                  меньше, интегрирование завершается ошибкой.
+                </td>
+              </tr>
+              <tr data-field="integration.max_step_s">
+                <td><code>integration.max_step_s</code></td>
+                <td><code>number &gt;= initial_step_s; s</code></td>
+                <td>Верхний предел шага, по умолчанию 5.</td>
+              </tr>
+              <tr data-field="integration.max_flight_time_s">
+                <td><code>integration.max_flight_time_s</code></td>
+                <td><code>number &gt; 0; s</code></td>
+                <td>
+                  Лимит моделируемого времени одного сегмента от рождения
+                  фрагмента, по умолчанию 3000. Не общий возраст каскада и не
+                  реальное время выполнения.
+                </td>
+              </tr>
+              <tr data-field="integration.max_step_attempts">
+                <td><code>integration.max_step_attempts</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Максимум попыток шага одного сегмента, включая отклонённые; по
+                  умолчанию 1000000.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>monte_carlo: атмосферная выборка</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="monte_carlo.seed">
+                <td><code>monte_carlo.seed</code></td>
+                <td><code>uint64</code></td>
+                <td>
+                  Seed выбора входов, физических параметров и разлёта. Это
+                  отдельный генератор, не орбитальный RNG. По умолчанию API:
+                  20230213; UI первоначально берёт seed орбитального MC.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.runs">
+                <td><code>monte_carlo.runs</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Максимум реализаций. По умолчанию API: 200, новый UI-конфиг:
+                  1000. Сходимость может остановить расчёт раньше; число не
+                  обязано совпадать с entries.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.workers">
+                <td><code>monte_carlo.workers</code></td>
+                <td><code>integer; 1 ... 1024</code></td>
+                <td>
+                  Параллельные исполнители, по умолчанию 15. При штатном расчёте
+                  фиксированный seed не зависит от их числа. Не настройка
+                  orbital OpenMP.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.run_timeout_s">
+                <td><code>monte_carlo.run_timeout_s</code></td>
+                <td><code>number; 0 &lt; value &lt;= 86400 s</code></td>
+                <td>
+                  Реальное время одной реализации вместе с каскадом, без
+                  ожидания очереди. По умолчанию 300. Ноль не отключает таймаут;
+                  превышение делает реализацию неполной.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence">
+                <td><code>monte_carlo.convergence</code></td>
+                <td><code>object | null; optional</code></td>
+                <td>
+                  Настройки досрочной остановки. null или отсутствие отключает
+                  критерий. UI использует объект.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>monte_carlo.convergence: контрольная сетка</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="monte_carlo.convergence.threshold">
+                <td><code>monte_carlo.convergence.threshold</code></td>
+                <td><code>number; 0 &lt; value &lt;= 1</code></td>
+                <td>
+                  Порог дивергенции Jensen–Shannon с log2, без квадратного
+                  корня; по умолчанию 0.02. Обе карты количества и массы должны
+                  пройти проверку. Не означает ошибку результата 2%.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.batch_size">
+                <td><code>monte_carlo.convergence.batch_size</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Интервал проверки по завершённым реализациям, по умолчанию 50.
+                  Первая накопленная карта задаёт базу сравнения.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.consecutive_checks">
+                <td><code>monte_carlo.convergence.consecutive_checks</code></td>
+                <td><code>integer &gt; 0</code></td>
+                <td>
+                  Необходимое число успешных проверок подряд, по умолчанию 3.
+                  Неудачная проверка сбрасывает счётчик.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.center_deg">
+                <td><code>monte_carlo.convergence.center_deg</code></td>
+                <td><code>number[2]; degree</code></td>
+                <td>
+                  Обязательный центр [широта,долгота]: |lat|&lt;89, |lon|≤180.
+                  Независим от центра карты отчёта.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.half_size_km">
+                <td><code>monte_carlo.convergence.half_size_km</code></td>
+                <td><code>number[2] &gt; 0; km</code></td>
+                <td>
+                  Полуразмеры [север–юг,запад–восток], по умолчанию [14,20]. Не
+                  менее двух ячеек на ось, не более 4 млн суммарно. Падения за
+                  пределами сетки блокируют вывод о сходимости.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.cell_m">
+                <td><code>monte_carlo.convergence.cell_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Ячейка контрольной сетки, по умолчанию API: 25; UI подбирает с
+                  учётом охвата. Не maps.cell_m.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.convergence.kernel_sigma_m">
+                <td><code>monte_carlo.convergence.kernel_sigma_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Сигма фиксированного контрольного KDE, по умолчанию 60;
+                  отношение к cell_m не более 64. Независима от адаптивной карты
+                  отчёта.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>monte_carlo.parameters: распределения</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="monte_carlo.parameters.size.absolute_magnitude">
+                <td>
+                  <code>monte_carlo.parameters.size.absolute_magnitude</code>
+                </td>
+                <td><code>number</code></td>
+                <td>
+                  H в фотометрической модели размера.
+                  D=1329e3*10^(-H/5)/sqrt(albedo) м; масса πρD³/6. UI берёт H из
+                  request. Не допускается совместно с mass_kg или diameter_m.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.size.albedo">
+                <td><code>monte_carlo.parameters.size.albedo</code></td>
+                <td><code>number[3]: [min,mode,max]</code></td>
+                <td>
+                  Треугольное распределение: 0&lt;min≤mode≤max≤1. Равные
+                  значения фиксируют альбедо. Обязательно вместе с H; не
+                  равномерный диапазон.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.density_kg_m3">
+                <td><code>monte_carlo.parameters.density_kg_m3</code></td>
+                <td><code>number | number[2]; kg/m^3</code></td>
+                <td>
+                  Положительная плотность: скаляр фиксирует значение, [min,max]
+                  задаёт равномерную выборку. Влияет на массу и баллистику.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.strong_strength_pa">
+                <td><code>monte_carlo.parameters.strong_strength_pa</code></td>
+                <td><code>number | number[2]; Pa</code></td>
+                <td>
+                  Положительная начальная прочность сильной ветви, выбираемой с
+                  вероятностью 1−weak_probability. Диапазон равномерный.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.weak_strength_pa">
+                <td><code>monte_carlo.parameters.weak_strength_pa</code></td>
+                <td><code>number | number[2]; Pa</code></td>
+                <td>
+                  Положительная начальная прочность слабой ветви, выбираемой с
+                  вероятностью weak_probability. При нулевой вероятности не
+                  выбирается, но валидируется.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.weak_probability">
+                <td><code>monte_carlo.parameters.weak_probability</code></td>
+                <td><code>number; 0 ... 1</code></td>
+                <td>
+                  Вероятность слабой ветви: 0 только strong, 1 только weak,
+                  иначе смесь. UI устанавливает 0.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.ablation_kg_j">
+                <td><code>monte_carlo.parameters.ablation_kg_j</code></td>
+                <td><code>number | number[2]; kg/J; &gt;= 0</code></td>
+                <td>
+                  Коэффициент σ в dm/dt=−½σρair*A*Vr³ при включённой абляции.
+                  Равномерный диапазон или фиксированное значение; ноль
+                  отключает потерю массы этим механизмом.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.dust_fraction">
+                <td><code>monte_carlo.parameters.dust_fraction</code></td>
+                <td><code>number | number[2]; 0 ... 1</code></td>
+                <td>
+                  Доля массы родителя, уходящая в пыль при применимом распаде.
+                  Равномерный диапазон; 1 оставляет нулевую массу дискретных
+                  детей.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.largest_fraction">
+                <td><code>monte_carlo.parameters.largest_fraction</code></td>
+                <td><code>number | number[2]; 0 &lt; value &lt; 1</code></td>
+                <td>
+                  Доля крупнейшего фрагмента от массы после удаления пыли.
+                  Равномерный диапазон или скаляр.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.beta">
+                <td><code>monte_carlo.parameters.beta</code></td>
+                <td><code>number | number[2]; 0 &lt; value &lt; 1</code></td>
+                <td>
+                  Показатель cumulative power-law генератора масс. Определяет
+                  распределение и число фрагментов; диапазон равномерный.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.wind_scale">
+                <td><code>monte_carlo.parameters.wind_scale</code></td>
+                <td><code>number | number[2]; &gt;= 0</code></td>
+                <td>
+                  Множитель вектора ветра. 0 отключает ветер, 1 сохраняет
+                  исходный; диапазон равномерный.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.drag_scale">
+                <td><code>monte_carlo.parameters.drag_scale</code></td>
+                <td><code>number | number[2]; &gt;= 0</code></td>
+                <td>
+                  Множитель Cd(M). 1 сохраняет базовую модель, 0 выключает это
+                  сопротивление; диапазон равномерный.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>maps: отчёт и GIS</h3>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="maps">
+                <td><code>maps</code></td>
+                <td><code>object | null; optional</code></td>
+                <td>
+                  Объект включает отчёт и GIS-экспорт; отсутствие или null
+                  отключает их. Численные результаты сохраняются отдельно от
+                  успешности визуализации.
+                </td>
+              </tr>
+              <tr data-field="maps.title">
+                <td><code>maps.title</code></td>
+                <td><code>string</code></td>
+                <td>
+                  Заголовок отчёта, по умолчанию Strewn field. UI использует
+                  обозначение объекта.
+                </td>
+              </tr>
+              <tr data-field="maps.method">
+                <td><code>maps.method</code></td>
+                <td><code>adaptive | fixed</code></td>
+                <td>
+                  Метод KDE. По умолчанию adaptive; Scott не является выбираемым
+                  режимом.
+                </td>
+              </tr>
+              <tr data-field="maps.cell_m">
+                <td><code>maps.cell_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Запрашиваемая ячейка карты, по умолчанию 25. При
+                  auto_cell_size итоговая ячейка может быть крупнее.
+                </td>
+              </tr>
+              <tr data-field="maps.auto_cell_size">
+                <td><code>maps.auto_cell_size</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  По умолчанию true: разрешено укрупнение сетки при ограничениях
+                  памяти/FFT. Не связано со скоростью анимации или физикой.
+                </td>
+              </tr>
+              <tr data-field="maps.fixed_sigma_m">
+                <td><code>maps.fixed_sigma_m</code></td>
+                <td><code>number &gt; 0; m</code></td>
+                <td>
+                  Сигма fixed KDE, по умолчанию 60. В adaptive также
+                  используется как резерв при вырожденной выборке и при оценке
+                  охвата/памяти.
+                </td>
+              </tr>
+              <tr data-field="maps.adaptive_alpha">
+                <td><code>maps.adaptive_alpha</code></td>
+                <td><code>number; 0 ... 1</code></td>
+                <td>
+                  Показатель адаптации локальной ширины ядра, по умолчанию 0.5.
+                  В fixed не применяется.
+                </td>
+              </tr>
+              <tr data-field="maps.adaptive_limits">
+                <td><code>maps.adaptive_limits</code></td>
+                <td><code>number[2]; 0 &lt; min &lt; max &lt;= 10</code></td>
+                <td>
+                  Пределы множителя локальной ширины, по умолчанию [0.2,5].
+                </td>
+              </tr>
+              <tr data-field="maps.adaptive_classes">
+                <td><code>maps.adaptive_classes</code></td>
+                <td><code>integer; 1 ... 32</code></td>
+                <td>
+                  Дискретные классы адаптивной ширины ядра, по умолчанию 16.
+                </td>
+              </tr>
+              <tr data-field="maps.center_deg">
+                <td><code>maps.center_deg</code></td>
+                <td><code>number[2] | null; degree</code></td>
+                <td>
+                  Фиксированный центр [широта,долгота], |lat|&lt;85, |lon|≤180.
+                  null или отсутствие включает автоматический охват поля.
+                </td>
+              </tr>
+              <tr data-field="maps.half_size_km">
+                <td><code>maps.half_size_km</code></td>
+                <td><code>number[2]; 0 &lt; each &lt;= 1000 km</code></td>
+                <td>
+                  Полуразмеры [север–юг,запад–восток], по умолчанию [14,20]. При
+                  автоматическом центре итоговый охват определяется по падениям,
+                  а не этой парой.
+                </td>
+              </tr>
+              <tr data-field="maps.basemap">
+                <td><code>maps.basemap</code></td>
+                <td><code>none | esri_imagery</code></td>
+                <td>
+                  Подложка: по умолчанию API none, новый UI-конфиг esri_imagery.
+                  Не влияет на среду интегрирования.
+                </td>
+              </tr>
+              <tr data-field="maps.offline">
+                <td><code>maps.offline</code></td>
+                <td><code>boolean</code></td>
+                <td>
+                  Офлайн-политика подложки. true запрещает онлайн-тайлы; false
+                  разрешает сеть с резервом встроенных тайлов. Отдельна от
+                  environment.offline.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="blocking">
+        <h2>Причины блокировки</h2>
+        <p>
+          manifest.blocked_reasons и handoff.blocked_reasons используют один
+          набор кодов. Пустой массив означает отсутствие причин блокировки.
+        </p>
+        <div class="table-wrap">
+          <table class="codes">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>invalid_input_covariance</code></td>
+                <td>
+                  Некорректна размерность, конечность, диагональ, симметрия или
+                  спектр ковариации.
+                </td>
+              </tr>
+              <tr>
+                <td><code>fitted_non_grav_covariance_not_sampled</code></td>
+                <td>
+                  Выбрана state_covariance при наличии оцениваемых
+                  NG-параметров.
+                </td>
+              </tr>
+              <tr>
+                <td><code>cancelled</code></td>
+                <td>MC отменён.</td>
+              </tr>
+              <tr>
+                <td><code>incomplete_clones</code></td>
+                <td>
+                  attempted или completed не совпадает с запрошенным числом
+                  клонов.
+                </td>
+              </tr>
+              <tr>
+                <td><code>failed_clones</code></td>
+                <td>Есть ошибки клонов.</td>
+              </tr>
+              <tr>
+                <td><code>not_all_clones_crossed</code></td>
+                <td>Не все запрошенные клоны пересекли границу.</td>
+              </tr>
+              <tr>
+                <td><code>requires_100_km_entry_boundary</code></td>
+                <td>
+                  Граница не 100 км либо высоты запроса и результата
+                  различаются.
+                </td>
+              </tr>
+              <tr>
+                <td><code>inconsistent_event_counts</code></td>
+                <td>
+                  Размер или значения hits_per_event не согласованы с событиями
+                  и строками crossings.
+                </td>
+              </tr>
+              <tr>
+                <td><code>invalid_clone_or_event_id</code></td>
+                <td>Индекс клона или события вне допустимых пределов.</td>
+              </tr>
+              <tr>
+                <td><code>multiple_crossings_per_clone</code></td>
+                <td>Один клон имеет несколько записей пересечения.</td>
+              </tr>
+              <tr>
+                <td><code>non_earth_crossing</code></td>
+                <td>Целевое тело пересечения или события не Земля.</td>
+              </tr>
+              <tr>
+                <td><code>invalid_entry_state</code></td>
+                <td>Некорректна система, векторы или эпохи входа.</td>
+              </tr>
+              <tr>
+                <td><code>entry_height_mismatch</code></td>
+                <td>
+                  Высота, восстановленная из положения, отличается от заданной
+                  более чем на 1 м.
+                </td>
+              </tr>
+              <tr>
+                <td><code>entry_not_inbound</code></td>
+                <td>
+                  Геодезия некорректна либо вертикальная скорость не направлена
+                  внутрь.
+                </td>
+              </tr>
+              <tr>
+                <td><code>inconsistent_clone_count</code></td>
+                <td>Число уникальных клонов не равно any_crossing_clones.</td>
+              </tr>
+              <tr>
+                <td><code>requires_one_encounter</code></td>
+                <td>Пересечения относятся не ровно к одному событию.</td>
+              </tr>
+              <tr>
+                <td><code>incomplete_entry_states</code></td>
+                <td>
+                  Число подготовленных entries не равно запрошенному числу
+                  клонов.
+                </td>
+              </tr>
+              <tr>
+                <td><code>missing_H_or_albedo</code></td>
+                <td>
+                  Нет конечного H или корректного альбедо 0&lt;p≤1. Эта причина
+                  не сбрасывает уже вычисленный entry_states_ready.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="options">
+        <h2>Дополнительные варианты atmosphere.json</h2>
+        <p>
+          Эти поля зависят от выбранного режима и могут отсутствовать в
+          конфигурации UI. Режимы среды имеют разные наборы допустимых ключей;
+          нельзя переносить ключи одного режима в другой произвольно.
+        </p>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="input.state">
+                <td><code>input.state</code></td>
+                <td><code>object; fixed_state</code></td>
+                <td>
+                  Один объект входа вместо input.path. Те же epoch, положение,
+                  скорость, id, что у entries[].
+                </td>
+              </tr>
+              <tr data-field="environment.bounds_deg">
+                <td><code>environment.bounds_deg</code></td>
+                <td><code>number[4]; degree; automatic</code></td>
+                <td>
+                  Границы [south,north,west,east]: упорядочены, широты в
+                  [-85,85], долготы в [-179.5,179.5], размах каждой оси ≤30°.
+                  Должны покрывать входы и оценочные пересечения земли.
+                </td>
+              </tr>
+              <tr data-field="environment.cycle_mjd_utc">
+                <td><code>environment.cycle_mjd_utc</code></td>
+                <td><code>number; MJD UTC; automatic</code></td>
+                <td>
+                  Явный цикл GFS; допустимость проверяется источником. Не вместе
+                  с gfs_file.
+                </td>
+              </tr>
+              <tr data-field="environment.gfs_file">
+                <td><code>environment.gfs_file</code></td>
+                <td><code>string; path; automatic</code></td>
+                <td>
+                  Локальный GFS GRIB вместо сетевого выбора. Не вместе с
+                  cycle_mjd_utc.
+                </td>
+              </tr>
+              <tr data-field="environment.path">
+                <td><code>environment.path</code></td>
+                <td><code>string; path; file</code></td>
+                <td>
+                  Обязательный путь к готовому JSON-снимку среды. Используется
+                  для повторения атмосферного расчёта без скачивания.
+                </td>
+              </tr>
+              <tr data-field="environment.weather_url">
+                <td><code>environment.weather_url</code></td>
+                <td><code>string; HTTP(S); remote</code></td>
+                <td>
+                  Обязательный URL подготовленного JSON атмосферы, не сырого
+                  GRIB.
+                </td>
+              </tr>
+              <tr data-field="environment.terrain_url">
+                <td><code>environment.terrain_url</code></td>
+                <td><code>string; HTTP(S); remote</code></td>
+                <td>Обязательный URL подготовленного JSON рельефа.</td>
+              </tr>
+              <tr data-field="environment.ground_height_wgs84_m">
+                <td><code>environment.ground_height_wgs84_m</code></td>
+                <td><code>number; m; idealized</code></td>
+                <td>
+                  Постоянная высота поверхности WGS84, по умолчанию 0. Ветер
+                  отсутствует.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.size.mass_kg">
+                <td><code>monte_carlo.parameters.size.mass_kg</code></td>
+                <td><code>number | number[2]; kg; &gt; 0</code></td>
+                <td>
+                  Начальная масса напрямую: фиксированная или равномерная.
+                  Альтернатива диаметру и H/альбедо; ровно один режим size.
+                </td>
+              </tr>
+              <tr data-field="monte_carlo.parameters.size.diameter_m">
+                <td><code>monte_carlo.parameters.size.diameter_m</code></td>
+                <td><code>number | number[2]; m; &gt; 0</code></td>
+                <td>
+                  Начальный диаметр: фиксированный или равномерный. Масса
+                  πρD³/6. Не вместе с mass_kg или H/альбедо.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="compatibility">
+        <h2>Совместимость и импорт</h2>
+        <p>
+          Ниже описаны старые поля и альтернативные формы общего атмосферного
+          импорта. UI-подготовка орбитального handoff требует более строгого
+          формата входов на 100 км.
+        </p>
+        <div class="table-wrap">
+          <table class="fields">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Тип и допустимые значения</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-field="entries[].weight">
+                <td><code>entries[].weight</code></td>
+                <td><code>number &gt;= 0; optional</code></td>
+                <td>
+                  Новый орбитальный экспорт не пишет поле; отсутствие равно 1.
+                  Старое weight:1 принимается. Общий атмосферный импорт
+                  поддерживает неединичные веса при положительной сумме;
+                  UI-handoff требует единичные. Не путать с кратностью
+                  фрагментов.
+                </td>
+              </tr>
+              <tr data-field="manifest.probability_scope">
+                <td><code>manifest.probability_scope</code></td>
+                <td><code>string; legacy</code></td>
+                <td>
+                  Старая поясняющая строка о смысле вероятности. Новый экспорт
+                  её не пишет; загрузчик не использует.
+                </td>
+              </tr>
+              <tr data-field="entries.frame_model">
+                <td><code>entries.frame_model</code></td>
+                <td><code>string; legacy</code></td>
+                <td>
+                  Старые архивы могут содержать IAU1976/1980 UT1/GAST, no polar
+                  motion без профиля EOP. Профиль нельзя достоверно восстановить
+                  только по этой строке.
+                </td>
+              </tr>
+              <tr data-field="epoch_jd_utc">
+                <td><code>epoch_jd_utc</code></td>
+                <td><code>number; JD UTC</code></td>
+                <td>
+                  При общем импорте допустим вместо epoch_mjd_utc, но не вместе
+                  с ним. Преобразуется вычитанием 2400000.5.
+                </td>
+              </tr>
+              <tr data-field="latitude_deg">
+                <td><code>latitude_deg</code></td>
+                <td><code>number; degree</code></td>
+                <td>
+                  Альтернативный геодезический вход: вместе с longitude_deg,
+                  height_wgs84_m и velocity_enu_mps вместо пары ECEF-векторов.
+                </td>
+              </tr>
+              <tr data-field="longitude_deg">
+                <td><code>longitude_deg</code></td>
+                <td><code>number; degree</code></td>
+                <td>
+                  Долгота альтернативного геодезического входа, восток
+                  положительный.
+                </td>
+              </tr>
+              <tr data-field="height_wgs84_m">
+                <td><code>height_wgs84_m</code></td>
+                <td><code>number; m</code></td>
+                <td>
+                  Высота альтернативного входа над WGS84. Не высота над местной
+                  землёй и не ортометрическая высота DEM.
+                </td>
+              </tr>
+              <tr data-field="velocity_enu_mps">
+                <td><code>velocity_enu_mps</code></td>
+                <td><code>number[3]; m/s</code></td>
+                <td>
+                  Скорость [east,north,up] альтернативного входа; переводится в
+                  ECEF. Геодезические и ECEF-поля не смешиваются.
+                </td>
+              </tr>
+              <tr data-field="r_itrs / v_itrs / jd_utc">
+                <td><code>r_itrs / v_itrs / jd_utc</code></td>
+                <td><code>number[3] / number[3] / number</code></td>
+                <td>
+                  Старый файл входов без schema_version: положение в м, скорость
+                  в м/с, эпоха JD UTC. Принимается общим загрузчиком, но не
+                  подготовкой орбитального handoff в UI.
+                </td>
+              </tr>
+              <tr data-field="maps.image_width">
+                <td><code>maps.image_width</code></td>
+                <td><code>integer; 800 ... 4096; legacy</code></td>
+                <td>
+                  Старая ширина растрового изображения, по умолчанию 1600.
+                  Принимается, но текущий HTML-рендер не использует и повторный
+                  экспорт не записывает.
+                </td>
+              </tr>
+              <tr data-field="maps.font_file">
+                <td><code>maps.font_file</code></td>
+                <td><code>string; path; legacy</code></td>
+                <td>
+                  Старый путь к шрифту растра. Принимается, но не используется
+                  текущим HTML-рендером и не записывается повторно.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

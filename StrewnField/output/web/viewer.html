@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>__TITLE__ | Monte Carlo report</title>
+    <style>
+      __LEAFLET_CSS__
+    </style>
+    <style>
+      :root {
+        font:
+          14px system-ui,
+          Segoe UI,
+          sans-serif;
+        color: #26343a;
+        background: #f5f7f8;
+        color-scheme: light;
+        letter-spacing: 0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      header {
+        padding: 18px 24px 0;
+        background: white;
+        border-bottom: 1px solid #d7dfe3;
+      }
+      h1 {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      h2 {
+        font-size: 17px;
+        font-weight: 600;
+        margin: 0 0 14px;
+      }
+      h3 {
+        font-size: 14px;
+        margin: 0;
+      }
+      .topline,
+      .toolbar,
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .topline {
+        justify-content: space-between;
+      }
+      .muted {
+        color: #64757d;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      nav {
+        gap: 0;
+        margin-top: 14px;
+      }
+      button,
+      select,
+      input {
+        font: inherit;
+        color: inherit;
+      }
+      button,
+      select {
+        min-height: 34px;
+        border: 1px solid #bccbd2;
+        border-radius: 4px;
+        background: white;
+        padding: 6px 10px;
+        cursor: pointer;
+        max-width: 100%;
+      }
+      button:hover {
+        background: #eef5f5;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 2px solid #087c80;
+        outline-offset: 2px;
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      nav button {
+        border: 0;
+        border-radius: 0;
+        border-bottom: 3px solid transparent;
+        padding: 12px 20px;
+      }
+      nav button[aria-selected="true"] {
+        border-bottom-color: #087c80;
+        color: #08676a;
+        background: #edf6f5;
+      }
+      button svg {
+        width: 17px;
+        height: 17px;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+      }
+      input[type="checkbox"] {
+        accent-color: #087c80;
+      }
+      input[type="range"] {
+        width: 100px;
+        accent-color: #087c80;
+      }
+      main {
+        max-width: 1700px;
+        margin: auto;
+        padding: 20px 24px 32px;
+      }
+      main:has(> #field.active) {
+        max-width: none;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .toolbar {
+        padding-bottom: 14px;
+      }
+      .toolbar select {
+        max-width: 360px;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        background: white;
+        border-block: 1px solid #d7dfe3;
+        margin-bottom: 22px;
+      }
+      .metric {
+        padding: 14px 18px;
+        border-right: 1px solid #e4e9eb;
+      }
+      .metric:last-child {
+        border: 0;
+      }
+      .value {
+        font-size: 25px;
+        font-weight: 600;
+        margin: 5px 0;
+        color: #087477;
+        font-variant-numeric: tabular-nums;
+      }
+      .charts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px 24px;
+      }
+      .plot {
+        height: 335px;
+        min-width: 0;
+        background: white;
+        border-bottom: 1px solid #d7dfe3;
+      }
+      .plot.tall {
+        height: 370px;
+      }
+      #wind .plot {
+        height: clamp(540px, 75vh, 760px);
+      }
+      .coordinate-canvas {
+        position: absolute;
+        pointer-events: none;
+      }
+      #map-views.two-plane {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .flight-view {
+        min-width: 0;
+      }
+      .flight-view h3 {
+        font-weight: 500;
+        margin: 0 0 10px;
+      }
+      .flight-view h3[hidden],
+      #profile-view[hidden] {
+        display: none;
+      }
+      #map-views.two-plane #map,
+      #map-profile {
+        height: clamp(390px, 62vh, 650px);
+        min-height: 390px;
+      }
+      #map-profile {
+        display: block;
+        width: 100%;
+        border: 1px solid #bacbd1;
+        background: white;
+      }
+      #profile-details[hidden] {
+        display: none;
+      }
+      @media (max-width: 1000px) {
+        #map-views.two-plane {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        #map-views.two-plane #map,
+        #map-profile {
+          height: 400px;
+          min-height: 350px;
+        }
+      }
+      .flight-canvas {
+        position: absolute;
+        pointer-events: none;
+      }
+      .flight-height-label {
+        background: #21363ae6;
+        border: 0;
+        color: #fff;
+        box-shadow: none;
+        font-size: 11px;
+        padding: 2px 5px;
+      }
+      .flight-height-label:before {
+        display: none;
+      }
+      #map-playback {
+        border-top: 1px solid #d7dfe3;
+        padding-top: 10px;
+      }
+      #map-playback[hidden] {
+        display: none;
+      }
+      .playback-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding-bottom: 8px;
+      }
+      .playback-row button {
+        width: 36px;
+        height: 36px;
+        padding: 6px;
+      }
+      .playback-row button svg {
+        margin: 0;
+      }
+      .playback-row select {
+        max-width: 260px;
+      }
+      .playback-row .timeline {
+        flex: 1;
+        min-width: 130px;
+      }
+      .playback-row input[type="range"] {
+        width: 100%;
+      }
+      #map-clock {
+        font-variant-numeric: tabular-nums;
+        min-width: 150px;
+        font-size: 12px;
+      }
+      #map-play .pause-icon,
+      #map-play.playing .play-icon {
+        display: none;
+      }
+      #map-play.playing .pause-icon {
+        display: inline;
+      }
+      #map-flight-status {
+        font-size: 12px;
+        line-height: 1.6;
+        margin: 0 0 10px;
+        color: #566c75;
+        overflow-wrap: anywhere;
+      }
+      .table-wrap {
+        overflow: auto;
+        margin: 18px 0 24px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        background: white;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+      }
+      th,
+      td {
+        padding: 9px 12px;
+        text-align: right;
+        border-bottom: 1px solid #e1e7ea;
+        white-space: nowrap;
+      }
+      th {
+        font-weight: 600;
+        color: #4b6069;
+        background: #edf2f4;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+      caption {
+        text-align: left;
+        padding: 8px 0;
+        font-weight: 600;
+      }
+      #entry-statistics {
+        max-width: 850px;
+      }
+      #entry-statistics th,
+      #entry-statistics td {
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+      #entry-note {
+        max-width: 1050px;
+        margin-bottom: 24px;
+      }
+      .notice {
+        padding: 10px 14px;
+        border-left: 3px solid #bb7623;
+        background: #fff7e8;
+        margin: 0 0 16px;
+        white-space: pre-wrap;
+        font-size: 13px;
+      }
+      .notice:empty {
+        display: none;
+      }
+      #map {
+        height: clamp(420px, calc(100vh - 230px), 1100px);
+        min-height: 390px;
+        background: #dce5e8;
+        border: 1px solid #bacbd1;
+      }
+      .leaflet-container {
+        font-family: inherit;
+      }
+      .map-legend {
+        background: #fffffff2;
+        padding: 10px 14px;
+        border-radius: 4px;
+        max-width: 220px;
+        font-size: 12px;
+        line-height: 1.8;
+      }
+      .gradient {
+        height: 10px;
+        background: linear-gradient(
+          90deg,
+          #440154,
+          #3b528b,
+          #21918c,
+          #5ec962,
+          #fde725
+        );
+        margin: 6px 0;
+      }
+      .legend-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .density-canvas {
+        position: absolute;
+        pointer-events: none;
+      }
+      .metadata {
+        margin: 12px 0;
+        color: #566c75;
+        font-size: 12px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+      }
+      details {
+        margin-top: 20px;
+        border-top: 1px solid #cdd9de;
+        padding-top: 12px;
+      }
+      pre {
+        font-size: 12px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-height: 400px;
+        overflow: auto;
+        background: white;
+        padding: 16px;
+      }
+      .print-context {
+        display: none;
+      }
+      footer {
+        padding: 10px 24px;
+        border-top: 1px solid #d7dfe3;
+        color: #64757d;
+        font-size: 12px;
+      }
+      .busy {
+        color: #98631b;
+      }
+      #run-meta {
+        min-height: 22px;
+      }
+      .color-key {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 14px 0;
+      }
+      .color-key .gradient {
+        width: 200px;
+      }
+      .run-nav {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .run-nav select {
+        min-width: 200px;
+      }
+      @media (max-width: 720px) {
+        header {
+          padding: 14px 12px 0;
+        }
+        main {
+          padding: 14px 12px;
+        }
+        h1 {
+          font-size: 18px;
+        }
+        nav button {
+          padding: 12px;
+        }
+        .metrics {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .metric {
+          padding: 10px;
+          font-size: 12px;
+        }
+        .value {
+          font-size: 21px;
+        }
+        .charts {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 14px;
+        }
+        .plot {
+          height: 320px;
+        }
+        .toolbar {
+          gap: 10px;
+        }
+        .toolbar select {
+          max-width: calc(100vw - 100px);
+        }
+        #map {
+          height: 65vh;
+          min-height: 350px;
+        }
+      }
+      @media (max-width: 720px) {
+        #wind .plot {
+          height: 500px;
+        }
+      }
+      @media (max-width: 720px) {
+        .playback-row #map-run {
+          flex-basis: 100%;
+          max-width: 100%;
+        }
+      }
+      #print-pages,
+      #print-fallback {
+        display: none;
+      }
+      @page {
+        size: A4 landscape;
+        margin: 12mm;
+      }
+      @media print {
+        * {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        body {
+          background: white;
+          font:
+            9pt Arial,
+            sans-serif;
+        }
+        body > header,
+        body > main,
+        body > footer {
+          display: none !important;
+        }
+        #print-fallback {
+          display: block;
+        }
+        body.print-ready #print-fallback {
+          display: none;
+        }
+        body.print-ready #print-pages {
+          display: block;
+        }
+        .print-page {
+          break-after: page;
+          width: 100%;
+          max-width: 273mm;
+        }
+        .print-page:last-child {
+          break-after: auto;
+        }
+        .print-page h2 {
+          font:
+            600 13pt Arial,
+            sans-serif;
+          margin: 0 0 3mm;
+          overflow-wrap: anywhere;
+        }
+        .print-meta {
+          font-size: 8pt;
+          line-height: 1.4;
+          margin: 0 0 3mm;
+          overflow-wrap: anywhere;
+          white-space: pre-wrap;
+        }
+        .print-charts {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 3mm 2mm;
+        }
+        .print-charts img {
+          display: block;
+          width: 100%;
+          height: auto;
+          min-width: 0;
+          break-inside: avoid;
+        }
+        .print-map {
+          display: block;
+          width: 100%;
+          height: auto;
+          max-height: 151mm;
+          object-fit: contain;
+          margin-bottom: 2mm;
+        }
+        .print-mass-key {
+          display: flex;
+          align-items: center;
+          gap: 4mm;
+          font-size: 8pt;
+          margin-top: 3mm;
+        }
+        .print-mass-key img {
+          width: 45mm;
+          height: 2.5mm;
+        }
+        .print-page .metrics {
+          margin-bottom: 4mm;
+        }
+        .print-page .metric {
+          padding: 2mm;
+        }
+        .print-page .value {
+          font-size: 16pt;
+        }
+        .print-page .muted {
+          font-size: 8pt;
+        }
+        .print-page .table-wrap {
+          overflow: visible;
+          margin: 3mm 0;
+        }
+        .print-page table {
+          font-size: 8pt;
+        }
+        .print-page th,
+        .print-page td {
+          padding: 1.5mm;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+        .print-page thead {
+          display: table-header-group;
+        }
+        .print-page tr {
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="topline">
+        <div>
+          <h1>__TITLE__</h1>
+          <div id="subtitle" class="muted"></div>
+        </div>
+        <div class="toolbar no-print">
+          <label
+            >Print<select id="print-scope">
+              <option value="current">Current view</option>
+              <option value="all">Full report + selected realization</option>
+            </select></label
+          ><button id="print" title="Print or save as PDF">
+            __PRINT_ICON__Print / PDF
+          </button>
+        </div>
+      </div>
+      <nav role="tablist" aria-label="Report sections">
+        <button role="tab" data-view="overview" aria-selected="true">
+          Ensemble</button
+        ><button role="tab" data-view="field" aria-selected="false">Map</button
+        ><button role="tab" data-view="flight" aria-selected="false">
+          Realization</button
+        ><button role="tab" data-view="wind" aria-selected="false">Wind</button>
+      </nav>
+    </header>
+    <main>
+      <div id="warnings" class="notice"></div>
+      <div id="print-error" class="notice no-print" role="alert"></div>
+      <section id="overview" class="view active" role="tabpanel">
+        <h2>Monte Carlo ensemble</h2>
+        <div id="metrics" class="metrics"></div>
+        <div id="statistics-note" class="metadata"></div>
+        <div id="entry-statistics" class="table-wrap"></div>
+        <div id="entry-note" class="metadata"></div>
+        <div class="charts">
+          <div id="landed" class="plot"></div>
+          <div id="counts" class="plot"></div>
+          <div id="largest" class="plot"></div>
+          <div id="breakup-height" class="plot"></div>
+          <div id="mass-spectrum" class="plot"></div>
+          <div id="convergence" class="plot"></div>
+          <div id="mass-count" class="plot"></div>
+          <div id="mass-budget" class="plot"></div>
+          <div id="impact-speed" class="plot"></div>
+          <div id="impact-time" class="plot"></div>
+        </div>
+        <div id="statistics" class="table-wrap"></div>
+        <details>
+          <summary>Calculation configuration and provenance</summary>
+          <pre id="configuration"></pre>
+        </details>
+      </section>
+      <section id="field" class="view" role="tabpanel">
+        <h2>Impact field</h2>
+        <div class="toolbar">
+          <label
+            >Quantity<select id="quantity">
+              <option value="count">Fragment number</option>
+              <option value="mass">Surviving mass</option>
+            </select></label
+          ><label><input id="density" type="checkbox" checked />Density</label
+          ><label><input id="hpd" type="checkbox" checked />HPD</label
+          ><label><input id="coordinates" type="checkbox" checked />Grid</label
+          ><label><input id="points" type="checkbox" />Impacts</label
+          ><label><input id="trajectory" type="checkbox" />Trajectory</label
+          ><label
+            >Points<select id="point-scope">
+              <option value="all">All realizations</option>
+              <option value="selected">Selected realization</option>
+            </select></label
+          ><label
+            >Opacity<input
+              id="opacity"
+              type="range"
+              min="0"
+              max="1"
+              step=".05"
+              value=".65" /></label
+          ><button id="fit" title="Fit full ensemble">__FIT_ICON__</button>
+        </div>
+        <div id="map-playback" hidden>
+          <div class="playback-row">
+            <select id="map-run" aria-label="Trajectory realization"></select
+            ><button
+              id="map-reset"
+              title="Restart"
+              aria-label="Restart"
+              disabled
+            >
+              __RESTART_ICON__</button
+            ><button
+              id="map-play"
+              title="Play"
+              aria-label="Play"
+              aria-pressed="false"
+              disabled
+            >
+              <span class="play-icon">__PLAY_ICON__</span
+              ><span class="pause-icon">__PAUSE_ICON__</span></button
+            ><label class="timeline"
+              ><input
+                id="map-time"
+                type="range"
+                min="0"
+                max="1"
+                step=".01"
+                value="0"
+                aria-label="Time since entry in seconds"
+                disabled /></label
+            ><output id="map-clock">0.00 s</output
+            ><select id="map-rate" aria-label="Playback speed" disabled>
+              <option value="1">1x</option>
+              <option value="5">5x</option>
+              <option value="20">20x</option>
+              <option value="100">100x</option></select
+            ><button
+              id="map-fit-flight"
+              title="Fit trajectory"
+              aria-label="Fit trajectory"
+              disabled
+            >
+              __FIT_ICON__
+            </button>
+          </div>
+          <div id="map-flight-status" role="status"></div>
+        </div>
+        <div id="map-views">
+          <div class="flight-view">
+            <h3 id="map-ground-title" hidden>Ground projection</h3>
+            <div id="map"></div>
+          </div>
+          <div id="profile-view" class="flight-view" hidden>
+            <h3>Side projection</h3>
+            <canvas
+              id="map-profile"
+              role="img"
+              aria-label="Animated fragment altitude versus signed distance along the entry direction"
+            ></canvas>
+            <div id="profile-details" class="metadata" hidden></div>
+          </div>
+        </div>
+        <div id="map-meta" class="metadata"></div>
+      </section>
+      <section id="flight" class="view" role="tabpanel">
+        <h2>Selected realization</h2>
+        <div class="toolbar">
+          <div class="run-nav">
+            <button
+              id="previous"
+              title="Previous realization"
+              aria-label="Previous realization"
+            >
+              &#8592;</button
+            ><select id="run" aria-label="Realization"></select
+            ><button
+              id="next"
+              title="Next realization"
+              aria-label="Next realization"
+            >
+              &#8594;
+            </button>
+          </div>
+          <label
+            >Fragments<select id="fragment">
+              <option value="all">All fragments</option>
+            </select></label
+          ><label><input id="log-time" type="checkbox" checked />Log time</label
+          ><label
+            >Start<select id="start">
+              <option value="breakup">First breakup</option>
+              <option value="entry">Atmospheric entry</option>
+            </select></label
+          >
+        </div>
+        <div id="run-meta" class="metadata"></div>
+        <div id="run-error" class="notice"></div>
+        <div id="run-print" class="print-context"></div>
+        <div class="charts">
+          <div id="altitude" class="plot tall"></div>
+          <div id="mass" class="plot tall"></div>
+          <div id="speed" class="plot tall"></div>
+          <div id="range" class="plot tall"></div>
+        </div>
+        <div class="color-key">
+          <span>Instantaneous fragment mass</span>
+          <div class="gradient"></div>
+          <span id="mass-scale" class="muted"></span
+          ><span class="muted">&#215; Breakup</span>
+        </div>
+        <div id="trace-note" class="metadata"></div>
+        <div id="events" class="table-wrap"></div>
+        <div id="parameters" class="table-wrap"></div>
+      </section>
+      <section id="wind" class="view" role="tabpanel">
+        <h2>Wind at selected entry</h2>
+        <div id="wind-meta" class="metadata"></div>
+        <div class="charts">
+          <div id="wind-components" class="plot tall"></div>
+          <div id="wind-direction" class="plot tall"></div>
+        </div>
+      </section>
+    </main>
+    <footer id="footer"></footer>
+    <div id="print-pages"></div>
+    <p id="print-fallback">
+      Print pages have not been prepared. Close this dialog and use the report's
+      Print / PDF button or Ctrl+P.
+    </p>
+    <script>
+      __LEAFLET_JS__;
+    </script>
+    <script>
+      __PLOTLY_JS__;
+    </script>
+    <!-- STREWN_FLIGHT_PAYLOADS -->
+    <script id="field-data" type="application/json">
+      __DATA__
+    </script>
+    <script>
+      __REPORT_JS__;
+    </script>
+    <script>
+      __GRATICULE_JS__;
+    </script>
+    <script>
+      __TRAJECTORY_JS__;
+    </script>
+    <script>
+      __MAP_FLIGHT_JS__;
+    </script>
+    <script>
+      __PRINT_JS__;
+    </script>
+    <script>
+      __VIEWER_JS__;
+    </script>
+    <!-- __LICENSES__ -->
+  </body>
+</html>

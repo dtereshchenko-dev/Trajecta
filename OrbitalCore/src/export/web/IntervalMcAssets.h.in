@@ -1,0 +1,11 @@
+#pragma once
+#include <string_view>
+namespace orbital_core::hazard::report_assets {
+inline constexpr unsigned char html[] = {@MC_HTML_BYTES@};
+inline constexpr unsigned char script[] = {@MC_SCRIPT_BYTES@};
+inline constexpr unsigned char leaflet[] = {@MC_LEAFLET_BYTES@};
+inline constexpr unsigned char style[] = {@MC_STYLE_BYTES@};
+inline constexpr unsigned char graticule[] = {@MC_GRATICULE_BYTES@};
+inline constexpr std::string_view leafletCss = R"MCASSET(@MC_LEAFLET_CSS@)MCASSET";
+inline constexpr std::string_view license = R"MCASSET(@MC_LICENSE@)MCASSET";
+}

@@ -1,0 +1,7 @@
+{
+  "title": "Strewn field",
+  "method": "fixed",
+  "cell_m": 25,
+  "fixed_sigma_m": 60,
+  "basemap": "none"
+}

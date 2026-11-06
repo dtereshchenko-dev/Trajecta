@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ades version="2022">
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIWx000000Cttr010000001</obsID>
+    <trkID>00000DaVA4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T08:14:20.688Z</obsTime>
+    <ra>242.793092</ra>
+    <dec>-11.326367</dec>
+    <astCat>Gaia2</astCat>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+    <notes>t</notes>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>ZLAF9B2</trkSub>
+    <obsID>L8WCDM010000CrgQ010000001</obsID>
+    <trkID>00000DXxSy</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T08:14:21.120Z</obsTime>
+    <ra>242.79308</ra>
+    <dec>-11.32631</dec>
+    <astCat>Gaia1</astCat>
+    <ref>MPS   895050</ref>
+    <disc>*</disc>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <deprecated>X</deprecated>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIWx000000Cttr010000002</obsID>
+    <trkID>00000DaVA4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T08:21:51.091Z</obsTime>
+    <ra>242.747300</ra>
+    <dec>-11.339269</dec>
+    <astCat>Gaia2</astCat>
+    <mag>18.2</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+    <notes>t</notes>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIWx000000Cttr010000003</obsID>
+    <trkID>00000DaVA4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T08:29:21.667Z</obsTime>
+    <ra>242.700642</ra>
+    <dec>-11.352486</dec>
+    <astCat>Gaia2</astCat>
+    <mag>18.3</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+    <notes>t</notes>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIWx000000Cttr010000004</obsID>
+    <trkID>00000DaVA4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T08:36:52.762Z</obsTime>
+    <ra>242.652517</ra>
+    <dec>-11.365917</dec>
+    <astCat>Gaia2</astCat>
+    <mag>18.0</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+    <notes>t</notes>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIX2000000Ctts010000001</obsID>
+    <trkID>00000DaVA5</trkID>
+    <mode>CCD</mode>
+    <stn>I52</stn>
+    <obsTime>2018-06-02T09:32:54.499Z</obsTime>
+    <ra>242.260746</ra>
+    <dec>-11.473950</dec>
+    <astCat>Gaia2</astCat>
+    <mag>17.5</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIX2000000Ctts010000002</obsID>
+    <trkID>00000DaVA5</trkID>
+    <mode>CCD</mode>
+    <stn>I52</stn>
+    <obsTime>2018-06-02T09:33:10.224Z</obsTime>
+    <ra>242.258842</ra>
+    <dec>-11.474469</dec>
+    <astCat>Gaia2</astCat>
+    <mag>17.2</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIX2000000Ctts010000003</obsID>
+    <trkID>00000DaVA5</trkID>
+    <mode>CCD</mode>
+    <stn>I52</stn>
+    <obsTime>2018-06-02T09:33:26.035Z</obsTime>
+    <ra>242.256742</ra>
+    <dec>-11.475069</dec>
+    <astCat>Gaia2</astCat>
+    <mag>17.5</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIX2000000Ctts010000004</obsID>
+    <trkID>00000DaVA5</trkID>
+    <mode>CCD</mode>
+    <stn>I52</stn>
+    <obsTime>2018-06-02T09:33:41.674Z</obsTime>
+    <ra>242.254808</ra>
+    <dec>-11.475522</dec>
+    <astCat>Gaia2</astCat>
+    <mag>17.7</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIWx000000Cttr010000005</obsID>
+    <trkID>00000DaVA4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T09:39:12.758Z</obsTime>
+    <ra>242.212625</ra>
+    <dec>-11.487261</dec>
+    <astCat>Gaia2</astCat>
+    <mag>17.7</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIWx000000Cttr010000006</obsID>
+    <trkID>00000DaVA4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T09:39:20.794Z</obsTime>
+    <ra>242.211575</ra>
+    <dec>-11.487511</dec>
+    <astCat>Gaia2</astCat>
+    <mag>17.9</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIWx000000Cttr010000007</obsID>
+    <trkID>00000DaVA4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T09:39:28.829Z</obsTime>
+    <ra>242.210708</ra>
+    <dec>-11.487808</dec>
+    <astCat>Gaia2</astCat>
+    <mag>17.8</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIWx000000Cttr010000008</obsID>
+    <trkID>00000DaVA4</trkID>
+    <mode>CCD</mode>
+    <stn>G96</stn>
+    <obsTime>2018-06-02T09:39:36.691Z</obsTime>
+    <ra>242.209479</ra>
+    <dec>-11.487958</dec>
+    <astCat>Gaia2</astCat>
+    <mag>17.8</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIX4000000Cttt010000001</obsID>
+    <trkID>00000DaVA6</trkID>
+    <mode>CCD</mode>
+    <stn>T08</stn>
+    <obsTime>2018-06-02T11:49:23.491Z</obsTime>
+    <ra>241.516213</ra>
+    <dec>-11.733739</dec>
+    <astCat>Gaia2</astCat>
+    <mag>16.8</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <trkSub>K18L00A</trkSub>
+    <obsID>L9GIX4000000Cttt010000002</obsID>
+    <trkID>00000DaVA6</trkID>
+    <mode>CCD</mode>
+    <stn>T08</stn>
+    <obsTime>2018-06-02T12:01:22.858Z</obsTime>
+    <ra>241.333171</ra>
+    <dec>-11.782814</dec>
+    <astCat>Gaia2</astCat>
+    <mag>16.8</mag>
+    <band>G</band>
+    <ref>MPS   906132</ref>
+    <subFmt>M92</subFmt>
+    <precTime>1</precTime>
+    <precRA>0.001</precRA>
+    <precDec>0.01</precDec>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <obsID>Lt2EXK6K0000BoKS010000001</obsID>
+    <trkID>000000IJBvC0</trkID>
+    <mode>CCD</mode>
+    <stn>Q55</stn>
+    <prog>03</prog>
+    <obsTime>2018-06-02T13:44:39.330Z</obsTime>
+    <rmsTime>1.0</rmsTime>
+    <ra>240.978114</ra>
+    <dec>-10.425919</dec>
+    <rmsRA>0.7</rmsRA>
+    <rmsDec>0.5</rmsDec>
+    <astCat>Gaia3</astCat>
+    <mag>16.80</mag>
+    <rmsMag>0.10</rmsMag>
+    <band>g</band>
+    <photCat>ATLAS2</photCat>
+    <seeing>4.3</seeing>
+    <exp>5</exp>
+    <ref>MPS  2547447</ref>
+    <subFmt>A22</subFmt>
+    <uncTime>0.5</uncTime>
+    <notes>t</notes>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <obsID>Lt2EXK6K0000BoKS010000002</obsID>
+    <trkID>000000IJBvC0</trkID>
+    <mode>CCD</mode>
+    <stn>Q55</stn>
+    <prog>03</prog>
+    <obsTime>2018-06-02T13:45:08.330Z</obsTime>
+    <rmsTime>1.0</rmsTime>
+    <ra>240.964307</ra>
+    <dec>-10.426097</dec>
+    <rmsRA>0.3</rmsRA>
+    <rmsDec>0.2</rmsDec>
+    <astCat>Gaia3</astCat>
+    <mag>16.43</mag>
+    <rmsMag>0.07</rmsMag>
+    <band>r</band>
+    <photCat>ATLAS2</photCat>
+    <seeing>4.1</seeing>
+    <exp>5</exp>
+    <ref>MPS  2547447</ref>
+    <subFmt>A22</subFmt>
+    <uncTime>0.5</uncTime>
+    <notes>t</notes>
+  </optical>
+  <optical>
+    <provID>2018 LA</provID>
+    <obsID>Lt2EXK6K0000BoKS010000003</obsID>
+    <trkID>000000IJBvC0</trkID>
+    <mode>CCD</mode>
+    <stn>Q55</stn>
+    <prog>03</prog>
+    <obsTime>2018-06-02T13:45:39.830Z</obsTime>
+    <rmsTime>1.0</rmsTime>
+    <ra>240.950707</ra>
+    <dec>-10.426196</dec>
+    <rmsRA>0.4</rmsRA>
+    <rmsDec>0.2</rmsDec>
+    <astCat>Gaia3</astCat>
+    <mag>15.83</mag>
+    <rmsMag>0.11</rmsMag>
+    <band>i</band>
+    <photCat>ATLAS2</photCat>
+    <seeing>3.3</seeing>
+    <exp>10</exp>
+    <ref>MPS  2547447</ref>
+    <subFmt>A22</subFmt>
+    <uncTime>0.5</uncTime>
+    <notes>t</notes>
+  </optical>
+</ades>
