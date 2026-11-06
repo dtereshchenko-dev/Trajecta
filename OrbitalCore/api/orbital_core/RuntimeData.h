@@ -10,6 +10,11 @@ namespace orbital_core {
 
 	[[nodiscard]] ORBITAL_CORE_API bool planetaryEphemerisAvailable() noexcept;
 	[[nodiscard]] ORBITAL_CORE_API bool asteroidEphemerisAvailable() noexcept;
+	// Configure before the first station lookup; active catalogs are cached until exit.
+	ORBITAL_CORE_API void setObservatoryDataDirectory(std::filesystem::path directory);
+	[[nodiscard]] ORBITAL_CORE_API std::filesystem::path observatoryDataDirectory();
+	ORBITAL_CORE_API void setEphemerisDataDirectory(std::filesystem::path directory);
+	[[nodiscard]] ORBITAL_CORE_API std::filesystem::path ephemerisDataDirectory();
 
 	struct RuntimeDataEntry {
 		std::string id;

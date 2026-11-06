@@ -882,10 +882,28 @@ int main(int argc, char* argv[])
 		setDefaultAsteroidSource(&sb441);
 
 		const auto result = runPipeline(opt);
-		if (!opt.lovInputPath.empty())
-			dumpLovInput(opt.lovInputPath, result.fit);
 		printSummary(result);
 		printForceModel(opt, result, sb441.isAvailable());
+		if (!result.fit.orbit || !result.fit.converged) {
+			std::cerr << "TrajectaCLI: fit did not converge";
+			switch (result.fit.selectionStatus) {
+				case orbital_core::FitSelectionStatus::PassLimit:
+					std::cerr << " (observation selection limit reached)";
+					break;
+				case orbital_core::FitSelectionStatus::InsufficientObservations:
+					std::cerr << " (too few observations after rejection)";
+					break;
+				case orbital_core::FitSelectionStatus::SafeguardRollback:
+					std::cerr << " (observation selection safeguard reached)";
+					break;
+				default:
+					break;
+			}
+			std::cerr << "; no solution was exported or propagated.\n";
+			return 2;
+		}
+		if (!opt.lovInputPath.empty())
+			dumpLovInput(opt.lovInputPath, result.fit);
 
 		std::filesystem::path solutionDirectory;
 		{
@@ -944,7 +962,7 @@ int main(int argc, char* argv[])
 			std::cout << "Residuals saved to: " << opt.residualsPath.string() << '\n';
 		}
 
-		return result.fit.orbit ? 0 : 2;
+		return 0;
 	} catch (const std::exception& e) {
 		std::cerr << "TrajectaCLI: " << e.what() << '\n';
 		return 1;

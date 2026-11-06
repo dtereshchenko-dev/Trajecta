@@ -1,0 +1,72 @@
+name: Publish application updates
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: trajecta-update-publication
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    if: github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Prepare update repository
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RELEASE_TAG -cnotmatch '^v\d+\.\d+\.\d+$') { throw 'Invalid release tag.' }
+          $latest = gh release view --json tagName | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $latest.tagName -cne $env:RELEASE_TAG) {
+            throw 'The published release is not the latest stable release; refusing to replace the update repository.'
+          }
+          $releases = gh api "repos/$env:GH_REPO/releases?per_page=100" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to list releases.' }
+          $current = @($releases | Where-Object { $_.tag_name -ceq $env:RELEASE_TAG })
+          if ($current.Count -ne 1 -or $current[0].draft -or $current[0].prerelease) {
+            throw 'A published stable release is required.'
+          }
+          $site = Join-Path $env:RUNNER_TEMP 'trajecta-pages'
+          $repository = Join-Path $site 'updates/windows'
+          $downloads = Join-Path $env:RUNNER_TEMP 'trajecta-update-downloads'
+          New-Item -ItemType Directory -Path $repository, $downloads -Force | Out-Null
+          $previous = @($releases | Where-Object {
+            $release = $_
+            -not $release.draft -and -not $release.prerelease -and $release.tag_name -cmatch '^v\d+\.\d+\.\d+$' -and
+              $release.tag_name -cne $env:RELEASE_TAG -and
+              @($release.assets | Where-Object { $_.name -ceq "Trajecta-IFW-$($release.tag_name).zip" }).Count -gt 0
+          } | Sort-Object published_at -Descending | Select-Object -First 1)
+          $tags = @($previous | ForEach-Object { $_.tag_name }) + @($env:RELEASE_TAG)
+          foreach ($tag in $tags) {
+            $archive = "Trajecta-IFW-$tag.zip"
+            gh release download "$tag" --pattern "$archive" --dir "$downloads"
+            if ($LASTEXITCODE -ne 0) { throw "Missing update repository asset for $tag." }
+            Expand-Archive -LiteralPath (Join-Path $downloads $archive) -DestinationPath $repository -Force
+          }
+          [xml]$updates = Get-Content -LiteralPath (Join-Path $repository 'Updates.xml') -Raw
+          $components = @($updates.Updates.PackageUpdate | Where-Object { $_.Name -ceq 'com.trajecta.app' })
+          if ($components.Count -ne 1 -or $components[0].Version -cne $env:RELEASE_TAG.Substring(1)) {
+            throw 'The update repository component version does not match the release tag.'
+          }
+          Set-Content -LiteralPath (Join-Path $site 'index.html') -Value '<!doctype html><title>Trajecta updates</title>' -Encoding utf8
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/trajecta-pages
+      - name: Deploy updates
+        id: deployment
+        uses: actions/deploy-pages@v4

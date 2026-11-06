@@ -28,14 +28,15 @@ Link your C++20 target to `OrbitalCore`. When adding a target within this
 project's CMake build, use `target_link_libraries(your_target PRIVATE OrbitalCore)`
 and `orbital_core_deploy_data(your_target)` to deploy the configured runtime
 data. The `OrbitalCore` DLL and its dependencies must also be available at
-runtime. The example takes the runtime-data directory as its second argument;
-the deployment helper puts these files beside the executable. See
+runtime. The example takes a directory containing the required files as its
+second argument and configures both data directories explicitly. See
 [Runtime data files](#runtime-data-files).
 
 ```cpp
 #include <orbital_core/DE440Source.h>
 #include <orbital_core/FitPipeline.h>
 #include <orbital_core/ObservationSet.h>
+#include <orbital_core/RuntimeData.h>
 #include <orbital_core/Types.h>
 #include <exception>
 #include <filesystem>
@@ -52,6 +53,8 @@ int main(int argc, char** argv)
 
     try {
         getExecutableDir() = std::filesystem::absolute(argv[2]);
+        oc::setObservatoryDataDirectory(getExecutableDir());
+        oc::setEphemerisDataDirectory(getExecutableDir());
         DE440Source de440;
         if (!de440.isAvailable()) {
             std::cerr << "DE440 not available in the runtime-data directory\n";
@@ -98,8 +101,11 @@ int main(int argc, char** argv)
 
 Run the program with paths to an observation file and to the directory holding
 runtime data. The application must set `getExecutableDir()` before loading
-sources; it is not automatically initialized by the library. `OBSCODE.dat` is needed
-for observation loading; radar data also require `RADCODE.dat`. Weighting uses
+sources; it is not automatically initialized by the library. Observatory and
+planetary ephemeris directories default to the user's application data. For
+custom setups, configure them before loading sources with
+`setObservatoryDataDirectory()` and `setEphemerisDataDirectory()`.
+`OBSCODE.dat` is needed for observation loading; radar data also require `RADCODE.dat`. Weighting uses
 the configured profile, whose rules must be deployed separately. To enable
 debiasing, set `ObservationPreparationOptions::debias` before preparation and
 provide the matching bias data. See [Runtime data files](#runtime-data-files)
@@ -248,7 +254,10 @@ are under `data/examples/` and `data/docs/`.
 `OBSCODE.dat` is required to load observations. `RADCODE.dat` is needed for
 radar observations, not optical-only fits; it is the project's converted radar
 catalogue, not the original JPL API response. DE440 is needed for planetary
-ephemerides and N-body calculations. SB441 is needed only when massive-asteroid
+ephemerides and N-body calculations. On Windows, the installer places the two
+catalogues in `%LOCALAPPDATA%/Trajecta/Trajecta/observatories` and DE440 in
+`%LOCALAPPDATA%/Trajecta/Trajecta/ephemerides`. Existing files are retained on
+reinstallation. SB441 is needed only when massive-asteroid
 perturbations are enabled. VFCC17 rules and the matching debias table are used
 when their respective options are enabled. The current fitter uses EFCC18 for
 both weight profiles; FCCT14 is present for compatibility and inspection.
@@ -264,9 +273,10 @@ time-data range. Missing files or dates outside their coverage can cause
 fallbacks; see the EOP notes for details. These files have different roles and
 must not be substituted by simply renaming another IERS product.
 
-The application can download SB441-N16; other source files are not yet downloaded
-or updated by the application. Files already loaded by a running process may
-require a restart after replacement.
+The application can download SB441-N16. At startup, it checks the optical and
+radar observatory catalogues in the background and offers available updates in
+Data sources; it does not replace them without confirmation. Files already
+loaded by a running process require a restart after replacement.
 
 For the debias tables currently used by the project, SHA-256 after
 extraction is `3ad243953731218565cbb25937e87803165ac28e4c948f06e52c6f8b9e1af887`

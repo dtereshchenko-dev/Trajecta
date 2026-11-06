@@ -85,6 +85,8 @@ set(CLIENT_SOURCES
     src/features/settings/CalculationSettingsModel.h src/features/settings/CalculationSettingsModel.cpp
     src/features/settings/DataSourcesModel.h src/features/settings/DataSourcesModel.cpp
     src/features/settings/Sb441Download.h src/features/settings/Sb441Download.cpp
+    src/features/settings/ObservatoryUpdate.h src/features/settings/ObservatoryUpdate.cpp
+    src/features/settings/ApplicationUpdate.h src/features/settings/ApplicationUpdate.cpp
     src/app/ApplicationSession.h src/app/ApplicationSession.cpp
     src/features/solution/SolutionViewModel.h src/features/solution/SolutionViewModel.cpp
     src/features/solution/CovarianceTableModel.h src/features/solution/CovarianceTableModel.cpp

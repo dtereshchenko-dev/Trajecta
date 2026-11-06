@@ -14,6 +14,7 @@
 #include "features/atmosphere/AtmosphereViewModel.h"
 #include "features/settings/CalculationSettingsModel.h"
 #include "features/settings/DataSourcesModel.h"
+#include "features/settings/ApplicationUpdate.h"
 #include "features/observations/ObservationReviewModel.h"
 #include "io/RecentFiles.h"
 
@@ -30,6 +31,7 @@ class ApplicationSession : public QObject {
 	Q_PROPERTY(RecentFiles* recentFiles READ recentFiles CONSTANT)
 	Q_PROPERTY(CalculationSettingsModel* calculationSettings READ calculationSettings CONSTANT)
 	Q_PROPERTY(DataSourcesModel* dataSources READ dataSources CONSTANT)
+	Q_PROPERTY(ApplicationUpdate* applicationUpdate READ applicationUpdate CONSTANT)
 	Q_PROPERTY(ObservationReviewModel* observationReview READ observationReview CONSTANT)
 	Q_PROPERTY(QString inputFile READ inputFile NOTIFY changed)
 	Q_PROPERTY(QString inputName READ inputName NOTIFY changed)
@@ -60,6 +62,7 @@ class ApplicationSession : public QObject {
 	CalculationSettingsModel* calculationSettings() { return &m_calculationSettings; }
 
 	DataSourcesModel* dataSources() { return &m_dataSources; }
+	ApplicationUpdate* applicationUpdate() { return &m_applicationUpdate; }
 
 	ObservationReviewModel* observationReview() { return &m_observationReview; }
 
@@ -133,6 +136,7 @@ class ApplicationSession : public QObject {
 	MovViewModel m_mov{m_solution, [this] { return m_engine.currentSettings(); }};
 	CalculationSettingsModel m_calculationSettings;
 	DataSourcesModel m_dataSources;
+	ApplicationUpdate m_applicationUpdate;
 	ObservationReviewModel m_observationReview;
 	bool m_gaiaDownloading{};
 	std::shared_ptr<orbital_core::ObservationSet> m_preparedInput;

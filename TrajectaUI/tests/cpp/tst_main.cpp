@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QTemporaryDir>
 #include <cstdio>
+#include "orbital_core/RuntimeData.h"
 
 #include "tst_recentfiles.h"
 #include "tst_orbitgeometry.h"
@@ -51,6 +52,10 @@ int main(int argc, char* argv[])
 	QApplication app(argc, argv);
 	app.setOrganizationName("TestOrg");
 	app.setApplicationName("TestApp");
+	orbital_core::setObservatoryDataDirectory(
+	    QDir(QStringLiteral(ORBITAL_UI_SOURCE_DIR)).filePath("../data").toStdWString());
+	orbital_core::setEphemerisDataDirectory(
+	    QDir(QStringLiteral(ORBITAL_UI_SOURCE_DIR)).filePath("../data").toStdWString());
 	if (qEnvironmentVariableIsSet("ORBITAL_DIAGNOSTICS_ONLY")) {
 		TestDiagnosticsModel test;
 		return runTest(&test, argc, argv);

@@ -296,6 +296,7 @@ add_library(OrbitalCore SHARED
     src/obs/ObservationIdentity.cpp
     api/orbital_core/obs/AstrometricConvention.h src/obs/GaiaPhotocenter.h
     api/orbital_core/obs/GaiaFpr.h src/obs/GaiaFpr.cpp
+    api/orbital_core/obs/ObservatoryUpdates.h src/obs/ObservatoryUpdates.cpp
     api/orbital_core/obs/SbdbPhysical.h src/obs/SbdbPhysical.cpp
     api/orbital_core/obs/ParsedObservation.h
     api/orbital_core/obs/StarCatalog.h src/obs/StarCatalog.cpp
@@ -606,6 +607,7 @@ enable_testing()
 include(GoogleTest)
 
 add_executable(OrbitalCoreTests
+    tests/TestMain.cpp
     tests/TypesTest.cpp
     tests/Vec3DTest.cpp
     tests/Matrix2DTest.cpp
@@ -669,6 +671,7 @@ add_executable(OrbitalCoreTests
     tests/ExporterOefTest.cpp
     tests/OrbitSolutionTest.cpp
     tests/ExporterRwoTest.cpp
+    tests/ObservatoryUpdatesTest.cpp
     tests/PostFitResidualTest.cpp
 
 )
@@ -705,7 +708,8 @@ if(ORBITAL_CORE_BUILD_HAZARD)
     )
 endif()
 
-target_link_libraries(OrbitalCoreTests PRIVATE OrbitalCore GTest::gtest_main)
+target_link_libraries(OrbitalCoreTests PRIVATE OrbitalCore GTest::gtest)
+target_compile_definitions(OrbitalCoreTests PRIVATE ORBITAL_TEST_OBSERVATORY_DIR="${ORBITAL_CORE_DATA_DIR}")
 orbital_core_deploy_data(OrbitalCoreTests)
 if(ORBITAL_CORE_BUILD_HAZARD)
     target_link_libraries(OrbitalCoreTests PRIVATE nlohmann_json::nlohmann_json)

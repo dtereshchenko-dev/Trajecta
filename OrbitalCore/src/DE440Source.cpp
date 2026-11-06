@@ -1,4 +1,5 @@
 #include "orbital_core/DE440Source.h"
+#include "orbital_core/RuntimeData.h"
 #include <string>
 #include <string_view>
 #include <utility>
@@ -296,22 +297,27 @@ DE440Source::DE440Source() : p_impl(std::make_unique<Impl>())
 	                                                                   "de441.bin"};
 
 	for (const char* fn : kCandidateFilenames) {
-		const auto path = getExecutableDir() / fn;
+		const auto directory = orbital_core::ephemerisDataDirectory();
+		if (directory.empty())
+			return;
+		const auto path = directory / fn;
 		if (!std::filesystem::exists(path))
 			continue;
 
-		if (p_impl->openView(path.string()))
+		const auto utf8 = path.u8string();
+		if (p_impl->openView(std::string(utf8.begin(), utf8.end())))
 			return;
 	}
 }
 
 DE440Source::DE440Source(std::string_view bspPath) : p_impl(std::make_unique<Impl>())
 {
-	const std::filesystem::path path(bspPath);
+	const auto path = std::filesystem::u8path(bspPath.begin(), bspPath.end());
 	if (!std::filesystem::exists(path))
 		return;
 
-	p_impl->openView(path.string());
+	const auto utf8 = path.u8string();
+	p_impl->openView(std::string(utf8.begin(), utf8.end()));
 }
 
 DE440Source::~DE440Source() = default;

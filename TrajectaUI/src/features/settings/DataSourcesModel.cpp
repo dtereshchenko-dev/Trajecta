@@ -72,6 +72,14 @@ DataSourcesModel::DataSourcesModel(FitSettingsAggregator* settings, QObject* par
 		m_restartRequired = true;
 		refresh();
 	});
+	connect(&m_observatoryUpdate, &ObservatoryUpdate::installed, this, [this] {
+		m_restartRequired = true;
+		refresh();
+	});
+	connect(&m_observatoryUpdate, &ObservatoryUpdate::changed, this, [this] {
+		if (m_checked) updateReadiness();
+		emit changed();
+	});
 	m_debounce.setSingleShot(true);
 	m_debounce.setInterval(750);
 	connect(&m_debounce, &QTimer::timeout, this, &DataSourcesModel::refresh);
@@ -183,8 +191,12 @@ void DataSourcesModel::updateReadiness()
 	else if (!unavailable.isEmpty())
 		m_readinessMessage =
 		    format(unavailable, tr("Ready with limited data: %1"), tr("Ready with limited data: %1 and %2 more"));
+	else if (m_restartRequired)
+		m_readinessMessage = tr("Data changed; restart required");
+	else if (m_observatoryUpdate.availableCount() > 0)
+		m_readinessMessage = tr("Observatory updates available");
 	else
-		m_readinessMessage = m_restartRequired ? tr("Data changed; restart required") : tr("Ready");
+		m_readinessMessage = tr("Ready");
 }
 
 DataSourcesModel::~DataSourcesModel() { m_watcher.waitForFinished(); }
@@ -205,9 +217,11 @@ void DataSourcesModel::updateWatchPaths()
 {
 	const QDir base(QString::fromStdWString(getExecutableDir().wstring()));
 	const auto downloaded = QFileInfo(Sb441Download::installedPath()).absolutePath();
+	const auto observatories = QString::fromStdWString(orbital_core::observatoryDataDirectory().wstring());
 	const QStringList directories{base.absolutePath(),          base.filePath("earth_orientation"),
 	                              base.filePath("weights"),     base.filePath("debias"),
-	                              base.filePath("debias_fcct14"), base.filePath("debias_2018"), downloaded};
+	                              base.filePath("debias_fcct14"), base.filePath("debias_2018"), downloaded,
+	                              observatories};
 	QStringList wantedDirectories;
 	for (const auto& directory : directories)
 		if (QFileInfo(directory).isDir())

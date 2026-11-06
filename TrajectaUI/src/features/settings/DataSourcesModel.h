@@ -8,6 +8,7 @@
 #include <QVariantList>
 #include "orbital_core/RuntimeData.h"
 #include "features/settings/Sb441Download.h"
+#include "features/settings/ObservatoryUpdate.h"
 
 class FitSettingsAggregator;
 
@@ -27,6 +28,7 @@ class DataSourcesModel : public QObject {
 	Q_PROPERTY(bool planetaryAvailable READ planetaryAvailable CONSTANT)
 	Q_PROPERTY(bool asteroidsAvailable READ asteroidsAvailable CONSTANT)
 	Q_PROPERTY(Sb441Download* sb441Download READ sb441Download CONSTANT)
+	Q_PROPERTY(ObservatoryUpdate* observatoryUpdate READ observatoryUpdate CONSTANT)
 
    public:
 	explicit DataSourcesModel(FitSettingsAggregator* settings = nullptr, QObject* parent = nullptr);
@@ -48,7 +50,8 @@ class DataSourcesModel : public QObject {
 
 	bool hasWarning() const
 	{
-		return m_checked && (m_unavailableCount > 0 || m_selectedUnavailableCount > 0 || m_restartRequired);
+		return (m_checked && (m_unavailableCount > 0 || m_selectedUnavailableCount > 0 || m_restartRequired)) ||
+		       m_observatoryUpdate.availableCount() > 0;
 	}
 
 	QString readinessMessage() const { return m_readinessMessage; }
@@ -58,6 +61,7 @@ class DataSourcesModel : public QObject {
 	bool asteroidsAvailable() const { return orbital_core::asteroidEphemerisAvailable(); }
 
 	Sb441Download* sb441Download() { return &m_sb441Download; }
+	ObservatoryUpdate* observatoryUpdate() { return &m_observatoryUpdate; }
 
 	Q_INVOKABLE void refresh();
 
@@ -69,6 +73,7 @@ class DataSourcesModel : public QObject {
 	void updateReadiness();
 	FitSettingsAggregator* m_settings;
 	Sb441Download m_sb441Download;
+	ObservatoryUpdate m_observatoryUpdate;
 	QFutureWatcher<std::vector<orbital_core::RuntimeDataEntry>> m_watcher;
 	QFileSystemWatcher m_files;
 	QTimer m_debounce;

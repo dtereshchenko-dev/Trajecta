@@ -6,12 +6,40 @@
 #include "earth_orientation/EopData.h"
 #include "obs/ObservatoryCatalog.h"
 #include "obs/Vfcc17Rules.h"
+#include "EnvironmentVariable.h"
 
 #include <fstream>
 #include <iterator>
 #include <utility>
 
 namespace orbital_core {
+	namespace {
+		std::filesystem::path defaultObservatoryDirectory()
+		{
+#ifdef _WIN32
+			if (const auto local = environmentVariable(L"LOCALAPPDATA"); local && !local->empty())
+				return std::filesystem::path(*local) / "Trajecta" / "Trajecta" / "observatories";
+#elif defined(__APPLE__)
+			if (const auto home = environmentVariable("HOME"); home && !home->empty())
+				return std::filesystem::path(*home) / "Library" / "Application Support" / "Trajecta" / "Trajecta" /
+				       "observatories";
+#else
+			if (const auto data = environmentVariable("XDG_DATA_HOME"); data && !data->empty())
+				return std::filesystem::path(*data) / "Trajecta" / "Trajecta" / "observatories";
+			if (const auto home = environmentVariable("HOME"); home && !home->empty())
+				return std::filesystem::path(*home) / ".local" / "share" / "Trajecta" / "Trajecta" / "observatories";
+#endif
+			return {};
+		}
+		std::filesystem::path observatoryDirectory = defaultObservatoryDirectory();
+		std::filesystem::path ephemerisDirectory = observatoryDirectory.empty()
+		    ? std::filesystem::path{} : observatoryDirectory.parent_path() / "ephemerides";
+	}
+
+	void setObservatoryDataDirectory(std::filesystem::path directory) { observatoryDirectory = std::move(directory); }
+	std::filesystem::path observatoryDataDirectory() { return observatoryDirectory; }
+	void setEphemerisDataDirectory(std::filesystem::path directory) { ephemerisDirectory = std::move(directory); }
+	std::filesystem::path ephemerisDataDirectory() { return ephemerisDirectory; }
 
 	bool planetaryEphemerisAvailable() noexcept
 	{
@@ -42,12 +70,12 @@ namespace orbital_core {
 			}
 			entries.push_back(std::move(entry));
 		};
-		inspect("planetary", base / "linux_p1550p2650.440", [](auto& e) {
+		inspect("planetary", ephemerisDataDirectory() / "linux_p1550p2650.440", [](auto& e) {
 			const auto* source = dynamic_cast<const DE440Source*>(getDefaultEphemerisSource());
 			e.active = planetaryEphemerisAvailable();
 			e.valid = e.active;
 			if (e.active)
-				e.path = source->sourcePath();
+				e.path = std::filesystem::u8path(source->sourcePath());
 			else
 				e.error = "Planetary ephemeris not connected";
 		});
@@ -109,13 +137,15 @@ namespace orbital_core {
 				e.catalogs = data.catalogCount();
 			});
 		}
-		inspect("observatories", base / "OBSCODE.dat", [](auto& e) {
+		inspect("observatories", observatoryDataDirectory() / "OBSCODE.dat", [](auto& e) {
 			e.records = obs::observatoryCatalog().size();
+			e.path = obs::activeOpticalCatalogPath();
 			e.valid = e.records > 0;
 			e.active = e.valid;
 		});
-		inspect("radar", base / "RADCODE.dat", [](auto& e) {
+		inspect("radar", observatoryDataDirectory() / "RADCODE.dat", [](auto& e) {
 			e.records = obs::radarObservatoryCatalog().size();
+			e.path = obs::activeRadarCatalogPath();
 			e.valid = e.records > 0;
 			e.active = e.valid;
 		});

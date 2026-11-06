@@ -169,3 +169,81 @@ jobs:
             ${{ runner.temp }}/trajecta-qt-test-logs/
             build/ci/Testing/Temporary/LastTest.log
           if-no-files-found: warn
+
+      - name: Check release tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $version = (Get-Content -LiteralPath build/ci/TrajectaUI/trajecta-version.txt -Raw).Trim()
+          if ($env:GITHUB_REF_NAME -cne "v$version" -or $version -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Release tag '$env:GITHUB_REF_NAME' does not match application version '$version'."
+          }
+
+      - name: Install Qt Installer Framework
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'qt-ifw.7z'
+          $destination = Join-Path $env:RUNNER_TEMP 'qt-ifw'
+          $url = 'https://download.qt.io/online/qtsdkrepository/windows_x86/ifw/tools_ifw_411/qt.tools.ifw.411/4.11.0-0-202603231357ifw-win-x64.7z'
+          curl.exe --fail --location --retry 3 --output $archive $url
+          if ($LASTEXITCODE -ne 0) { throw 'Qt IFW download failed.' }
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne 'C47201C4F6A82A8B607DAA245237F40831D78425E904EDD1514B71FD17EFEFC1') {
+            throw 'Qt IFW archive SHA-256 mismatch.'
+          }
+          New-Item -ItemType Directory -Path $destination -Force | Out-Null
+          tar.exe -xf $archive -C $destination
+          if ($LASTEXITCODE -ne 0) { throw 'Qt IFW extraction failed.' }
+
+      - name: Test installer update
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: ./installer/tests/update-smoke.ps1 -IfwDirectory "$env:RUNNER_TEMP/qt-ifw"
+
+      - name: Prepare release packages
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $ifw = Join-Path $env:RUNNER_TEMP 'qt-ifw'
+          $vcpkg = Join-Path $env:VCPKG_INSTALLATION_ROOT 'installed/x64-windows'
+          & ./installer/deploy.ps1 -Repository $env:GITHUB_WORKSPACE -BuildDirectory "$env:GITHUB_WORKSPACE/build/ci" `
+            -QtDirectory $env:QT_ROOT_DIR -IfwDirectory $ifw -VcpkgPrefix $vcpkg -StageOnly -PrepareUpdateRepository
+          if (-not $?) { throw 'Installer staging failed.' }
+          $stages = @(Get-ChildItem -LiteralPath installer/.staging -Directory)
+          if ($stages.Count -ne 1) { throw "Expected one staging directory, got $($stages.Count)." }
+          $stage = $stages[0].FullName
+          $output = Join-Path $env:RUNNER_TEMP 'trajecta-release'
+          New-Item -ItemType Directory -Path $output | Out-Null
+          & "$ifw/bin/binarycreator.exe" --hybrid --compression 5 -c "$stage/config/config.xml" `
+            -p "$stage/packages" "$output/TrajectaSetup.exe"
+          if ($LASTEXITCODE -ne 0) { throw 'Installer creation failed.' }
+          Compress-Archive -Path "$stage/repository/*" -DestinationPath "$output/Trajecta-IFW-$env:GITHUB_REF_NAME.zip" -CompressionLevel Optimal
+
+      - name: Upload release packages
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages
+          path: ${{ runner.temp }}/trajecta-release/
+          if-no-files-found: error
+          retention-days: 7
+
+  draft-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-packages
+          path: release
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" --draft --verify-tag --title "Trajecta $RELEASE_TAG" \
+            "release/TrajectaSetup.exe" "release/Trajecta-IFW-$RELEASE_TAG.zip"

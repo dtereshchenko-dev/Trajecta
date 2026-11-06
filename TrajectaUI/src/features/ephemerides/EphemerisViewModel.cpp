@@ -162,6 +162,7 @@ void EphemerisViewModel::setSolution(const orbital_core::FitPipelineResult& resu
 		solution.cometPhaseCoefficient = component.phaseCoefficient;
 	}
 	m_solution = solution;
+	m_solutionConverged = result.fit.converged;
 
 	if (designation != m_designation || m_startDate.isEmpty()) {
 		const auto startUtc = CalculationTime::defaultStartUtc(result.fit);
@@ -182,6 +183,7 @@ void EphemerisViewModel::clearSolution()
 		++m_generation;
 	}
 	m_solution.reset();
+	m_solutionConverged = false;
 	m_error.clear();
 	m_summary.clear();
 	m_table.clear();
@@ -284,6 +286,8 @@ std::optional<orbital_core::EphemerisRequest> EphemerisViewModel::request(QStrin
 	};
 	if (!m_solution)
 		return reject(tr("No solution"));
+	if (!m_solutionConverged)
+		return reject(tr("A converged solution is required."));
 	if (!parseTime(m_startTime).isValid())
 		return reject(tr("Invalid start time"));
 	const auto start = parseMjd(m_startDate, m_startTime);
