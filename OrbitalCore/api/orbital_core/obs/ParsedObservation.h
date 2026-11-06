@@ -127,11 +127,6 @@ namespace orbital_core::obs {
 	};
 
 	struct ParsedObservation {
-		std::string permanentDesignation;
-		std::string classificationDesignation;
-		std::optional<ImportedObservationFit> importedFit;
-		std::string id;
-		std::optional<RadarObservation> radar;
 		// ---- submitted time ----
 		// `jd` is always populated.  The split form mirrors reference and keeps tens
 		// of microseconds that would be lost by adding a fractional day to a full
@@ -139,34 +134,11 @@ namespace orbital_core::obs {
 		// split fields use timeScale too: MPC/RWO before 1972 are UT1, including
 		// legacy MPC records wrapped in ADES; native ADES is UTC.
 		double jd = 0.0;
-		time::Scale timeScale = time::Scale::UTC;
-		int utcMjdDay = 0;
 		double utcSecondsOfDay = 0.0;
-		bool hasSplitUtc = false;
 
 		// ---- astrometry, radians ----
 		double raRad = 0.0;
 		double decRad = 0.0;
-
-		// ---- identity ----
-		std::string objectName;
-		std::string obsCode;
-
-		// ---- classification ----
-		char catalogCode = ' ';
-		std::string astCat;
-		AstrometricConvention astrometricConvention{AstrometricConvention::CatalogReferenced};
-		std::optional<double> gaiaPhotocenterRadiusKm;
-		Technique technique = Technique::Unknown;
-		char programCode = ' ';       // Single-character MPC program used by weight rules.
-		std::string adesProgramCode;  // Original base-62 prog, including codes beyond MPC80.
-		std::string notes;            // ADES observing notes, not a program identifier.
-		bool isInterstellar = false;
-
-		// ---- photometry ----
-		std::string magnitudeText;
-		char magBand = ' ';
-		std::optional<bool> nuclearMagnitude;
 		double rmsMag = 0.0;  // ADES photometric uncertainty; zero when absent.
 
 		// ---- precision as reported by the submitter ----
@@ -174,45 +146,61 @@ namespace orbital_core::obs {
 		// Granularity of the submitted timestamp.  The 80-column record always
 		// states it by field width; ADES restates it in precTime.  `hasTimeAccuracy`
 		// separates "the submitter said 1e-6 d" from the struct default.
-		bool hasTimeAccuracy = false;
 		double timeAccuracyDays = 1.0e-6;
 		double raAccuracyArcsec = 1.5e-2;
 		double decAccuracyArcsec = 1.0e-2;
 
 		// ---- uncertainty supplied by the observer (ADES only) ----
-		bool hasObserverSigma = false;
 		double rmsRaArcsec = 0.0;
 		double rmsDecArcsec = 0.0;
 		double rmsCorr = 0.0;
+
 		// rmsTime is the observer's RANDOM timing uncertainty; uncTime is the
 		// semi-systematic one. Both are in seconds. Only rmsTime enters the
 		// independent measurement covariance; uncTime is retained for export
 		// fidelity and for a future correlated-timing model.
-		bool hasRmsTime = false;
 		double rmsTimeSec = 0.0;
-		bool hasUncTime = false;
 		double uncTimeSec = 0.0;
-
-		// ---- per-observation terrestrial position ----
-		std::optional<RovingObserver> rovingObserver;
 
 		// ---- space-based observer ----
 		// Offset from the geocentre to the observer, in the J2000 equatorial
 		// frame.  ObsNode converts to ecliptic AU.
-		bool isSatellite = false;
-		OffsetUnits offsetUnits = OffsetUnits::None;
 		double offsetX = 0.0;
 		double offsetY = 0.0;
 		double offsetZ = 0.0;
 
-		// ---- provenance, for logging and for the .rwo header ----
+		std::optional<double> gaiaPhotocenterRadiusKm;
+		std::string permanentDesignation;
+		std::string classificationDesignation;
+		std::string id;
+		std::string objectName;
+		std::string obsCode;
+		std::string astCat;
+		std::string adesProgramCode;  // Original base-62 prog, including codes beyond MPC80.
+		std::string notes;            // ADES observing notes, not a program identifier.
+		std::string magnitudeText;
+		std::optional<RovingObserver> rovingObserver;
 		std::string sourceFormat;
+		std::optional<ImportedObservationFit> importedFit;
+		std::optional<RadarObservation> radar;
 
-		// Duplicate detection during IOD pool assembly: two records describe the
-		// same measurement when the epoch, the object, the position and the
-		// station agree.  Provenance and reported precision are deliberately not
-		// compared — the same observation re-served in another format is still
-		// the same observation.
+		int utcMjdDay = 0;
+		AstrometricConvention astrometricConvention{AstrometricConvention::CatalogReferenced};
+		Technique technique = Technique::Unknown;
+		OffsetUnits offsetUnits = OffsetUnits::None;
+		time::Scale timeScale = time::Scale::UTC;
+		bool hasSplitUtc = false;
+		char catalogCode = ' ';
+		char programCode = ' ';  // Single-character MPC program used by weight rules.
+		bool isInterstellar = false;
+		char magBand = ' ';
+		bool hasTimeAccuracy = false;
+		bool hasObserverSigma = false;
+		bool hasRmsTime = false;
+		bool hasUncTime = false;
+		bool isSatellite = false;
+		std::optional<bool> nuclearMagnitude;
+
 		[[nodiscard]] bool operator==(const ParsedObservation& other) const noexcept
 		{
 			return jd == other.jd && radar == other.radar && objectName == other.objectName && raRad == other.raRad &&

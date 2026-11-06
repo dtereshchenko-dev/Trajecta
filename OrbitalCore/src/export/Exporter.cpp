@@ -2,6 +2,7 @@
 #include "OefLayout.h"
 #include "obs/RwoMetadata.h"
 #include "OefCoordinates.h"
+#include "EnvironmentVariable.h"
 #include <filesystem>
 #include <span>
 #include <string>
@@ -25,7 +26,6 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
-#include <cstdlib>
 #include <ctime>
 #include <fstream>
 #include <iomanip>
@@ -87,12 +87,15 @@ namespace orbital_core {
 		[[nodiscard]] std::filesystem::path localAppDataWorkDirectory()
 		{
 #ifdef _WIN32
-			if (const char* localAppData = std::getenv("LOCALAPPDATA"); localAppData && *localAppData) {
-				return std::filesystem::path(localAppData) / "Trajecta" / "work";
+			if (const auto localAppData = environmentVariable(L"LOCALAPPDATA"); localAppData && !localAppData->empty()) {
+				return std::filesystem::path(*localAppData) / "Trajecta" / "work";
 			}
+			const auto home = environmentVariable(L"HOME");
+#else
+			const auto home = environmentVariable("HOME");
 #endif
-			if (const char* home = std::getenv("HOME"); home && *home) {
-				return std::filesystem::path(home) / ".local" / "share" / "Trajecta" / "work";
+			if (home && !home->empty()) {
+				return std::filesystem::path(*home) / ".local" / "share" / "Trajecta" / "work";
 			}
 			return {};
 		}

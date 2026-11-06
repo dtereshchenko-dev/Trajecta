@@ -149,13 +149,9 @@ prediction horizons of at most 30 days. Cobweb requires a suitable converged
 nominal, covariance and curvature SNR; the admissible-region grid can work
 without a nominal. See `hazard/ManifoldOfVariations.h` for the current contract.
 
-The interval MC API is declared in `hazard/IntervalMonteCarlo.h`. Core also
-retains event-based sampling APIs with three paths:
-
-- `runStateCovarianceMonteCarlo`: sample the six-dimensional orbital state.
-- `runParameterCovarianceMonteCarlo`: sample the full state/non-grav covariance,
-  including cross terms.
-- `runObservationMonteCarlo`: perturb observations and refit each clone.
+The interval MC API is declared in `hazard/IntervalMonteCarlo.h`. Both
+covariance and observation sampling use the same physical boundary scan.
+Covariance sampling includes the full fitted state/non-grav covariance.
 
 The experimental LOV implementation traces returns and refines virtual impactors;
 it is still under development and is not an MC sample. Its configuration
@@ -163,59 +159,30 @@ includes the coordinate system, coordinate scaling, and uniform-sigma or
 probability-based sampling. Use the full-parameter overload when fitted
 non-gravitational parameters contribute to uncertainty.
 
-The following event-based, gravity-only Core example assumes an existing `propagator` configured
-consistently with the fit. The low-level APIs take `NBodyPropagator`, whose
-implementation header is internal. For saved solutions, the public
-`loadOrbitSolution` and `hazard::propagateSolution` interface constructs the
-propagator and performs the encounter scan and covariance MC without refitting.
+For an accepted fit, use the fit-epoch state and its full covariance:
 
 ```cpp
-#include <orbital_core/hazard/CloseApproach.h>
-#include <orbital_core/hazard/LineOfVariationImpact.h>
-#include <orbital_core/hazard/ObsMonteCarlo.h>
+#include <orbital_core/hazard/IntervalMonteCarlo.h>
 
 namespace hz = orbital_core::hazard;
 
-// Close-approach scan (any of the 9 supported bodies).
-hz::CloseApproachConfig caCfg;
-caCfg.horizonYears = 100.0;
-caCfg.thresholdAu  = 0.05;
-caCfg.planet       = hz::Planet::Earth;     // or Moon, Mars, …
-
-auto events = hz::findCloseApproaches(*result.fitEpochOrbit, propagator, caCfg);
-
-// Line-of-variation impact probability over close-approach returns.
-// State cov lives at the LM fit epoch — pair it with fitEpochOrbit so
-// LOV samples are drawn at the right epoch and integrated forward
-// non-linearly to each close-approach.
-hz::LineOfVariationImpactConfig lovCfg;
-lovCfg.closeApproach = caCfg;
-auto riskRows = hz::traceLineOfVariationImpacts(
-    *result.fitEpochOrbit,
-    result.uncertainty.cartesianStateCovariance,
-    propagator,
-    lovCfg);
-
-// Cov-MC risk corridor (Gaussian draw from fit-epoch cov + non-linear
-// N-body propagation per clone).
-hz::ObsMcConfig mcCfg;
-mcCfg.numClones      = 20000;
-mcCfg.noiseSigmaMult = 1.0;   // cov σ-scale; 1.0 = use cov as-is
-auto corridor = hz::runStateCovarianceMonteCarlo(
-    *result.fitEpochOrbit,
-    result.uncertainty.cartesianStateCovariance,
-    propagator, events, mcCfg);
+hz::IntervalMcConfig config;
+config.method = hz::McMethod::Covariance; // or Observations
+config.target = hz::Planet::Earth;        // Earth, Moon or Mars
+config.startMjdTdb = fit.fit.fitEpochOrbit->epochMjd();
+config.endMjdTdb = config.startMjdTdb + 365.25;
+config.samples = 10000;
+auto mc = hz::runIntervalMonteCarlo(fit, config);
 ```
 
 Run hazard analysis only with a valid fit-epoch orbit and available covariance.
 State and covariance must share their epoch; do not pair the fit-epoch covariance
 with an orbit transported to a different display epoch.
 
-`ObsMcResult::corridor` contains boundary-crossing states and body-fixed
-latitude/longitude at `ObsMcConfig::altitudeKm`. Earth frame provenance is
-recorded in `earthFrameModel`; it must not be inferred from an unrelated force
-model setting. `saveMonteCarloArchive` exports the orbital MC inputs and results,
-including states for atmospheric handoff.
+The returned clones carry individual status and boundary-entry states, and
+events group crossings by time. For saved solutions, the covariance-only
+overload accepts an `OrbitSolution` and explicit force settings. The archive
+writer records the calculation and supports atmospheric handoff.
 
 ## Atmospheric simulation
 

@@ -42,7 +42,7 @@ namespace orbital_core::fit {
 		oc.evaluateOnly = pass.evaluateOnly;
 
 		if (!oc.nonGrav.enabled || !warmStartNg || !warmStartNg->enabled() ||
-		    warmStartNg->model() != NonGravModel::canonicalModel(static_cast<NgModel>(oc.nonGrav.model)))
+		    warmStartNg->model() != static_cast<NgModel>(oc.nonGrav.model))
 			warmStartNg = nullptr;
 		if (warmStartNg) {
 			oc.nonGrav.useInitialValues = true;

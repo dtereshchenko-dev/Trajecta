@@ -2,8 +2,7 @@
 
 Command-line orbit fitting and impact analysis using the same Core `FitPipeline`
 as the UI. This is the renamed FitPipelineCLI implementation, not the removed
-legacy OrbitSolver/CLI11 program. Its existing options and numerical defaults
-are unchanged.
+legacy OrbitSolver/CLI11 program.
 
 ## Build
 
@@ -42,9 +41,19 @@ TrajectaCLI <observations.xml|observations.psv|observations.txt> [options]
 ```powershell
 TrajectaCLI observations.xml --residuals residuals.txt
 TrajectaCLI observations.xml --lov-impact --survey-integrator ra15 --survey-horizon 30
+TrajectaCLI observations.xml --mc 10000 --mc-method covariance --mc-start-mjd 61000 --mc-end-mjd 62000 --survey-integrator ra15
+TrajectaCLI observations.xml --mc 1000 --mc-method observations --mc-start-mjd 61000 --mc-end-mjd 62000
 ```
 
 Use `--help` for weighting, clipping, non-gravitational fitting, close approaches,
 LOV and diagnostic options. `--survey-integrator` selects survey propagation;
 the nominal fit retains its existing RA15 policy. OEF/RWO export uses Core's
 shared `Exporter` and reports the output directory.
+
+Both MC methods use the same interval engine as Risk Monitor. Times are MJD TDB;
+the start must be at or after the fit epoch. If omitted, the start is the fit
+epoch and the end is the fit epoch plus `--survey-horizon` years. The target is
+selected by `--survey-planet` (Earth, Moon or Mars). The old `--obs-mc` option
+remains an alias for `--mc`; by default it samples covariance, not observations.
+The archive is now the interval-MC format; `--mc-output` writes Earth-fixed
+entries when the target is Earth. Nominal encounter filters do not affect MC.

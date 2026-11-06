@@ -11,10 +11,7 @@
       "horizon_days": 1.09575,
       "planet_mask": 2303,
       "sb441": true,
-      "step_days": 10,
-      "encounter_radius_au": 0.01,
-      "threshold_au": 0.1,
-      "sample_step_days": 1
+      "step_days": 10
     }
   },
   "environment": {"mode": "idealized", "ground_height_wgs84_m": 0},

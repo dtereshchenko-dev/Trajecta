@@ -141,6 +141,28 @@ namespace {
 		EXPECT_THROW((void)hz::runIntervalMonteCarlo(source, config), std::invalid_argument);
 	}
 
+	TEST_F(IntervalMonteCarloTest, ImportedSolutionUsesSameEngineAndRejectsInvalidCovariance)
+	{
+		orbital_core::OrbitSolution imported;
+		imported.nominal = *source.fit.fitEpochOrbit;
+		imported.covariance = source.fit.uncertainty.fitParameterCovariance;
+		imported.nonGrav = source.fit.finalNonGrav;
+		const auto fromFit = hz::runIntervalMonteCarlo(source, config);
+		const auto fromFile = hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config);
+		ASSERT_EQ(fromFit.completed, fromFile.completed);
+		ASSERT_EQ(fromFit.entryClones, fromFile.entryClones);
+		for (int i = 0; i < config.samples; ++i) {
+			EXPECT_EQ(fromFit.clones[i].state, fromFile.clones[i].state);
+			ASSERT_EQ(fromFit.clones[i].entry.has_value(), fromFile.clones[i].entry.has_value());
+			if (fromFit.clones[i].entry)
+				EXPECT_DOUBLE_EQ(fromFit.clones[i].entry->mjdTdb, fromFile.clones[i].entry->mjdTdb);
+		}
+		imported.covariance(0, 0) = -1;
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config), std::invalid_argument);
+		config.method = hz::McMethod::Observations;
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config), std::invalid_argument);
+	}
+
 	TEST_F(IntervalMonteCarloTest, CloseFlybyDoesNotCreateBoundaryEvent)
 	{
 		source.fit.fitEpochOrbit->setR({1, -.001, .0001});

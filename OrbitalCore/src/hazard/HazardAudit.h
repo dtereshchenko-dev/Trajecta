@@ -1,8 +1,8 @@
 #pragma once
 
 #include "logger/Logger.h"
+#include "EnvironmentVariable.h"
 
-#include <cstdlib>
 #include <iomanip>
 #include <locale>
 #include <sstream>
@@ -18,8 +18,8 @@ namespace orbital_core::hazard::audit {
 	inline bool enabled()
 	{
 		static const bool value = [] {
-			const char* setting = std::getenv("ORBITAL_HAZARD_AUDIT");
-			return setting && setting[0] == '1';
+			const auto setting = environmentVariable("ORBITAL_HAZARD_AUDIT");
+			return setting && !setting->empty() && (*setting)[0] == '1';
 		}();
 		return value;
 	}

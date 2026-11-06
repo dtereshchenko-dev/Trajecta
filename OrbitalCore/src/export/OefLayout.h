@@ -46,10 +46,7 @@ namespace orbital_core::oef {
 				break;
 			case NgModel::MarsdenCO:
 			case NgModel::InverseSquare:
-			case NgModel::InverseSquareDT:
-				out.model = ng.model() == NgModel::MarsdenCO                                                 ? 101
-				            : (ng.DT() != 0.0 || hasNgParameter(ng.fitParameterMask(), NgParameterMask::DT)) ? 103
-				                                                                                             : 102;
+				out.model = ng.model() == NgModel::MarsdenCO ? 101 : 103;
 				out.values = {ng.A1(), ng.A2(), ng.A3(), ng.DT()};
 				for (int i = 0; i < ng.numFitParams(); ++i)
 					out.solved.push_back(1 + static_cast<int>(ng.fitParameterAt(i)));

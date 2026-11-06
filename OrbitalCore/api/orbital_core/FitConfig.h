@@ -12,7 +12,6 @@ namespace orbital_core {
 		MarsdenCO = 2,
 		InverseSquare = 3,
 		Yarkovsky = 4,
-		InverseSquareDT = 5,
 	};
 
 	struct NBodySettings {

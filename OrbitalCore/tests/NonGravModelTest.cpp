@@ -22,8 +22,7 @@ TEST(NonGravModelTest, StatePartialsMatchIndependentCentralDifferences)
 	model.setEnabled(true);
 	model.setParams(1.2e-7, -2.3e-8, 3.1e-8);
 	const Vec3D r(1.3, 0.4, -0.2);
-	for (const auto kind : {NgModel::InverseSquare, NgModel::Yarkovsky, NgModel::MarsdenH2O, NgModel::MarsdenCO,
-	                        NgModel::InverseSquareDT}) {
+	for (const auto kind : {NgModel::InverseSquare, NgModel::Yarkovsky, NgModel::MarsdenH2O, NgModel::MarsdenCO}) {
 		model.setModel(kind);
 		for (double speed : {0.012, 0.035}) {
 			const Vec3D v(-0.003, speed, 0.002);
@@ -242,7 +241,7 @@ TEST(NonGravModelTest, AnalyticDTSensitivityMatchesFD)
 	    << "∂a_NG/∂DT z mismatch: analytic=" << analytic.z << " fd=" << fd.z;
 }
 
-TEST(NonGravModelTest, InverseSquareDTSensitivityMatchesFiniteDifference)
+TEST(NonGravModelTest, InverseSquareDelaySensitivityMatchesFiniteDifference)
 {
 	NonGravModel ng;
 	ng.setModel(NgModel::InverseSquare);

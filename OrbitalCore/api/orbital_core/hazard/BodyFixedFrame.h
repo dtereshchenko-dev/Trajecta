@@ -39,6 +39,11 @@ namespace orbital_core::hazard {
 	[[nodiscard]] ORBITAL_CORE_API Vec3D icrfToBodyFixedMjd(Planet planet, const Vec3D& rPlanetCentricEclKm,
 	                                                        double mjdTdb, IEphemerisSource* source = nullptr) noexcept;
 
+	// Includes the rate of the rotating frame; input and output are km/s.
+	[[nodiscard]] ORBITAL_CORE_API Vec3D bodyFixedVelocityMjd(Planet planet, const Vec3D& rPlanetCentricEclKm,
+	                                                          const Vec3D& vPlanetCentricEclKmS, double mjdTdb,
+	                                                          IEphemerisSource* source = nullptr) noexcept;
+
 	// Provenance of the Earth transformation below, distinct from the selected
 	// EOP profile used by the dynamical pole. Capture with computed states.
 	[[nodiscard]] ORBITAL_CORE_API std::string earthBodyFixedFrameModel();

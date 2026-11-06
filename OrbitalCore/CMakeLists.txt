@@ -315,7 +315,7 @@ add_library(OrbitalCore SHARED
     src/propagator/NBodyDynamics.h  src/propagator/NBodyDynamics.cpp
     src/propagator/EarthJ2.cpp
     src/propagator/ForceAudit.h     src/propagator/ForceAudit.cpp
-    src/RuntimeData.cpp
+    src/EnvironmentVariable.h      src/RuntimeData.cpp
     src/earth_orientation/EarthOrientation.h src/earth_orientation/EarthOrientation.cpp
     src/earth_orientation/EopData.h src/earth_orientation/C04Data.cpp
     src/earth_orientation/FinalsData.cpp
@@ -394,7 +394,6 @@ target_sources(OrbitalCore PRIVATE
     api/orbital_core/hazard/BPlane.h
     api/orbital_core/hazard/BodyFixedFrame.h
     api/orbital_core/hazard/SurfaceGeometry.h
-    api/orbital_core/hazard/ObsMonteCarlo.h
     api/orbital_core/hazard/IntervalMonteCarlo.h
     api/orbital_core/hazard/LineOfVariationImpact.h
 )
@@ -407,7 +406,6 @@ target_link_libraries(OrbitalCore PRIVATE nlohmann_json::nlohmann_json TrajectaH
 
 if(ORBITAL_CORE_BUILD_HAZARD)
     target_sources(OrbitalCore PRIVATE
-        src/export/MonteCarloArchive.cpp
         src/export/IntervalMcArchive.cpp
         src/export/IntervalMcReport.cpp
         src/hazard/Moid.cpp
@@ -454,14 +452,12 @@ if(ORBITAL_CORE_BUILD_HAZARD)
         src/hazard/VirtualImpactorRefinement.h
         src/hazard/VirtualImpactorRefinement.cpp
         src/hazard/BPlane.cpp
-        src/hazard/ObsMonteCarlo.cpp
         src/hazard/IntervalMonteCarlo.cpp
         src/hazard/ManifoldOfVariations.cpp
     src/export/MovReport.cpp
         src/hazard/mov/MovCoordinates.cpp
         src/hazard/McBoundaryScan.cpp
         src/hazard/McObservationSampler.cpp
-        src/hazard/SolutionPropagation.cpp
         src/hazard/ImpactEnergy.cpp
     )
     target_compile_definitions(OrbitalCore PUBLIC ORBITAL_CORE_HAZARD_AVAILABLE)
@@ -643,7 +639,6 @@ add_executable(OrbitalCoreTests
     tests/SpkReaderTest.cpp
     tests/NBodyPropagatorTest.cpp
     tests/MonteCarloAltitudeTest.cpp
-    tests/MonteCarloArchiveTest.cpp
     tests/IntervalMonteCarloTest.cpp
     tests/ManifoldOfVariationsTest.cpp
     src/hazard/mov/MovCoordinates.cpp
@@ -670,6 +665,7 @@ add_executable(OrbitalCoreTests
     tests/OverObservationReweightTest.cpp
     tests/FitObservationsTest.cpp
     tests/APosterioriCovarianceScalingTest.cpp
+    tests/EnvironmentVariableTest.cpp
     tests/ExporterOefTest.cpp
     tests/OrbitSolutionTest.cpp
     tests/ExporterRwoTest.cpp

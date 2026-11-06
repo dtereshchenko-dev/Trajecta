@@ -102,7 +102,7 @@ namespace orbital_core {
 			if (lsp.size() < 4)
 				throw std::invalid_argument("Incomplete LSP");
 			const int model = integer(lsp[1], 0, extended ? 103 : 2);
-			if (model > 2 && model < 101)
+			if ((model > 2 && model < 101) || model == 102)
 				throw std::invalid_argument("Unknown extended OEF model");
 			const int count = integer(lsp[2], 0, 4);
 			const int fitted = integer(lsp[3], 6, 10) - 6;
@@ -124,7 +124,7 @@ namespace orbital_core {
 				            : model == 101 ? NgModel::MarsdenCO
 				                           : NgModel::InverseSquare);
 				ng.setParams(number(ngr[1]), number(ngr[2]), number(ngr[3]));
-				ng.setDT(model == 102 ? 0.0 : number(ngr[4]));
+				ng.setDT(number(ngr[4]));
 			}
 			ng.setEnabled(true);
 			std::vector<int> slots;
@@ -150,8 +150,8 @@ namespace orbital_core {
 				return;
 			}
 			const auto& row = required(header, "OC_NG", 9);
-			const int version = integer(row[1], 1, 3);
-			const auto originalModel = static_cast<NgModel>(integer(row[2], 0, 5));
+			(void)integer(row[1], 1, 3);
+			const auto originalModel = static_cast<NgModel>(integer(row[2], 0, 4));
 			NonGravModel restored;
 			restored.setModel(originalModel);
 			const bool enabled = integer(row[3], 0, 1) != 0;
@@ -160,7 +160,7 @@ namespace orbital_core {
 				throw std::invalid_argument("Invalid Core OEF fitted parameter mask");
 			restored.setFitParameterMask(mask);
 			restored.setParams(number(row[5]), number(row[6]), number(row[7]));
-			restored.setDT(version < 3 && originalModel == NgModel::InverseSquare ? 0.0 : number(row[8]));
+			restored.setDT(number(row[8]));
 			restored.setEnabled(enabled);
 			const auto saved = oef::layout(restored), native = oef::layout(ng);
 			if (oef::requiresExtension(restored) != extended || restored.enabled() != enabled ||

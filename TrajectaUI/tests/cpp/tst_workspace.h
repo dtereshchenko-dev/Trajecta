@@ -3270,7 +3270,7 @@ class TestWorkspace : public QObject {
 		ng.setParams(1.25e-8, -2.5e-9, 3.75e-10);
 		ng.setDT(12.5);
 		const double values[]{1.25e-8, -2.5e-9, 3.75e-10, 12.5};
-		for (auto type : {NgModel::MarsdenH2O, NgModel::MarsdenCO, NgModel::InverseSquare, NgModel::InverseSquareDT}) {
+		for (auto type : {NgModel::MarsdenH2O, NgModel::MarsdenCO, NgModel::InverseSquare}) {
 			ng.setModel(type);
 			const int count = ng.numFitParams();
 			auto& covariance = result.fit.uncertainty.fitParameterCovariance;

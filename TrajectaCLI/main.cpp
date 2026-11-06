@@ -14,12 +14,13 @@
 #include "orbital_core/hazard/LineOfVariationImpact.h"
 #include "orbital_core/forces/ForceAuditControl.h"
 #include "orbital_core/hazard/ImpactRiskRmsObjective.h"
-#include "orbital_core/hazard/ObsMonteCarlo.h"
-#include "orbital_core/hazard/MonteCarloArchive.h"
+#include "orbital_core/hazard/IntervalMonteCarlo.h"
+#include "orbital_core/hazard/BodyFixedFrame.h"
 #include "orbital_core/Photometry.h"
 #include "logger/Logger.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cctype>
 #include <cmath>
 #include <cstdint>
@@ -62,6 +63,10 @@ namespace {
 		bool lovImpact = false;
 		orbital_core::hazard::LineOfVariationImpactConfig lovCfg;
 		int obsMcClones = 0;
+		orbital_core::hazard::McMethod mcMethod = orbital_core::hazard::McMethod::Covariance;
+		unsigned mcWorkers = 15;
+		std::optional<double> mcStartMjd;
+		std::optional<double> mcEndMjd;
 		std::uint64_t obsMcSeed = 42;
 		double obsMcAltitudeKm = 0.0;
 		std::filesystem::path obsMcOutput;
@@ -143,8 +148,6 @@ namespace {
 			return orbital_core::NonGravModelKind::InverseSquare;
 		if (v == "yarkovsky")
 			return orbital_core::NonGravModelKind::Yarkovsky;
-		if (v == "dt" || v == "inverse-square-dt" || v == "inversesquaredt")
-			return orbital_core::NonGravModelKind::InverseSquareDT;
 		throw std::invalid_argument("unknown --non-grav-model: " + value);
 	}
 
@@ -224,7 +227,7 @@ namespace {
 		   << "  --planet-mask <int>               Perturber mask (default: planets+Moon)\n"
 		   << "  --sb441                           Enable SB441-N16 if available\n"
 		   << "  --non-grav                        Enable non-grav fit\n"
-		   << "  --non-grav-model <name>           h2o|co|inverse-square|yarkovsky|dt\n"
+		   << "  --non-grav-model <name>           h2o|co|inverse-square|yarkovsky\n"
 		   << "  --ng-solve <set>                  default|a12|a123|a123dt|a2\n"
 		   << "  --init-a1 <AU/d^2> --init-a2 <AU/d^2> --init-a3 <AU/d^2>\n"
 		   << "  --residuals <file>                Save final residual table\n"
@@ -242,9 +245,14 @@ namespace {
 		   << "  --lov-sampling <mode>            fixed|probability (default: fixed)\n"
 		   << "  --lov-prob-step <x>               Step for probability sampling (default: 1e-7)\n"
 		   << "  --lov-sigma-step <x>              Fixed/max LOV sigma step (default: 0.01)\n"
-		   << "  --obs-mc <N>                      State-covariance Monte Carlo with N clones\n"
-		   << "  --obs-mc-seed <n>                 RNG seed for --obs-mc (default: 42)\n"
-		   << "  --mc-altitude-km <h>              MC boundary height; 0 = legacy sphere\n"
+		   << "  --mc <N>                          Interval Monte Carlo with N clones\n"
+		   << "  --obs-mc <N>                      Legacy alias for --mc (covariance by default)\n"
+		   << "  --mc-method <name>                covariance|observations (default: covariance)\n"
+		   << "  --mc-workers <N>                  Worker threads (default: 15)\n"
+		   << "  --mc-start-mjd <TDB>              Interval start (default: fit epoch)\n"
+		   << "  --mc-end-mjd <TDB>                Interval end (default: survey horizon)\n"
+		   << "  --mc-seed <n>                     RNG seed (default: 42; --obs-mc-seed alias)\n"
+		   << "  --mc-altitude-km <h>              MC height above reference surface (default: 0)\n"
 		   << "  --mc-output <path>                Save Earth MC crossing states as JSON\n"
 		   << "  --state-at <mjd>[,<mjd>...]       Propagate the fitted nominal to these\n"
 		   << "                                    epochs (MJD TDB) and print the ECLM\n"
@@ -317,8 +325,10 @@ namespace {
 					opt.cfg.nbody.useSb441 = true;
 				else if (arg == "--non-grav")
 					opt.cfg.nonGrav.enabled = true;
-				else if (arg == "--non-grav-model")
-					opt.cfg.nonGrav.model = parseNonGravModel(requireValue(i, arg));
+				else if (arg == "--non-grav-model") {
+					const auto name = lower(requireValue(i, arg));
+					opt.cfg.nonGrav.model = parseNonGravModel(name);
+				}
 				else if (arg == "--ng-solve")
 					opt.cfg.nonGrav.solveMask = parseNonGravSolveMask(requireValue(i, arg));
 				else if (arg == "--init-a1") {
@@ -375,8 +385,28 @@ namespace {
 					opt.lovCfg.probabilityStep = parseDouble(requireValue(i, arg), arg);
 				else if (arg == "--lov-sigma-step")
 					opt.lovCfg.sigmaStepMax = parseDouble(requireValue(i, arg), arg);
-				else if (arg == "--obs-mc")
-					opt.obsMcClones = static_cast<int>(parseDouble(requireValue(i, arg), arg));
+				else if (arg == "--obs-mc" || arg == "--mc") {
+					opt.obsMcClones = parseInt(requireValue(i, arg), arg);
+					if (opt.obsMcClones < 1 || opt.obsMcClones > 1000000)
+						throw std::invalid_argument("MC sample count must be in [1, 1000000]");
+				}
+				else if (arg == "--mc-workers") {
+					const auto workers = parseInt(requireValue(i, arg), arg);
+					if (workers < 1 || workers > 1024)
+						throw std::invalid_argument("--mc-workers must be in [1, 1024]");
+					opt.mcWorkers = static_cast<unsigned>(workers);
+				} else if (arg == "--mc-method") {
+					const auto method = lower(requireValue(i, arg));
+					if (method == "covariance")
+						opt.mcMethod = orbital_core::hazard::McMethod::Covariance;
+					else if (method == "observations")
+						opt.mcMethod = orbital_core::hazard::McMethod::Observations;
+					else
+						throw std::invalid_argument("--mc-method must be covariance or observations");
+				} else if (arg == "--mc-start-mjd")
+					opt.mcStartMjd = parseDouble(requireValue(i, arg), arg);
+				else if (arg == "--mc-end-mjd")
+					opt.mcEndMjd = parseDouble(requireValue(i, arg), arg);
 				else if (arg == "--state-at") {
 					const std::string list = requireValue(i, arg);
 					std::size_t pos = 0;
@@ -393,7 +423,7 @@ namespace {
 					if (opt.stateAtMjd.empty())
 						throw std::invalid_argument("--state-at: no epochs parsed");
 					std::sort(opt.stateAtMjd.begin(), opt.stateAtMjd.end());
-				} else if (arg == "--obs-mc-seed")
+				} else if (arg == "--obs-mc-seed" || arg == "--mc-seed")
 					opt.obsMcSeed = static_cast<std::uint64_t>(std::stoull(requireValue(i, arg)));
 				else if (arg == "--mc-altitude-km")
 					opt.obsMcAltitudeKm = parseDouble(requireValue(i, arg), arg);
@@ -627,102 +657,92 @@ namespace {
 		}
 	}
 
-	void printObsMc(const Orbit& orbit, const orbital_core::FitResult& fit, const NBodyPropagator& propagator,
-	                const std::vector<orbital_core::hazard::CloseApproachEvent>& events, int numClones,
-	                std::uint64_t seed, double altitudeKm, const std::filesystem::path& output,
-	                const std::filesystem::path& solutionDirectory, const std::string& objectName)
+	void printIntervalMc(const CliOptions& opt, const orbital_core::FitPipelineResult& source,
+	                     const std::filesystem::path& solutionDirectory)
 	{
 		namespace hz = orbital_core::hazard;
-		if (events.empty()) {
-			std::cout << "cov-MC: no close-approach events\n";
-			return;
+		if (!source.fit.fitEpochOrbit)
+			throw std::invalid_argument("MC requires a fit-epoch orbit");
+		if (opt.caCfg.lookbackYears != 0)
+			throw std::invalid_argument("MC does not support lookback before the fit epoch");
+		hz::IntervalMcConfig cfg;
+		cfg.method = opt.mcMethod;
+		cfg.target = opt.caCfg.planet;
+		cfg.startMjdTdb = opt.mcStartMjd.value_or(source.fit.fitEpochOrbit->epochMjd());
+		cfg.endMjdTdb = opt.mcEndMjd.value_or(source.fit.fitEpochOrbit->epochMjd() +
+		                                      opt.caCfg.horizonYears * 365.25);
+		cfg.samples = opt.obsMcClones;
+		cfg.seed = opt.obsMcSeed;
+		cfg.altitudeKm = opt.obsMcAltitudeKm;
+		cfg.workers = opt.mcWorkers;
+		cfg.integrator = opt.surveyIntegrator;
+		if (!opt.obsMcOutput.empty() && cfg.target != hz::Planet::Earth)
+			throw std::invalid_argument("--mc-output requires Earth as the target");
+		const auto mc = hz::runIntervalMonteCarlo(source, cfg);
+		const auto root = solutionDirectory / "MC";
+		std::filesystem::create_directories(root);
+		const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
+		                     std::chrono::system_clock::now().time_since_epoch()).count();
+		auto destination = root / ("run-" + std::to_string(now));
+		for (int i = 1;; ++i) {
+			auto partial = destination;
+			partial += ".partial";
+			if (!std::filesystem::exists(destination) && !std::filesystem::exists(partial))
+				break;
+			destination = root / ("run-" + std::to_string(now) + "-" + std::to_string(i));
 		}
-		if (fit.uncertainty.cartesianStateCovariance.isZero(0.0)) {
-			std::cout << "cov-MC: fit produced no state covariance\n";
-			return;
-		}
+		hz::saveIntervalMonteCarlo(destination, source, mc);
+		std::cout << "MC archive written to: " << destination.string() << '\n';
 
-		hz::ObsMcConfig cfg;
-		cfg.numClones = numClones;
-		cfg.rngSeed = seed;
-		cfg.altitudeKm = altitudeKm;
-
-		const auto& fullCov = fit.uncertainty.fitParameterCovariance;
-		const bool full = fullCov.rows() == 6 + fit.finalNonGrav.numFitParams() && fullCov.rows() == fullCov.cols();
-		const hz::ObsMcResult mc =
-		    full ? hz::runParameterCovarianceMonteCarlo(orbit, fullCov, fit.finalNonGrav, propagator, events, cfg)
-		         : hz::runStateCovarianceMonteCarlo(orbit, fit.uncertainty.cartesianStateCovariance, propagator, events,
-		                                            cfg);
-		hz::MonteCarloArchiveInput archive;
-		archive.solution.nominal = orbit;
-		archive.solution.objectName = objectName;
-		archive.solution.nonGrav = fit.finalNonGrav;
-		archive.solution.absoluteMagnitude =
-		    orbital_core::photometry::fit(orbital_core::photometry::observations(fit).data()).absoluteMagnitude;
-		if (full)
-			archive.solution.covariance = fullCov;
-		else
-			archive.solution.covariance = fit.uncertainty.cartesianStateCovariance;
-		archive.kind = full ? hz::CovarianceSampling::Parameters : hz::CovarianceSampling::State;
-		archive.sampling = cfg;
-		archive.covarianceObjectiveScale = fit.uncertainty.covarianceObjectiveScale;
-		const auto saved = hz::saveMonteCarloArchive(solutionDirectory, archive, propagator, events, mc);
-		std::cout << "MC archive written to: " << saved.directory.string() << '\n';
-
-		if (altitudeKm > 0.0)
-			std::cout << "cov-MC boundary=" << altitudeKm
-			          << " km above reference ellipsoid; counts/P refer to entry, not ground impact\n";
-
-		if (!output.empty()) {
+		if (!opt.obsMcOutput.empty()) {
 			using nlohmann::json;
 			json data = {{"schema_version", 1},
 			             {"frame", "ECEF"},
 			             {"frame_model", "OrbitalCore IAU1976/1980 UT1/GAST; no polar motion"},
-			             {"altitude_km", altitudeKm},
-			             {"boundary", altitudeKm > 0.0 ? "reference_ellipsoid_altitude" : "planet_sphere"},
-			             {"seed", seed},
-			             {"requested", numClones},
-			             {"completed", mc.numConverged},
-			             {"failed", mc.numFailedFit},
+			             {"altitude_km", cfg.altitudeKm},
+			             {"boundary", "reference_ellipsoid_altitude"},
+			             {"seed", cfg.seed},
+			             {"requested", cfg.samples},
+			             {"completed", mc.completed},
+			             {"failed", mc.failedFit + mc.failedPropagation},
 			             {"cancelled", mc.cancelled},
-			             {"conditioning", "Earth boundary crossings within selected encounter windows"},
+			             {"conditioning", "Earth boundary crossings within the requested interval"},
 			             {"entries", json::array()},
 			             {"crossings", json::array()}};
-			for (const auto& point : mc.corridor) {
-				if (point.planet != hz::Planet::Earth)
+			for (const auto& clone : mc.clones) {
+				if (clone.status != hz::McCloneStatus::Complete || !clone.entry)
 					continue;
-				const auto id = static_cast<std::uint64_t>(point.cloneIndex) * events.size() +
-				                static_cast<std::uint64_t>(point.eventIndex);
-				const auto r = point.rBodyFixedKm * 1000.0;
-				const auto v = point.vBodyFixedKmS * 1000.0;
-				data["entries"].push_back({{"id", id},
-				                           {"epoch_mjd_utc", point.epochMjdUtc},
+				const auto& entry = *clone.entry;
+				const auto r = hz::icrfToBodyFixedMjd(cfg.target, entry.relativePositionKm, entry.mjdTdb) * 1000.0;
+				const auto v = hz::bodyFixedVelocityMjd(cfg.target, entry.relativePositionKm,
+				                                        entry.relativeVelocityKmS, entry.mjdTdb) * 1000.0;
+				if (!std::isfinite(r.dot(r)) || !std::isfinite(v.dot(v)))
+					throw std::runtime_error("Invalid Earth-fixed MC entry state");
+				data["entries"].push_back({{"id", clone.index},
+				                           {"epoch_mjd_utc", orbital_core::time::fromMjdTdb(entry.mjdTdb, orbital_core::time::Scale::UTC)},
 				                           {"position_ecef_m", {r.x, r.y, r.z}},
 				                           {"velocity_ecef_mps", {v.x, v.y, v.z}},
 				                           {"weight", 1.0}});
-				data["crossings"].push_back({{"id", id},
-				                             {"clone", point.cloneIndex},
-				                             {"event", point.eventIndex},
-				                             {"epoch_mjd_tdb", point.epochMjdTdb},
-				                             {"latitude_deg", point.latitudeDeg},
-				                             {"longitude_deg", point.longitudeDeg}});
+				data["crossings"].push_back({{"id", clone.index},
+				                             {"clone", clone.index},
+				                             {"epoch_mjd_tdb", entry.mjdTdb},
+				                             {"latitude_deg", entry.latitudeDeg},
+				                             {"longitude_deg", entry.longitudeDeg}});
 			}
-			std::ofstream stream(output);
+			std::ofstream stream(opt.obsMcOutput);
 			stream.exceptions(std::ios::failbit | std::ios::badbit);
 			stream << data.dump(2) << '\n';
 		}
 
-		std::cout << "cov-MC clones=" << mc.numAttempted << " converged=" << mc.numConverged
-		          << " anyImpact=" << mc.numAnyImpactClones << " aggregateP=" << std::scientific << std::setprecision(6)
-		          << mc.aggregateImpactProb << " sigma=" << mc.aggregateImpactSigma << '\n';
-		for (std::size_t e = 0; e < events.size(); ++e) {
-			const double pe = mc.numConverged > 0 ? static_cast<double>(mc.hitsPerEvent[e]) / mc.numConverged : 0.0;
-			std::cout << "  event[" << e << "]"
-			          << " jd=" << std::fixed << std::setprecision(3) << events[e].jd << " hits=" << mc.hitsPerEvent[e]
-			          << " p=" << std::scientific << std::setprecision(6) << pe << " minMissKm=" << std::fixed
-			          << std::setprecision(1) << mc.minMissPerEventKm[e] << " medMissKm=" << mc.medianMissPerEventKm[e]
-			          << '\n';
-		}
+		std::cout << "MC requested=" << cfg.samples << " completed=" << mc.completed
+		          << " failedFit=" << mc.failedFit << " failedPropagation=" << mc.failedPropagation
+		          << " entries=" << mc.entryClones << '\n';
+		if (mc.completed > 0)
+			std::cout << "  aggregateP=" << std::scientific << double(mc.entryClones) / mc.completed << '\n';
+		for (std::size_t e = 0; e < mc.events.size(); ++e)
+			std::cout << "  event[" << e << "] startMjdTdb=" << std::setprecision(12) << mc.events[e].startMjdTdb
+			          << " endMjdTdb=" << mc.events[e].endMjdTdb << " entries=" << mc.events[e].entryClones
+			          << " p=" << mc.events[e].probability << '\n';
 	}
 
 }  // namespace
@@ -885,7 +905,7 @@ int main(int argc, char* argv[])
 			std::cout << "Fit export written to: " << exportReport.directory.string() << '\n';
 		}
 
-		const bool needSurvey = opt.closeApproachScan || opt.lovImpact || opt.obsMcClones > 0;
+		const bool needSurvey = opt.closeApproachScan || opt.lovImpact;
 		if (needSurvey) {
 			Orbit_p surveyOrbit = result.fit.fitEpochOrbit ? result.fit.fitEpochOrbit : result.fit.orbit;
 			if (!surveyOrbit)
@@ -898,7 +918,7 @@ int main(int argc, char* argv[])
 			          << " accuracy=" << surveyProp.fixedAccuracyParameter() << '\n';
 
 			std::vector<orbital_core::hazard::CloseApproachEvent> caEvents;
-			if (opt.closeApproachScan || opt.obsMcClones > 0) {
+			if (opt.closeApproachScan) {
 				caEvents = orbital_core::hazard::findCloseApproaches(*surveyOrbit, surveyProp, opt.caCfg, nullptr);
 			}
 
@@ -911,12 +931,9 @@ int main(int argc, char* argv[])
 				printLovImpact(*surveyOrbit, result.fit, result.observations.all, result.effectiveConfig, surveyProp,
 				               lovCfg);
 			}
-
-			if (opt.obsMcClones > 0) {
-				printObsMc(*surveyOrbit, result.fit, surveyProp, caEvents, opt.obsMcClones, opt.obsMcSeed,
-				           opt.obsMcAltitudeKm, opt.obsMcOutput, solutionDirectory, result.observations.objectName);
-			}
 		}
+		if (opt.obsMcClones > 0)
+			printIntervalMc(opt, result, solutionDirectory);
 
 		if (!opt.stateAtMjd.empty())
 			printStateAt(opt, result);

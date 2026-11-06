@@ -94,7 +94,7 @@ namespace orbital_core::hazard {
 		                 {"requested", c.samples},
 		                 {"seed", c.seed},
 		                 {"workers", c.workers},
-		                 {"integrator", "RA15"},
+		                 {"integrator", result.config.integrator == IntegratorKind::IAS15 ? "IAS15" : "RA15"},
 		                 {"earth_frame", earthBodyFixedFrameModel()},
 		                 {"body_fixed_frame", result.bodyFixedFrame},
 		                 {"body_fixed_model", result.bodyFixedModel},

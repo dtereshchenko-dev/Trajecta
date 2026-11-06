@@ -5,8 +5,9 @@
 #include "orbital_core/DE440Source.h"
 #include "orbital_core/SpkReader.h"
 #include "orbital_core/Types.h"
+#include "orbital_core/TimeScale.h"
 #include "orbital_core/hazard/PlanetData.h"
-#include "orbital_core/hazard/ObsMonteCarlo.h"
+#include "orbital_core/hazard/IntervalMonteCarlo.h"
 #include "orbital_core/perturbations/PlanetaryPerturbations.h"
 #include "orbital_core/perturbations/AsteroidPerturbations.h"
 #include "hazard/CloseApproachKinematics.h"
@@ -444,6 +445,12 @@ TEST(ImpactMonteCarloTest, SurfaceCrossingOverridesConicAndKeepsEventWindow)
 
 		std::optional<LunarLibration> lunarLibrationMjdTdb(double) override { return LunarLibration{{0, 0, 0}, 440}; }
 	} moon;
+	const auto previous = getDefaultEphemerisSource();
+	setDefaultEphemerisSource(&moon);
+	struct RestoreSource {
+		IEphemerisSource* source;
+		~RestoreSource() { setDefaultEphemerisSource(source); }
+	} restore{previous};
 
 	constexpr double epoch = 2460000.5;
 	constexpr double auKm = Constants::AU_IN_METERS / 1000.0;
@@ -476,30 +483,37 @@ TEST(ImpactMonteCarloTest, SurfaceCrossingOverridesConicAndKeepsEventWindow)
 		const Vec3D eccentricity = v.cross(h) * (1. / mu) - r * (1. / r.magnitude());
 		const double q = h.dot(h) / (mu * (1. + eccentricity.magnitude()));
 		EXPECT_LT(q, radius);
-		auto later = event;
-		later.jd += 3;
-		const std::array events{later, event};
-		hz::ObsMcConfig cfg;
-		cfg.numClones = 4;
-		const auto state = hz::runStateCovarianceMonteCarlo(orbit, cov, propagator, events, cfg, &moon);
+		hz::IntervalMcConfig cfg;
+		cfg.target = hz::Planet::Moon;
+		cfg.startMjdTdb = orbit.epochMjd();
+		cfg.endMjdTdb = cfg.startMjdTdb + .006;
+		cfg.samples = 4;
+		cfg.workers = 1;
+		cfg.altitudeKm = 0;
+		orbital_core::NBodySettings forces;
+		forces.enabled = true;
+		forces.planetMask = 0;
+		forces.stepSize = .002;
+		orbital_core::OrbitSolution solution;
+		solution.nominal = orbit;
+		solution.covariance = cov;
+		const auto state = hz::runIntervalMonteCarlo(solution, forces, cfg);
 		NonGravModel ng;
 		ng.setModel(NgModel::Yarkovsky);
 		ng.setEnabled(true);
-		orbital_core::FitParameterCovariance paramCov = orbital_core::FitParameterCovariance::Identity(7, 7) * 1e-30;
-		const auto parameters =
-		    hz::runParameterCovarianceMonteCarlo(orbit, paramCov, ng, propagator, events, cfg, &moon);
+		solution.nonGrav = ng;
+		solution.covariance = orbital_core::FitParameterCovariance::Identity(7, 7) * 1e-30;
+		const auto parameters = hz::runIntervalMonteCarlo(solution, forces, cfg);
 		for (const auto* result : {&state, &parameters}) {
-			EXPECT_EQ(result->numConverged, cfg.numClones);
-			EXPECT_EQ(result->numFailedFit, 0);
-			EXPECT_EQ(result->hitsPerEvent[0], 0);
-			EXPECT_EQ(result->hitsPerEvent[1], altitude < 0 ? cfg.numClones : 0);
-			EXPECT_EQ(result->corridor.size(), result->numAnyImpactClones);
-			for (const auto& hit : result->corridor) {
-				EXPECT_EQ(hit.eventIndex, 1);
-				EXPECT_GT(hit.tcaJd, event.jd);
-				EXPECT_LT(hit.tcaJd, epoch + .006);
-				EXPECT_TRUE(hit.bodyFixedValid);
-				EXPECT_NEAR(hit.rBodyFixedKm.magnitude(), radius, .02);
+			EXPECT_EQ(result->completed, cfg.samples);
+			EXPECT_EQ(result->failedPropagation, 0);
+			EXPECT_EQ(result->entryClones, altitude < 0 ? cfg.samples : 0);
+			for (const auto& clone : result->clones) {
+				if (!clone.entry)
+					continue;
+				EXPECT_GT(clone.entry->mjdTdb, orbital_core::time::mjdFromJd(event.jd));
+				EXPECT_LT(clone.entry->mjdTdb, cfg.endMjdTdb);
+				EXPECT_NEAR(clone.entry->relativePositionKm.magnitude(), radius, .02);
 			}
 		}
 	}
@@ -524,19 +538,19 @@ TEST(ImpactMonteCarloTest, MissingEphemeridesDoNotCountAsSuccessfulMisses)
 	orbit.setEpoch(2460000.5);
 	orbit.setR(Vec3D(1, 0, 0));
 	orbit.setV(Vec3D(0, 1, 0));
-	hz::CloseApproachEvent event;
-	event.jd = orbit.getEpoch() + 1;
-	NBodyPropagator prop(IntegratorKind::RA15);
-	prop.setAllPlanetsEnabled(false);
-	prop.setUseSb441(false);
-	hz::ObsMcConfig cfg;
-	cfg.numClones = 4;
-	const auto result = hz::runStateCovarianceMonteCarlo(orbit, orbital_core::StateCov6x6::Identity() * 1e-30, prop,
-	                                                     {&event, 1}, cfg, &missing);
-	EXPECT_EQ(result.numConverged, 0);
-	EXPECT_EQ(result.numFailedFit, cfg.numClones);
-	EXPECT_FALSE(result.isReliable());
-	EXPECT_TRUE(result.corridor.empty());
+	orbital_core::OrbitSolution solution;
+	solution.nominal = orbit;
+	solution.covariance = orbital_core::StateCov6x6::Identity() * 1e-30;
+	orbital_core::NBodySettings forces;
+	forces.enabled = true;
+	hz::IntervalMcConfig cfg;
+	cfg.startMjdTdb = orbit.epochMjd();
+	cfg.endMjdTdb = cfg.startMjdTdb + 1;
+	cfg.samples = 4;
+	const auto previous = getDefaultEphemerisSource();
+	setDefaultEphemerisSource(&missing);
+	EXPECT_THROW((void)hz::runIntervalMonteCarlo(solution, forces, cfg), std::runtime_error);
+	setDefaultEphemerisSource(previous);
 }
 
 TEST(NBodyInteriorStopTest, Ra15RefinesSphereWithStateStmAndSens)

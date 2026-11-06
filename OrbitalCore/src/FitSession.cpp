@@ -42,7 +42,7 @@ namespace orbital_core {
 		const auto initialIncluded = request.initialIncluded;
 		const auto* warmStartNg = request.warmStartNonGrav;
 		if (!cfg.nonGrav.enabled || !warmStartNg || !warmStartNg->enabled() ||
-		    warmStartNg->model() != NonGravModel::canonicalModel(static_cast<NgModel>(cfg.nonGrav.model)))
+		    warmStartNg->model() != static_cast<NgModel>(cfg.nonGrav.model))
 			warmStartNg = nullptr;
 		const auto& options = request.options;
 		if (!initial)

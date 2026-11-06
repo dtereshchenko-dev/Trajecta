@@ -306,8 +306,8 @@ No fit is repeated and no extra covariance multiplier is applied.
 MC (defaults: 1000, 42, 100 km). `input.propagation` requires `horizon_days`,
 `planet_mask`, and `sb441`: the old saved solution does not retain enough force
 metadata to infer these. Match the original fit's force settings. Optional
-settings are `integrator` (`ra15` or `ias15`), `step_days`,
-`encounter_radius_au`, `threshold_au`, and `sample_step_days`.
+settings are `integrator` (`ra15` or `ias15`) and `step_days`.
+The orbital MC checks the full interval, without a nominal encounter filter.
 DE440/SB441 and the ordinary OrbitalCore runtime data are deployed alongside the
 executable. A requested but unavailable ephemeris source is an error.
 
@@ -319,8 +319,8 @@ atmospheric configuration; OEF `MAG`'s second number is slope G, not albedo.
 Non-grav parameters act only during orbital propagation; the atmospheric solver
 receives ECEF position/velocity, MJD UTC, IDs and weights.
 
-No entries, invalid covariance, failed orbital clones, or ambiguous repeated
-encounter associations stop the job explicitly. Physical misses are reported
+No entries, invalid covariance or failed orbital clones stop the job explicitly.
+Physical misses are reported
 separately and atmospheric results are conditional on the selected entries.
 Cancellation is cooperative around the nominal encounter scan and between MC
 clones; an ongoing nominal scan is not interrupted internally.
@@ -510,21 +510,20 @@ all new JSON/CSV archives retain MJD without a round trip through JD. Selection 
 proportional to nonnegative entry weight. The supplied weights are used once,
 not multiplied into sampled impacts a second time.
 
-The existing OrbitalCore MC accepts `ObsMcConfig::altitudeKm`. Zero retains the
-historical planet sphere; positive values stop at geodetic height above the
-reference ellipsoid (WGS84 for Earth). Clone generation and covariance scaling
-are unchanged. The returned corridor contains the actual crossing points,
-precise MJD UTC/TDB epochs and rotating-frame position/velocity. At positive height the
+The OrbitalCore interval MC accepts `IntervalMcConfig::altitudeKm`. Zero and
+positive values stop at geodetic height above the reference ellipsoid (WGS84 for
+Earth). Entries contain actual crossing points and MJD TDB epochs; the adapter
+converts the states to rotating-frame position/velocity and MJD UTC. At positive height the
 reported probability describes entry through that boundary, not ground impact.
 KDE must use those crossing coordinates without projection from ground points.
 
-The orbital CLI exposes `--obs-mc 200 --mc-altitude-km 100 --mc-output entries.json`.
+The orbital CLI exposes `--mc 200 --mc-altitude-km 100 --mc-output entries.json`.
 The Earth states in this file can be used directly as `state_samples` by
 StrewnCLI. The file includes run counts and crossing IDs; selection remains
-conditional on successful Earth entries in the selected encounter windows.
+conditional on successful Earth entries in the selected interval.
 The frame uses OrbitalCore's IAU1976/1980 UT1/GAST convention without polar motion,
 not a new high-precision ITRF realization. The one-command `orbit_solution` adapter
-uses exactly this MC path; the Qt altitude control is not yet connected.
+uses the same MC engine.
 
 Defaults are a strong-only preset, not a universal population prior:
 `weak_probability=0`, strong strength 0.9-5 MPa, density 2500-3500 kg/m3,
@@ -705,7 +704,7 @@ environment JSON, which is copied into the result snapshot.
 | `runs.jsonl` | Sampled parameters, per-run status/error, mass budget, step counts |
 | `impacts.csv` | Full ECEF state, geodetic position, mass, multiplicity, time, IDs |
 | `breakups.jsonl` | Parent states, strengths, generation and group counts |
-| `orbital_mc.json` | For work input: imported state/full COV, orbital settings, counts, encounter/crossing IDs |
+| `orbital_mc.json` | For work input: imported state/full COV, orbital settings, counts, events and crossing clone IDs |
 | `request.json` | For work input: original request for provenance, with its original path base |
 
 Replay atmospheric results using `job.json`, not the copied `request.json`:

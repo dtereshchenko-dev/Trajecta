@@ -17,11 +17,6 @@ namespace orbital_core {
 
 	enum class ExportProduct {
 		FitSummary,
-		// Ordinary ellipses retain EQU/KEP output. The cometary coordinate
-		// policy writes CAR first, then a separate COT OEF at the CAR epoch.
-		// COT uses (q,e,i,node,peri,true anomaly); angular values and both
-		// covariance axes are exported in degrees. Unavailable covariance
-		// is marked explicitly, never replaced by zeros or KEP/EQU fields.
 		OrbitElements,
 		StateVectors,
 		Covariance,
@@ -44,8 +39,6 @@ namespace orbital_core {
 
 	struct ExportReport {
 		std::filesystem::path directory;
-		// Outputs written by this save call, not an inventory of directory.
-		// Unrequested files from earlier exports can remain in the directory.
 		std::vector<std::filesystem::path> files;
 	};
 
