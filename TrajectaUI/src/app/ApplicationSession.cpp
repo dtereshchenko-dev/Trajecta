@@ -88,7 +88,8 @@ ApplicationSession::ApplicationSession(FitSettingsAggregator& settings, QObject*
 			            m_solution.cometPhotometry() ? &m_solution.cometPhotometrySolution() : nullptr);
 			        m_acceptedInputFile = m_inputFile;
 			        m_loadRequested = false;
-			        m_progress = tr("Result saved to working folder");
+			        m_progress = result.fit.converged ? tr("Result saved to working folder")
+			                                          : tr("Fit not converged; result not saved");
 			        m_error.clear();
 		        } else {
 			        m_error = tr("The calculation returned no solution");

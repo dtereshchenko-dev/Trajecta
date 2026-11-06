@@ -374,7 +374,6 @@ QString SolutionViewModel::nonGravModel() const
 			return tr("Inverse-square");
 		case NgModel::Yarkovsky:
 			return tr("Yarkovsky");
-		case NgModel::InverseSquareDT:
 			return tr("Inverse-square");
 		case NgModel::None:
 			return tr("Off");

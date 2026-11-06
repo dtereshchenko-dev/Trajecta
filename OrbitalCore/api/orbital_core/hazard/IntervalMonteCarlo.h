@@ -1,6 +1,8 @@
 #pragma once
 
 #include "orbital_core/FitPipeline.h"
+#include "orbital_core/IntegratorKind.h"
+#include "orbital_core/OrbitSolution.h"
 #include "orbital_core/hazard/Planet.h"
 #include <array>
 #include <filesystem>
@@ -21,6 +23,7 @@ namespace orbital_core::hazard {
 		int samples{10000};
 		std::uint64_t seed{42};
 		unsigned workers{15};
+		IntegratorKind integrator{IntegratorKind::RA15};
 	};
 
 	struct McBoundaryEntry {
@@ -81,6 +84,13 @@ namespace orbital_core::hazard {
 	// Cancellation invalidates partial trajectories, but retains completed trials.
 	// The target is one body; this is not an all-body first-collision competition.
 	[[nodiscard]] ORBITAL_CORE_API IntervalMcResult runIntervalMonteCarlo(const FitPipelineResult& solution,
+	                                                                      const IntervalMcConfig& config,
+	                                                                      std::stop_token cancel = {},
+	                                                                      std::function<void(int, int)> progress = {});
+
+	// Covariance sampling for an imported solution; observations are not available.
+	[[nodiscard]] ORBITAL_CORE_API IntervalMcResult runIntervalMonteCarlo(const OrbitSolution& solution,
+	                                                                      const NBodySettings& forces,
 	                                                                      const IntervalMcConfig& config,
 	                                                                      std::stop_token cancel = {},
 	                                                                      std::function<void(int, int)> progress = {});

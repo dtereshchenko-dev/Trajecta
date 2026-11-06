@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <!-- deploy.ps1 fills version placeholders in a staged copy. -->
+    <Name>Trajecta</Name>
+    <Version>@TRAJECTA_VERSION@</Version>
+    <Title>Trajecta @TRAJECTA_VERSION@ Installer</Title>
+    <Publisher>Trajecta</Publisher>
+    <StartMenuDir>Trajecta</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/Trajecta</TargetDir>
+    <RemoveTargetDir>false</RemoveTargetDir>
+    <AllowNonAsciiCharacters>true</AllowNonAsciiCharacters>
+    <AllowSpaceInPath>true</AllowSpaceInPath>
+    <MaintenanceToolName>Uninstall Trajecta</MaintenanceToolName>
+    <RemoteRepositories>
+        <Repository>
+            <Url>https://dtereshchenko-dev.github.io/Trajecta/updates/windows</Url>
+            <Enabled>1</Enabled>
+            <DisplayName>Trajecta updates</DisplayName>
+        </Repository>
+    </RemoteRepositories>
+    <ControlScript>controller.qs</ControlScript>
+    <InstallerWindowIcon>icon</InstallerWindowIcon>
+    <InstallerApplicationIcon>icon</InstallerApplicationIcon>
+    <WizardStyle>Modern</WizardStyle>
+    <WizardShowPageList>false</WizardShowPageList>
+    <WizardDefaultWidth>500</WizardDefaultWidth>
+    <WizardDefaultHeight>400</WizardDefaultHeight>
+    <Logo>banner.png</Logo>
+    <RunProgram>@TargetDir@/Trajecta.exe</RunProgram>
+    <RunProgramDescription>Launch Trajecta</RunProgramDescription>
+</Installer>

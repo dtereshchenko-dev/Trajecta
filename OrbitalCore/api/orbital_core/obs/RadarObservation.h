@@ -21,12 +21,14 @@ namespace orbital_core::obs {
 		std::optional<RadarMeasurement> delaySeconds;
 		std::optional<RadarMeasurement> dopplerHz;
 		double frequencyHz{};
+
 		// RWO gives range rate, not transmitter frequency. For such imports,
 		// Doppler and its sigma are represented at a reference frequency of 1 Hz.
 		// This is a unit conversion, not an inferred transmitter frequency.
 		bool frequencyIsReference{false};
 		std::string transmitter;
 		RadarReturn returnType{RadarReturn::CenterOfMass};
+
 		// Surface returns only; preparation assumes 1 km when absent.
 		std::optional<double> surfaceRadiusKm;
 
@@ -41,6 +43,7 @@ namespace orbital_core::obs {
 				return !channel ||
 				       (std::isfinite(channel->value) && std::isfinite(channel->sigma) && channel->sigma > 0.0);
 			};
+
 			return dimensions() > 0 && !transmitter.empty() && validChannel(delaySeconds) && validChannel(dopplerHz) &&
 			       (!delaySeconds || delaySeconds->value > 0.0) && std::isfinite(frequencyHz) && frequencyHz > 0.0 &&
 			       (!surfaceRadiusKm || (std::isfinite(*surfaceRadiusKm) && *surfaceRadiusKm > 0.0));

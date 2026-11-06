@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "orbital_core/DE440Source.h"
+#include "orbital_core/RuntimeData.h"
 #include "orbital_core/Types.h"
 #include "orbital_core/forces/EihRelativity.h"
 #include "orbital_core/forces/EarthJ2.h"
@@ -82,6 +83,25 @@ TEST_F(DE440SourceTest, IsAvailableWithFile)
 		GTEST_SKIP() << "DE440 file not found";
 	EXPECT_TRUE(source->isAvailable());
 	EXPECT_EQ(source->name(), "DE440");
+}
+
+TEST_F(DE440SourceTest, DoesNotLoadFromExecutableDirectoryWhenConfiguredDataIsMissing)
+{
+	const auto originalDirectory = orbital_core::ephemerisDataDirectory();
+	const auto originalExecutable = getExecutableDir();
+	struct Restore {
+		std::filesystem::path data, executable;
+		~Restore()
+		{
+			orbital_core::setEphemerisDataDirectory(data);
+			getExecutableDir() = executable;
+		}
+	} restore{originalDirectory, originalExecutable};
+	getExecutableDir() = originalDirectory;
+	ASSERT_TRUE(std::filesystem::exists(getExecutableDir() / "linux_p1550p2650.440"));
+	orbital_core::setEphemerisDataDirectory(originalDirectory / "missing-ephemeris-directory");
+	DE440Source missing;
+	EXPECT_FALSE(missing.isAvailable());
 }
 
 TEST_F(DE440SourceTest, MjdQueryPreservesFramesAndSubJdTimes)

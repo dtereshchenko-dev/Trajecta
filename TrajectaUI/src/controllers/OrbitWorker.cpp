@@ -64,6 +64,7 @@ void OrbitWorker::process(const OrbitFitJob& job, std::stop_token cancel)
 	auto fail = [this](const QString& msg) { emit errorOccurred(msg); };
 
 	try {
+		m_solutionDirectory.clear();
 		if (cancel.stop_requested())
 			throw std::runtime_error("Cancelled");
 		const auto cfg = makeFitConfig(job.settings);
@@ -98,23 +99,25 @@ void OrbitWorker::process(const OrbitFitJob& job, std::stop_token cancel)
 			throw std::runtime_error("Cancelled");
 		if (!result.fit.orbit)
 			throw std::runtime_error("The calculation returned no solution");
-		orbital_core::ExportContext exportContext;
-		exportContext.objectName =
-		    observations.objectName.empty() ? observations.source.stem().string() : observations.objectName;
-		exportContext.fitResult = &result.fit;
-		exportContext.observations = observations.all;
-		exportContext.gaiaPhotocenterRadiusKm = observations.gaiaPhotocenterRadiusKm;
-		exportContext.weightProfile = result.effectiveConfig.weightProfile;
-		exportContext.useWeights = result.effectiveConfig.useWeights;
-		exportContext.cometPhotometry = result.usesCometPhotometry();
-		exportContext.photometry = result.effectiveConfig.photometry;
+		if (result.fit.converged) {
+			orbital_core::ExportContext exportContext;
+			exportContext.objectName =
+			    observations.objectName.empty() ? observations.source.stem().string() : observations.objectName;
+			exportContext.fitResult = &result.fit;
+			exportContext.observations = observations.all;
+			exportContext.gaiaPhotocenterRadiusKm = observations.gaiaPhotocenterRadiusKm;
+			exportContext.weightProfile = result.effectiveConfig.weightProfile;
+			exportContext.useWeights = result.effectiveConfig.useWeights;
+			exportContext.cometPhotometry = result.usesCometPhotometry();
+			exportContext.photometry = result.effectiveConfig.photometry;
 
-		const auto exportReport = orbital_core::Exporter::save(exportContext, {orbital_core::ExportProduct::All});
-		LOG_INFO << "Fit export written to " << exportReport.directory.string();
+			const auto exportReport = orbital_core::Exporter::save(exportContext, {orbital_core::ExportProduct::All});
+			LOG_INFO << "Fit export written to " << exportReport.directory.string();
+			m_solutionDirectory = exportReport.directory;
+		}
 
 		if (cancel.stop_requested())
 			throw std::runtime_error("Cancelled");
-		m_solutionDirectory = exportReport.directory;
 		m_result = std::move(result);
 		emit optimizationFinished();
 	}

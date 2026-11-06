@@ -8,6 +8,7 @@
 #include "orbital_core/Types.h"
 #include "orbital_core/DE440Source.h"
 #include "orbital_core/SpkReader.h"
+#include "orbital_core/RuntimeData.h"
 #include "logger/Logger.h"
 #include "app/ApplicationSession.h"
 #include "features/settings/Sb441Download.h"
@@ -29,6 +30,10 @@ int main(int argc, char* argv[])
 	getExecutableDir() = QCoreApplication::applicationDirPath().toStdWString();
 
 	auto logDir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+	if (!logDir.isEmpty()) {
+		orbital_core::setObservatoryDataDirectory(QDir(logDir).filePath("observatories").toStdWString());
+		orbital_core::setEphemerisDataDirectory(QDir(logDir).filePath("ephemerides").toStdWString());
+	}
 	QDir().mkpath(logDir + "/log");
 	Logger::setLogFile((logDir + "/log/process.log").toStdString());
 
@@ -50,6 +55,8 @@ int main(int argc, char* argv[])
 	settings.load();
 
 	ApplicationSession session(settings);
+	session.applicationUpdate()->check();
+	session.dataSources()->observatoryUpdate()->check();
 	QQmlApplicationEngine engine;
 	engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
 

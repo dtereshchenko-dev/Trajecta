@@ -119,6 +119,12 @@ ApplicationWindow {
                             Layout.fillWidth: true
                         }
                         CustomTextLink { visible: !window.session.busy && window.session.dataSources.checked && (window.session.dataSources.unavailableCount > 0 || window.session.dataSources.restartRequired); text: qsTr("Data sources"); onClicked: dataSourcesDialog.open() }
+                        CustomTextLink {
+                            visible: window.session.applicationUpdate.available
+                            enabled: !window.session.busy
+                            text: qsTr("Update available: %1").arg(window.session.applicationUpdate.version)
+                            onClicked: updateDialog.open()
+                        }
                         CustomText { text: window.session.solution.available ? qsTr("Results saved to working folder") : ""; secondary: true; font.pixelSize: 10 }
                     }
                 }
@@ -136,6 +142,26 @@ ApplicationWindow {
     ObservationReviewDialog { id: observationReview; session: window.session }
     CalculationSettingsDialog { id: settingsDialog; session: window.session }
     DataSourcesDialog { id: dataSourcesDialog; sources: window.session.dataSources }
+    BaseDialog {
+        id: updateDialog
+        title: qsTr("Update Trajecta")
+        acceptText: qsTr("Update")
+        acceptPrimary: true
+        autoAccept: false
+        cancelText: qsTr("Later")
+        contentItem: CustomText {
+            text: window.session.applicationUpdate.error.length ? window.session.applicationUpdate.error
+                : qsTr("Trajecta will close and the update tool will open.")
+            wrapMode: Text.Wrap
+            elide: Text.ElideNone
+        }
+        onAcceptRequested: {
+            if (window.session.applicationUpdate.openUpdater()) {
+                updateDialog.close()
+                window.close()
+            }
+        }
+    }
     BaseDialog {
         id: closeDialog
         title: qsTr("Calculation in progress")

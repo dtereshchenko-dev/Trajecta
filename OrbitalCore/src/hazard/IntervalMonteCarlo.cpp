@@ -21,10 +21,9 @@ namespace orbital_core::hazard {
 			clone.nonGrav = ng;
 		}
 
-		Eigen::MatrixXd covarianceFactor(const FitResult& fit)
+		Eigen::MatrixXd covarianceFactor(const FitParameterCovariance& covariance, const NonGravModel& nonGrav)
 		{
-			const auto& covariance = fit.uncertainty.fitParameterCovariance;
-			const int dimension = 6 + fit.finalNonGrav.fitParameterCount();
+			const int dimension = 6 + nonGrav.fitParameterCount();
 			if (covariance.rows() != dimension || covariance.cols() != dimension || !covariance.allFinite() ||
 			    (covariance.diagonal().array() <= 0).any())
 				throw std::invalid_argument("Full fit-epoch covariance is unavailable");
@@ -40,26 +39,31 @@ namespace orbital_core::hazard {
 		}
 	}  // namespace
 
-	IntervalMcResult runIntervalMonteCarlo(const FitPipelineResult& source, const IntervalMcConfig& config,
-	                                       std::stop_token cancel, std::function<void(int, int)> progress)
+	static IntervalMcResult runIntervalMonteCarloImpl(const Orbit& orbit, const NonGravModel& nonGrav,
+	                                                   const FitParameterCovariance& covariance,
+	                                                   const NBodySettings& forces, const FitPipelineResult* source,
+	                                                   const IntervalMcConfig& config, std::stop_token cancel,
+	                                                   const std::function<void(int, int)>& progress)
 	{
-		if (!source.fit.fitEpochOrbit || source.fit.cancelled || !source.fit.converged)
-			throw std::invalid_argument("MC requires a converged accepted solution");
-		if (!source.effectiveConfig.nbody.enabled)
+		if (!forces.enabled)
 			throw std::invalid_argument("MC requires an N-body accepted solution");
 		if (config.method != McMethod::Covariance && config.method != McMethod::Observations)
 			throw std::invalid_argument("Unknown MC method");
+		if (config.method == McMethod::Observations && !source)
+			throw std::invalid_argument("Observation MC requires observations and a fitted solution");
+		if (config.integrator != IntegratorKind::RA15 && config.integrator != IntegratorKind::IAS15)
+			throw std::invalid_argument("Unsupported MC integrator");
 		if (config.target != Planet::Earth && config.target != Planet::Moon && config.target != Planet::Mars)
 			throw std::invalid_argument("Unsupported MC target");
 		if (!std::isfinite(config.startMjdTdb) || !std::isfinite(config.endMjdTdb) ||
-		    !std::isfinite(source.fit.fitEpochOrbit->epochMjd()) ||
-		    config.startMjdTdb < source.fit.fitEpochOrbit->epochMjd() || config.endMjdTdb <= config.startMjdTdb ||
+		    !std::isfinite(orbit.epochMjd()) ||
+		    config.startMjdTdb < orbit.epochMjd() || config.endMjdTdb <= config.startMjdTdb ||
 		    !std::isfinite(config.altitudeKm) || config.altitudeKm < 0 || config.samples < 1 ||
 		    config.samples > 1000000 || !config.workers || config.workers > 1024)
 			throw std::invalid_argument("Invalid MC interval or sampling settings");
 		IntervalMcResult result;
 		result.config = config;
-		initialize(result.nominal, *source.fit.fitEpochOrbit, source.fit.finalNonGrav);
+		initialize(result.nominal, orbit, nonGrav);
 		result.clones.resize(config.samples);
 		for (int i = 0; i < config.samples; ++i)
 			result.clones[i].index = i;
@@ -68,6 +72,9 @@ namespace orbital_core::hazard {
 			mc::summarize(result);
 			return result;
 		}
+		Eigen::MatrixXd factor;
+		if (config.method == McMethod::Covariance)
+			factor = covarianceFactor(covariance, nonGrav);
 		auto* eph = getDefaultEphemerisSource();
 		if (!eph || !eph->isAvailable())
 			throw std::runtime_error("Planetary ephemerides are unavailable");
@@ -77,12 +84,11 @@ namespace orbital_core::hazard {
 		result.bodyFixedFrame = rotation.frame;
 		result.bodyFixedModel =
 		    config.target == Planet::Earth ? earthBodyFixedFrameModel() : std::string(rotation.model);
-		const auto& forces = source.effectiveConfig.nbody;
 		if (!std::isfinite(forces.stepSize) || forces.stepSize <= 0)
 			throw std::invalid_argument("Invalid accepted propagation step");
 		if (forces.useSb441 && (!getDefaultAsteroidSource() || !getDefaultAsteroidSource()->isAvailable()))
 			throw std::runtime_error("SB441 is unavailable");
-		NBodyPropagator base;
+		NBodyPropagator base(config.integrator);
 		base.setStepSize(forces.stepSize);
 		base.setPlanetMask(forces.planetMask);
 		base.setUseSb441(forces.useSb441);
@@ -107,15 +113,10 @@ namespace orbital_core::hazard {
 				clone.entry.reset();
 			}
 		};
-		propagate(result.nominal, cancel);
-		Eigen::MatrixXd factor;
 		std::unique_ptr<mc::ObservationSampler> sampler;
-		if (!cancel.stop_requested()) {
-			if (config.method == McMethod::Covariance)
-				factor = covarianceFactor(source.fit);
-			else
-				sampler = std::make_unique<mc::ObservationSampler>(source, cancel);
-		}
+		if (!cancel.stop_requested() && config.method == McMethod::Observations)
+			sampler = std::make_unique<mc::ObservationSampler>(*source, cancel);
+		propagate(result.nominal, cancel);
 		std::stop_source stop;
 		std::stop_callback external(cancel, [&] { stop.request_stop(); });
 		std::mutex progressMutex;
@@ -128,7 +129,7 @@ namespace orbital_core::hazard {
 			auto& clone = result.clones[i];
 			try {
 				if (config.method == McMethod::Covariance) {
-					initialize(clone, *source.fit.fitEpochOrbit, source.fit.finalNonGrav);
+					initialize(clone, orbit, nonGrav);
 					Eigen::VectorXd normal(factor.cols());
 					sampling::fillStandardNormal(normal, config.seed, i);
 					const Eigen::VectorXd offset = factor * normal;
@@ -167,5 +168,23 @@ namespace orbital_core::hazard {
 		result.cancelled = cancel.stop_requested();
 		mc::summarize(result);
 		return result;
+	}
+
+	IntervalMcResult runIntervalMonteCarlo(const FitPipelineResult& source, const IntervalMcConfig& config,
+	                                       std::stop_token cancel, std::function<void(int, int)> progress)
+	{
+		if (!source.fit.fitEpochOrbit || source.fit.cancelled || !source.fit.converged)
+			throw std::invalid_argument("MC requires a converged accepted solution");
+		return runIntervalMonteCarloImpl(*source.fit.fitEpochOrbit, source.fit.finalNonGrav,
+		                                 source.fit.uncertainty.fitParameterCovariance, source.effectiveConfig.nbody,
+		                                 &source, config, cancel, progress);
+	}
+
+	IntervalMcResult runIntervalMonteCarlo(const OrbitSolution& solution, const NBodySettings& forces,
+	                                       const IntervalMcConfig& config, std::stop_token cancel,
+	                                       std::function<void(int, int)> progress)
+	{
+		return runIntervalMonteCarloImpl(solution.nominal, solution.nonGrav, solution.covariance, forces, nullptr,
+		                                 config, cancel, progress);
 	}
 }  // namespace orbital_core::hazard

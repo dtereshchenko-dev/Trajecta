@@ -1,0 +1,249 @@
+name: Windows CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: MSVC 2022 / Qt 6.9.3
+    runs-on: windows-2022
+    timeout-minutes: 180
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-windows
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.9.3'
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          modules: qt5compat qtcharts qtquick3d qtshadertools
+          cache: true
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure Qt test plugins
+        shell: pwsh
+        run: |
+          "QT_QPA_PLATFORM_PLUGIN_PATH=$env:QT_ROOT_DIR/plugins/platforms" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "QT_PLUGIN_PATH=$env:QT_ROOT_DIR/plugins" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VCPKG_DEFAULT_BINARY_CACHE=$env:RUNNER_TEMP/vcpkg-binary-cache" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Identify runner image
+        id: runner-image
+        shell: pwsh
+        run: '"version=$env:ImageVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append'
+
+      - name: Restore vcpkg binary cache
+        id: vcpkg-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/vcpkg-binary-cache
+          key: vcpkg-${{ runner.os }}-x64-6216d31-${{ steps.runner-image.outputs.version }}-${{ hashFiles('.github/workflows/windows-ci.yml') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-x64-6216d31-${{ steps.runner-image.outputs.version }}-
+
+      - name: Install C++ dependencies
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path $env:VCPKG_DEFAULT_BINARY_CACHE | Out-Null
+          git -C "$env:VCPKG_INSTALLATION_ROOT" fetch origin 6216d31bc1d529bbb40c2a1c4535ab86d081abcf
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git -C "$env:VCPKG_INSTALLATION_ROOT" checkout --detach 6216d31bc1d529bbb40c2a1c4535ab86d081abcf
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:VCPKG_INSTALLATION_ROOT/bootstrap-vcpkg.bat" -disableMetrics
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe" install eigen3 nlohmann-json curl gtest "gdal[core,openjpeg,png]"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Save vcpkg binary cache
+        if: steps.vcpkg-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/vcpkg-binary-cache
+          key: ${{ steps.vcpkg-cache.outputs.cache-primary-key }}
+
+      - name: Restore runtime data cache
+        id: runtime-data-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/linux_p1550p2650.440
+            data/debias/efcc18.dat
+            data/debias/fcct14.dat
+          key: runtime-data-de440-efcc18-fcct14-v1
+
+      - name: Prepare runtime data
+        shell: pwsh
+        run: |
+          function Test-CachedFile($path, $sha256) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { return $false }
+            if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $sha256) {
+              throw "Cached file failed SHA-256 validation: $path. Delete the runtime-data cache and rerun."
+            }
+            Write-Host "Verified cached file: $path"
+            return $true
+          }
+
+          function Get-CheckedFile($url, $path, $sha256) {
+            if (Test-CachedFile $path $sha256) { return }
+            curl.exe --fail --location --retry 3 --output $path $url
+            if ($LASTEXITCODE -ne 0) { throw "Download failed: $url" }
+            if ((Get-FileHash $path -Algorithm SHA256).Hash -ne $sha256) {
+              throw "SHA-256 mismatch: $path"
+            }
+          }
+
+          Get-CheckedFile 'https://ssd.jpl.nasa.gov/ftp/eph/planets/Linux/de440/linux_p1550p2650.440' `
+            'data/linux_p1550p2650.440' '29915576D0A6555766B99485AC3056EE415E86DF4FCE282611C31AFB329AD062'
+
+          New-Item -ItemType Directory -Force -Path 'data/debias' | Out-Null
+          foreach ($table in @(
+            @{ Year = '2014'; Name = 'fcct14.dat'; Hash = '3AD243953731218565CBB25937E87803165AC28E4C948F06E52C6F8B9E1AF887' },
+            @{ Year = '2018'; Name = 'efcc18.dat'; Hash = 'EF6A50830BB83D8B1161E7ACB391EED988EA9708E9FBCCCC0C834DA6109476E3' }
+          )) {
+            $destination = Join-Path 'data/debias' $table.Name
+            if (Test-CachedFile $destination $table.Hash) { continue }
+            $archive = Join-Path $env:RUNNER_TEMP "debias_$($table.Year).tgz"
+            $extract = Join-Path $env:RUNNER_TEMP "debias_$($table.Year)"
+            New-Item -ItemType Directory -Force -Path $extract | Out-Null
+            curl.exe --fail --location --retry 3 --output $archive "https://ssd.jpl.nasa.gov/ftp/ssd/debias/debias_$($table.Year).tgz"
+            if ($LASTEXITCODE -ne 0) { throw "Debias download failed: $($table.Year)" }
+            tar -xzf $archive -C $extract bias.dat
+            if ($LASTEXITCODE -ne 0) { throw "Debias extraction failed: $($table.Year)" }
+            $source = Join-Path $extract 'bias.dat'
+            if ((Get-FileHash $source -Algorithm SHA256).Hash -ne $table.Hash) {
+              throw "Debias SHA-256 mismatch: $($table.Year)"
+            }
+            Copy-Item $source $destination
+          }
+
+      - name: Save runtime data cache
+        if: steps.runtime-data-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/linux_p1550p2650.440
+            data/debias/efcc18.dat
+            data/debias/fcct14.dat
+          key: ${{ steps.runtime-data-cache.outputs.cache-primary-key }}
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S . -B build/ci -G Ninja `
+            -DCMAKE_BUILD_TYPE=Release `
+            "-DCMAKE_PREFIX_PATH=$env:QT_ROOT_DIR" `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build
+        run: cmake --build build/ci --parallel 4
+
+      - name: Run tests
+        env:
+          TRAJECTA_QT_TEST_LOG_DIR: ${{ runner.temp }}/trajecta-qt-test-logs
+        run: ctest --test-dir build/ci --output-on-failure --no-tests=error --parallel 2
+
+      - name: Upload test logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-test-logs
+          path: |
+            ${{ runner.temp }}/trajecta-qt-test-logs/
+            build/ci/Testing/Temporary/LastTest.log
+          if-no-files-found: warn
+
+      - name: Check release tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $version = (Get-Content -LiteralPath build/ci/TrajectaUI/trajecta-version.txt -Raw).Trim()
+          if ($env:GITHUB_REF_NAME -cne "v$version" -or $version -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Release tag '$env:GITHUB_REF_NAME' does not match application version '$version'."
+          }
+
+      - name: Install Qt Installer Framework
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'qt-ifw.7z'
+          $destination = Join-Path $env:RUNNER_TEMP 'qt-ifw'
+          $url = 'https://download.qt.io/online/qtsdkrepository/windows_x86/ifw/tools_ifw_411/qt.tools.ifw.411/4.11.0-0-202603231357ifw-win-x64.7z'
+          curl.exe --fail --location --retry 3 --output $archive $url
+          if ($LASTEXITCODE -ne 0) { throw 'Qt IFW download failed.' }
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne 'C47201C4F6A82A8B607DAA245237F40831D78425E904EDD1514B71FD17EFEFC1') {
+            throw 'Qt IFW archive SHA-256 mismatch.'
+          }
+          New-Item -ItemType Directory -Path $destination -Force | Out-Null
+          tar.exe -xf $archive -C $destination
+          if ($LASTEXITCODE -ne 0) { throw 'Qt IFW extraction failed.' }
+
+      - name: Test installer update
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: ./installer/tests/update-smoke.ps1 -IfwDirectory "$env:RUNNER_TEMP/qt-ifw"
+
+      - name: Prepare release packages
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $ifw = Join-Path $env:RUNNER_TEMP 'qt-ifw'
+          $vcpkg = Join-Path $env:VCPKG_INSTALLATION_ROOT 'installed/x64-windows'
+          & ./installer/deploy.ps1 -Repository $env:GITHUB_WORKSPACE -BuildDirectory "$env:GITHUB_WORKSPACE/build/ci" `
+            -QtDirectory $env:QT_ROOT_DIR -IfwDirectory $ifw -VcpkgPrefix $vcpkg -StageOnly -PrepareUpdateRepository
+          if (-not $?) { throw 'Installer staging failed.' }
+          $stages = @(Get-ChildItem -LiteralPath installer/.staging -Directory)
+          if ($stages.Count -ne 1) { throw "Expected one staging directory, got $($stages.Count)." }
+          $stage = $stages[0].FullName
+          $output = Join-Path $env:RUNNER_TEMP 'trajecta-release'
+          New-Item -ItemType Directory -Path $output | Out-Null
+          & "$ifw/bin/binarycreator.exe" --hybrid --compression 5 -c "$stage/config/config.xml" `
+            -p "$stage/packages" "$output/TrajectaSetup.exe"
+          if ($LASTEXITCODE -ne 0) { throw 'Installer creation failed.' }
+          Compress-Archive -Path "$stage/repository/*" -DestinationPath "$output/Trajecta-IFW-$env:GITHUB_REF_NAME.zip" -CompressionLevel Optimal
+
+      - name: Upload release packages
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages
+          path: ${{ runner.temp }}/trajecta-release/
+          if-no-files-found: error
+          retention-days: 7
+
+  draft-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-packages
+          path: release
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" --draft --verify-tag --title "Trajecta $RELEASE_TAG" \
+            "release/TrajectaSetup.exe" "release/Trajecta-IFW-$RELEASE_TAG.zip"

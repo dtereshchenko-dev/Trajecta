@@ -22,7 +22,7 @@ BaseDialog {
                 font.pixelSize: 11
                 Layout.fillWidth: true
             }
-            CustomButton { iconName: "rotate-ccw"; flat: true; accessibleLabel: qsTr("Check again"); enabled: !dialog.sources.checking; onClicked: dialog.sources.refresh() }
+            CustomButton { iconName: "rotate-ccw"; flat: true; accessibleLabel: qsTr("Check again"); enabled: !dialog.sources.checking; onClicked: { dialog.sources.refresh(); dialog.sources.observatoryUpdate.check() } }
         }
         CustomText {
             visible: dialog.sources.restartRequired
@@ -54,6 +54,7 @@ BaseDialog {
                     delegate: ColumnLayout {
                         id: row
                         required property var modelData
+                        readonly property var updateState: dialog.sources.observatoryUpdate.states[row.modelData.id] || ({})
                         Layout.fillWidth: true
                         spacing: 4
                         RowLayout {
@@ -64,6 +65,29 @@ BaseDialog {
                         }
                         CustomText { text: row.modelData.detail; secondary: true; font.pixelSize: 10; wrapMode: Text.Wrap; elide: Text.ElideNone; Layout.fillWidth: true }
                         CustomText { text: row.modelData.impact; secondary: true; font.pixelSize: 10; wrapMode: Text.Wrap; elide: Text.ElideNone; Layout.fillWidth: true }
+                        RowLayout {
+                            visible: !!row.updateState.available || !!row.updateState.checking
+                            Layout.fillWidth: true
+                            Layout.topMargin: visible ? 5 : 0
+                            CustomButton {
+                                objectName: "update-source-" + row.modelData.id
+                                visible: !!row.updateState.available
+                                enabled: !dialog.sources.checking
+                                text: qsTr("Update")
+                                iconName: "download"
+                                onClicked: dialog.sources.observatoryUpdate.install(row.modelData.id)
+                            }
+                            CustomText { visible: !!row.updateState.checking; text: qsTr("Checking for updates..."); secondary: true; font.pixelSize: 10 }
+                        }
+                        CustomText {
+                            visible: !!row.updateState.message
+                            text: row.updateState.message || ""
+                            secondary: true
+                            font.pixelSize: 10
+                            wrapMode: Text.Wrap
+                            elide: Text.ElideNone
+                            Layout.fillWidth: true
+                        }
                         RowLayout {
                             visible: row.modelData.id === "asteroids" && (dialog.sources.sb441Download.running || !row.modelData.onDisk || (!row.modelData.active && !row.modelData.valid))
                             Layout.fillWidth: true

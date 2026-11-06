@@ -115,9 +115,12 @@ namespace {
 			    make_orbit_from_states_vectors(StateVectors(Vec3D(1.0, 0.1, 0.02), Vec3D(0.01, 0.9, 0.1)), 2459165.5);
 			ASSERT_TRUE(fit.orbit);
 			fit.fitEpochOrbit = fit.orbit;
-			root = std::filesystem::temp_directory_path() /
-			       ("orbital_rwo_test_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
-			ownsRoot = std::filesystem::create_directory(root);
+			const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
+			for (int attempt = 0; attempt < 100 && !ownsRoot; ++attempt) {
+				root = std::filesystem::temp_directory_path() /
+				       ("orbital_rwo_test_" + std::to_string(stamp) + "-" + std::to_string(attempt));
+				ownsRoot = std::filesystem::create_directory(root);
+			}
 			ASSERT_TRUE(ownsRoot);
 		}
 

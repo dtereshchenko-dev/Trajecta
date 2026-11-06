@@ -1,11 +1,12 @@
 #include "strewn_orbit/OrbitJob.h"
-#include "orbital_core/hazard/SolutionPropagation.h"
+#include "orbital_core/hazard/IntervalMonteCarlo.h"
+#include "orbital_core/hazard/BodyFixedFrame.h"
+#include "orbital_core/TimeScale.h"
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <fstream>
-#include <limits>
 #include <set>
 #include <stdexcept>
 
@@ -69,27 +70,32 @@ namespace strewn {
 			stream << value.dump(2) << '\n';
 		}
 
-		hz::SolutionPropagationConfig propagation(const Json& input, unsigned workers)
+		struct OrbitalPropagation {
+			orbital_core::NBodySettings forces;
+			hz::IntervalMcConfig sampling;
+			double horizonDays{};
+		};
+
+		OrbitalPropagation propagation(const Json& input, unsigned workers)
 		{
 			keys(input, {"kind", "path", "clones", "seed", "altitude_km", "propagation"});
-			hz::SolutionPropagationConfig config;
-			config.workers = workers;
+			OrbitalPropagation config;
+			config.sampling.workers = workers;
 			const auto clones = count(input, "clones", 1000);
-			if (clones == 0 || clones > static_cast<std::uint64_t>(std::numeric_limits<int>::max()))
-				throw std::invalid_argument("Orbital clones must be in [1, INT_MAX]");
-			config.sampling.numClones = static_cast<int>(clones);
-			config.sampling.rngSeed = count(input, "seed", 42);
+			if (clones == 0 || clones > 1000000)
+				throw std::invalid_argument("Orbital clones must be in [1, 1000000]");
+			config.sampling.samples = static_cast<int>(clones);
+			config.sampling.seed = count(input, "seed", 42);
 			config.sampling.altitudeKm = input.value("altitude_km", 100.0);
 			if (!std::isfinite(config.sampling.altitudeKm) || config.sampling.altitudeKm <= 0)
 				throw std::invalid_argument("An atmospheric entry altitude must be positive");
 			const auto& p = input.at("propagation");
-			keys(p, {"integrator", "horizon_days", "step_days", "planet_mask", "sb441", "encounter_radius_au",
-			         "threshold_au", "sample_step_days"});
+			keys(p, {"integrator", "horizon_days", "step_days", "planet_mask", "sb441"});
 			const auto integrator = p.value("integrator", "ra15");
 			if (integrator == "ra15")
-				config.integrator = IntegratorKind::RA15;
+				config.sampling.integrator = IntegratorKind::RA15;
 			else if (integrator == "ias15")
-				config.integrator = IntegratorKind::IAS15;
+				config.sampling.integrator = IntegratorKind::IAS15;
 			else
 				throw std::invalid_argument("Orbital integrator must be ra15 or ias15");
 			config.forces.enabled = true;
@@ -102,30 +108,27 @@ namespace strewn {
 			config.forces.planetMask = static_cast<std::uint16_t>(mask);
 			config.forces.useSb441 = p.at("sb441").get<bool>();
 			config.forces.stepSize = p.value("step_days", 10.0);
-			config.encounter.horizonYears = p.at("horizon_days").get<double>() / 365.25;
-			config.encounter.planet = hz::Planet::Earth;
-			config.encounter.thresholdAu = p.value("threshold_au", .1);
-			config.encounter.encounterRadiusAu = p.value("encounter_radius_au", .1);
-			config.encounter.sampleStepDay = p.value("sample_step_days", .01);
+			config.horizonDays = p.at("horizon_days").get<double>();
+			if (!std::isfinite(config.horizonDays) || config.horizonDays <= 0)
+				throw std::invalid_argument("horizon_days must be finite and positive");
 			return config;
 		}
 
-		Json orbitReport(const orbital_core::OrbitSolution& solution, const hz::SolutionPropagationConfig& config,
-		                 const hz::SolutionPropagationResult& result)
+		Json orbitReport(const orbital_core::OrbitSolution& solution, const OrbitalPropagation& config,
+		                 const hz::IntervalMcResult& mc)
 		{
-			const auto& mc = result.mc;
 			Json events = Json::array(), crossings = Json::array();
-			for (const auto& event : result.events)
-				events.push_back({{"epoch_mjd_tdb", event.jd - 2400000.5}, {"distance_au", event.distAu}});
-			for (const auto& point : mc.corridor)
-				crossings.push_back({{"id", point.cloneIndex},
-				                     {"event", point.eventIndex},
-				                     {"epoch_mjd_tdb", point.epochMjdTdb},
-				                     {"latitude_deg", point.latitudeDeg},
-				                     {"longitude_deg", point.longitudeDeg}});
+			for (const auto& event : mc.events)
+				events.push_back({{"start_mjd_tdb", event.startMjdTdb}, {"end_mjd_tdb", event.endMjdTdb},
+				                  {"entries", event.entryClones}, {"probability", event.probability}});
+			for (const auto& clone : mc.clones)
+				if (clone.status == hz::McCloneStatus::Complete && clone.entry)
+					crossings.push_back({{"id", clone.index}, {"epoch_mjd_tdb", clone.entry->mjdTdb},
+					                     {"latitude_deg", clone.entry->latitudeDeg},
+					                     {"longitude_deg", clone.entry->longitudeDeg}});
 			const auto& ng = solution.nonGrav;
 			return {
-			    {"schema_version", 1},
+			    {"schema_version", 2},
 			    {"object", solution.objectName},
 			    {"state",
 			     {{"frame", "heliocentric ECLM J2000"},
@@ -143,31 +146,26 @@ namespace strewn {
 			      {"a2_au_day2", ng.A2()},
 			      {"a3_au_day2", ng.A3()},
 			      {"dt_day", ng.DT()}}},
-			    {"integrator", config.integrator == IntegratorKind::RA15 ? "ra15" : "ias15"},
+			    {"integrator", config.sampling.integrator == IntegratorKind::RA15 ? "ra15" : "ias15"},
 			    {"planet_mask", config.forces.planetMask},
 			    {"sb441", config.forces.useSb441},
 			    {"step_days", config.forces.stepSize},
-			    {"horizon_days", config.encounter.horizonYears * 365.25},
-			    {"encounter_radius_au", config.encounter.encounterRadiusAu},
-			    {"threshold_au", config.encounter.thresholdAu},
-			    {"sample_step_days", config.encounter.sampleStepDay},
-			    {"requested", config.sampling.numClones},
-			    {"seed", config.sampling.rngSeed},
-			    {"workers", config.workers},
-			    {"completed", mc.numConverged},
-			    {"failed", mc.numFailedFit},
-			    {"attempted", mc.numAttempted},
-			    {"entry_probability_among_completed", mc.aggregateImpactProb},
-			    {"hits_per_event", mc.hitsPerEvent},
+			    {"horizon_days", config.horizonDays},
+			    {"requested", config.sampling.samples},
+			    {"seed", config.sampling.seed},
+			    {"workers", config.sampling.workers},
+			    {"completed", mc.completed},
+			    {"failed", mc.failedFit + mc.failedPropagation},
+			    {"entry_probability_among_completed", mc.completed ? Json(double(mc.entryClones) / mc.completed) : Json(nullptr)},
 			    {"cancelled", mc.cancelled},
-			    {"entries", mc.corridor.size()},
+			    {"entries", mc.entryClones},
 			    {"events", events},
 			    {"crossings", crossings},
 			    {"altitude_km", config.sampling.altitudeKm},
 			    {"boundary", "WGS84 geodetic height"},
 			    {"frame_model", "OrbitalCore IAU1976/1980 UT1/GAST; no polar motion"},
 			    {"conditioning",
-			     "atmospheric sampling is conditional on successful Earth entries in the selected encounter windows"}};
+			     "atmospheric sampling is conditional on successful Earth entries in the requested interval"}};
 		}
 	}  // namespace
 
@@ -184,7 +182,7 @@ namespace strewn {
 		if (!job.outputDirectory.empty() &&
 		    (std::filesystem::exists(job.outputDirectory) && !std::filesystem::is_empty(job.outputDirectory)))
 			throw std::invalid_argument("Output directory must be new or empty");
-		const auto config = propagation(request.at("input"), job.monteCarlo.workers);
+		auto config = propagation(request.at("input"), job.monteCarlo.workers);
 		const auto text = request.at("input").at("path").get<std::string>();
 		const auto directory = std::filesystem::absolute(path).parent_path() /
 		                       std::filesystem::path(std::u8string(text.begin(), text.end()));
@@ -197,37 +195,45 @@ namespace strewn {
 		job.environmentDirectory = directory / "StrewnField";
 		if (job.outputDirectory.empty())
 			job.outputDirectory = allocateRun(job.environmentDirectory);
-		const auto propagated = hz::propagateSolution(solution, config, control.cancel, [&](int done, int total) {
+		config.sampling.startMjdTdb = solution.nominal.epochMjd();
+		config.sampling.endMjdTdb = config.sampling.startMjdTdb + config.horizonDays;
+		const auto propagated = hz::runIntervalMonteCarlo(solution, config.forces, config.sampling, control.cancel,
+		                                                   [&](int done, int total) {
 			if (orbitalProgress)
 				orbitalProgress(done, total);
-			return !control.cancel.stop_requested();
 		});
 		const auto report = orbitReport(solution, config, propagated);
 		EntrySamples prepared;
 		std::set<int> selected;
-		for (const auto& point : propagated.mc.corridor) {
-			if (!point.bodyFixedValid)
-				throw std::runtime_error("An orbital entry has no Earth-fixed state");
-			if (!selected.insert(point.cloneIndex).second)
-				throw std::runtime_error("Ambiguous entry assigned to more than one encounter; narrow the horizon");
-			const auto r = point.rBodyFixedKm * 1000.0, v = point.vBodyFixedKmS * 1000.0;
+		for (const auto& clone : propagated.clones) {
+			if (clone.status != hz::McCloneStatus::Complete || !clone.entry)
+				continue;
+			const auto& entry = *clone.entry;
+			if (!selected.insert(clone.index).second)
+				throw std::runtime_error("Duplicate orbital entry");
+			const auto r = hz::icrfToBodyFixedMjd(hz::Planet::Earth, entry.relativePositionKm, entry.mjdTdb) * 1000.0;
+			const auto v = hz::bodyFixedVelocityMjd(hz::Planet::Earth, entry.relativePositionKm,
+			                                        entry.relativeVelocityKmS, entry.mjdTdb) * 1000.0;
+			if (!std::isfinite(r.dot(r)) || !std::isfinite(v.dot(v)))
+				throw std::runtime_error("An orbital entry has no valid Earth-fixed state");
 			prepared.values.push_back({{r.x, r.y, r.z},
 			                           {v.x, v.y, v.z},
-			                           point.epochMjdUtc,
+			                           orbital_core::time::fromMjdTdb(entry.mjdTdb, orbital_core::time::Scale::UTC),
 			                           1.0,
-			                           static_cast<std::uint64_t>(point.cloneIndex)});
+			                           static_cast<std::uint64_t>(clone.index)});
 		}
 		const auto archiveOrbit = [&] {
 			write(job.outputDirectory / "orbital_mc.json", report);
 			write(job.outputDirectory / "request.json", request);
 		};
-		if (propagated.mc.cancelled || prepared.values.empty() || propagated.mc.numFailedFit > 0) {
+		if (propagated.cancelled || prepared.values.empty() || propagated.failedFit > 0 ||
+		    propagated.failedPropagation > 0) {
 			std::filesystem::create_directories(job.outputDirectory);
 			archiveOrbit();
 			write(job.outputDirectory / "manifest.json", {{"schema_version", 1},
-			                                              {"status", propagated.mc.cancelled ? "cancelled" : "failed"},
+			                                              {"status", propagated.cancelled ? "cancelled" : "failed"},
 			                                              {"stage", "orbital_entry"}});
-			if (propagated.mc.cancelled) {
+			if (propagated.cancelled) {
 				JobResult result;
 				result.simulation.cancelled = true;
 				return result;

@@ -10,8 +10,7 @@ enum class NgModel : int {
 	MarsdenH2O = 1,      // Marsden, Sekanina & Yeomans 1973 — water-ice sublimation
 	MarsdenCO = 2,       // CO sublimation (r0 ≈ 5 AU) — distant-active comets
 	InverseSquare = 3,   // g(r) = (1 AU / r)², optionally with DT
-	Yarkovsky = 4,       // g(r) = (1 AU / r)² — asteroid Yarkovsky (A2 only)
-	InverseSquareDT = 5  // Legacy identifier; normalized to InverseSquare on input.
+	Yarkovsky = 4       // g(r) = (1 AU / r)² — asteroid Yarkovsky (A2 only)
 };
 
 enum class NgParameter : std::uint8_t {
@@ -124,11 +123,6 @@ class ORBITAL_CORE_API NonGravModel {
 
 	[[nodiscard]] static NgParameterMask defaultFitParameterMaskFor(NgModel model) noexcept;
 	[[nodiscard]] static NgParameterMask sanitizeFitParameterMaskFor(NgModel model, NgParameterMask mask) noexcept;
-
-	[[nodiscard]] static constexpr NgModel canonicalModel(NgModel model) noexcept
-	{
-		return model == NgModel::InverseSquareDT ? NgModel::InverseSquare : model;
-	}
 
 	[[nodiscard]] int numFitParams() const noexcept;
 

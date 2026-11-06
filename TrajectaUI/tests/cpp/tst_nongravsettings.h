@@ -22,7 +22,7 @@ class TestNonGravSettings : public QObject {
 
 		NonGravSettings settings;
 		QVERIFY(settings.setProperty("enabled", true));
-		QVERIFY(settings.setProperty("model", 5));
+		QVERIFY(settings.setProperty("model", 3));
 		QVERIFY(settings.setProperty("solveMask", 15));
 		settings.save(stored);
 		QCOMPARE(stored.allKeys(), QStringList({"nonGravEnabled", "nonGravModel", "nonGravSolveMask"}));
@@ -39,7 +39,7 @@ class TestNonGravSettings : public QObject {
 		stored.setValue("nonGravSolveMask", 0);
 		reloaded.load(stored);
 		QCOMPARE(reloaded.model(), 3);
-		QCOMPARE(reloaded.solveMask(), 15);
+		QCOMPARE(reloaded.solveMask(), 0);
 	}
 
 	void obsoleteValuesAreIgnoredWithoutModifyingStorage()

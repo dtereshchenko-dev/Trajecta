@@ -98,6 +98,8 @@ class TestWorkspace : public QObject {
 		                                                     "Session-owned");
 		qmlRegisterUncreatableType<DataSourcesModel>("TrajectaUI", 1, 0, "DataSourcesModel", "Session-owned");
 		qmlRegisterUncreatableType<Sb441Download>("TrajectaUI", 1, 0, "Sb441Download", "Session-owned");
+		qmlRegisterUncreatableType<ObservatoryUpdate>("TrajectaUI", 1, 0, "ObservatoryUpdate", "Session-owned");
+		qmlRegisterUncreatableType<ApplicationUpdate>("TrajectaUI", 1, 0, "ApplicationUpdate", "Session-owned");
 		qmlRegisterUncreatableType<SolutionViewModel>("TrajectaUI", 1, 0, "SolutionViewModel", "Session-owned");
 		qmlRegisterUncreatableType<ObservationTableModel>("TrajectaUI", 1, 0, "ObservationTableModel",
 		                                                  "Solution-owned");
@@ -190,6 +192,18 @@ class TestWorkspace : public QObject {
 	}
 
    private slots:
+	void applicationUpdateParsesMaintenanceToolOutput()
+	{
+		const QByteArray output = "[12] Loading component scripts...\n<?xml version=\"1.0\"?>\n"
+		    "<updates><update id=\"other\" version=\"9.0.0\"/>"
+		    "<update id=\"com.trajecta.app\" version=\"1.0.2\"/></updates>\n";
+		QCOMPARE(ApplicationUpdate::availableVersion(output, "1.0.1"), QStringLiteral("1.0.2"));
+		QVERIFY(ApplicationUpdate::availableVersion(output, "1.0.2").isEmpty());
+		QVERIFY(ApplicationUpdate::availableVersion(output, "2.0.0").isEmpty());
+		QVERIFY(ApplicationUpdate::availableVersion("network error", "1.0.1").isEmpty());
+		QVERIFY(ApplicationUpdate::availableVersion("<updates><update id=\"com.trajecta.app\" version=\"1.0.2\"></updates>", "1.0.1").isEmpty());
+		QVERIFY(ApplicationUpdate::availableVersion("<updates><update id=\"com.trajecta.app\" version=\"1.0.2-beta\"/></updates>", "1.0.1").isEmpty());
+	}
 
 	void sb441DownloadVerifiesBeforeReplacing()
 	{
@@ -410,28 +424,29 @@ class TestWorkspace : public QObject {
 	{
 		QTemporaryDir directory;
 		QVERIFY(directory.isValid());
-		const QString radarPath = directory.filePath("RADCODE.dat");
-		QFile radar(radarPath);
-		QVERIFY(radar.open(QIODevice::WriteOnly));
-		radar.write("invalid radar data\n");
-		radar.close();
+		QVERIFY(QDir(directory.path()).mkpath("weights"));
+		const QString weightPath = directory.filePath("weights/vfcc17.rules");
+		QFile weights(weightPath);
+		QVERIFY(weights.open(QIODevice::WriteOnly));
+		weights.write("invalid weight data\n");
+		weights.close();
 		const auto previous = getExecutableDir();
 		const auto restore = qScopeGuard([&] { getExecutableDir() = previous; });
 		getExecutableDir() = directory.path().toStdWString();
 		DataSourcesModel sources;
 		sources.refresh();
 		QTRY_VERIFY_WITH_TIMEOUT(sources.checked(), 30000);
-		const auto radarEntry = [&] {
+		const auto weightEntry = [&] {
 			for (const auto& value : sources.entries()) {
 				const auto entry = value.toMap();
-				if (entry.value("id") == "radar")
+				if (entry.value("id") == "weights")
 					return entry;
 			}
 			return QVariantMap{};
 		};
-		QVERIFY(radarEntry().value("onDisk").toBool());
-		QVERIFY(QFile::remove(radarPath));
-		QTRY_VERIFY_WITH_TIMEOUT(!radarEntry().value("onDisk").toBool(), 30000);
+		QVERIFY(weightEntry().value("onDisk").toBool());
+		QVERIFY(QFile::remove(weightPath));
+		QTRY_VERIFY_WITH_TIMEOUT(!weightEntry().value("onDisk").toBool(), 30000);
 		QVERIFY(sources.restartRequired());
 		QVERIFY(sources.unavailableCount() > 0);
 	}
@@ -1698,6 +1713,26 @@ class TestWorkspace : public QObject {
 			QCOMPARE(time::toMjdTdb(interval.startMjdUtc, time::Scale::UTC), epoch);
 			QCOMPARE(time::toMjdTdb(interval.endMjdUtc, time::Scale::UTC), epoch + 30 * 365.25);
 		}
+	}
+
+	void ephemeridesRequireConvergedFit()
+	{
+		EphemerisViewModel ephemerides;
+		auto result = fixture();
+		ephemerides.setSolution(result, "Fixture", std::nullopt);
+		QVERIFY(ephemerides.canGenerate());
+
+		result.fit.converged = false;
+		ephemerides.setSolution(result, "Fixture", std::nullopt);
+		QVERIFY(ephemerides.available());
+		QVERIFY(!ephemerides.canGenerate());
+		QCOMPARE(ephemerides.formError(), QStringLiteral("A converged solution is required."));
+		ephemerides.generate();
+		QCOMPARE(ephemerides.error(), ephemerides.formError());
+
+		result.fit.converged = true;
+		ephemerides.setSolution(result, "Fixture", std::nullopt);
+		QVERIFY(ephemerides.canGenerate());
 	}
 
 	void historicalFitUsesOneUtcDefaultAcrossCalculationForms()
@@ -3270,7 +3305,7 @@ class TestWorkspace : public QObject {
 		ng.setParams(1.25e-8, -2.5e-9, 3.75e-10);
 		ng.setDT(12.5);
 		const double values[]{1.25e-8, -2.5e-9, 3.75e-10, 12.5};
-		for (auto type : {NgModel::MarsdenH2O, NgModel::MarsdenCO, NgModel::InverseSquare, NgModel::InverseSquareDT}) {
+		for (auto type : {NgModel::MarsdenH2O, NgModel::MarsdenCO, NgModel::InverseSquare}) {
 			ng.setModel(type);
 			const int count = ng.numFitParams();
 			auto& covariance = result.fit.uncertainty.fitParameterCovariance;
@@ -4323,6 +4358,92 @@ class TestWorkspace : public QObject {
 		QVERIFY(!draft->valid());
 	}
 
+	void observatoryUpdateChecksBeforeWriting()
+	{
+		QTemporaryDir directory;
+		QVERIFY(directory.isValid());
+		const auto previous = orbital_core::observatoryDataDirectory();
+		const auto restore = qScopeGuard([&] { orbital_core::setObservatoryDataDirectory(previous); });
+		orbital_core::setObservatoryDataDirectory(directory.path().toStdWString());
+		QFile file(directory.filePath("OBSCODE.dat"));
+		QVERIFY(file.open(QIODevice::WriteOnly));
+		QCOMPARE(file.write("original"), 8);
+		file.close();
+		ObservatoryUpdate updater([](const QString& id, std::string_view current, std::stop_token) {
+			if (id == "radar") throw std::runtime_error("offline");
+			return orbital_core::obs::ObservatoryUpdate{"updated", 1, 0, current != "updated"};
+		});
+		QSignalSpy installed(&updater, &ObservatoryUpdate::installed);
+		updater.check();
+		QTRY_VERIFY(!updater.states().value("observatories").toMap().value("checking").toBool());
+		QTRY_VERIFY(!updater.states().value("radar").toMap().value("checking").toBool());
+		QCOMPARE(updater.availableCount(), 1);
+		QVERIFY(!updater.states().value("radar").toMap().value("message").toString().isEmpty());
+		QVERIFY(file.open(QIODevice::ReadOnly));
+		QCOMPARE(file.readAll(), QByteArray("original"));
+		file.close();
+		updater.install("observatories");
+		QCOMPARE(installed.size(), 1);
+		QCOMPARE(updater.availableCount(), 0);
+		QVERIFY(file.open(QIODevice::ReadOnly));
+		QCOMPARE(file.readAll(), QByteArray("updated"));
+		file.close();
+		updater.check();
+		QTRY_VERIFY(!updater.states().value("observatories").toMap().value("checking").toBool());
+		QTRY_VERIFY(!updater.states().value("radar").toMap().value("checking").toBool());
+		QCOMPARE(updater.availableCount(), 0);
+		QCOMPARE(installed.size(), 1);
+	}
+
+	void observatoryUpdateDoesNotOverwriteConcurrentChange()
+	{
+		QTemporaryDir directory;
+		QVERIFY(directory.isValid());
+		const auto previous = orbital_core::observatoryDataDirectory();
+		const auto restore = qScopeGuard([&] { orbital_core::setObservatoryDataDirectory(previous); });
+		orbital_core::setObservatoryDataDirectory(directory.path().toStdWString());
+		QFile file(directory.filePath("OBSCODE.dat"));
+		QVERIFY(file.open(QIODevice::WriteOnly));
+		QCOMPARE(file.write("original"), 8);
+		file.close();
+		ObservatoryUpdate updater([](const QString& id, std::string_view, std::stop_token) {
+			return orbital_core::obs::ObservatoryUpdate{"updated", 1, 0, id == "observatories"};
+		});
+		updater.check();
+		QTRY_VERIFY(!updater.states().value("observatories").toMap().value("checking").toBool());
+		QTRY_VERIFY(!updater.states().value("radar").toMap().value("checking").toBool());
+		QVERIFY(file.open(QIODevice::WriteOnly | QIODevice::Truncate));
+		QCOMPARE(file.write("edited"), 6);
+		file.close();
+		updater.install("observatories");
+		QVERIFY(file.open(QIODevice::ReadOnly));
+		QCOMPARE(file.readAll(), QByteArray("edited"));
+		file.close();
+		QTRY_VERIFY(!updater.states().value("observatories").toMap().value("checking").toBool());
+		QCOMPARE(updater.availableCount(), 1);
+	}
+
+	void observatoryUpdateControls()
+	{
+		FitSettingsAggregator settings;
+		ApplicationSession session(settings);
+		QQmlApplicationEngine engine;
+		engine.setImportPathList({QLibraryInfo::path(QLibraryInfo::QmlImportsPath)});
+		engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
+		engine.load(QUrl::fromLocalFile(QStringLiteral(ORBITAL_UI_SOURCE_DIR) + "/qml/shell/WorkspaceWindow.qml"));
+		QVERIFY(!engine.rootObjects().isEmpty());
+		auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().front());
+		QVERIFY(window);
+		QTRY_VERIFY(window->isVisible());
+		auto* button = findItem(window->contentItem(), "data-sources-button");
+		QVERIFY(button);
+		QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+		                  button->mapToScene({button->width() / 2, button->height() / 2}).toPoint());
+		QTRY_VERIFY(session.dataSources()->checked());
+		QTRY_VERIFY(findItem(window->contentItem(), "update-source-observatories"));
+		QVERIFY(findItem(window->contentItem(), "update-source-radar"));
+	}
+
 	void calculationSettingsDialog()
 	{
 		const auto clear = qScopeGuard([] { QSettings().clear(); });
@@ -4982,6 +5103,7 @@ class TestWorkspace : public QObject {
 		const auto oldExecutableDir = getExecutableDir();
 		getExecutableDir() = QCoreApplication::applicationDirPath().toStdWString();
 		DE440Source de440;
+		QVERIFY2(de440.isAvailable(), "Test planetary ephemeris was not loaded");
 		setDefaultEphemerisSource(&de440);
 		const auto restore = qScopeGuard([&] {
 			setDefaultEphemerisSource(nullptr);
@@ -5024,8 +5146,9 @@ class TestWorkspace : public QObject {
 		QVERIFY(findItem(page, "ephemeris-station")->isVisible());
 
 		click("ephemeris-generate");
-		QTRY_COMPARE_WITH_TIMEOUT(ephemerides->epochCount(), 15, 30000);
+		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
 		QVERIFY2(ephemerides->error().isEmpty(), qPrintable(ephemerides->error()));
+		QCOMPARE(ephemerides->epochCount(), 15);
 		auto* table = ephemerides->table();
 		QCOMPARE(table->header(0), QString("Date UTC"));
 		QCOMPARE(table->cell(0, 0), QString("2023-02-24 00:00"));

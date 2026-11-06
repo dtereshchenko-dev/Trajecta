@@ -3,7 +3,7 @@
 #include "orbital_core/Photometry.h"
 #include "orbital_core/TimeScale.h"
 #ifdef ORBITAL_CORE_HAZARD_AVAILABLE
-#include "orbital_core/hazard/SolutionPropagation.h"
+#include "orbital_core/hazard/IntervalMonteCarlo.h"
 #endif
 #include <gtest/gtest.h>
 #include <chrono>
@@ -19,13 +19,17 @@ namespace {
 	   protected:
 		std::filesystem::path m_root;
 		FitResult m_fit;
+		bool m_ownsRoot = false;
 
 		void SetUp() override
 		{
-			m_root =
-			    std::filesystem::temp_directory_path() /
-			    ("orbit-solution-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
-			ASSERT_TRUE(std::filesystem::create_directory(m_root));
+			const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
+			for (int attempt = 0; attempt < 100 && !m_ownsRoot; ++attempt) {
+				m_root = std::filesystem::temp_directory_path() /
+				         ("orbit-solution-test-" + std::to_string(stamp) + "-" + std::to_string(attempt));
+				m_ownsRoot = std::filesystem::create_directory(m_root);
+			}
+			ASSERT_TRUE(m_ownsRoot);
 			m_fit.fitEpochOrbit =
 			    make_orbit_from_states_vectors(StateVectors(Vec3D(.9, .1, .05), Vec3D(-.1, 1.05, .02)), 2460000.5);
 			ASSERT_TRUE(m_fit.fitEpochOrbit);
@@ -41,10 +45,10 @@ namespace {
 
 		void TearDown() override
 		{
-			if (std::filesystem::canonical(m_root).parent_path() ==
-			        std::filesystem::canonical(std::filesystem::temp_directory_path()) &&
-			    m_root.filename().string().starts_with("orbit-solution-test-"))
-				std::filesystem::remove_all(m_root);
+			if (m_ownsRoot) {
+				std::error_code error;
+				std::filesystem::remove_all(m_root, error);
+			}
 		}
 
 		std::filesystem::path save(bool full = false)
@@ -70,13 +74,16 @@ namespace {
 			std::ofstream(file, std::ios::binary) << contents;
 		}
 
-		void nonGrav(NgModel model)
+		void nonGrav(NgModel model, bool fitDt = false)
 		{
 			m_fit.finalNonGrav.setModel(model);
 			m_fit.finalNonGrav.setEnabled(true);
+			if (fitDt)
+				m_fit.finalNonGrav.setFitParameterMask(NgParameterMask::A1 | NgParameterMask::A2 |
+				                                         NgParameterMask::A3 | NgParameterMask::DT);
 			m_fit.finalNonGrav.setParams(model == NgModel::Yarkovsky ? 0 : 1e-10, -2e-12,
 			                             model == NgModel::Yarkovsky ? 0 : 3e-11);
-			m_fit.finalNonGrav.setDT(model == NgModel::InverseSquareDT ? .5 : 0);
+			m_fit.finalNonGrav.setDT(fitDt ? .5 : 0);
 			const int dimension = 6 + m_fit.finalNonGrav.fitParameterCount();
 			m_fit.uncertainty.fitParameterCovariance = FitParameterCovariance::Identity(dimension, dimension) * 1e-24;
 			m_fit.uncertainty.fitParameterCovariance.topLeftCorner<6, 6>() = m_fit.uncertainty.cartesianStateCovariance;
@@ -168,11 +175,10 @@ namespace {
 
 	TEST_F(OrbitSolutionTest, LoadsFullNonGravCovarianceAndCrossTerms)
 	{
-		for (const auto model : {NgModel::Yarkovsky, NgModel::MarsdenH2O, NgModel::MarsdenCO, NgModel::InverseSquare,
-		                         NgModel::InverseSquareDT}) {
+		for (const auto model : {NgModel::Yarkovsky, NgModel::MarsdenH2O, NgModel::MarsdenCO, NgModel::InverseSquare}) {
 			nonGrav(model);
 			const auto solution = loadOrbitSolution(save(true));
-			EXPECT_EQ(solution.nonGrav.model(), NonGravModel::canonicalModel(model));
+			EXPECT_EQ(solution.nonGrav.model(), model);
 			EXPECT_EQ(solution.nonGrav.fitParameterMask(), m_fit.finalNonGrav.fitParameterMask());
 			EXPECT_DOUBLE_EQ(solution.nonGrav.A2(), -2e-12);
 			EXPECT_DOUBLE_EQ(solution.nonGrav.DT(), m_fit.finalNonGrav.DT());
@@ -201,11 +207,10 @@ namespace {
 			            m_fit.finalNonGrav.A1() * scale * m_fit.finalNonGrav.gr(r), 1e-24);
 	}
 
-	TEST_F(OrbitSolutionTest, MigratesLegacyInverseSquareModels)
+	TEST_F(OrbitSolutionTest, PreservesInverseSquareWithAndWithoutFittedDelay)
 	{
-		nonGrav(NgModel::InverseSquareDT);
+		nonGrav(NgModel::InverseSquare, true);
 		const auto withDelay = save();
-		replace(withDelay / "orbit_cartesian_oef.txt", "! OC_NG 3 3 ", "! OC_NG 2 5 ");
 		const auto delayed = loadOrbitSolution(withDelay).nonGrav;
 		EXPECT_EQ(delayed.model(), NgModel::InverseSquare);
 		EXPECT_DOUBLE_EQ(delayed.DT(), .5);
@@ -214,11 +219,9 @@ namespace {
 		nonGrav(NgModel::InverseSquare);
 		m_fit.finalNonGrav.setDT(.5);
 		const auto withoutDelay = save();
-		replace(withoutDelay / "orbit_cartesian_oef.txt", "! OC_NG 3 3 ", "! OC_NG 2 3 ");
-		replace(withoutDelay / "orbit_cartesian_oef.txt", " LSP   103 ", " LSP   102 ");
 		const auto original = loadOrbitSolution(withoutDelay).nonGrav;
 		EXPECT_EQ(original.model(), NgModel::InverseSquare);
-		EXPECT_DOUBLE_EQ(original.DT(), 0.0);
+		EXPECT_DOUBLE_EQ(original.DT(), .5);
 		EXPECT_FALSE(hasNgParameter(original.fitParameterMask(), NgParameterMask::DT));
 	}
 
@@ -242,10 +245,10 @@ namespace {
 
 	TEST_F(OrbitSolutionTest, CoreExtensionCannotBeMistakenForStandardOef)
 	{
-		for (const auto model : {NgModel::InverseSquare, NgModel::InverseSquareDT, NgModel::MarsdenCO}) {
+		for (const auto model : {NgModel::InverseSquare, NgModel::MarsdenCO}) {
 			nonGrav(model);
 			const auto directory = save();
-			EXPECT_EQ(loadOrbitSolution(directory).nonGrav.model(), NonGravModel::canonicalModel(model));
+			EXPECT_EQ(loadOrbitSolution(directory).nonGrav.model(), model);
 			replace(directory / "orbit_cartesian_oef.txt", "'OC-OEF1.0'", "'OEF2.0'");
 			EXPECT_THROW((void)loadOrbitSolution(directory), std::invalid_argument);
 		}
@@ -253,7 +256,7 @@ namespace {
 
 	TEST_F(OrbitSolutionTest, PreservesDisabledModelCoefficientsAndConfiguredMask)
 	{
-		nonGrav(NgModel::InverseSquareDT);
+		nonGrav(NgModel::InverseSquare, true);
 		m_fit.finalNonGrav.setFitParameterMask(NgParameterMask::A1 | NgParameterMask::A2);
 		m_fit.finalNonGrav.setEnabled(false);
 		m_fit.uncertainty.fitParameterCovariance = m_fit.uncertainty.cartesianStateCovariance;
@@ -331,34 +334,38 @@ namespace {
 	TEST_F(OrbitSolutionTest, CancellationPreventsPropagationAndCallbacks)
 	{
 		const auto solution = loadOrbitSolution(save());
-		hazard::SolutionPropagationConfig config;
-		config.forces.enabled = true;
-		config.sampling.altitudeKm = 100;
+		NBodySettings forces;
+		forces.enabled = true;
+		hazard::IntervalMcConfig config;
+		config.startMjdTdb = solution.nominal.epochMjd();
+		config.endMjdTdb = config.startMjdTdb + 1;
 		std::stop_source stop;
 		stop.request_stop();
-		const auto result = hazard::propagateSolution(solution, config, stop.get_token(), [](int, int) {
+		const auto result = hazard::runIntervalMonteCarlo(solution, forces, config, stop.get_token(), [](int, int) {
 			ADD_FAILURE() << "Cancelled propagation called progress";
-			return true;
 		});
-		EXPECT_TRUE(result.mc.cancelled);
-		EXPECT_EQ(result.mc.numAttempted, 0);
-		EXPECT_EQ(result.mc.altitudeKm, 100);
+		EXPECT_TRUE(result.cancelled);
+		EXPECT_EQ(result.completed, 0);
+		EXPECT_EQ(result.config.altitudeKm, 100);
 		EXPECT_TRUE(result.events.empty());
 	}
 
 	TEST_F(OrbitSolutionTest, RejectsPropagationSettingsBeforeStarting)
 	{
 		auto solution = loadOrbitSolution(save());
-		hazard::SolutionPropagationConfig config;
-		config.forces.enabled = true;
+		NBodySettings forces;
+		forces.enabled = true;
+		hazard::IntervalMcConfig config;
+		config.startMjdTdb = solution.nominal.epochMjd();
+		config.endMjdTdb = config.startMjdTdb + 1;
 		config.workers = 0;
-		EXPECT_THROW((void)hazard::propagateSolution(solution, config), std::invalid_argument);
+		EXPECT_THROW((void)hazard::runIntervalMonteCarlo(solution, forces, config), std::invalid_argument);
 		config.workers = 1;
 		config.integrator = static_cast<IntegratorKind>(99);
-		EXPECT_THROW((void)hazard::propagateSolution(solution, config), std::invalid_argument);
+		EXPECT_THROW((void)hazard::runIntervalMonteCarlo(solution, forces, config), std::invalid_argument);
 		config.integrator = IntegratorKind::RA15;
 		solution.covariance.resize(7, 7);
-		EXPECT_THROW((void)hazard::propagateSolution(solution, config), std::invalid_argument);
+		EXPECT_THROW((void)hazard::runIntervalMonteCarlo(solution, forces, config), std::invalid_argument);
 	}
 #endif
 }  // namespace

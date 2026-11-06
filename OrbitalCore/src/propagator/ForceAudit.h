@@ -1,6 +1,7 @@
 #pragma once
 
 #include "logger/Logger.h"
+#include "EnvironmentVariable.h"
 
 #include <cstdlib>
 #include <iomanip>
@@ -23,9 +24,10 @@ namespace orbital_core::forces::audit {
 
 	inline int setting(const char* name, int fallback) noexcept
 	{
-		const char* raw = std::getenv(name);
-		if (!raw || !raw[0])
+		const auto valueText = environmentVariable(name);
+		if (!valueText || valueText->empty())
 			return fallback;
+		const char* raw = valueText->c_str();
 		char* end = nullptr;
 		const long value = std::strtol(raw, &end, 10);
 		if (end == raw)

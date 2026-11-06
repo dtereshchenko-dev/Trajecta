@@ -156,6 +156,7 @@ class EphemerisViewModel : public QObject {
 
 	EphemerisTableModel m_table;
 	std::optional<orbital_core::EphemerisSolution> m_solution;
+	bool m_solutionConverged{};
 	QString m_designation;
 	int m_center{Topocentric};
 	QString m_station{QStringLiteral("500")};

@@ -19,7 +19,8 @@ TEST(NonGravProfileTest, NumFitParamsRoutesThroughModel)
 	EXPECT_EQ(profile.model().numFitParams(), 3);
 	m.setModel(NgModel::MarsdenH2O);
 	EXPECT_EQ(profile.model().numFitParams(), 4);
-	m.setModel(NgModel::InverseSquareDT);
+	m.setModel(NgModel::InverseSquare);
+	m.setFitParameterMask(NgParameterMask::A1 | NgParameterMask::A2 | NgParameterMask::A3 | NgParameterMask::DT);
 	EXPECT_EQ(profile.model().numFitParams(), 4);
 }
 

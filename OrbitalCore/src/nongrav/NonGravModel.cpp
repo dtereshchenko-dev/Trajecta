@@ -29,7 +29,7 @@ namespace {
 
 void NonGravModel::setModel(NgModel m) noexcept
 {
-	m_model = canonicalModel(m);
+	m_model = m;
 	m_fitMask = defaultFitParameterMaskFor(m);
 }
 
@@ -47,7 +47,6 @@ NgParameterMask NonGravModel::defaultFitParameterMaskFor(NgModel model) noexcept
 
 		case NgModel::MarsdenH2O:
 		case NgModel::MarsdenCO:
-		case NgModel::InverseSquareDT:
 			return NgParameterMask::A1 | NgParameterMask::A2 | NgParameterMask::A3 | NgParameterMask::DT;
 	}
 
@@ -73,7 +72,6 @@ NgParameterMask NonGravModel::sanitizeFitParameterMaskFor(NgModel model, NgParam
 		case NgModel::InverseSquare:
 		case NgModel::MarsdenH2O:
 		case NgModel::MarsdenCO:
-		case NgModel::InverseSquareDT:
 			if (hasNgParameter(mask, NgParameterMask::DT))
 				return kA1A2A3DT;
 
@@ -199,7 +197,6 @@ double NonGravModel::gr(double rAU) const noexcept
 
 		case NgModel::InverseSquare:
 		case NgModel::Yarkovsky:
-		case NgModel::InverseSquareDT:
 			return 1.0 / (rAU * rAU);
 	}
 

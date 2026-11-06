@@ -3,6 +3,8 @@
 #include "FileReader.h"
 #include "logger/Logger.h"
 #include "orbital_core/Types.h"
+#include "orbital_core/RuntimeData.h"
+#include "orbital_core/obs/ObservatoryUpdates.h"
 
 #include <algorithm>
 #include <cctype>
@@ -25,9 +27,8 @@ namespace orbital_core::obs {
 			return reader.data();
 		}
 
-		ObservatoryCatalog loadOpticalCatalog()
+		ObservatoryCatalog loadOpticalCatalog(const std::filesystem::path& path)
 		{
-			const auto path = getExecutableDir() / "OBSCODE.dat";
 			std::istringstream stream(readCatalogFile(path));
 			ObservatoryCatalog catalog;
 			std::string line;
@@ -55,15 +56,36 @@ namespace orbital_core::obs {
 			return catalog;
 		}
 
-		const RadarCatalog& radarCatalogData()
+		template <typename Catalog> struct LoadedCatalog {
+			Catalog data;
+			std::filesystem::path path;
+		};
+
+		const LoadedCatalog<ObservatoryCatalog>& opticalCatalogData()
 		{
-			static const RadarCatalog data = [] {
-				const auto path = getExecutableDir() / "RADCODE.dat";
+			static const LoadedCatalog<ObservatoryCatalog> data = [] {
+				const auto directory = observatoryDataDirectory();
+				if (directory.empty())
+					throw std::runtime_error("Observatory data directory is not configured");
+				const auto path = directory / "OBSCODE.dat";
+				validateOpticalObservatoryCatalog(readCatalogFile(path));
+				return LoadedCatalog<ObservatoryCatalog>{loadOpticalCatalog(path), path};
+			}();
+			return data;
+		}
+
+		const LoadedCatalog<RadarCatalog>& radarCatalogData()
+		{
+			static const LoadedCatalog<RadarCatalog> data = [] {
+				const auto directory = observatoryDataDirectory();
+				if (directory.empty())
+					throw std::runtime_error("Observatory data directory is not configured");
+				const auto path = directory / "RADCODE.dat";
 				std::istringstream stream(readCatalogFile(path));
 				auto catalog = readRadarCatalog(stream);
 				LOG_INFO << "ObservatoryCatalog: loaded " << catalog.stations.size() << " stations from "
 				         << path.string();
-				return catalog;
+				return LoadedCatalog<RadarCatalog>{std::move(catalog), path};
 			}();
 			return data;
 		}
@@ -118,7 +140,8 @@ namespace orbital_core::obs {
 			std::string jpl, mpc, longitude, rhoXY, rhoZ;
 			if (!(row >> record.code >> jpl >> mpc >> longitude >> rhoXY >> rhoZ))
 				fail("malformed station row");
-			if (!stationCode(record.code) || (jpl != "-" && !jplCode(jpl)) || (mpc != "-" && !stationCode(mpc)))
+			if ((!stationCode(record.code) && !jplCode(record.code)) || (jpl != "-" && !jplCode(jpl)) ||
+			    (mpc != "-" && !stationCode(mpc)))
 				fail("invalid station identifier");
 			record.longitude = coordinate(longitude);
 			record.cosPhi = coordinate(rhoXY);
@@ -154,15 +177,16 @@ namespace orbital_core::obs {
 
 	const ObservatoryCatalog& observatoryCatalog()
 	{
-		static const ObservatoryCatalog data = loadOpticalCatalog();
-		return data;
+		return opticalCatalogData().data;
 	}
+	std::filesystem::path activeOpticalCatalogPath() { return opticalCatalogData().path; }
 
-	const ObservatoryCatalog& radarObservatoryCatalog() { return radarCatalogData().stations; }
+	const ObservatoryCatalog& radarObservatoryCatalog() { return radarCatalogData().data.stations; }
+	std::filesystem::path activeRadarCatalogPath() { return radarCatalogData().path; }
 
 	const ObservatoryRecord& radarObservatory(std::string_view code)
 	{
-		const auto& data = radarCatalogData();
+		const auto& data = radarCatalogData().data;
 		std::string canonical(code);
 		if (const auto alias = data.aliases.find(canonical); alias != data.aliases.end())
 			canonical = alias->second;

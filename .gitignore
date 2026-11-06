@@ -8,6 +8,8 @@
 # Build output
 # ============================================================================
 build/
+/installer/.staging/
+/installer/packages/com.trajecta.app/data/
 build-*/
 out/
 cmake-build-*/

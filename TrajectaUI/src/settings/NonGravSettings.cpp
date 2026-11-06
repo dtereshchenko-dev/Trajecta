@@ -12,10 +12,5 @@ void NonGravSettings::load(QSettings& s)
 	m_enabled = s.value("nonGravEnabled", false).toBool();
 	m_model = s.value("nonGravModel", 1).toInt();
 	m_solveMask = s.value("nonGravSolveMask", 0).toInt();
-	if (m_model == 5) {
-		m_model = 3;
-		if (m_solveMask == 0)
-			m_solveMask = 15;
-	}
 	emit changed();
 }
