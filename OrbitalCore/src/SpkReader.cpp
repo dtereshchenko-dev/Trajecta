@@ -1,5 +1,6 @@
 
 #include "orbital_core/SpkReader.h"
+#include "orbital_core/RuntimeData.h"
 #include <memory>
 #include <string>
 #include <utility>
@@ -415,11 +416,14 @@ SpkReader::SpkReader() : d(std::make_unique<Impl>())
 {
 	static const char* candidates[] = {"sb441-n16.bsp", "sb441-n343.bsp"};
 
-	for (const char* fn : candidates) {
-		auto path = getExecutableDir() / fn;
-		const auto utf8 = path.u8string();
-		if (d->open(std::string(utf8.begin(), utf8.end())))
-			return;
+	for (const auto& directory : {orbital_core::ephemerisDataDirectory(), getExecutableDir()}) {
+		if (directory.empty())
+			continue;
+		for (const char* fn : candidates) {
+			const auto utf8 = (directory / fn).u8string();
+			if (d->open(std::string(utf8.begin(), utf8.end())))
+				return;
+		}
 	}
 }
 

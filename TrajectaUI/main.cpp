@@ -11,8 +11,6 @@
 #include "orbital_core/RuntimeData.h"
 #include "logger/Logger.h"
 #include "app/ApplicationSession.h"
-#include "features/settings/Sb441Download.h"
-#include <QFileInfo>
 #include <memory>
 #ifdef Q_OS_WIN
 #include "app/TaskbarProgress.h"
@@ -40,13 +38,8 @@ int main(int argc, char* argv[])
 	DE440Source de440;
 	setDefaultEphemerisSource(&de440);
 
-	std::unique_ptr<SpkReader> sb441;
-	const auto downloadedSb441 = Sb441Download::installedPath();
-	if (QFileInfo::exists(downloadedSb441))
-		sb441 = std::make_unique<SpkReader>(downloadedSb441.toUtf8().toStdString());
-	if (!sb441 || !sb441->isAvailable())
-		sb441 = std::make_unique<SpkReader>();
-	setDefaultAsteroidSource(sb441.get());
+	SpkReader sb441;
+	setDefaultAsteroidSource(&sb441);
 
 	QQuickStyle::setStyle("Basic");
 	app.setWindowIcon(QIcon(":/qt/qml/TrajectaUI/resources/icons/workspace/app-logo.svg"));

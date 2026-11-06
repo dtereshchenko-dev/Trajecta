@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "orbital_core/SpkReader.h"
+#include "orbital_core/RuntimeData.h"
 #include "orbital_core/Types.h"
 #include "orbital_core/Vec3D.h"
 #include <algorithm>
@@ -119,6 +120,31 @@ TEST_F(SpkReaderTest, FallbackWhenFileAbsent)
 
 	Vec3D R, V;
 	EXPECT_FALSE(noFile.queryState(2000001, Constants::J2000_JD, R, V));
+}
+
+TEST_F(SpkReaderTest, LoadsFromEphemerisDataDirectory)
+{
+	if (!reader->isAvailable())
+		GTEST_SKIP() << "SB441 test data is unavailable";
+
+	const auto kernel = std::filesystem::u8path(reader->sourcePath());
+	const auto previousEphemeris = orbital_core::ephemerisDataDirectory();
+	const auto previousExecutable = getExecutableDir();
+	struct RestoreDirectories {
+		std::filesystem::path ephemeris;
+		std::filesystem::path executable;
+		~RestoreDirectories()
+		{
+			orbital_core::setEphemerisDataDirectory(ephemeris);
+			getExecutableDir() = executable;
+		}
+	} restore{previousEphemeris, previousExecutable};
+
+	orbital_core::setEphemerisDataDirectory(kernel.parent_path());
+	getExecutableDir() = kernel.parent_path() / "missing-directory";
+	SpkReader fromDataDirectory;
+	ASSERT_TRUE(fromDataDirectory.isAvailable());
+	EXPECT_EQ(std::filesystem::u8path(fromDataDirectory.sourcePath()), kernel);
 }
 
 TEST_F(SpkReaderTest, ConcurrentQueriesProduceIdenticalResults)
