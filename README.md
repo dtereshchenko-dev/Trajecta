@@ -13,11 +13,11 @@ through an intuitive, interactive workspace. Trajecta draws inspiration from
 established tools such as Find_Orb and OrbFit, as well as the methods they use.
 
 Trajecta is in active development and testing. If you encounter a bug or
-unexpected behavior, please [open an issue](https://github.com/DmitryTrereshchenko1996/Trajecta/issues)
+unexpected behavior, please [open an issue](https://github.com/dtereshchenko-dev/Trajecta/issues)
 with the steps to reproduce it.
 
-**Downloads:** A Windows installer will be published on
-[GitHub Releases](https://github.com/DmitryTrereshchenko1996/Trajecta/releases).
+**Downloads:** The Windows installer is available on
+[GitHub Releases](https://github.com/dtereshchenko-dev/Trajecta/releases).
 For a source build, see the [developer guide](DEVELOPMENT.md#build).
 
 ## Key features
@@ -118,7 +118,7 @@ RA15 and IAS15 integrators and non-gravitational models are available.
   they are not a new estimate of orbital impact probability.
 
 For confirmed bugs or unexpected behavior, see or open a
-[GitHub issue](https://github.com/DmitryTrereshchenko1996/Trajecta/issues).
+[GitHub issue](https://github.com/dtereshchenko-dev/Trajecta/issues).
 
 ## For developers
 
