@@ -19,13 +19,17 @@ namespace {
 	   protected:
 		std::filesystem::path m_root;
 		FitResult m_fit;
+		bool m_ownsRoot = false;
 
 		void SetUp() override
 		{
-			m_root =
-			    std::filesystem::temp_directory_path() /
-			    ("orbit-solution-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
-			ASSERT_TRUE(std::filesystem::create_directory(m_root));
+			const auto stamp = std::chrono::steady_clock::now().time_since_epoch().count();
+			for (int attempt = 0; attempt < 100 && !m_ownsRoot; ++attempt) {
+				m_root = std::filesystem::temp_directory_path() /
+				         ("orbit-solution-test-" + std::to_string(stamp) + "-" + std::to_string(attempt));
+				m_ownsRoot = std::filesystem::create_directory(m_root);
+			}
+			ASSERT_TRUE(m_ownsRoot);
 			m_fit.fitEpochOrbit =
 			    make_orbit_from_states_vectors(StateVectors(Vec3D(.9, .1, .05), Vec3D(-.1, 1.05, .02)), 2460000.5);
 			ASSERT_TRUE(m_fit.fitEpochOrbit);
@@ -41,10 +45,10 @@ namespace {
 
 		void TearDown() override
 		{
-			if (std::filesystem::canonical(m_root).parent_path() ==
-			        std::filesystem::canonical(std::filesystem::temp_directory_path()) &&
-			    m_root.filename().string().starts_with("orbit-solution-test-"))
-				std::filesystem::remove_all(m_root);
+			if (m_ownsRoot) {
+				std::error_code error;
+				std::filesystem::remove_all(m_root, error);
+			}
 		}
 
 		std::filesystem::path save(bool full = false)

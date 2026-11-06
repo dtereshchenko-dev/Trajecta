@@ -264,7 +264,7 @@ TEST(RadarObservation, SurfaceReturnWithoutRadiusUsesOneKilometre)
 	ASSERT_TRUE(ephemeris.isAvailable());
 	setDefaultEphemerisSource(&ephemeris);
 	const auto path =
-	    std::filesystem::path(__FILE__).parent_path().parent_path().parent_path() / "data/examples/NEO/apollo_1862.txt";
+	    std::filesystem::path(__FILE__).parent_path().parent_path().parent_path() / "data/examples/NEO/Apollo1862.txt";
 	const auto observations = loadObservations(path);
 	std::vector<ObsNode> radar;
 	std::ranges::copy_if(observations.all, std::back_inserter(radar),

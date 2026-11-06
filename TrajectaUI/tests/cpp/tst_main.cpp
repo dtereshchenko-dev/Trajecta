@@ -1,9 +1,12 @@
 #include <QTest>
 #include <QApplication>
+#include <QDir>
+#include <QFile>
 #include <QProcess>
 #include <QProcessEnvironment>
 #include <QSettings>
 #include <QTemporaryDir>
+#include <cstdio>
 
 #include "tst_recentfiles.h"
 #include "tst_orbitgeometry.h"
@@ -14,6 +17,35 @@
 #include "tst_orbitengine.h"
 #include "tst_workspace.h"
 
+static int runTest(QObject* test, int argc, char* argv[])
+{
+	const QString logDirectory = qEnvironmentVariable("TRAJECTA_QT_TEST_LOG_DIR");
+	if (logDirectory.isEmpty())
+		return QTest::qExec(test, argc, argv);
+
+	if (!QDir().mkpath(logDirectory)) {
+		std::fprintf(stderr, "Cannot create Qt test log directory: %s\n", qPrintable(logDirectory));
+		return 1;
+	}
+	const QString logPath = QDir(logDirectory).filePath(
+	    QStringLiteral("%1-%2.txt").arg(QString::fromLatin1(test->metaObject()->className()))
+	        .arg(QCoreApplication::applicationPid()));
+	QStringList arguments = QCoreApplication::arguments();
+	arguments << QStringLiteral("-o") << logPath + QStringLiteral(",txt");
+	const int status = QTest::qExec(test, arguments);
+	if (status != 0) {
+		QFile log(logPath);
+		if (log.open(QIODevice::ReadOnly)) {
+			const QByteArray output = log.readAll();
+			std::fwrite(output.constData(), 1, static_cast<size_t>(output.size()), stderr);
+			std::fflush(stderr);
+		} else {
+			std::fprintf(stderr, "Cannot read Qt test log: %s\n", qPrintable(logPath));
+		}
+	}
+	return status;
+}
+
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
@@ -21,13 +53,13 @@ int main(int argc, char* argv[])
 	app.setApplicationName("TestApp");
 	if (qEnvironmentVariableIsSet("ORBITAL_DIAGNOSTICS_ONLY")) {
 		TestDiagnosticsModel test;
-		return QTest::qExec(&test, argc, argv);
+		return runTest(&test, argc, argv);
 	}
 
 	int status = 0;
 	if (qEnvironmentVariableIsSet("ORBITAL_WORKSPACE_ONLY")) {
 		TestWorkspace test;
-		return QTest::qExec(&test, argc, argv);
+		return runTest(&test, argc, argv);
 	}
 	if (!qEnvironmentVariableIsSet("ORBITAL_MODELS_ONLY")) {
 		QProcess workspace;
@@ -55,31 +87,31 @@ int main(int argc, char* argv[])
 
 	{
 		TestRecentFiles test;
-		status |= QTest::qExec(&test, argc, argv);
+		status |= runTest(&test, argc, argv);
 	}
 	{
 		TestOrbitGeometry test;
-		status |= QTest::qExec(&test, argc, argv);
+		status |= runTest(&test, argc, argv);
 	}
 	{
 		TestGridGeometry test;
-		status |= QTest::qExec(&test, argc, argv);
+		status |= runTest(&test, argc, argv);
 	}
 	{
 		TestOrbitEngine test;
-		status |= QTest::qExec(&test, argc, argv);
+		status |= runTest(&test, argc, argv);
 	}
 	{
 		TestDiagnosticsModel test;
-		status |= QTest::qExec(&test, argc, argv);
+		status |= runTest(&test, argc, argv);
 	}
 	{
 		TestNonGravSettings test;
-		status |= QTest::qExec(&test, argc, argv);
+		status |= runTest(&test, argc, argv);
 	}
 	{
 		TestCometOrbits test;
-		status |= QTest::qExec(&test, argc, argv);
+		status |= runTest(&test, argc, argv);
 	}
 
 	return status;

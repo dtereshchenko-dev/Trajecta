@@ -326,3 +326,14 @@ Strewn HTML/JavaScript tests live under `StrewnField/tests/`; browser-based test
 have their own runtime requirements. A successful build alone does not run tests
 or establish cross-platform numerical equivalence.
 
+### Continuous integration
+
+The Windows CI workflow builds the project and runs CTest on pushes, pull
+requests, and manual dispatches. It caches vcpkg binary packages and obtains
+DE440 and the two debias tables from JPL or a cache, verifying their SHA-256
+hashes each time. An initial run must populate the caches; GitHub may evict
+them, and cache access can differ between branches and pull requests.
+SB441-N16 is not downloaded, so tests requiring it are skipped. The workflow
+does not build or publish an installer and does not establish numerical
+equivalence across platforms.
+
