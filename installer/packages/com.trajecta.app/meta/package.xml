@@ -4,9 +4,9 @@
     <DisplayName>Trajecta</DisplayName>
     <Description>Orbit determination, ephemerides, impact monitoring and StrewnField atmospheric Monte Carlo. Includes TrajectaCLI and StrewnCLI command-line tools.</Description>
     <Version>@TRAJECTA_VERSION@</Version>
-    <ReleaseDate>2026-10-13</ReleaseDate>
+    <ReleaseDate>@TRAJECTA_RELEASE_DATE@</ReleaseDate>
     <Default>true</Default>
-    <Essential>true</Essential>
+    <Essential>false</Essential>
     <Script>installscript.qs</Script>
     <Licenses>
         <License name="GNU General Public License v3" file="license.txt" />

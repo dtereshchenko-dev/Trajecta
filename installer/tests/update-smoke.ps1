@@ -46,7 +46,8 @@ try {
     $repogen = Join-Path $IfwDirectory 'bin/repogen.exe'
     $archivegen = Join-Path $IfwDirectory 'bin/archivegen.exe'
     foreach ($version in @('1.0.1', '1.0.2')) {
-        Write-Text (Join-Path $meta 'package.xml') "<Package><DisplayName>Trajecta</DisplayName><Description>Smoke</Description><Version>$version</Version><ReleaseDate>2026-01-01</ReleaseDate><Default>true</Default><Essential>true</Essential><Script>installscript.qs</Script></Package>"
+        $essential = if ($version -eq '1.0.1') { 'true' } else { 'false' }
+        Write-Text (Join-Path $meta 'package.xml') "<Package><DisplayName>Trajecta</DisplayName><Description>Smoke</Description><Version>$version</Version><ReleaseDate>2026-01-01</ReleaseDate><Default>true</Default><Essential>$essential</Essential><Script>installscript.qs</Script></Package>"
         Write-Text (Join-Path $data 'app.txt') $version
         foreach ($item in @(@('OBSCODE.dat', 'obscode.7z'), @('RADCODE.dat', 'radcode.7z'), @('linux_p1550p2650.440', 'de440.7z'))) {
             $inputFile = Join-Path $root ('input/' + $item[0])
@@ -85,7 +86,7 @@ try {
                 throw "Update check failed: $output $errors"
             }
             & (Join-Path $target 'Uninstall Trajecta.exe') '--default-answer' '--confirm-command' 'update'
-            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 6) { throw "Maintenance tool failed: $LASTEXITCODE" }
+            if ($LASTEXITCODE -ne 0) { throw "Maintenance tool failed or requested a restart: $LASTEXITCODE" }
             Assert-Text (Join-Path $target 'app.txt') '1.0.2'
             Assert-Text $userCatalog 'user-updated'
             Assert-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/work/keep.txt') 'user-work'
@@ -100,5 +101,4 @@ try {
     }
 }
 
-# The maintenance tool's accepted restart-required code must not fail the CI step.
 $global:LASTEXITCODE = 0

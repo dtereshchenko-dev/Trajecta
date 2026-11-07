@@ -2,7 +2,7 @@
 <Installer>
     <Name>Trajecta</Name>
     <Version>@TRAJECTA_VERSION@</Version>
-    <Title>Trajecta @TRAJECTA_VERSION@ Installer</Title>
+    <Title>Trajecta Installer</Title>
     <Publisher>Trajecta</Publisher>
     <TargetDir>@HomeDir@/.local/opt/Trajecta</TargetDir>
     <RemoveTargetDir>false</RemoveTargetDir>

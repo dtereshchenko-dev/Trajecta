@@ -5,6 +5,11 @@ function Component()
 
 Component.prototype.onLoaded = function()
 {
+    if (!installer.isCommandLineInstance()) {
+        var finishedPage = gui.pageByObjectName("FinishedPage");
+        if (finishedPage)
+            finishedPage.entered.connect(this, Component.prototype.onFinishedPageEntered);
+    }
     if (installer.isInstaller()) {
         installer.installationFinished.connect(this, Component.prototype.onInstallFinished);
 
@@ -14,6 +19,17 @@ Component.prototype.onLoaded = function()
 
     }
 }
+
+Component.prototype.onFinishedPageEntered = function()
+{
+    if (!installer.isUpdater() || installer.status !== QInstaller.Success)
+        return;
+    var page = gui.pageByObjectName("FinishedPage");
+    if (page && page.RunItCheckBox) {
+        page.RunItCheckBox.checked = true;
+        gui.clickButton(buttons.FinishButton, 200);
+    }
+};
 
 Component.prototype.onInstallFinished = function()
 {

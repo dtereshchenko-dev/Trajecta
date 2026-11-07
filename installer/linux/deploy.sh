@@ -16,7 +16,9 @@ app="$stage/packages/com.trajecta.app/data"
 meta="$stage/packages/com.trajecta.app/meta"
 mkdir -p "$app/usr/bin" "$meta" "$stage/config" "$output"
 sed "s/@TRAJECTA_VERSION@/$version/g" "$root/installer/linux/config.xml" > "$stage/config/config.xml"
-sed "s/@TRAJECTA_VERSION@/$version/g" "$root/installer/linux/package.xml" > "$meta/package.xml"
+release_date=$(date -u +%F)
+sed -e "s/@TRAJECTA_VERSION@/$version/g" -e "s/@TRAJECTA_RELEASE_DATE@/$release_date/g" \
+    "$root/installer/linux/package.xml" > "$meta/package.xml"
 cat "$root/installer/linux/controller.qs" "$root/installer/common/lifecycle.qs" > "$stage/config/controller.qs"
 cp "$root/installer/linux/installscript.qs" "$meta/installscript.qs"
 cp "$root/installer/config/icon.png" "$root/installer/config/banner.png" "$stage/config/"
