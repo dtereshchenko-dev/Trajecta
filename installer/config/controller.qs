@@ -2,6 +2,7 @@ function Controller()
 {
     this.removeUserData = false;
     this.targetDir = "";
+    installer.installDirectoryChanged.connect(this, Controller.prototype.onTargetDirectoryEdited);
     installer.uninstallationStarted.connect(this, Controller.prototype.onUninstallationStarted);
     installer.uninstallationFinished.connect(this, Controller.prototype.onUninstallationFinished);
 }
@@ -11,6 +12,14 @@ Controller.prototype.onUninstallationStarted = function()
     if (systemInfo.productType !== "windows" || !installer.isUninstaller()
             || installer.value("PreserveUserData") === "1")
         return;
+
+    if (installer.isProcessRunning("Trajecta.exe")) {
+        if (installer.isCommandLineInstance())
+            console.log("Close Trajecta before removing it.");
+        else
+            QMessageBox.warning("trajecta.running", "Trajecta", "Close Trajecta before removing it.");
+        return;
+    }
 
     this.targetDir = installer.value("TargetDir");
     if (installer.isCommandLineInstance()) {

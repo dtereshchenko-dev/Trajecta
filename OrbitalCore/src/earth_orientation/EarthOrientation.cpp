@@ -1,5 +1,6 @@
 #include "EarthOrientation.h"
 #include <filesystem>
+#include <optional>
 #include "EopData.h"
 #include "orbital_core/Types.h"
 

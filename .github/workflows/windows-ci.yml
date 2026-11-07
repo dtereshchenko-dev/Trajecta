@@ -1,4 +1,4 @@
-name: Windows CI
+name: CI
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build-and-test:
-    name: MSVC 2022 / Qt 6.9.3
+    name: Windows Server 2022 / MSVC 2022 / Qt 6.9.3
     runs-on: windows-2022
     timeout-minutes: 180
     env:
@@ -224,7 +224,7 @@ jobs:
           $output = Join-Path $env:RUNNER_TEMP 'trajecta-release'
           New-Item -ItemType Directory -Path $output | Out-Null
           & "$ifw/bin/binarycreator.exe" --hybrid --compression 5 -c "$stage/config/config.xml" `
-            -p "$stage/packages" "$output/TrajectaSetup.exe"
+            -p "$stage/packages" "$output/TrajectaSetup-x86_64.exe"
           if ($LASTEXITCODE -ne 0) { throw 'Installer creation failed.' }
           Compress-Archive -Path "$stage/repository/*" -DestinationPath "$output/Trajecta-IFW-$env:GITHUB_REF_NAME.zip" -CompressionLevel Optimal
 
@@ -237,9 +237,13 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  linux:
+    name: Ubuntu 26.04
+    uses: ./.github/workflows/ubuntu-ci.yml
+
   draft-release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build-and-test
+    needs: [build-and-test, linux]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -248,6 +252,10 @@ jobs:
         with:
           name: release-packages
           path: release
+      - uses: actions/download-artifact@v4
+        with:
+          name: linux-release-packages
+          path: release
       - name: Create draft release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -255,4 +263,5 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           gh release create "$RELEASE_TAG" --draft --verify-tag --title "Trajecta $RELEASE_TAG" \
-            "release/TrajectaSetup.exe" "release/Trajecta-IFW-$RELEASE_TAG.zip"
+            "release/TrajectaSetup-x86_64.exe" "release/Trajecta-IFW-$RELEASE_TAG.zip" \
+            "release/TrajectaSetup-x86_64.run" "release/Trajecta-IFW-linux-x86_64-$RELEASE_TAG.zip"

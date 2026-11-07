@@ -53,7 +53,7 @@ ColumnLayout {
                 RowLayout {
                     Layout.preferredWidth: 50
                     spacing: 4
-                    CustomText { text: elementRow.modelData.label; font.family: "Georgia"; font.italic: true; font.pixelSize: 14 }
+                    CustomText { text: elementRow.modelData.label; font.family: Qt.platform.os === "windows" ? "Georgia" : UI.font; font.italic: true; font.pixelSize: 14 }
                     CustomText { text: elementRow.modelData.unit; visible: text.length > 0; secondary: true; font.pixelSize: 10 }
                     Item { Layout.fillWidth: true }
                 }

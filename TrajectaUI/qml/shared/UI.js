@@ -1,8 +1,12 @@
 .pragma library
 
 var systemFonts = Qt.fontFamilies()
-var font = systemFonts.indexOf("Segoe UI Variable Text") >= 0 ? "Segoe UI Variable Text" : systemFonts.indexOf("Segoe UI") >= 0 ? "Segoe UI" : "Inter"
-var monoFont = systemFonts.indexOf("Cascadia Mono") >= 0 ? "Cascadia Mono" : systemFonts.indexOf("Consolas") >= 0 ? "Consolas" : "JetBrains Mono"
+var font = "Source Sans 3"
+var monoFont = "Cascadia Mono"
+if (Qt.platform.os === "windows") {
+    font = systemFonts.indexOf("Segoe UI Variable Text") >= 0 ? "Segoe UI Variable Text" : systemFonts.indexOf("Segoe UI") >= 0 ? "Segoe UI" : "Inter"
+    monoFont = systemFonts.indexOf("Cascadia Mono") >= 0 ? "Cascadia Mono" : systemFonts.indexOf("Consolas") >= 0 ? "Consolas" : "JetBrains Mono"
+}
 var controlHeight = 33
 var rowHeight = 36
 var radius = 4

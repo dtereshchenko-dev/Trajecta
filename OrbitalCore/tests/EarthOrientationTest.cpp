@@ -318,7 +318,8 @@ namespace {
 		parsed.obsCode = "F52";
 		parsed.magnitudeText = "20.0";
 		const ObsNode node(parsed, ObservatoryRecord{"F52", 203.74409, .936239, .351545});
-		EXPECT_NEAR(node.LST, 5.3605187722485672, 2e-12);
+		// Allow sub-millimetre compiler-dependent rounding in the rotation chain.
+		EXPECT_NEAR(node.LST, 5.3605187722485672, 1e-11);
 
 		const Vec3D offsetEclAu(2.3981680378233689e-5, -2.3353858328807347e-5, 2.6409633567564912e-5);
 		const Vec3D expectedBodyAu(-3.6537912322656392e-5, -1.6072567871481898e-5, 1.4988194117280977e-5);

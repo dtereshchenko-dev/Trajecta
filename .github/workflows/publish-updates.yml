@@ -41,26 +41,37 @@ jobs:
             throw 'A published stable release is required.'
           }
           $site = Join-Path $env:RUNNER_TEMP 'trajecta-pages'
-          $repository = Join-Path $site 'updates/windows'
           $downloads = Join-Path $env:RUNNER_TEMP 'trajecta-update-downloads'
-          New-Item -ItemType Directory -Path $repository, $downloads -Force | Out-Null
-          $previous = @($releases | Where-Object {
-            $release = $_
-            -not $release.draft -and -not $release.prerelease -and $release.tag_name -cmatch '^v\d+\.\d+\.\d+$' -and
-              $release.tag_name -cne $env:RELEASE_TAG -and
-              @($release.assets | Where-Object { $_.name -ceq "Trajecta-IFW-$($release.tag_name).zip" }).Count -gt 0
-          } | Sort-Object published_at -Descending | Select-Object -First 1)
-          $tags = @($previous | ForEach-Object { $_.tag_name }) + @($env:RELEASE_TAG)
-          foreach ($tag in $tags) {
-            $archive = "Trajecta-IFW-$tag.zip"
-            gh release download "$tag" --pattern "$archive" --dir "$downloads"
-            if ($LASTEXITCODE -ne 0) { throw "Missing update repository asset for $tag." }
-            Expand-Archive -LiteralPath (Join-Path $downloads $archive) -DestinationPath $repository -Force
-          }
-          [xml]$updates = Get-Content -LiteralPath (Join-Path $repository 'Updates.xml') -Raw
-          $components = @($updates.Updates.PackageUpdate | Where-Object { $_.Name -ceq 'com.trajecta.app' })
-          if ($components.Count -ne 1 -or $components[0].Version -cne $env:RELEASE_TAG.Substring(1)) {
-            throw 'The update repository component version does not match the release tag.'
+          New-Item -ItemType Directory -Path $site, $downloads -Force | Out-Null
+          $platforms = @(
+            @{ Name = 'windows'; Prefix = 'Trajecta-IFW-'; Required = $true },
+            @{ Name = 'linux'; Prefix = 'Trajecta-IFW-linux-x86_64-'; Required = $false }
+          )
+          foreach ($platform in $platforms) {
+            $available = @($releases | Where-Object {
+              $release = $_
+              -not $release.draft -and -not $release.prerelease -and $release.tag_name -cmatch '^v\d+\.\d+\.\d+$' -and
+                @($release.assets | Where-Object { $_.name -ceq "$($platform.Prefix)$($release.tag_name).zip" }).Count -gt 0
+            } | Sort-Object published_at -Descending | Select-Object -First 2)
+            if ($platform.Required -and ($available.Count -eq 0 -or $available[0].tag_name -cne $env:RELEASE_TAG)) {
+              throw "The latest release is missing the $($platform.Name) update repository."
+            }
+            if ($available.Count -eq 0) { continue }
+            $repository = Join-Path $site "updates/$($platform.Name)"
+            New-Item -ItemType Directory -Path $repository -Force | Out-Null
+            [array]::Reverse($available)
+            foreach ($release in $available) {
+              $archive = "$($platform.Prefix)$($release.tag_name).zip"
+              gh release download "$($release.tag_name)" --pattern "$archive" --dir "$downloads"
+              if ($LASTEXITCODE -ne 0) { throw "Missing update repository asset: $archive." }
+              Expand-Archive -LiteralPath (Join-Path $downloads $archive) -DestinationPath $repository -Force
+            }
+            [xml]$updates = Get-Content -LiteralPath (Join-Path $repository 'Updates.xml') -Raw
+            $components = @($updates.Updates.PackageUpdate | Where-Object { $_.Name -ceq 'com.trajecta.app' })
+            $newestTag = $available[-1].tag_name
+            if ($components.Count -ne 1 -or $components[0].Version -cne $newestTag.Substring(1)) {
+              throw "The $($platform.Name) component version does not match $newestTag."
+            }
           }
           Set-Content -LiteralPath (Join-Path $site 'index.html') -Value '<!doctype html><title>Trajecta updates</title>' -Encoding utf8
 

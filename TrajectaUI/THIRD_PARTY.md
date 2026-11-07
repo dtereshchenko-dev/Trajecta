@@ -31,6 +31,10 @@ Trajecta uses the following third-party libraries and data:
   Source: https://github.com/rsms/inter
 - **JetBrains Mono:** SIL Open Font License 1.1; copyright The JetBrains Mono
   Project Authors. Source: https://github.com/JetBrains/JetBrainsMono
+- **Source Sans 3:** SIL Open Font License 1.1; copyright Adobe.
+  Source: https://github.com/adobe-fonts/source-sans
+- **Cascadia Mono:** SIL Open Font License 1.1; copyright Microsoft.
+  Source: https://github.com/microsoft/cascadia-code
 - Their full notices are included in `licenses/` in Windows packages and in
   `TrajectaUI/resources/fonts/` in the source tree.
 

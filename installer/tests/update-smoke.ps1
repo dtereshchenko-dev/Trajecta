@@ -30,14 +30,18 @@ try {
     $data = Join-Path $package 'data'
     $meta = Join-Path $package 'meta'
     $repository = Join-Path $root 'repository'
-    $target = Join-Path $root 'installed'
+    $target = Join-Path $root 'installed with spaces'
     $config = Join-Path $root 'config.xml'
     $source = Get-Content -LiteralPath (Join-Path $repoRoot 'packages/com.trajecta.app/meta/installscript.qs') -Raw
     $start = $source.IndexOf('Component.prototype.createOperationsForArchive = function(archive)')
-    if ($start -lt 0) { throw 'Archive operation handler not found' }
-    Write-Text (Join-Path $meta 'installscript.qs') ("function Component() {}`n" + $source.Substring($start))
+    $operations = $source.IndexOf('Component.prototype.createOperations = function()')
+    if ($start -lt 0 -or $operations -lt 0) { throw 'Component script handlers not found' }
+    Write-Text (Join-Path $meta 'installscript.qs') ($source.Substring(0, $operations) + $source.Substring($start))
+    $controller = (Get-Content -LiteralPath (Join-Path $repoRoot 'config/controller.qs') -Raw) + "`n" +
+        (Get-Content -LiteralPath (Join-Path $repoRoot 'common/lifecycle.qs') -Raw)
+    Write-Text (Join-Path $root 'controller.qs') $controller
     $repoUrl = ([uri]$repository).AbsoluteUri
-    Write-Text $config "<Installer><Name>Trajecta update smoke</Name><Version>1.0.1</Version><Title>Smoke</Title><Publisher>Test</Publisher><MaintenanceToolName>maintenancetool</MaintenanceToolName><RemoteRepositories><Repository><Url>$repoUrl</Url><Enabled>1</Enabled></Repository></RemoteRepositories></Installer>"
+    Write-Text $config "<Installer><Name>Trajecta update smoke</Name><Version>1.0.1</Version><Title>Smoke</Title><Publisher>Test</Publisher><MaintenanceToolName>Uninstall Trajecta</MaintenanceToolName><ControlScript>controller.qs</ControlScript><RemoteRepositories><Repository><Url>$repoUrl</Url><Enabled>1</Enabled></Repository></RemoteRepositories></Installer>"
     $binarycreator = Join-Path $IfwDirectory 'bin/binarycreator.exe'
     $repogen = Join-Path $IfwDirectory 'bin/repogen.exe'
     $archivegen = Join-Path $IfwDirectory 'bin/archivegen.exe'
@@ -57,10 +61,18 @@ try {
             Assert-Text $userCatalog '1.0.1'
             Write-Text $userCatalog 'user-updated'
             Write-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/work/keep.txt') 'user-work'
+            $metadata = Join-Path $target 'components.xml'
+            $metadataHash = (Get-FileHash -LiteralPath $metadata -Algorithm SHA256).Hash
+            & (Join-Path $root 'setup.exe') '--root' $target '--auto-answer' 'OverwriteTargetDirectory=Yes' '--default-answer' '--confirm-command' 'install'
+            if ($LASTEXITCODE -eq 0) { throw 'Repeated installation unexpectedly succeeded.' }
+            if ((Get-FileHash -LiteralPath $metadata -Algorithm SHA256).Hash -ne $metadataHash) { throw 'Repeated installation changed metadata.' }
+            Assert-Text (Join-Path $target 'app.txt') '1.0.1'
+            Assert-Text $userCatalog 'user-updated'
+            if (Test-Path -LiteralPath (Join-Path $target 'Uninstall Trajecta.exe.new')) { throw 'Repeated installation left a new maintenance tool.' }
         } else {
             Run-Checked $repogen @('-p', $packages, $repository)
             $check = [System.Diagnostics.Process]::new()
-            $check.StartInfo.FileName = Join-Path $target 'maintenancetool.exe'
+            $check.StartInfo.FileName = Join-Path $target 'Uninstall Trajecta.exe'
             $check.StartInfo.Arguments = 'check-updates'
             $check.StartInfo.UseShellExecute = $false
             $check.StartInfo.RedirectStandardOutput = $true
@@ -72,7 +84,7 @@ try {
             if ($check.ExitCode -ne 0 -or $output -notmatch '(?s)<updates>.*id="com\.trajecta\.app".*/>.*</updates>') {
                 throw "Update check failed: $output $errors"
             }
-            & (Join-Path $target 'maintenancetool.exe') '--default-answer' '--confirm-command' 'update'
+            & (Join-Path $target 'Uninstall Trajecta.exe') '--default-answer' '--confirm-command' 'update'
             if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 6) { throw "Maintenance tool failed: $LASTEXITCODE" }
             Assert-Text (Join-Path $target 'app.txt') '1.0.2'
             Assert-Text $userCatalog 'user-updated'

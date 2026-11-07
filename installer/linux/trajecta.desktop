@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Trajecta
+Comment=Orbit determination and impact analysis
+Exec=Trajecta
+Icon=trajecta
+Categories=Science;Astronomy;
+Terminal=false

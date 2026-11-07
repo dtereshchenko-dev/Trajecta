@@ -91,6 +91,11 @@ namespace orbital_core {
 				return std::filesystem::path(*localAppData) / "Trajecta" / "work";
 			}
 			const auto home = environmentVariable(L"HOME");
+#elif defined(__linux__)
+			if (const auto data = environmentVariable("XDG_DATA_HOME"); data && !data->empty()) {
+				return std::filesystem::path(*data) / "Trajecta" / "work";
+			}
+			const auto home = environmentVariable("HOME");
 #else
 			const auto home = environmentVariable("HOME");
 #endif
@@ -113,6 +118,13 @@ namespace orbital_core {
 
 		[[nodiscard]] std::filesystem::path resolveBaseDirectory(const ExportContext& context)
 		{
+#if defined(__linux__)
+			if (context.rootDirectory.empty()) {
+				const auto data = localAppDataWorkDirectory();
+				if (!data.empty())
+					return data;
+			}
+#endif
 			std::filesystem::path root = context.rootDirectory.empty() ? getExecutableDir() : context.rootDirectory;
 			if (root.empty())
 				throw std::runtime_error("Exporter root directory is empty");
