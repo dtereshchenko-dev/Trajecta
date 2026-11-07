@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>Trajecta</Name>
+    <Version>@TRAJECTA_VERSION@</Version>
+    <Title>Trajecta @TRAJECTA_VERSION@ Installer</Title>
+    <Publisher>Trajecta</Publisher>
+    <TargetDir>@HomeDir@/.local/opt/Trajecta</TargetDir>
+    <RemoveTargetDir>false</RemoveTargetDir>
+    <AllowNonAsciiCharacters>true</AllowNonAsciiCharacters>
+    <AllowSpaceInPath>true</AllowSpaceInPath>
+    <MaintenanceToolName>TrajectaMaintenance</MaintenanceToolName>
+    <RemoteRepositories>
+        <Repository>
+            <Url>https://dtereshchenko-dev.github.io/Trajecta/updates/linux</Url>
+            <Enabled>1</Enabled>
+            <DisplayName>Trajecta Linux updates</DisplayName>
+        </Repository>
+    </RemoteRepositories>
+    <ControlScript>controller.qs</ControlScript>
+    <InstallerWindowIcon>icon</InstallerWindowIcon>
+    <WizardStyle>Modern</WizardStyle>
+    <WizardShowPageList>false</WizardShowPageList>
+    <WizardDefaultWidth>500</WizardDefaultWidth>
+    <WizardDefaultHeight>400</WizardDefaultHeight>
+    <Logo>banner.png</Logo>
+    <RunProgram>@TargetDir@/usr/bin/trajecta</RunProgram>
+    <RunProgramDescription>Launch Trajecta</RunProgramDescription>
+</Installer>

@@ -125,7 +125,7 @@ TEST(WeatherTest, InterpolatesPressureColumnsAndAppliesGeoidWithoutVerticalWind)
 TEST(WeatherTest, RequiredRasterDriversAreAvailable)
 {
 	initializeRasters();
-	for (const auto* name : {"GRIB", "GTiff", "JP2OpenJPEG"}) {
+	for (const auto* name : {"GRIB", "GTiff", "JP2OpenJPEG", "CSV", "MEM"}) {
 		EXPECT_NE(GetGDALDriverManager()->GetDriverByName(name), nullptr) << name;
 	}
 }

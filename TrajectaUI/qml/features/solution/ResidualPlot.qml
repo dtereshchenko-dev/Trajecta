@@ -146,9 +146,9 @@ ChartView {
         titleBrush: AppTheme.muted
         gridLineColor: AppTheme.chartGrid
         color: AppTheme.chartGrid
-        labelsFont.family: "Consolas"
+        labelsFont.family: Qt.platform.os === "windows" ? "Consolas" : UI.monoFont
         labelsFont.pixelSize: 10
-        titleFont.family: "Segoe UI"
+        titleFont.family: Qt.platform.os === "windows" ? "Segoe UI" : UI.font
         titleFont.pixelSize: 10
         labelFormat: chart.timeMode ? "%.1f" : "%.2f"
     }
@@ -162,9 +162,9 @@ ChartView {
         titleBrush: AppTheme.muted
         gridLineColor: AppTheme.chartGrid
         color: AppTheme.chartGrid
-        labelsFont.family: "Consolas"
+        labelsFont.family: Qt.platform.os === "windows" ? "Consolas" : UI.monoFont
         labelsFont.pixelSize: 10
-        titleFont.family: "Segoe UI"
+        titleFont.family: Qt.platform.os === "windows" ? "Segoe UI" : UI.font
         titleFont.pixelSize: 10
         labelFormat: chart.yLabelFormat
     }

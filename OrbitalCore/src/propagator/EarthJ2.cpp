@@ -3,6 +3,7 @@
 #include "orbital_core/Types.h"
 #include "earth_orientation/EarthOrientation.h"
 #include "earth_orientation/EarthRotation.h"
+#include <Eigen/Geometry>
 
 namespace orbital_core::forces::detail {
     struct EarthZonalParameters {

@@ -2145,21 +2145,40 @@ class TestWorkspace : public QObject {
 		component.setData(R"(
             import QtQuick
             import TrajectaUI
+            import "shared/UI.js" as UI
             QtObject {
-                property string textFamily: AppTheme.fallbackTextFont.name
-                property string monoFamily: AppTheme.fallbackMonoFont.name
-                property string monoBoldFamily: AppTheme.fallbackMonoBoldFont.name
-                property bool available: Qt.fontFamilies().indexOf("Inter") >= 0
-                    && Qt.fontFamilies().indexOf("JetBrains Mono") >= 0
+                property string textFamily: AppTheme.textFont.name
+                property string italicFamily: AppTheme.textItalicFont.name
+                property string semiBoldFamily: AppTheme.textSemiBoldFont.name
+                property string boldFamily: AppTheme.textBoldFont.name
+                property string monoFamily: AppTheme.monoFont.name
+                property string monoBoldFamily: AppTheme.monoBoldFont.name
+                property string uiTextFamily: UI.font
+                property string uiMonoFamily: UI.monoFont
             }
         )",
-		                  QUrl());
+		                  QUrl::fromLocalFile(QStringLiteral(ORBITAL_UI_SOURCE_DIR) + "/qml/font-check.qml"));
 		std::unique_ptr<QObject> root(component.create());
 		QVERIFY2(root, qPrintable(component.errorString()));
-		QVERIFY(!root->property("textFamily").toString().isEmpty());
-		QVERIFY(!root->property("monoFamily").toString().isEmpty());
-		QVERIFY(!root->property("monoBoldFamily").toString().isEmpty());
-		QVERIFY(root->property("available").toBool());
+#ifdef Q_OS_WIN
+		QCOMPARE(root->property("textFamily").toString(), QStringLiteral("Inter"));
+		QCOMPARE(root->property("monoFamily").toString(), QStringLiteral("JetBrains Mono"));
+		QCOMPARE(root->property("monoBoldFamily").toString(), QStringLiteral("JetBrains Mono"));
+		const QString textFamily = root->property("uiTextFamily").toString();
+		QVERIFY(textFamily == QStringLiteral("Segoe UI Variable Text") || textFamily == QStringLiteral("Segoe UI")
+		        || textFamily == root->property("textFamily").toString());
+		const QString monoFamily = root->property("uiMonoFamily").toString();
+		QVERIFY(monoFamily == QStringLiteral("Cascadia Mono") || monoFamily == QStringLiteral("Consolas")
+		        || monoFamily == root->property("monoFamily").toString());
+#else
+		QCOMPARE(root->property("textFamily").toString(), QStringLiteral("Source Sans 3"));
+		QCOMPARE(root->property("italicFamily").toString(), QStringLiteral("Source Sans 3"));
+		QCOMPARE(root->property("semiBoldFamily").toString(), QStringLiteral("Source Sans 3"));
+		QCOMPARE(root->property("boldFamily").toString(), QStringLiteral("Source Sans 3"));
+		QCOMPARE(root->property("monoFamily").toString(), QStringLiteral("Cascadia Mono"));
+		QCOMPARE(root->property("uiTextFamily").toString(), root->property("textFamily").toString());
+		QCOMPARE(root->property("uiMonoFamily").toString(), root->property("monoFamily").toString());
+#endif
 	}
 
 	void bundledApplicationIcon()

@@ -3,9 +3,13 @@ import QtQuick
 import "UI.js" as UI
 
 QtObject {
-    property FontLoader fallbackTextFont: FontLoader { source: "../../resources/fonts/Inter.ttc" }
-    property FontLoader fallbackMonoFont: FontLoader { source: "../../resources/fonts/JetBrainsMono-Regular.ttf" }
-    property FontLoader fallbackMonoBoldFont: FontLoader { source: "../../resources/fonts/JetBrainsMono-Bold.ttf" }
+    readonly property bool windows: Qt.platform.os === "windows"
+    property FontLoader textFont: FontLoader { source: windows ? "../../resources/fonts/Inter.ttc" : "../../resources/fonts/SourceSans3-Regular.ttf" }
+    property FontLoader textItalicFont: FontLoader { source: windows ? "" : "../../resources/fonts/SourceSans3-It.ttf" }
+    property FontLoader textSemiBoldFont: FontLoader { source: windows ? "" : "../../resources/fonts/SourceSans3-Semibold.ttf" }
+    property FontLoader textBoldFont: FontLoader { source: windows ? "" : "../../resources/fonts/SourceSans3-Bold.ttf" }
+    property FontLoader monoFont: FontLoader { source: windows ? "../../resources/fonts/JetBrainsMono-Regular.ttf" : "../../resources/fonts/CascadiaMono.ttf" }
+    property FontLoader monoBoldFont: FontLoader { source: windows ? "../../resources/fonts/JetBrainsMono-Bold.ttf" : "" }
     property string name: "graphite"
     readonly property var colors: UI.themes[name] || UI.themes.graphite
     readonly property color base: colors.base

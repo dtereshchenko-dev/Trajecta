@@ -335,6 +335,7 @@ $dependencyScript = "$stage\runtime-dependencies.cmake"
 Get-RuntimeDependencyScript | Set-Content -LiteralPath $dependencyScript -Encoding UTF8
 Copy-Item -LiteralPath "$root\packages\com.trajecta.app\meta" -Destination "$package\meta" -Recurse
 Copy-Item -LiteralPath "$root\config" -Destination "$stage\config" -Recurse
+[IO.File]::AppendAllText("$stage\config\controller.qs", "`n" + [IO.File]::ReadAllText("$root\common\lifecycle.qs"))
 Set-InstallerVersion -Path "$stage\config\config.xml" -Version $version -RootElement 'Installer'
 Set-InstallerVersion -Path "$package\meta\package.xml" -Version $version -RootElement 'Package'
 
@@ -435,7 +436,7 @@ if ($StageOnly) {
 }
 
 Write-Host '[5/6] Building the hybrid installer'
-$candidate = "$stage\TrajectaSetup.exe"
+$candidate = "$stage\TrajectaSetup-x86_64.exe"
 Invoke-Checked $binarycreator @('--hybrid', '--compression', '5', '-c', "$stage\config\config.xml",
     '-p', "$stage\packages", $candidate)
 Require-Path $candidate
@@ -444,7 +445,7 @@ if ((Get-Item -LiteralPath $candidate).Length -lt 1MB) { throw 'Installer output
 Write-Host '[6/6] Replacing the current installer and package'
 $data = Assert-Local "$root\packages\com.trajecta.app\data"
 if (Test-Path -LiteralPath $data) { Remove-Item -LiteralPath $data -Recurse -Force }
-$output = Assert-Local "$root\TrajectaSetup.exe"
+$output = Assert-Local "$root\TrajectaSetup-x86_64.exe"
 Move-Item -LiteralPath (Assert-Local $payload) -Destination $data
 Move-Item -LiteralPath (Assert-Local $candidate) -Destination $output -Force
 Write-Host "Installer: $output"

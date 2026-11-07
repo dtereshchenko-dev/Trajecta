@@ -54,6 +54,8 @@ QString ApplicationUpdate::toolPath() const
 {
 #ifdef Q_OS_WIN
 	return QDir(QCoreApplication::applicationDirPath()).filePath(QStringLiteral("Uninstall Trajecta.exe"));
+#elif defined(Q_OS_LINUX)
+	return QDir(QCoreApplication::applicationDirPath()).filePath(QStringLiteral("../../TrajectaMaintenance"));
 #else
 	return {};
 #endif

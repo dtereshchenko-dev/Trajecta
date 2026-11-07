@@ -12,17 +12,6 @@ Component.prototype.onLoaded = function()
         installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
         installer.setDefaultPageVisible(QInstaller.StartMenuSelection, false);
 
-        // Kill running app if needed
-        installer.execute("taskkill", ["/IM", "Trajecta.exe", "/F"]);
-
-        // Auto-remove previous installation if exists
-        var targetDir = installer.value("TargetDir");
-        var maintenanceTool = targetDir + "/Uninstall Trajecta.exe";
-        if (installer.fileExists(maintenanceTool)) {
-            installer.gainAdminRights();
-            installer.execute(maintenanceTool, ["purge", "PreserveUserData=1", "RemoveTargetDir=false"]);
-        }
-
     }
 }
 

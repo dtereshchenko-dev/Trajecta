@@ -255,6 +255,20 @@ set(CLIENT_ICON_FILES
 set_source_files_properties(main.cpp src/features/settings/CalculationSettingsModel.cpp PROPERTIES
     COMPILE_DEFINITIONS "TRAJECTA_VERSION=\"${TRAJECTA_VERSION}\"")
 
+if(WIN32)
+    set(CLIENT_FONT_FILES
+        resources/fonts/Inter.ttc
+        resources/fonts/JetBrainsMono-Regular.ttf
+        resources/fonts/JetBrainsMono-Bold.ttf)
+else()
+    set(CLIENT_FONT_FILES
+        resources/fonts/SourceSans3-Regular.ttf
+        resources/fonts/SourceSans3-It.ttf
+        resources/fonts/SourceSans3-Semibold.ttf
+        resources/fonts/SourceSans3-Bold.ttf
+        resources/fonts/CascadiaMono.ttf)
+endif()
+
 qt_add_qml_module(TrajectaUI
     URI TrajectaUI
     VERSION 1.0
@@ -262,9 +276,7 @@ qt_add_qml_module(TrajectaUI
     QML_FILES ${CLIENT_QML_FILES}
     RESOURCES
         ${CLIENT_ICON_FILES}
-        resources/fonts/Inter.ttc
-        resources/fonts/JetBrainsMono-Regular.ttf
-        resources/fonts/JetBrainsMono-Bold.ttf
+        ${CLIENT_FONT_FILES}
 )
 
 target_include_directories(TrajectaUI PRIVATE
@@ -360,5 +372,4 @@ add_test(NAME Tests COMMAND Tests -o -,txt)
 target_compile_definitions(Tests PRIVATE ORBITAL_UI_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 qt_add_resources(Tests "client_test_assets"
     PREFIX "/qt/qml/TrajectaUI"
-    FILES resources/fonts/Inter.ttc resources/fonts/JetBrainsMono-Regular.ttf
-        resources/fonts/JetBrainsMono-Bold.ttf ${CLIENT_ICON_FILES})
+    FILES ${CLIENT_FONT_FILES} ${CLIENT_ICON_FILES})
