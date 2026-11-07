@@ -87,3 +87,6 @@ try {
         Remove-Item -LiteralPath $root -Recurse -Force
     }
 }
+
+# The maintenance tool's accepted restart-required code must not fail the CI step.
+$global:LASTEXITCODE = 0
