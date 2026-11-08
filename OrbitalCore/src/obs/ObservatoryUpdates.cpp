@@ -26,8 +26,8 @@ namespace orbital_core::obs {
 		bool validCode(std::string_view code)
 		{
 			return code.size() == 3 && std::all_of(code.begin(), code.end(), [](char c) {
-				return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z');
-			});
+				       return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z');
+			       });
 		}
 
 		double number(const std::string& text)
@@ -69,9 +69,11 @@ namespace orbital_core::obs {
 						double value = 0;
 						const char* first = token.data();
 						const char* last = first + token.size();
-						if (first != last && *first == '+') ++first;
+						if (first != last && *first == '+')
+							++first;
 						const auto [end, error] = std::from_chars(first, last, value);
-						if (value == 0) value = 0;
+						if (value == 0)
+							value = 0;
 						if (error == std::errc{} && end == last && std::isfinite(value))
 							normalized << 'N' << std::hexfloat << value;
 						else
@@ -99,9 +101,9 @@ namespace orbital_core::obs {
 			throw std::runtime_error("Invalid optical catalog header");
 		std::istringstream header(line);
 		std::string codeHeader, lonHeader, cosHeader, sinHeader, nameHeader, extraHeader;
-		if (!(header >> codeHeader >> lonHeader >> cosHeader >> sinHeader >> nameHeader) ||
-		    codeHeader != "Code" || lonHeader != "Long." || cosHeader != "cos" || sinHeader != "sin" ||
-		    nameHeader != "Name" || (header >> extraHeader))
+		if (!(header >> codeHeader >> lonHeader >> cosHeader >> sinHeader >> nameHeader) || codeHeader != "Code" ||
+		    lonHeader != "Long." || cosHeader != "cos" || sinHeader != "sin" || nameHeader != "Name" ||
+		    (header >> extraHeader))
 			throw std::runtime_error("Invalid optical catalog header");
 		std::set<std::string> codes;
 		while (std::getline(input, line)) {
@@ -183,8 +185,8 @@ namespace orbital_core::obs {
 		}
 		const auto document = nlohmann::json::parse(source.begin(), source.end());
 		if (!document.is_object() || !document.contains("signature") ||
-		    document.at("signature").value("version", std::string{}) != "1.1" ||
-		    !document.contains("coords") || !document.at("coords").is_object())
+		    document.at("signature").value("version", std::string{}) != "1.1" || !document.contains("coords") ||
+		    !document.at("coords").is_object())
 			throw std::runtime_error("Invalid JPL radar response");
 		const auto& coords = document.at("coords");
 		if (coords.size() < 10)
@@ -235,8 +237,9 @@ namespace orbital_core::obs {
 			const auto name = position.at("name").get<std::string>();
 			const double l = jsonNumber(position, "longitude"), x = jsonNumber(position, "d_xy"),
 			             z = jsonNumber(position, "d_z");
-			if (trim(name).empty() || name.find_first_of("\r\n") != std::string::npos || name.find('\0') != std::string::npos ||
-			    l < 0 || l >= 360 || x < 0 || !std::isfinite(std::hypot(x, z)) || std::hypot(x, z) <= 0)
+			if (trim(name).empty() || name.find_first_of("\r\n") != std::string::npos ||
+			    name.find('\0') != std::string::npos || l < 0 || l >= 360 || x < 0 ||
+			    !std::isfinite(std::hypot(x, z)) || std::hypot(x, z) <= 0)
 				throw std::runtime_error("Invalid JPL radar station");
 			output << code << ' ' << code << " - " << l << ' ' << x << ' ' << z << ' ' << name << '\n';
 			++added;
@@ -261,4 +264,4 @@ namespace orbital_core::obs {
 		                                          8 * 1024 * 1024, cancel);
 		return prepareRadarObservatoryUpdate(response.body, current);
 	}
-}
+}  // namespace orbital_core::obs

@@ -79,8 +79,8 @@ namespace {
 			m_fit.finalNonGrav.setModel(model);
 			m_fit.finalNonGrav.setEnabled(true);
 			if (fitDt)
-				m_fit.finalNonGrav.setFitParameterMask(NgParameterMask::A1 | NgParameterMask::A2 |
-				                                         NgParameterMask::A3 | NgParameterMask::DT);
+				m_fit.finalNonGrav.setFitParameterMask(NgParameterMask::A1 | NgParameterMask::A2 | NgParameterMask::A3 |
+				                                       NgParameterMask::DT);
 			m_fit.finalNonGrav.setParams(model == NgModel::Yarkovsky ? 0 : 1e-10, -2e-12,
 			                             model == NgModel::Yarkovsky ? 0 : 3e-11);
 			m_fit.finalNonGrav.setDT(fitDt ? .5 : 0);

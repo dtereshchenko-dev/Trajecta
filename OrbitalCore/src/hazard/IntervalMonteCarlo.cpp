@@ -40,10 +40,10 @@ namespace orbital_core::hazard {
 	}  // namespace
 
 	static IntervalMcResult runIntervalMonteCarloImpl(const Orbit& orbit, const NonGravModel& nonGrav,
-	                                                   const FitParameterCovariance& covariance,
-	                                                   const NBodySettings& forces, const FitPipelineResult* source,
-	                                                   const IntervalMcConfig& config, std::stop_token cancel,
-	                                                   const std::function<void(int, int)>& progress)
+	                                                  const FitParameterCovariance& covariance,
+	                                                  const NBodySettings& forces, const FitPipelineResult* source,
+	                                                  const IntervalMcConfig& config, std::stop_token cancel,
+	                                                  const std::function<void(int, int)>& progress)
 	{
 		if (!forces.enabled)
 			throw std::invalid_argument("MC requires an N-body accepted solution");
@@ -56,10 +56,9 @@ namespace orbital_core::hazard {
 		if (config.target != Planet::Earth && config.target != Planet::Moon && config.target != Planet::Mars)
 			throw std::invalid_argument("Unsupported MC target");
 		if (!std::isfinite(config.startMjdTdb) || !std::isfinite(config.endMjdTdb) ||
-		    !std::isfinite(orbit.epochMjd()) ||
-		    config.startMjdTdb < orbit.epochMjd() || config.endMjdTdb <= config.startMjdTdb ||
-		    !std::isfinite(config.altitudeKm) || config.altitudeKm < 0 || config.samples < 1 ||
-		    config.samples > 1000000 || !config.workers || config.workers > 1024)
+		    !std::isfinite(orbit.epochMjd()) || config.startMjdTdb < orbit.epochMjd() ||
+		    config.endMjdTdb <= config.startMjdTdb || !std::isfinite(config.altitudeKm) || config.altitudeKm < 0 ||
+		    config.samples < 1 || config.samples > 1000000 || !config.workers || config.workers > 1024)
 			throw std::invalid_argument("Invalid MC interval or sampling settings");
 		IntervalMcResult result;
 		result.config = config;

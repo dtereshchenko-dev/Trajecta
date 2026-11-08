@@ -62,6 +62,7 @@ class ApplicationSession : public QObject {
 	CalculationSettingsModel* calculationSettings() { return &m_calculationSettings; }
 
 	DataSourcesModel* dataSources() { return &m_dataSources; }
+
 	ApplicationUpdate* applicationUpdate() { return &m_applicationUpdate; }
 
 	ObservationReviewModel* observationReview() { return &m_observationReview; }

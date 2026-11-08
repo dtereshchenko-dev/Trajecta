@@ -7,9 +7,9 @@
 
 enum class NgModel : int {
 	None = 0,
-	MarsdenH2O = 1,      // Marsden, Sekanina & Yeomans 1973 — water-ice sublimation
-	MarsdenCO = 2,       // CO sublimation (r0 ≈ 5 AU) — distant-active comets
-	InverseSquare = 3,   // g(r) = (1 AU / r)², optionally with DT
+	MarsdenH2O = 1,     // Marsden, Sekanina & Yeomans 1973 — water-ice sublimation
+	MarsdenCO = 2,      // CO sublimation (r0 ≈ 5 AU) — distant-active comets
+	InverseSquare = 3,  // g(r) = (1 AU / r)², optionally with DT
 	Yarkovsky = 4       // g(r) = (1 AU / r)² — asteroid Yarkovsky (A2 only)
 };
 

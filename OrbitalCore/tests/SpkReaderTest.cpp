@@ -131,9 +131,11 @@ TEST_F(SpkReaderTest, LoadsFromEphemerisDataDirectory)
 	const auto kernel = std::filesystem::path(std::u8string(sourcePath.begin(), sourcePath.end()));
 	const auto previousEphemeris = orbital_core::ephemerisDataDirectory();
 	const auto previousExecutable = getExecutableDir();
+
 	struct RestoreDirectories {
 		std::filesystem::path ephemeris;
 		std::filesystem::path executable;
+
 		~RestoreDirectories()
 		{
 			orbital_core::setEphemerisDataDirectory(ephemeris);

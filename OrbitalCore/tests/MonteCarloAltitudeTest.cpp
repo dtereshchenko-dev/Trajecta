@@ -16,22 +16,28 @@ namespace {
 	class FixedEarth : public IEphemerisSource {
 	   public:
 		EphemerisRecord queryJD(EphemerisPlanet, double jd) override { return {jd, {1, 0, 0}, {}}; }
+
 		std::vector<EphemerisRecord> fetchWindow(EphemerisPlanet, double, int) override { return {}; }
+
 		bool isAvailable() const override { return true; }
+
 		std::string name() const override { return "altitude-test"; }
 	};
 
 	class MovingEarth final : public FixedEarth {
 	   public:
 		explicit MovingEarth(const Vec3D& velocity) : velocity_(velocity) {}
+
 		EphemerisRecord queryJD(EphemerisPlanet planet, double jd) override
 		{
 			return queryMjd(planet, orbital_core::time::mjdFromJd(jd));
 		}
+
 		EphemerisRecord queryMjd(EphemerisPlanet, double t) override
 		{
 			return {orbital_core::time::jdFromMjd(t), Vec3D(1, 0, 0) + velocity_ * (t - mjd), velocity_};
 		}
+
 	   private:
 		Vec3D velocity_;
 	};
@@ -75,6 +81,7 @@ namespace {
 		}
 
 		void TearDown() override { setDefaultEphemerisSource(previous); }
+
 		hz::IntervalMcResult run(double altitude)
 		{
 			cfg.altitudeKm = altitude;
@@ -98,12 +105,17 @@ namespace {
 				EXPECT_NEAR(height(fixed), altitude, 5e-5);
 				EXPECT_LT(entry.mjdTdb, ground.clones[i].entry->mjdTdb);
 				const auto v = hz::bodyFixedVelocityMjd(hz::Planet::Earth, entry.relativePositionKm,
-				                                         entry.relativeVelocityKmS, entry.mjdTdb);
+				                                        entry.relativeVelocityKmS, entry.mjdTdb);
 				const double before = entry.mjdTdb - .1 / 86400, after = entry.mjdTdb + .1 / 86400;
-				const auto finite = (hz::icrfToBodyFixedMjd(hz::Planet::Earth,
-				    entry.relativePositionKm + entry.relativeVelocityKmS * ((after - entry.mjdTdb) * 86400), after) -
-				    hz::icrfToBodyFixedMjd(hz::Planet::Earth,
-				    entry.relativePositionKm + entry.relativeVelocityKmS * ((before - entry.mjdTdb) * 86400), before)) *
+				const auto finite =
+				    (hz::icrfToBodyFixedMjd(
+				         hz::Planet::Earth,
+				         entry.relativePositionKm + entry.relativeVelocityKmS * ((after - entry.mjdTdb) * 86400),
+				         after) -
+				     hz::icrfToBodyFixedMjd(
+				         hz::Planet::Earth,
+				         entry.relativePositionKm + entry.relativeVelocityKmS * ((before - entry.mjdTdb) * 86400),
+				         before)) *
 				    (1.0 / ((after - before) * 86400));
 				EXPECT_LT((v - finite).magnitude(), 1e-5);
 				EXPECT_LT(fixed.dot(v), 0);
@@ -134,7 +146,7 @@ namespace {
 		for (const auto& clone : result.clones) {
 			ASSERT_TRUE(clone.entry);
 			const auto fixed = hz::icrfToBodyFixedMjd(hz::Planet::Earth, clone.entry->relativePositionKm,
-			                                           clone.entry->mjdTdb, &moving);
+			                                          clone.entry->mjdTdb, &moving);
 			EXPECT_NEAR(height(fixed), 100, 5e-5);
 		}
 	}
@@ -164,8 +176,8 @@ namespace {
 				ASSERT_TRUE(parallel.clones[i].entry);
 				EXPECT_EQ(serial.clones[i].state, parallel.clones[i].state);
 				EXPECT_DOUBLE_EQ(serial.clones[i].entry->mjdTdb, parallel.clones[i].entry->mjdTdb);
-				const auto fixed = hz::icrfToBodyFixedMjd(hz::Planet::Earth,
-				    serial.clones[i].entry->relativePositionKm, serial.clones[i].entry->mjdTdb);
+				const auto fixed = hz::icrfToBodyFixedMjd(hz::Planet::Earth, serial.clones[i].entry->relativePositionKm,
+				                                          serial.clones[i].entry->mjdTdb);
 				EXPECT_NEAR(height(fixed), 100, 5e-5);
 			}
 		}

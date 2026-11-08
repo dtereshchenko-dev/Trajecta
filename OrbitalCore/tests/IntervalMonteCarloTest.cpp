@@ -158,9 +158,11 @@ namespace {
 				EXPECT_DOUBLE_EQ(fromFit.clones[i].entry->mjdTdb, fromFile.clones[i].entry->mjdTdb);
 		}
 		imported.covariance(0, 0) = -1;
-		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config), std::invalid_argument);
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config),
+		             std::invalid_argument);
 		config.method = hz::McMethod::Observations;
-		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config), std::invalid_argument);
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config),
+		             std::invalid_argument);
 	}
 
 	TEST_F(IntervalMonteCarloTest, CloseFlybyDoesNotCreateBoundaryEvent)

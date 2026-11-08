@@ -189,10 +189,10 @@ namespace Calculations {
 			return std::isfinite(rho) ? rho : -1.0;
 		}
 
-        class IodResidualModel final {
+		class IodResidualModel final {
 		   public:
-            IodResidualModel(std::span<const ObsNode> obs,
-			                   orbital_core::AstrometricWeightProfile weightProfile) noexcept
+			IodResidualModel(std::span<const ObsNode> obs,
+			                 orbital_core::AstrometricWeightProfile weightProfile) noexcept
 			    : m_obs(obs), m_weightProfile(weightProfile)
 			{
 			}
@@ -262,9 +262,9 @@ namespace Calculations {
 			}
 		};
 
-        class FixedDistanceEndpointFitter final {
+		class FixedDistanceEndpointFitter final {
 		   public:
-            explicit FixedDistanceEndpointFitter(orbital_core::AstrometricWeightProfile weightProfile)
+			explicit FixedDistanceEndpointFitter(orbital_core::AstrometricWeightProfile weightProfile)
 			    : m_weightProfile(weightProfile)
 			{
 				orbital_core::obs::ensureSigmaTable(m_weightProfile);
@@ -282,7 +282,7 @@ namespace Calculations {
 				if (rho1 <= 0.0 || rhoN <= 0.0)
 					return out;
 
-                const IodResidualModel residualModel(obs, m_weightProfile);
+				const IodResidualModel residualModel(obs, m_weightProfile);
 				Eigen::VectorXd base;
 				if (!residualModel.compute(seed, epoch, base))
 					return out;
@@ -369,7 +369,7 @@ namespace Calculations {
 				if (!seed.state.isValid() || subarc.size() < 3)
 					return out;
 
-                const IodResidualModel residualModel(subarc, m_weightProfile);
+				const IodResidualModel residualModel(subarc, m_weightProfile);
 				Eigen::VectorXd base;
 				if (!residualModel.compute(seed.state, seed.epoch, base))
 					return out;
@@ -430,13 +430,13 @@ namespace Calculations {
 			}
 
 			[[nodiscard]] static bool residualsForParams(const Params& params, double epoch,
-                                                         const IodResidualModel& residualModel, Eigen::VectorXd& out)
+			                                             const IodResidualModel& residualModel, Eigen::VectorXd& out)
 			{
 				return residualModel.compute(stateFromParams(params), epoch, out);
 			}
 
 			[[nodiscard]] bool computeJacobian(const IodImprovementSeed& seed, const std::vector<ObsNode>& subarc,
-                                               const IodResidualModel& residualModel, const Eigen::VectorXd& base,
+			                                   const IodResidualModel& residualModel, const Eigen::VectorXd& base,
 			                                   Eigen::MatrixXd& jac) const
 			{
 				const Params params = paramsFromState(seed.state);
@@ -542,11 +542,11 @@ namespace Calculations {
 			}
 		};
 
-		[[nodiscard]] IodImprovementSeed attemptIodImprovements(
-		    const StateVectors& seedState, double seedEpoch, const std::vector<ObsNode>& subarc, double seedScore,
-		    orbital_core::AstrometricWeightProfile weightProfile,
-            const FixedDistanceEndpointFitter& fixedDistanceFitter,
-		    const FoFullImprovementFitter& fullImprovementFitter)
+		[[nodiscard]] IodImprovementSeed attemptIodImprovements(const StateVectors& seedState, double seedEpoch,
+		                                                        const std::vector<ObsNode>& subarc, double seedScore,
+		                                                        orbital_core::AstrometricWeightProfile weightProfile,
+		                                                        const FixedDistanceEndpointFitter& fixedDistanceFitter,
+		                                                        const FoFullImprovementFitter& fullImprovementFitter)
 		{
 			if (!seedState.isValid() || subarc.size() < 3 || !std::isfinite(seedScore) || seedScore >= kBadScore) {
 				return IodImprovementSeed{seedState, seedEpoch, seedScore, seedScore, false};
@@ -631,7 +631,7 @@ namespace Calculations {
 			         << "hyperbolic eccentricity penalty disabled";
 		}
 
-        const FixedDistanceEndpointFitter fixedDistanceFitter(weightProfile);
+		const FixedDistanceEndpointFitter fixedDistanceFitter(weightProfile);
 		const FoFullImprovementFitter fullImprovementFitter(weightProfile);
 
 		const double totalSpanDays = groundObs.back().epochJdTdb() - groundObs.front().epochJdTdb();

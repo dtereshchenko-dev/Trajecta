@@ -15,46 +15,58 @@ using namespace strewn::sources;
 TEST(WeatherTest, GfsRangeDownloadsAreBoundedAndKeepInventoryOrder)
 {
 	std::vector<trajecta::http::ByteRange> ranges;
-	for (std::uint64_t i = 0; i < 9; ++i) ranges.push_back({i, i});
+	for (std::uint64_t i = 0; i < 9; ++i)
+		ranges.push_back({i, i});
 	std::mutex mutex;
 	std::condition_variable ready;
 	std::size_t active = 0, peak = 0, started = 0;
-	auto files = downloadGfsRanges(ranges, [&](auto range, auto) {
-		std::unique_lock lock(mutex);
-		++active;
-		peak = std::max(peak, active);
-		if (++started <= 4) {
-			ready.notify_all();
-			if (!ready.wait_for(lock, std::chrono::seconds(5), [&] { return started >= 4; }))
-				throw std::runtime_error("GFS downloads did not run concurrently");
-		}
-		--active;
-		return std::filesystem::path(std::to_string(range.first));
-	}, {});
+	auto files =
+	    downloadGfsRanges(ranges,
+	                      [&](auto range, auto) {
+		                      std::unique_lock lock(mutex);
+		                      ++active;
+		                      peak = std::max(peak, active);
+		                      if (++started <= 4) {
+			                      ready.notify_all();
+			                      if (!ready.wait_for(lock, std::chrono::seconds(5), [&] { return started >= 4; }))
+				                      throw std::runtime_error("GFS downloads did not run concurrently");
+		                      }
+		                      --active;
+		                      return std::filesystem::path(std::to_string(range.first));
+	                      },
+	                      {});
 	EXPECT_EQ(peak, 4u);
 	ASSERT_EQ(files.size(), ranges.size());
-	for (std::size_t i = 0; i < files.size(); ++i) EXPECT_EQ(files[i].string(), std::to_string(i));
+	for (std::size_t i = 0; i < files.size(); ++i)
+		EXPECT_EQ(files[i].string(), std::to_string(i));
 }
 
 TEST(WeatherTest, GfsRangeFailureStopsOtherDownloads)
 {
 	const std::vector<trajecta::http::ByteRange> ranges{{0, 0}, {1, 1}};
 	std::atomic<bool> secondStarted{false}, sawStop{false};
-	EXPECT_THROW((void)downloadGfsRanges(ranges, [&](auto range, auto stop) {
-		const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
-		if (range.first == 0) {
-			while (!secondStarted.load() && std::chrono::steady_clock::now() < deadline) std::this_thread::yield();
-			throw std::runtime_error("failed range");
-		}
-		secondStarted = true;
-		while (!stop.stop_requested() && std::chrono::steady_clock::now() < deadline) std::this_thread::yield();
-		sawStop = stop.stop_requested();
-		return std::filesystem::path{};
-	}, {}), std::runtime_error);
+	EXPECT_THROW(
+	    (void)downloadGfsRanges(ranges,
+	                            [&](auto range, auto stop) {
+		                            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+		                            if (range.first == 0) {
+			                            while (!secondStarted.load() && std::chrono::steady_clock::now() < deadline)
+				                            std::this_thread::yield();
+			                            throw std::runtime_error("failed range");
+		                            }
+		                            secondStarted = true;
+		                            while (!stop.stop_requested() && std::chrono::steady_clock::now() < deadline)
+			                            std::this_thread::yield();
+		                            sawStop = stop.stop_requested();
+		                            return std::filesystem::path{};
+	                            },
+	                            {}),
+	    std::runtime_error);
 	EXPECT_TRUE(sawStop);
 	std::stop_source cancel;
 	cancel.request_stop();
-	EXPECT_THROW((void)downloadGfsRanges(ranges, [](auto, auto) { return std::filesystem::path{}; }, cancel.get_token()),
+	EXPECT_THROW((void)downloadGfsRanges(
+	                 ranges, [](auto, auto) { return std::filesystem::path{}; }, cancel.get_token()),
 	             trajecta::http::Cancelled);
 }
 

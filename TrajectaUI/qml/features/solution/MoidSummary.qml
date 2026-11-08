@@ -10,7 +10,14 @@ ColumnLayout {
     Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: AppTheme.line }
     RowLayout {
         Layout.fillWidth: true
+        visible: summary.solution.phaStatus.length > 0
         Layout.topMargin: 3
+        Layout.minimumHeight: 30
+        CustomText { text: qsTr("PHA status"); secondary: true; font.pixelSize: 11; Layout.fillWidth: true }
+        CustomText { objectName: "pha-status"; text: summary.solution.phaStatus; font.pixelSize: 13; color: summary.solution.potentiallyHazardous ? AppTheme.amber : AppTheme.ink }
+    }
+    RowLayout {
+        Layout.fillWidth: true
         Layout.minimumHeight: 30
         CustomText { text: qsTr("Earth MOID"); secondary: true; font.pixelSize: 11; Layout.fillWidth: true }
         InlineValue { objectName: "earth-moid"; value: UI.groupedNumber(summary.solution.earthMoidKm, 1); valueSize: 13; unit: "km" }

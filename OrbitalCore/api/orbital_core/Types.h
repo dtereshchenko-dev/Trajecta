@@ -426,19 +426,34 @@ namespace Calculations {
 
 	inline double kepler_solve_h(const double& M, const double& e, double tolerance = 1e-10)
 	{
-		double F = 2 * std::atan(std::sqrt((e - 1) / (e + 1)) * std::tan(M / 2));
-		double F_prev;
+		if (!std::isfinite(M) || !std::isfinite(e) || e < 1.0 || !std::isfinite(tolerance) || tolerance <= 0.0)
+			return std::numeric_limits<double>::quiet_NaN();
+		if (M == 0.0)
+			return 0.0;
 
-		auto kepler_eq = [&](const double& F, const double& M, const double& e) -> double {
-			return e * std::sinh(F) - F - M;
-		};
-
-		do {
-			F_prev = F;
-			F = F - kepler_eq(F, M, e) / (e * std::cosh(F) - 1);
-		} while (std::fabs(F - F_prev) > tolerance);
-
-		return F;
+		const double mean = std::abs(M);
+		double lower = 0.0;
+		double upper = std::max(1.0, std::asinh(mean / e) + 1.0);
+		while (e * std::sinh(upper) - upper < mean)
+			upper *= 2.0;
+		double anomaly = std::asinh(mean / e);
+		for (int i = 0; i < 100; ++i) {
+			const double residual = e * std::sinh(anomaly) - anomaly - mean;
+			if (residual == 0.0)
+				break;
+			if (residual > 0.0)
+				upper = anomaly;
+			else
+				lower = anomaly;
+			const double next = anomaly - residual / (e * std::cosh(anomaly) - 1.0);
+			const double candidate = std::isfinite(next) && next > lower && next < upper ? next : (lower + upper) / 2.0;
+			if (std::abs(candidate - anomaly) <= tolerance * std::max(1.0, std::abs(candidate))) {
+				anomaly = candidate;
+				break;
+			}
+			anomaly = candidate;
+		}
+		return std::copysign(anomaly, M);
 	}
 
 	inline Vec3D angMomentum(const Vec3D& R, const Vec3D& V) noexcept { return R.cross(V); }

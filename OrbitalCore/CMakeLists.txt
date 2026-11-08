@@ -338,6 +338,7 @@ add_library(OrbitalCore SHARED
     src/uncertainty/CovarianceDiagnostics.cpp
     src/optimizers/EigenLevenbergMarquardt.cpp
     src/obs/PreparedObservation.h
+    src/obs/LightTimeSeries.h
     src/obs/AstrometricResidual.h src/obs/AstrometricResidual.cpp
     src/obs/AstrometricSigma.h     src/obs/AstrometricSigma.cpp
     src/obs/Vfcc17Rules.h          src/obs/Vfcc17Rules.cpp

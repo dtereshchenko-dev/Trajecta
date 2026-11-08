@@ -31,14 +31,18 @@ namespace orbital_core {
 #endif
 			return {};
 		}
+
 		std::filesystem::path observatoryDirectory = defaultObservatoryDirectory();
-		std::filesystem::path ephemerisDirectory = observatoryDirectory.empty()
-		    ? std::filesystem::path{} : observatoryDirectory.parent_path() / "ephemerides";
-	}
+		std::filesystem::path ephemerisDirectory =
+		    observatoryDirectory.empty() ? std::filesystem::path{} : observatoryDirectory.parent_path() / "ephemerides";
+	}  // namespace
 
 	void setObservatoryDataDirectory(std::filesystem::path directory) { observatoryDirectory = std::move(directory); }
+
 	std::filesystem::path observatoryDataDirectory() { return observatoryDirectory; }
+
 	void setEphemerisDataDirectory(std::filesystem::path directory) { ephemerisDirectory = std::move(directory); }
+
 	std::filesystem::path ephemerisDataDirectory() { return ephemerisDirectory; }
 
 	bool planetaryEphemerisAvailable() noexcept
@@ -77,8 +81,7 @@ namespace orbital_core {
 			if (e.active) {
 				const auto path = source->sourcePath();
 				e.path = std::filesystem::path(std::u8string(path.begin(), path.end()));
-			}
-			else
+			} else
 				e.error = "Planetary ephemeris not connected";
 		});
 		inspect("asteroids", base / "sb441-n16.bsp", [&](auto& e) {

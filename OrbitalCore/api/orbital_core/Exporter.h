@@ -15,15 +15,7 @@
 
 namespace orbital_core {
 
-	enum class ExportProduct {
-		FitSummary,
-		OrbitElements,
-		StateVectors,
-		Covariance,
-		Residuals,
-		Observations,
-		All
-	};
+	enum class ExportProduct { FitSummary, OrbitElements, StateVectors, Covariance, Residuals, Observations, All };
 
 	struct ExportContext {
 		std::string objectName;

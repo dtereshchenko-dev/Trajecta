@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QVariantMap>
 #include <QtConcurrent/QtConcurrentRun>
+#include <algorithm>
 
 namespace {
 	QString title(const QString& id)
@@ -77,7 +78,8 @@ DataSourcesModel::DataSourcesModel(FitSettingsAggregator* settings, QObject* par
 		refresh();
 	});
 	connect(&m_observatoryUpdate, &ObservatoryUpdate::changed, this, [this] {
-		if (m_checked) updateReadiness();
+		if (m_checked)
+			updateReadiness();
 		emit changed();
 	});
 	m_debounce.setSingleShot(true);
@@ -130,6 +132,20 @@ DataSourcesModel::DataSourcesModel(FitSettingsAggregator* settings, QObject* par
 			                           : source.valid  ? tr("Verified on disk")
 			                                           : tr("Invalid")}});
 		}
+		const auto displayOrder = [](const QVariant& value) {
+			const auto id = value.toMap().value("id").toString();
+			if (id == "planetary")
+				return 0;
+			if (id == "asteroids")
+				return 1;
+			if (id == "observatories")
+				return 2;
+			if (id == "radar")
+				return 3;
+			return 4;
+		};
+		std::stable_sort(m_entries.begin(), m_entries.end(),
+		                 [&](const QVariant& a, const QVariant& b) { return displayOrder(a) < displayOrder(b); });
 		if (m_checked) {
 			for (const auto& value : m_entries) {
 				const auto entry = value.toMap();
@@ -167,11 +183,10 @@ void DataSourcesModel::updateReadiness()
 		const auto entry = value.toMap();
 		const auto id = entry.value("id").toString();
 		const auto name = entry.value("title").toString();
-		const bool configured =
-		    (id == "planetary" && pert && pert->enabled()) ||
-		    (id == "asteroids" && pert && pert->enabled() && pert->useSb441()) ||
-		    (id == "weights" && weight && weight->useWeights() && weight->weightProfile() == 1) ||
-		    (id == "debias_efcc18" && weight && weight->debiasEnabled());
+		const bool configured = (id == "planetary" && pert && pert->enabled()) ||
+		                        (id == "asteroids" && pert && pert->enabled() && pert->useSb441()) ||
+		                        (id == "weights" && weight && weight->useWeights() && weight->weightProfile() == 1) ||
+		                        (id == "debias_efcc18" && weight && weight->debiasEnabled());
 		const bool availableOnDisk = entry.value("valid").toBool() && entry.value("onDisk").toBool();
 		if (!availableOnDisk)
 			unavailable.append(name);
@@ -219,9 +234,13 @@ void DataSourcesModel::updateWatchPaths()
 	const QDir base(QString::fromStdWString(getExecutableDir().wstring()));
 	const auto downloaded = QFileInfo(Sb441Download::installedPath()).absolutePath();
 	const auto observatories = QString::fromStdWString(orbital_core::observatoryDataDirectory().wstring());
-	const QStringList directories{base.absolutePath(),          base.filePath("earth_orientation"),
-	                              base.filePath("weights"),     base.filePath("debias"),
-	                              base.filePath("debias_fcct14"), base.filePath("debias_2018"), downloaded,
+	const QStringList directories{base.absolutePath(),
+	                              base.filePath("earth_orientation"),
+	                              base.filePath("weights"),
+	                              base.filePath("debias"),
+	                              base.filePath("debias_fcct14"),
+	                              base.filePath("debias_2018"),
+	                              downloaded,
 	                              observatories};
 	QStringList wantedDirectories;
 	for (const auto& directory : directories)

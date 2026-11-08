@@ -47,7 +47,9 @@ TEST(Convertors, ConvertGregorianToJD)
 TEST(Convertors, ConvertJDToGregorian)
 {
 	const auto start = Convertors::convertGregorianToJD(2024, 1, 1.0);
-	const auto atSeconds = [start](double seconds) { return Convertors::convertJDToGregorian(start + seconds / 86400.0); };
+	const auto atSeconds = [start](double seconds) {
+		return Convertors::convertJDToGregorian(start + seconds / 86400.0);
+	};
 	EXPECT_EQ(atSeconds(21 * 3600 + 50 * 60 + 1.54), "2024-01-01 21:50:01.54");
 	EXPECT_EQ(atSeconds(21 * 3600 + 50 * 60 + 0.01), "2024-01-01 21:50:00.01");
 	EXPECT_EQ(atSeconds(59.999), "2024-01-01 00:01:00.00");
@@ -241,6 +243,21 @@ TEST(Calculations, KeplerSolveHConsistency)
 		double F = Calculations::kepler_solve_h(M, e);
 		double M_check = e * std::sinh(F) - F;
 		EXPECT_NEAR(M_check, M, 1e-8) << "Failed for M=" << M << " e=" << e;
+	}
+}
+
+TEST(Calculations, KeplerSolveHLargeAndNearParabolicAnomalies)
+{
+	for (const double e : {1.000001, 1.01, 2.0, 5.0}) {
+		for (const double magnitude : {1e-8, 0.1, 3.0, 10.0, 100.0, 1e4, 1e8}) {
+			for (const double sign : {-1.0, 1.0}) {
+				const double mean = sign * magnitude;
+				const double anomaly = Calculations::kepler_solve_h(mean, e, 1e-13);
+				ASSERT_TRUE(std::isfinite(anomaly)) << "M=" << mean << " e=" << e;
+				EXPECT_NEAR(e * std::sinh(anomaly) - anomaly, mean, 1e-11 * (1.0 + magnitude))
+				    << "M=" << mean << " e=" << e;
+			}
+		}
 	}
 }
 

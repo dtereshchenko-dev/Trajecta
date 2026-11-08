@@ -28,9 +28,10 @@ static int runTest(QObject* test, int argc, char* argv[])
 		std::fprintf(stderr, "Cannot create Qt test log directory: %s\n", qPrintable(logDirectory));
 		return 1;
 	}
-	const QString logPath = QDir(logDirectory).filePath(
-	    QStringLiteral("%1-%2.txt").arg(QString::fromLatin1(test->metaObject()->className()))
-	        .arg(QCoreApplication::applicationPid()));
+	const QString logPath = QDir(logDirectory)
+	                            .filePath(QStringLiteral("%1-%2.txt")
+	                                          .arg(QString::fromLatin1(test->metaObject()->className()))
+	                                          .arg(QCoreApplication::applicationPid()));
 	QStringList arguments = QCoreApplication::arguments();
 	arguments << QStringLiteral("-o") << logPath + QStringLiteral(",txt");
 	const int status = QTest::qExec(test, arguments);

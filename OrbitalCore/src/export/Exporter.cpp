@@ -15,6 +15,7 @@
 #include "orbital_core/StateVectors.h"
 #include "orbital_core/Types.h"
 #include "orbital_core/hazard/Moid.h"
+#include "orbital_core/hazard/PhaClassifier.h"
 
 #include "hazard/LovCoordinateChart.h"
 #include "hazard/CloseApproachKinematics.h"
@@ -87,7 +88,8 @@ namespace orbital_core {
 		[[nodiscard]] std::filesystem::path localAppDataWorkDirectory()
 		{
 #ifdef _WIN32
-			if (const auto localAppData = environmentVariable(L"LOCALAPPDATA"); localAppData && !localAppData->empty()) {
+			if (const auto localAppData = environmentVariable(L"LOCALAPPDATA");
+			    localAppData && !localAppData->empty()) {
 				return std::filesystem::path(*localAppData) / "Trajecta" / "work";
 			}
 			const auto home = environmentVariable(L"HOME");
@@ -183,11 +185,10 @@ namespace orbital_core {
 			return sanitizePathPart(context.objectName);
 		}
 
-		[[nodiscard]] double exportedAbsoluteMagnitude(const FitResult& fit, double slopeG)
+		[[nodiscard]] std::optional<double> exportedAbsoluteMagnitude(const FitResult& fit, double slopeG)
 		{
-			const double H =
-			    photometry::fit(photometry::observations(fit).data(), slopeG).absoluteMagnitude.value_or(0.0);
-			return std::isfinite(H) && H > 0.0 ? H : 0.0;
+			const auto h = photometry::fit(photometry::observations(fit).data(), slopeG).absoluteMagnitude;
+			return h && std::isfinite(*h) ? h : std::nullopt;
 		}
 
 		void writeOefHeader(std::ostream& os, const NonGravModel& ng)
@@ -207,11 +208,11 @@ namespace orbital_core {
 
 		void writeMagnitudeLine(std::ostream& os, const ExportContext& context)
 		{
-			const double h = context.cometPhotometry
-			                     ? 0.0
-			                     : exportedAbsoluteMagnitude(*context.fitResult, context.photometry.asteroidG);
-			os << " MAG " << std::fixed << std::setprecision(3) << std::setw(7) << (h > 0.0 ? h : 99.999)
-			   << std::setw(7) << context.photometry.asteroidG << '\n'
+			const auto h = context.cometPhotometry
+			                   ? std::nullopt
+			                   : exportedAbsoluteMagnitude(*context.fitResult, context.photometry.asteroidG);
+			os << " MAG " << std::fixed << std::setprecision(3) << std::setw(7) << h.value_or(99.999) << std::setw(7)
+			   << context.photometry.asteroidG << '\n'
 			   << std::defaultfloat << std::setprecision(17);
 		}
 
@@ -358,11 +359,11 @@ namespace orbital_core {
 			writeOefScientific(os, orbit.getOrbitalPeriod(), 23);
 			os << '\n';
 
-			if (!comet && earthData && std::isfinite(earthData->moidAu)) {
-				const double H = exportedAbsoluteMagnitude(fit, slopeG);
-				const bool pha = H > 0.0 && H < 22.0 && earthData->moidAu <= 0.05;
-				os << "! PHA " << (pha ? 'T' : 'F') << '\n';
-			}
+			const double h = exportedAbsoluteMagnitude(fit, slopeG).value_or(std::numeric_limits<double>::quiet_NaN());
+			const double moid = earthData ? earthData->moidAu : std::numeric_limits<double>::quiet_NaN();
+			const auto pha = hazard::classifyPha(!comet, h, moid);
+			if (pha == hazard::PhaStatus::Pha || pha == hazard::PhaStatus::NotPha)
+				os << "! PHA " << (pha == hazard::PhaStatus::Pha ? 'T' : 'F') << '\n';
 
 			const double vInf = hazard::circularEarthVInfinityKmS(orbit);
 			if (std::isfinite(vInf)) {

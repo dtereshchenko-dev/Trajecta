@@ -85,7 +85,7 @@ ApplicationSession::ApplicationSession(FitSettingsAggregator& settings, QObject*
 			        m_ephemerides.setSolution(
 			            result, m_solution.objectTitle(),
 			            std::isfinite(magnitude) ? std::optional<double>(magnitude) : std::nullopt,
-			            m_solution.cometPhotometry() ? &m_solution.cometPhotometrySolution() : nullptr);
+			            m_solution.cometPhotometry() ? &m_solution.cometPhotometrySolution() : nullptr, directory);
 			        m_acceptedInputFile = m_inputFile;
 			        m_loadRequested = false;
 			        m_progress = result.fit.converged ? tr("Result saved to working folder")

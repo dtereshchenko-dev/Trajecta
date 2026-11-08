@@ -6,9 +6,11 @@ TEST(EnvironmentVariableTest, ReadsPresentAndAbsentValues)
 {
 	constexpr const char* name = "TRAJECTA_TEST_ENVIRONMENT_VALUE";
 	const auto previous = orbital_core::environmentVariable(name);
+
 	struct Restore {
 		const char* name;
 		std::optional<std::string> previous;
+
 		~Restore()
 		{
 #ifdef _WIN32
@@ -40,11 +42,14 @@ TEST(EnvironmentVariableTest, ReadsUnicodeWindowsPath)
 {
 	constexpr const wchar_t* name = L"TRAJECTA_TEST_ENVIRONMENT_PATH";
 	const auto previous = orbital_core::environmentVariable(name);
+
 	struct Restore {
 		const wchar_t* name;
 		std::optional<std::wstring> previous;
+
 		~Restore() { _wputenv_s(name, previous ? previous->c_str() : L""); }
 	} restore{name, previous};
+
 	const std::wstring path = L"C:\\Users\\\u0422\u0435\u0441\u0442";
 	ASSERT_EQ(_wputenv_s(name, path.c_str()), 0);
 	EXPECT_EQ(orbital_core::environmentVariable(name), std::optional<std::wstring>(path));

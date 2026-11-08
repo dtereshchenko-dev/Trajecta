@@ -61,6 +61,7 @@ class DataSourcesModel : public QObject {
 	bool asteroidsAvailable() const { return orbital_core::asteroidEphemerisAvailable(); }
 
 	Sb441Download* sb441Download() { return &m_sb441Download; }
+
 	ObservatoryUpdate* observatoryUpdate() { return &m_observatoryUpdate; }
 
 	Q_INVOKABLE void refresh();

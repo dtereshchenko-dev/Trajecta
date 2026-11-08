@@ -16,9 +16,9 @@ namespace {
 			if (i == 258)
 				out << std::string(27, ' ') << "Gaia\n";
 			else
-				out << ' ' << std::fixed << std::setprecision(4) << std::setw(9) << 12.0
-				    << std::setprecision(6) << std::setw(8) << 0.7 << std::showpos << std::setw(9) << 0.6
-				    << std::noshowpos << "Station " << i << '\n';
+				out << ' ' << std::fixed << std::setprecision(4) << std::setw(9) << 12.0 << std::setprecision(6)
+				    << std::setw(8) << 0.7 << std::showpos << std::setw(9) << 0.6 << std::noshowpos << "Station " << i
+				    << '\n';
 		}
 		out << "</pre>\n";
 		return out.str();
@@ -33,11 +33,12 @@ namespace {
 		out << "}}";
 		return out.str();
 	}
-}
+}  // namespace
 
 TEST(ObservatoryUpdates, OpticalPreservesHistoricalCodesAndSpacecraft)
 {
-	const auto result = prepareOpticalObservatoryUpdate(opticalResponse(), "Code Long cos sin Name\nZ99 1 0.7 0.6 Old station\n");
+	const auto result =
+	    prepareOpticalObservatoryUpdate(opticalResponse(), "Code Long cos sin Name\nZ99 1 0.7 0.6 Old station\n");
 	EXPECT_EQ(result.updated, 1000);
 	EXPECT_NE(result.contents.find("Z99 1 0.7 0.6 Old station"), std::string::npos);
 	EXPECT_NE(result.contents.find("258 Gaia"), std::string::npos);
@@ -48,7 +49,8 @@ TEST(ObservatoryUpdates, RejectsIncompleteOpticalResponse)
 {
 	EXPECT_THROW((void)prepareOpticalObservatoryUpdate("<html>error</html>", ""), std::runtime_error);
 	EXPECT_THROW((void)prepareOpticalObservatoryUpdate("<pre>\n500 0 0 0\n</pre>", ""), std::runtime_error);
-	EXPECT_THROW(validateOpticalObservatoryCatalog("Code Long. cos sin Name\n500 0 0 0 Geocentric\n"), std::runtime_error);
+	EXPECT_THROW(validateOpticalObservatoryCatalog("Code Long. cos sin Name\n500 0 0 0 Geocentric\n"),
+	             std::runtime_error);
 }
 
 TEST(ObservatoryUpdates, UnchangedOpticalDataIgnoreFormatting)
@@ -72,8 +74,9 @@ TEST(ObservatoryUpdates, UnchangedOpticalDataIgnoreFormatting)
 
 TEST(ObservatoryUpdates, RadarUpdatesKnownStationAndPreservesAliases)
 {
-	const std::string existing = "! RADCODE format=2\n251 -1 251 293.0 400000 130000 Arecibo\n"
-	                             "257 -25 257 243.0 348000 245000 DSS25\n";
+	const std::string existing =
+	    "! RADCODE format=2\n251 -1 251 293.0 400000 130000 Arecibo\n"
+	    "257 -25 257 243.0 348000 245000 DSS25\n";
 	const auto result = prepareRadarObservatoryUpdate(radarResponse(), existing);
 	EXPECT_EQ(result.updated, 10);
 	EXPECT_EQ(result.unmapped, 9);

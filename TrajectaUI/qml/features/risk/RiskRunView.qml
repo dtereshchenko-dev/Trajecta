@@ -129,10 +129,9 @@ ColumnLayout {
                 id: cell
                 required property string display
                 required property string detail
-                required property bool hasEntry
                 required property int column
                 implicitHeight: 36
-                color: cell.hasEntry ? AppTheme.accentTint : AppTheme.base
+                color: AppTheme.base
                 CustomText {
                     anchors.fill: parent
                     anchors.leftMargin: 8

@@ -124,6 +124,20 @@ class ORBITAL_CORE_API NBodyPropagator {
 		Eigen::Matrix<double, 6, 4> SensA;
 	};
 
+	struct DenseTrajectory {
+		double epochMjd{};
+		IntegratedStateFull initial;
+		std::vector<DenseIntegratedStep> steps;
+
+		[[nodiscard]] ORBITAL_CORE_API std::optional<IntegratedStateFull> at(double mjd) const;
+	};
+
+	[[nodiscard]] DenseTrajectory propagateDenseMjd(const Vec3D& R0, const Vec3D& V0, double epochMjd,
+	                                                double firstMjd, double lastMjd, const NonGravModel& ng,
+	                                                bool variational, bool sensitivities) const;
+	void extendDenseBackwardMjd(DenseTrajectory& trajectory, double firstMjd, const NonGravModel& ng,
+	                            bool variational, bool sensitivities) const;
+
 	struct PropagationWithStmSurfaceStop {
 		PropagationResultFull state;
 		double jd{};
@@ -204,6 +218,8 @@ class ORBITAL_CORE_API NBodyPropagator {
 
    private:
 	[[nodiscard]] IntegrationOptions integrationOptions() const;
+	void integrateDenseSegment(DenseTrajectory& trajectory, const IntegratedStateFull& initial, double epochMjd,
+	                           double targetMjd, const NonGravModel& ng, bool variational, bool sensitivities) const;
 
 	double m_stepSize = 10.0;
 

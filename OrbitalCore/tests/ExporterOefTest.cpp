@@ -3,7 +3,10 @@
 #include "orbital_core/Exporter.h"
 #include "orbital_core/CometaryCoordinates.h"
 #include "orbital_core/Constants.h"
+#include "orbital_core/IEphemerisSource.h"
 #include "orbital_core/StateVectors.h"
+#include "orbital_core/Types.h"
+#include "orbital_core/hazard/PhaClassifier.h"
 #include "hazard/LovCoordinateChart.h"
 
 #include <Eigen/Eigenvalues>
@@ -24,6 +27,35 @@
 using namespace orbital_core;
 
 namespace {
+	class EarthEphemeris final : public IEphemerisSource {
+	   public:
+		EphemerisRecord queryJD(EphemerisPlanet, double jd) override
+		{
+			constexpr double e = 0.0167;
+			const double speed = Constants::GAUSS_K * std::sqrt((1.0 + e) / (1.0 - e));
+			return {jd, Vec3D(1.0 - e, 0.0, 0.0), Vec3D(0.0, speed * std::cos(0.1), speed * std::sin(0.1))};
+		}
+
+		std::vector<EphemerisRecord> fetchWindow(EphemerisPlanet, double, int) override { return {}; }
+
+		bool isAvailable() const override { return true; }
+
+		std::string name() const override { return "test Earth orbit"; }
+	};
+
+	class ScopedEphemeris {
+	   public:
+		explicit ScopedEphemeris(IEphemerisSource* source) : previous(getDefaultEphemerisSource())
+		{
+			setDefaultEphemerisSource(source);
+		}
+
+		~ScopedEphemeris() { setDefaultEphemerisSource(previous); }
+
+	   private:
+		IEphemerisSource* previous;
+	};
+
 	struct OefData {
 		std::map<std::string, std::vector<double>> fields;
 
@@ -146,6 +178,40 @@ namespace {
 		}
 	};
 }  // namespace
+
+TEST_F(ExporterOefTest, PhaExportRequiresKnownMagnitudeAndUsesSharedClassifier)
+{
+	setCometaryOrbit(0.2);
+	EarthEphemeris ephemeris;
+	ScopedEphemeris scoped(&ephemeris);
+	const auto missing = save({ExportProduct::OrbitElements});
+	const auto path = missing.directory / "orbit_keplerian_oef.txt";
+	const auto initial = readOef(path);
+	ASSERT_TRUE(initial.fields.contains("MOID"));
+	EXPECT_EQ(readFileBytes(path).find("! PHA "), std::string::npos);
+
+	Residual observation{};
+	observation.mag = 22.0;
+	observation.magBand = 'V';
+	observation.helioDistAu = 1.0;
+	observation.geoDistAu = 1.0;
+	fit.residuals.add(observation);
+	const auto known = save({ExportProduct::OrbitElements});
+	const auto output = readFileBytes(known.directory / "orbit_keplerian_oef.txt");
+	const auto status = hazard::classifyPha(true, 22.0, initial.vector("MOID")(0));
+	ASSERT_NE(status, hazard::PhaStatus::Unknown);
+	EXPECT_NE(output.find(status == hazard::PhaStatus::Pha ? "! PHA T" : "! PHA F"), std::string::npos);
+
+	fit.residuals.clear();
+	observation.mag = 1.0;
+	observation.helioDistAu = 10.0;
+	observation.geoDistAu = 10.0;
+	fit.residuals.add(observation);
+	const auto bright = save({ExportProduct::OrbitElements});
+	const auto brightOutput = readFileBytes(bright.directory / "orbit_keplerian_oef.txt");
+	EXPECT_NE(brightOutput.find("-9.000"), std::string::npos);
+	EXPECT_NE(brightOutput.find(status == hazard::PhaStatus::Pha ? "! PHA T" : "! PHA F"), std::string::npos);
+}
 
 TEST_F(ExporterOefTest, NormalInvertsPrinted2020VvCovariance)
 {

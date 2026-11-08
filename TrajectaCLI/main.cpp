@@ -328,8 +328,7 @@ namespace {
 				else if (arg == "--non-grav-model") {
 					const auto name = lower(requireValue(i, arg));
 					opt.cfg.nonGrav.model = parseNonGravModel(name);
-				}
-				else if (arg == "--ng-solve")
+				} else if (arg == "--ng-solve")
 					opt.cfg.nonGrav.solveMask = parseNonGravSolveMask(requireValue(i, arg));
 				else if (arg == "--init-a1") {
 					opt.cfg.nonGrav.initialA1 = parseDouble(requireValue(i, arg), arg);
@@ -389,8 +388,7 @@ namespace {
 					opt.obsMcClones = parseInt(requireValue(i, arg), arg);
 					if (opt.obsMcClones < 1 || opt.obsMcClones > 1000000)
 						throw std::invalid_argument("MC sample count must be in [1, 1000000]");
-				}
-				else if (arg == "--mc-workers") {
+				} else if (arg == "--mc-workers") {
 					const auto workers = parseInt(requireValue(i, arg), arg);
 					if (workers < 1 || workers > 1024)
 						throw std::invalid_argument("--mc-workers must be in [1, 1024]");
@@ -669,8 +667,7 @@ namespace {
 		cfg.method = opt.mcMethod;
 		cfg.target = opt.caCfg.planet;
 		cfg.startMjdTdb = opt.mcStartMjd.value_or(source.fit.fitEpochOrbit->epochMjd());
-		cfg.endMjdTdb = opt.mcEndMjd.value_or(source.fit.fitEpochOrbit->epochMjd() +
-		                                      opt.caCfg.horizonYears * 365.25);
+		cfg.endMjdTdb = opt.mcEndMjd.value_or(source.fit.fitEpochOrbit->epochMjd() + opt.caCfg.horizonYears * 365.25);
 		cfg.samples = opt.obsMcClones;
 		cfg.seed = opt.obsMcSeed;
 		cfg.altitudeKm = opt.obsMcAltitudeKm;
@@ -681,8 +678,9 @@ namespace {
 		const auto mc = hz::runIntervalMonteCarlo(source, cfg);
 		const auto root = solutionDirectory / "MC";
 		std::filesystem::create_directories(root);
-		const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
-		                     std::chrono::system_clock::now().time_since_epoch()).count();
+		const auto now =
+		    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
+		        .count();
 		auto destination = root / ("run-" + std::to_string(now));
 		for (int i = 1;; ++i) {
 			auto partial = destination;
@@ -714,15 +712,17 @@ namespace {
 					continue;
 				const auto& entry = *clone.entry;
 				const auto r = hz::icrfToBodyFixedMjd(cfg.target, entry.relativePositionKm, entry.mjdTdb) * 1000.0;
-				const auto v = hz::bodyFixedVelocityMjd(cfg.target, entry.relativePositionKm,
-				                                        entry.relativeVelocityKmS, entry.mjdTdb) * 1000.0;
+				const auto v = hz::bodyFixedVelocityMjd(cfg.target, entry.relativePositionKm, entry.relativeVelocityKmS,
+				                                        entry.mjdTdb) *
+				               1000.0;
 				if (!std::isfinite(r.dot(r)) || !std::isfinite(v.dot(v)))
 					throw std::runtime_error("Invalid Earth-fixed MC entry state");
-				data["entries"].push_back({{"id", clone.index},
-				                           {"epoch_mjd_utc", orbital_core::time::fromMjdTdb(entry.mjdTdb, orbital_core::time::Scale::UTC)},
-				                           {"position_ecef_m", {r.x, r.y, r.z}},
-				                           {"velocity_ecef_mps", {v.x, v.y, v.z}},
-				                           {"weight", 1.0}});
+				data["entries"].push_back(
+				    {{"id", clone.index},
+				     {"epoch_mjd_utc", orbital_core::time::fromMjdTdb(entry.mjdTdb, orbital_core::time::Scale::UTC)},
+				     {"position_ecef_m", {r.x, r.y, r.z}},
+				     {"velocity_ecef_mps", {v.x, v.y, v.z}},
+				     {"weight", 1.0}});
 				data["crossings"].push_back({{"id", clone.index},
 				                             {"clone", clone.index},
 				                             {"epoch_mjd_tdb", entry.mjdTdb},
@@ -734,9 +734,8 @@ namespace {
 			stream << data.dump(2) << '\n';
 		}
 
-		std::cout << "MC requested=" << cfg.samples << " completed=" << mc.completed
-		          << " failedFit=" << mc.failedFit << " failedPropagation=" << mc.failedPropagation
-		          << " entries=" << mc.entryClones << '\n';
+		std::cout << "MC requested=" << cfg.samples << " completed=" << mc.completed << " failedFit=" << mc.failedFit
+		          << " failedPropagation=" << mc.failedPropagation << " entries=" << mc.entryClones << '\n';
 		if (mc.completed > 0)
 			std::cout << "  aggregateP=" << std::scientific << double(mc.entryClones) / mc.completed << '\n';
 		for (std::size_t e = 0; e < mc.events.size(); ++e)

@@ -107,6 +107,20 @@ namespace {
 				                                      const IntegratedStateFull& state) mutable {
 					return observe(epoch, offset, heliocentric(state, epoch, offset));
 				};
+			if (value.denseStepObserver)
+				value.denseStepObserver = [source = &m_source, observe = value.denseStepObserver](DenseIntegratedStep step) {
+					auto evaluate = std::move(step.evaluate);
+					step.evaluate = [source, evaluate = std::move(evaluate)](double mjd) {
+						auto state = evaluate(mjd);
+						Vec3D positions[8], velocities[8];
+						EphemerisForceTerms terms;
+						source->getAllPlanetStatesMjd(mjd, positions, velocities, nullptr, nullptr, &terms);
+						state.R -= terms.sunPosition;
+						state.V -= terms.sunVelocity;
+						return state;
+					};
+					observe(std::move(step));
+				};
 			return value;
 		}
 

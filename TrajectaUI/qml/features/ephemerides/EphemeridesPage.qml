@@ -1,8 +1,6 @@
 pragma ComponentBehavior: Bound
-import QtCore
 import QtQuick
 import QtQuick.Controls.Basic
-import QtQuick.Dialogs
 import QtQuick.Layouts
 import TrajectaUI
 import "../../shared/UI.js" as UI
@@ -35,7 +33,7 @@ BasePage {
                 objectName: "ephemeris-settings-button"
                 iconName: "sliders-horizontal"
                 flat: true
-                accessibleLabel: qsTr("Time scale and light time")
+                accessibleLabel: qsTr("Ephemeris settings")
                 onClicked: settings.open()
             }
         }
@@ -163,24 +161,21 @@ BasePage {
                     font.pixelSize: 11
                     Layout.fillWidth: true
                 }
-                CustomComboBox {
-                    id: exportFormat
-                    objectName: "ephemeris-export-format"
-                    implicitWidth: 86
-                    model: page.ephemerides.exportFormats
-                    Accessible.name: qsTr("Export format")
-                }
                 CustomButton {
-                    objectName: "ephemeris-export"
-                    iconName: "download"
-                    enabled: page.ephemerides.epochCount > 0 && !page.ephemerides.busy
-                    accessibleLabel: qsTr("Save ephemerides")
-                    onClicked: {
-                        saveDialog.selectedFile = saveDialog.currentFolder.toString().replace(/\/$/, "") + "/"
-                            + page.ephemerides.suggestedFileName(exportFormat.currentIndex)
-                        saveDialog.open()
-                    }
+                    objectName: "ephemeris-open-archive"
+                    iconName: "folder-open"
+                    enabled: page.ephemerides.archivePath.length > 0 && !page.ephemerides.busy
+                    accessibleLabel: qsTr("Open ephemeris folder")
+                    onClicked: page.ephemerides.openArchive()
                 }
+            }
+            CustomText {
+                visible: page.ephemerides.uncertaintyUnavailable && !page.ephemerides.busy
+                text: qsTr("Uncertainty unavailable: fit covariance is missing or invalid.")
+                color: AppTheme.amber
+                font.pixelSize: 11
+                Layout.fillWidth: true
+                wrapMode: Text.Wrap
             }
             Item {
                 Layout.fillWidth: true
@@ -223,12 +218,19 @@ BasePage {
                     model: page.ephemerides.table
                     boundsBehavior: Flickable.StopAtBounds
                     columnWidthProvider: function(column) {
-                        const widths = page.ephemerides.layout === 1 ? [176, 128, 128, 128, 128, 128, 128]
-                            : [176, 132, 124, 120, 100, 76, 108]
-                        const total = widths.reduce((a, b) => a + b, 0)
-                        return widths[column] + Math.max(0, width - total - 14) / widths.length
+                        const count = table.columns
+                        const minimum = page.ephemerides.table.columnWidth(column)
+                        if (count <= 0)
+                            return minimum
+                        let total = 0
+                        for (let i = 0; i < count; ++i)
+                            total += page.ephemerides.table.columnWidth(i)
+                        const extra = Math.max(0, Math.floor(table.width - table.rightMargin) - total)
+                        const share = Math.floor(extra / count)
+                        return minimum + (column === count - 1 ? extra - share * (count - 1) : share)
                     }
-                    onWidthChanged: forceLayout()
+                    onWidthChanged: Qt.callLater(table.forceLayout)
+                    onColumnsChanged: Qt.callLater(table.forceLayout)
                     rowHeightProvider: function(row) { return 34 }
                     delegate: Rectangle {
                         id: cell
@@ -248,7 +250,11 @@ BasePage {
                         Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AppTheme.lineSoft }
                     }
                     ScrollBar.horizontal: CustomScrollBar { id: horizontalBar; policy: ScrollBar.AsNeeded }
-                    ScrollBar.vertical: CustomScrollBar { id: verticalBar; policy: ScrollBar.AsNeeded }
+                    ScrollBar.vertical: CustomScrollBar {
+                        id: verticalBar
+                        policy: ScrollBar.AsNeeded
+                        onVisibleChanged: Qt.callLater(table.forceLayout)
+                    }
                     bottomMargin: horizontalBar.visible ? horizontalBar.height : 0
                     rightMargin: verticalBar.visible ? verticalBar.width : 0
                 }
@@ -288,16 +294,14 @@ BasePage {
     }
     Connections {
         target: page.ephemerides
-        function onFormChanged() { table.forceLayout() }
+        function onFormChanged() { Qt.callLater(table.forceLayout) }
     }
-    FileDialog {
-        id: saveDialog
-        objectName: "ephemeris-save-dialog"
-        title: qsTr("Save ephemerides")
-        fileMode: FileDialog.SaveFile
-        currentFolder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
-        nameFilters: [[qsTr("Text (*.txt)"), qsTr("JSON (*.json)")][exportFormat.currentIndex], qsTr("All files (*)")]
-        onAccepted: page.ephemerides.save(selectedFile, exportFormat.currentIndex)
+    Connections {
+        target: page.ephemerides.table
+        function onChanged() { Qt.callLater(table.forceLayout) }
     }
-    EphemerisSettingsDialog { id: settings; ephemerides: page.ephemerides }
+    EphemerisSettingsDialog {
+        id: settings
+        ephemerides: page.ephemerides
+    }
 }

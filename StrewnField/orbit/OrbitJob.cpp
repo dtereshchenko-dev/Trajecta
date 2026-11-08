@@ -119,53 +119,56 @@ namespace strewn {
 		{
 			Json events = Json::array(), crossings = Json::array();
 			for (const auto& event : mc.events)
-				events.push_back({{"start_mjd_tdb", event.startMjdTdb}, {"end_mjd_tdb", event.endMjdTdb},
-				                  {"entries", event.entryClones}, {"probability", event.probability}});
+				events.push_back({{"start_mjd_tdb", event.startMjdTdb},
+				                  {"end_mjd_tdb", event.endMjdTdb},
+				                  {"entries", event.entryClones},
+				                  {"probability", event.probability}});
 			for (const auto& clone : mc.clones)
 				if (clone.status == hz::McCloneStatus::Complete && clone.entry)
-					crossings.push_back({{"id", clone.index}, {"epoch_mjd_tdb", clone.entry->mjdTdb},
+					crossings.push_back({{"id", clone.index},
+					                     {"epoch_mjd_tdb", clone.entry->mjdTdb},
 					                     {"latitude_deg", clone.entry->latitudeDeg},
 					                     {"longitude_deg", clone.entry->longitudeDeg}});
 			const auto& ng = solution.nonGrav;
-			return {
-			    {"schema_version", 2},
-			    {"object", solution.objectName},
-			    {"state",
-			     {{"frame", "heliocentric ECLM J2000"},
-			      {"epoch_mjd_tdb", solution.nominal.epochMjd()},
-			      {"position_au", vector(solution.nominal.getR())},
-			      {"velocity_au_day", vector(solution.nominal.getV() * Constants::GAUSS_K)}}},
-			    {"covariance", matrix(solution.covariance)},
-			    {"additional_covariance_scale", 1.0},
-			    {"covariance_layout", "R_AU,V_AU_day,non_grav_in_fit_mask_order"},
-			    {"non_grav",
-			     {{"enabled", ng.enabled()},
-			      {"model", static_cast<int>(ng.model())},
-			      {"fit_mask", static_cast<int>(ng.fitParameterMask())},
-			      {"a1_au_day2", ng.A1()},
-			      {"a2_au_day2", ng.A2()},
-			      {"a3_au_day2", ng.A3()},
-			      {"dt_day", ng.DT()}}},
-			    {"integrator", config.sampling.integrator == IntegratorKind::RA15 ? "ra15" : "ias15"},
-			    {"planet_mask", config.forces.planetMask},
-			    {"sb441", config.forces.useSb441},
-			    {"step_days", config.forces.stepSize},
-			    {"horizon_days", config.horizonDays},
-			    {"requested", config.sampling.samples},
-			    {"seed", config.sampling.seed},
-			    {"workers", config.sampling.workers},
-			    {"completed", mc.completed},
-			    {"failed", mc.failedFit + mc.failedPropagation},
-			    {"entry_probability_among_completed", mc.completed ? Json(double(mc.entryClones) / mc.completed) : Json(nullptr)},
-			    {"cancelled", mc.cancelled},
-			    {"entries", mc.entryClones},
-			    {"events", events},
-			    {"crossings", crossings},
-			    {"altitude_km", config.sampling.altitudeKm},
-			    {"boundary", "WGS84 geodetic height"},
-			    {"frame_model", "OrbitalCore IAU1976/1980 UT1/GAST; no polar motion"},
-			    {"conditioning",
-			     "atmospheric sampling is conditional on successful Earth entries in the requested interval"}};
+			return {{"schema_version", 2},
+			        {"object", solution.objectName},
+			        {"state",
+			         {{"frame", "heliocentric ECLM J2000"},
+			          {"epoch_mjd_tdb", solution.nominal.epochMjd()},
+			          {"position_au", vector(solution.nominal.getR())},
+			          {"velocity_au_day", vector(solution.nominal.getV() * Constants::GAUSS_K)}}},
+			        {"covariance", matrix(solution.covariance)},
+			        {"additional_covariance_scale", 1.0},
+			        {"covariance_layout", "R_AU,V_AU_day,non_grav_in_fit_mask_order"},
+			        {"non_grav",
+			         {{"enabled", ng.enabled()},
+			          {"model", static_cast<int>(ng.model())},
+			          {"fit_mask", static_cast<int>(ng.fitParameterMask())},
+			          {"a1_au_day2", ng.A1()},
+			          {"a2_au_day2", ng.A2()},
+			          {"a3_au_day2", ng.A3()},
+			          {"dt_day", ng.DT()}}},
+			        {"integrator", config.sampling.integrator == IntegratorKind::RA15 ? "ra15" : "ias15"},
+			        {"planet_mask", config.forces.planetMask},
+			        {"sb441", config.forces.useSb441},
+			        {"step_days", config.forces.stepSize},
+			        {"horizon_days", config.horizonDays},
+			        {"requested", config.sampling.samples},
+			        {"seed", config.sampling.seed},
+			        {"workers", config.sampling.workers},
+			        {"completed", mc.completed},
+			        {"failed", mc.failedFit + mc.failedPropagation},
+			        {"entry_probability_among_completed",
+			         mc.completed ? Json(double(mc.entryClones) / mc.completed) : Json(nullptr)},
+			        {"cancelled", mc.cancelled},
+			        {"entries", mc.entryClones},
+			        {"events", events},
+			        {"crossings", crossings},
+			        {"altitude_km", config.sampling.altitudeKm},
+			        {"boundary", "WGS84 geodetic height"},
+			        {"frame_model", "OrbitalCore IAU1976/1980 UT1/GAST; no polar motion"},
+			        {"conditioning",
+			         "atmospheric sampling is conditional on successful Earth entries in the requested interval"}};
 		}
 	}  // namespace
 
@@ -198,10 +201,10 @@ namespace strewn {
 		config.sampling.startMjdTdb = solution.nominal.epochMjd();
 		config.sampling.endMjdTdb = config.sampling.startMjdTdb + config.horizonDays;
 		const auto propagated = hz::runIntervalMonteCarlo(solution, config.forces, config.sampling, control.cancel,
-		                                                   [&](int done, int total) {
-			if (orbitalProgress)
-				orbitalProgress(done, total);
-		});
+		                                                  [&](int done, int total) {
+			                                                  if (orbitalProgress)
+				                                                  orbitalProgress(done, total);
+		                                                  });
 		const auto report = orbitReport(solution, config, propagated);
 		EntrySamples prepared;
 		std::set<int> selected;
@@ -213,7 +216,8 @@ namespace strewn {
 				throw std::runtime_error("Duplicate orbital entry");
 			const auto r = hz::icrfToBodyFixedMjd(hz::Planet::Earth, entry.relativePositionKm, entry.mjdTdb) * 1000.0;
 			const auto v = hz::bodyFixedVelocityMjd(hz::Planet::Earth, entry.relativePositionKm,
-			                                        entry.relativeVelocityKmS, entry.mjdTdb) * 1000.0;
+			                                        entry.relativeVelocityKmS, entry.mjdTdb) *
+			               1000.0;
 			if (!std::isfinite(r.dot(r)) || !std::isfinite(v.dot(v)))
 				throw std::runtime_error("An orbital entry has no valid Earth-fixed state");
 			prepared.values.push_back({{r.x, r.y, r.z},

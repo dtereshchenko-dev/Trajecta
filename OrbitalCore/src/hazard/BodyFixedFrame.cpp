@@ -150,13 +150,13 @@ namespace orbital_core::hazard {
 	}
 
 	Vec3D bodyFixedVelocityMjd(Planet planet, const Vec3D& r, const Vec3D& v, double mjdTdb,
-	                            IEphemerisSource* source) noexcept
+	                           IEphemerisSource* source) noexcept
 	{
 		constexpr double offset = 1.0 / 86400.0;
 		const double before = mjdTdb - offset, after = mjdTdb + offset;
-		const Vec3D rate = (icrfToBodyFixedMjd(planet, r, after, source) -
-		                    icrfToBodyFixedMjd(planet, r, before, source)) *
-		                   (1.0 / ((after - before) * 86400.0));
+		const Vec3D rate =
+		    (icrfToBodyFixedMjd(planet, r, after, source) - icrfToBodyFixedMjd(planet, r, before, source)) *
+		    (1.0 / ((after - before) * 86400.0));
 		return icrfToBodyFixedMjd(planet, v, mjdTdb, source) + rate;
 	}
 

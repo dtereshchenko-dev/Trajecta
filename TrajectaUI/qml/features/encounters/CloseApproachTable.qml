@@ -8,9 +8,6 @@ Item {
     id: root
     required property CloseApproachTableModel results
     property string emptyText
-    readonly property var tooltips: [qsTr("TDB; plus/minus local linear 3-sigma time uncertainty"), qsTr("Encounter body"),
-        qsTr("Nominal body-centred distance"), qsTr("Local linear 3-sigma lower bound, truncated at zero"),
-        qsTr("Local linear 3-sigma upper bound"), qsTr("Relative speed at closest approach"), qsTr("Hyperbolic excess speed")]
     HorizontalHeaderView {
         id: header
         anchors.left: parent.left
@@ -45,11 +42,7 @@ Item {
                     opacity: root.results.sortColumn === heading.column ? 1 : 0.35
                 }
             }
-            HoverHandler { id: hover }
             TapHandler { onTapped: root.results.toggleSort(heading.column) }
-            ToolTip.visible: hover.hovered
-            ToolTip.delay: 500
-            ToolTip.text: root.tooltips[heading.column]
             Accessible.role: Accessible.Button
             Accessible.name: heading.model.display
             Accessible.onPressAction: root.results.toggleSort(heading.column)
@@ -76,7 +69,6 @@ Item {
         delegate: Rectangle {
             id: cell
             required property string display
-            required property string toolTip
             required property int column
             implicitHeight: 34
             color: AppTheme.base
@@ -89,10 +81,6 @@ Item {
                 font.pixelSize: 11
                 horizontalAlignment: cell.column >= 2 ? Text.AlignRight : Text.AlignLeft
             }
-            HoverHandler { id: cellHover }
-            ToolTip.visible: cellHover.hovered && cell.toolTip.length > 0
-            ToolTip.delay: 500
-            ToolTip.text: cell.toolTip
             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AppTheme.lineSoft }
         }
         ScrollBar.horizontal: CustomScrollBar {}

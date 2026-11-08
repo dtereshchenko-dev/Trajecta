@@ -16,7 +16,7 @@ namespace Calculations {
 	// Approximate RMS in radians is sqrt(cost / N); returns 1e30 on failure.
 	[[nodiscard]] ORBITAL_CORE_API double keplerResidualCost(const Vec3D& R1, const Vec3D& V1, double t1JD,
 	                                                         const std::vector<ObsNode>& obs);
-}
+}  // namespace Calculations
 
 namespace Calculations::iod_scoring {
 

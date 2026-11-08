@@ -93,8 +93,8 @@ TEST_F(EarthJ2Test, RotatingPoleAndZonalForceMatchPotential)
 		for (int j = 0; j < 3; ++j) {
 			Eigen::Vector3d d = Eigen::Vector3d::Zero();
 			d[j] = step;
-			expected[j] = (potential(r - 2 * d) - 8 * potential(r - d) + 8 * potential(r + d) -
-			               potential(r + 2 * d)) / (12 * step);
+			expected[j] = (potential(r - 2 * d) - 8 * potential(r - d) + 8 * potential(r + d) - potential(r + 2 * d)) /
+			              (12 * step);
 		}
 		EXPECT_LT((actual - expected).norm() / expected.norm(), 1e-8);
 		EXPECT_DOUBLE_EQ(dadv.norm(), 0.0);

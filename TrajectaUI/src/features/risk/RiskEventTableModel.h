@@ -26,7 +26,6 @@ class RiskEventTableModel : public QAbstractTableModel {
 	struct Row {
 		QStringList cells;
 		QString detail;
-		bool entry{};
 	};
 
 	std::vector<Row> m_rows;

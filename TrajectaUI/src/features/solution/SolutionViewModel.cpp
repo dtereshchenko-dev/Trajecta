@@ -5,6 +5,7 @@
 #include <orbital_core/TimeScale.h>
 #include <orbital_core/hazard/EquinoctialCoordinates.h>
 #include <orbital_core/hazard/ImpactEnergy.h>
+#include <orbital_core/hazard/PhaClassifier.h>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -340,6 +341,35 @@ QVariantMap SolutionViewModel::typicalSize() const
 double SolutionViewModel::earthMoidKm() const
 {
 	return m_moids[orbital_core::hazard::Planet::Earth] * (Constants::AU_IN_METERS / 1000.0);
+}
+
+orbital_core::hazard::PhaStatus SolutionViewModel::phaClassification() const
+{
+	if (!m_snapshot)
+		return orbital_core::hazard::PhaStatus::NotApplicable;
+	using namespace orbital_core::hazard;
+	return classifyPha(!cometPhotometry(), absoluteMagnitude(), m_moids[Planet::Earth]);
+}
+
+bool SolutionViewModel::potentiallyHazardous() const
+{
+	return phaClassification() == orbital_core::hazard::PhaStatus::Pha;
+}
+
+QString SolutionViewModel::phaStatus() const
+{
+	using orbital_core::hazard::PhaStatus;
+	switch (phaClassification()) {
+		case PhaStatus::Pha:
+			return tr("PHA");
+		case PhaStatus::NotPha:
+			return tr("Not PHA");
+		case PhaStatus::Unknown:
+			return tr("Unknown");
+		case PhaStatus::NotApplicable:
+			return {};
+	}
+	return {};
 }
 
 QVariantList SolutionViewModel::planetMoids() const

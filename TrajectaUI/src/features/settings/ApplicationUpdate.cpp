@@ -11,11 +11,13 @@ ApplicationUpdate::ApplicationUpdate(QObject* parent) : QObject(parent)
 	m_timeout.setSingleShot(true);
 	connect(&m_timeout, &QTimer::timeout, this, [this] { m_process.kill(); });
 	connect(&m_process, &QProcess::errorOccurred, this, [this](QProcess::ProcessError error) {
-		if (error == QProcess::FailedToStart) m_timeout.stop();
+		if (error == QProcess::FailedToStart)
+			m_timeout.stop();
 	});
 	connect(&m_process, &QProcess::finished, this, [this](int code, QProcess::ExitStatus status) {
 		m_timeout.stop();
-		if (status != QProcess::NormalExit || code != 0) return;
+		if (status != QProcess::NormalExit || code != 0)
+			return;
 		m_version = availableVersion(m_process.readAllStandardOutput(), QCoreApplication::applicationVersion());
 		emit changed();
 	});
@@ -33,7 +35,8 @@ QString ApplicationUpdate::availableVersion(const QByteArray& output, const QStr
 {
 	const auto start = output.indexOf("<updates>");
 	const auto end = output.indexOf("</updates>", start);
-	if (start < 0 || end < 0) return {};
+	if (start < 0 || end < 0)
+		return {};
 	QXmlStreamReader xml(output.mid(start, end + int(sizeof("</updates>") - 1) - start));
 	QString version;
 	while (!xml.atEnd()) {
@@ -64,16 +67,20 @@ QString ApplicationUpdate::toolPath() const
 void ApplicationUpdate::check()
 {
 	const auto path = toolPath();
-	if (path.isEmpty() || !QFileInfo::exists(path) || m_process.state() != QProcess::NotRunning) return;
+	if (path.isEmpty() || !QFileInfo::exists(path) || m_process.state() != QProcess::NotRunning)
+		return;
 	m_timeout.start(60000);
 	m_process.start(path, {QStringLiteral("check-updates")});
 }
 
 bool ApplicationUpdate::openUpdater()
 {
-	if (!available()) return false;
-	if (m_process.state() != QProcess::NotRunning) return false;
-	if (QProcess::startDetached(toolPath(), {QStringLiteral("--start-updater")})) return true;
+	if (!available())
+		return false;
+	if (m_process.state() != QProcess::NotRunning)
+		return false;
+	if (QProcess::startDetached(toolPath(), {QStringLiteral("--start-updater")}))
+		return true;
 	m_error = tr("Could not start the update tool.");
 	emit changed();
 	return false;

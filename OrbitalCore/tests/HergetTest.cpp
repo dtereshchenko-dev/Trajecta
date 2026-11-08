@@ -136,15 +136,15 @@ TEST(Herget, HyperbolicPropagationMatchesKeplerReferenceInBothTimeDirections)
 	}
 }
 
-TEST(Herget, RejectsFiniteUnconvergedStateAfterIterationBudgetIsExhausted)
+TEST(Herget, TinyHyperbolicTimeStepsPreserveTheInitialState)
 {
 	const StateVectors initial(Vec3D(0.1, 0.0, 0.0), Vec3D(0.0, 5.0, 0.0));
 	for (const double days : {-1.0e-40, 1.0e-40}) {
 		SCOPED_TRACE(days);
 		const auto result = Calculations::propagateKeplerState(initial, days);
-		EXPECT_FALSE(result.isValid());
-		EXPECT_DOUBLE_EQ(result.first.magnitude(), 0.0);
-		EXPECT_DOUBLE_EQ(result.second.magnitude(), 0.0);
+		ASSERT_TRUE(result.isValid());
+		EXPECT_LT((result.first - initial.first).magnitude(), 1e-15);
+		EXPECT_LT((result.second - initial.second).magnitude(), 1e-15);
 	}
 }
 

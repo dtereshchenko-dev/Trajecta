@@ -189,11 +189,13 @@ namespace strewn::sources {
 					}
 				}
 				const auto selected = ranges(readBytes(index, options.maxDownloadBytes));
-				const auto files = downloadGfsRanges(selected, [&](auto range, auto token) {
-					return fetch(chosen.url, directory, options, token, range);
-				}, cancel);
+				const auto files = downloadGfsRanges(
+				    selected,
+				    [&](auto range, auto token) { return fetch(chosen.url, directory, options, token, range); },
+				    cancel);
 				for (const auto& file : files) {
-					if (cancel.stop_requested()) throw trajecta::http::Cancelled{};
+					if (cancel.stop_requested())
+						throw trajecta::http::Cancelled{};
 					readGrib(file, bounds, result);
 					provenance["raw_sources"].push_back(file.filename().string());
 				}
