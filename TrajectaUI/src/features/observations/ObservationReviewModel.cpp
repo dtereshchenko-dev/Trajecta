@@ -4,6 +4,7 @@
 
 #include <QDate>
 #include <QDateTime>
+#include <QTimeZone>
 #include <algorithm>
 #include <cmath>
 #include <unordered_map>
@@ -24,9 +25,9 @@ namespace {
 		QDateTime date;
 		if (observation.hasSplitUtc) {
 			const auto day = QDate::fromJulianDay(static_cast<qint64>(observation.utcMjdDay) + 2400001);
-			date = QDateTime(day, QTime(0, 0), Qt::UTC).addMSecs(qRound64(observation.utcSecondsOfDay * 1000.0));
+			date = QDateTime(day, QTime(0, 0), QTimeZone::UTC).addMSecs(qRound64(observation.utcSecondsOfDay * 1000.0));
 		} else {
-			date = QDateTime::fromMSecsSinceEpoch(qRound64((observation.JD - 2440587.5) * 86400000.0), Qt::UTC);
+			date = QDateTime::fromMSecsSinceEpoch(qRound64((observation.JD - 2440587.5) * 86400000.0), QTimeZone::UTC);
 		}
 		const char* scale = observation.timeScale == orbital_core::time::Scale::UT1   ? "UT1"
 		                    : observation.timeScale == orbital_core::time::Scale::TT  ? "TT"

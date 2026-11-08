@@ -312,7 +312,7 @@ DE440Source::DE440Source() : p_impl(std::make_unique<Impl>())
 
 DE440Source::DE440Source(std::string_view bspPath) : p_impl(std::make_unique<Impl>())
 {
-	const auto path = std::filesystem::u8path(bspPath.begin(), bspPath.end());
+	const auto path = std::filesystem::path(std::u8string(bspPath.begin(), bspPath.end()));
 	if (!std::filesystem::exists(path))
 		return;
 

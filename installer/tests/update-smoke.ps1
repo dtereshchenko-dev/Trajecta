@@ -33,10 +33,10 @@ try {
     $target = Join-Path $root 'installed with spaces'
     $config = Join-Path $root 'config.xml'
     $source = Get-Content -LiteralPath (Join-Path $repoRoot 'packages/com.trajecta.app/meta/installscript.qs') -Raw
-    $start = $source.IndexOf('Component.prototype.createOperationsForArchive = function(archive)')
-    $operations = $source.IndexOf('Component.prototype.createOperations = function()')
-    if ($start -lt 0 -or $operations -lt 0) { throw 'Component script handlers not found' }
-    Write-Text (Join-Path $meta 'installscript.qs') ($source.Substring(0, $operations) + $source.Substring($start))
+    $start = [regex]::Match($source, 'Component\.prototype\.createOperationsForArchive\s*=\s*function\s*\(\s*archive\s*\)')
+    $operations = [regex]::Match($source, 'Component\.prototype\.createOperations\s*=\s*function\s*\(\s*\)')
+    if (!$start.Success -or !$operations.Success) { throw 'Component script handlers not found' }
+    Write-Text (Join-Path $meta 'installscript.qs') ($source.Substring(0, $operations.Index) + $source.Substring($start.Index))
     $controller = (Get-Content -LiteralPath (Join-Path $repoRoot 'config/controller.qs') -Raw) + "`n" +
         (Get-Content -LiteralPath (Join-Path $repoRoot 'common/lifecycle.qs') -Raw)
     Write-Text (Join-Path $root 'controller.qs') $controller

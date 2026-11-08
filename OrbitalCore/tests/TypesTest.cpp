@@ -46,9 +46,13 @@ TEST(Convertors, ConvertGregorianToJD)
 
 TEST(Convertors, ConvertJDToGregorian)
 {
-	std::string result = Convertors::convertJDToGregorian(Constants::J2000_JD);
-	EXPECT_NE(result.find("2000"), std::string::npos);
-	EXPECT_NE(result.find("01"), std::string::npos);
+	const auto start = Convertors::convertGregorianToJD(2024, 1, 1.0);
+	const auto atSeconds = [start](double seconds) { return Convertors::convertJDToGregorian(start + seconds / 86400.0); };
+	EXPECT_EQ(atSeconds(21 * 3600 + 50 * 60 + 1.54), "2024-01-01 21:50:01.54");
+	EXPECT_EQ(atSeconds(21 * 3600 + 50 * 60 + 0.01), "2024-01-01 21:50:00.01");
+	EXPECT_EQ(atSeconds(59.999), "2024-01-01 00:01:00.00");
+	EXPECT_EQ(atSeconds(86399.999), "2024-01-02 00:00:00.00");
+	EXPECT_EQ(Convertors::convertJDToGregorian(Constants::J2000_JD), "2000-01-01 12:00:00.00");
 }
 
 TEST(Convertors, StringToInt)

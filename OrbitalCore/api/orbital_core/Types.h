@@ -278,17 +278,23 @@ namespace Convertors {
 		double dayFrac;
 		jdToYMD(jd, year, month, dayFrac);
 
-		const int day = static_cast<int>(std::floor(dayFrac));
-		const double hourFrac = (dayFrac - day) * 24.0;
-		const int hour = static_cast<int>(std::floor(hourFrac));
-		const double minuteFrac = (hourFrac - hour) * 60.0;
-		const int minute = static_cast<int>(std::floor(minuteFrac));
-		const double second = (minuteFrac - minute) * 60.0;
+		constexpr int centisecondsPerDay = 8640000;
+		int day = static_cast<int>(std::floor(dayFrac));
+		int centiseconds = static_cast<int>(std::llround((dayFrac - day) * centisecondsPerDay));
+		if (centiseconds == centisecondsPerDay) {
+			jdToYMD(std::floor(jd + 0.5) + 0.5, year, month, dayFrac);
+			day = static_cast<int>(std::floor(dayFrac));
+			centiseconds = 0;
+		}
+		const int hour = centiseconds / 360000;
+		const int minute = centiseconds / 6000 % 60;
+		const int second = centiseconds / 100 % 60;
+		const int fraction = centiseconds % 100;
 
 		std::ostringstream oss;
 		oss << year << "-" << std::setfill('0') << std::setw(2) << month << "-" << std::setfill('0') << std::setw(2)
 		    << day << " " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2)
-		    << minute << ":" << std::fixed << std::setprecision(2) << second;
+		    << minute << ":" << std::setw(2) << second << "." << std::setw(2) << fraction;
 
 		return oss.str();
 	}

@@ -74,8 +74,10 @@ namespace orbital_core {
 			const auto* source = dynamic_cast<const DE440Source*>(getDefaultEphemerisSource());
 			e.active = planetaryEphemerisAvailable();
 			e.valid = e.active;
-			if (e.active)
-				e.path = std::filesystem::u8path(source->sourcePath());
+			if (e.active) {
+				const auto path = source->sourcePath();
+				e.path = std::filesystem::path(std::u8string(path.begin(), path.end()));
+			}
 			else
 				e.error = "Planetary ephemeris not connected";
 		});
@@ -84,7 +86,8 @@ namespace orbital_core {
 			e.active = asteroidEphemerisAvailable();
 			e.valid = e.active;
 			if (e.active) {
-				e.path = std::filesystem::u8path(source->sourcePath());
+				const auto path = source->sourcePath();
+				e.path = std::filesystem::path(std::u8string(path.begin(), path.end()));
 				e.records = source->targetIds().size();
 			} else if (!downloadedAsteroidFile.empty() && std::filesystem::is_regular_file(downloadedAsteroidFile)) {
 				e.path = downloadedAsteroidFile;

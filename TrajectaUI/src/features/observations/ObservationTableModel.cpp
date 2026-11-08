@@ -447,12 +447,29 @@ void ObservationTableModel::discardEdits()
 	emit selectionChanged();
 }
 
+void ObservationTableModel::beginObservationFilterChange()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+	beginFilterChange();
+#endif
+}
+
+void ObservationTableModel::endObservationFilterChange()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+	endFilterChange(QSortFilterProxyModel::Direction::Rows);
+#else
+	invalidateFilter();
+#endif
+}
+
 void ObservationTableModel::setFilterText(const QString& value)
 {
 	if (m_filter == value)
 		return;
+	beginObservationFilterChange();
 	m_filter = value;
-	invalidateFilter();
+	endObservationFilterChange();
 	emit filterChanged();
 	emit countChanged();
 }
@@ -470,10 +487,11 @@ void ObservationTableModel::setRadarMode(bool radar)
 {
 	if (m_rows->radarMode == radar)
 		return;
+	beginObservationFilterChange();
 	m_rows->radarMode = radar;
 	m_selectedSourceRow = -1;
 	m_stationFilter.clear();
-	invalidateFilter();
+	endObservationFilterChange();
 	emit m_rows->headerDataChanged(Qt::Horizontal, 0, m_rows->columnCount() - 1);
 	emit filterChanged();
 	emit countChanged();
@@ -489,10 +507,11 @@ void ObservationTableModel::clearFilters()
 {
 	if (m_filter.isEmpty() && m_stationFilter.isEmpty() && !m_excludedOnly)
 		return;
+	beginObservationFilterChange();
 	m_filter.clear();
 	m_stationFilter.clear();
 	m_excludedOnly = false;
-	invalidateFilter();
+	endObservationFilterChange();
 	emit filterChanged();
 	emit countChanged();
 }
@@ -501,8 +520,9 @@ void ObservationTableModel::setExcludedOnly(bool value)
 {
 	if (m_excludedOnly == value)
 		return;
+	beginObservationFilterChange();
 	m_excludedOnly = value;
-	invalidateFilter();
+	endObservationFilterChange();
 	emit filterChanged();
 	emit countChanged();
 }
@@ -511,8 +531,9 @@ void ObservationTableModel::setStationFilter(const QString& value)
 {
 	if (m_stationFilter == value)
 		return;
+	beginObservationFilterChange();
 	m_stationFilter = value;
-	invalidateFilter();
+	endObservationFilterChange();
 	emit filterChanged();
 	emit countChanged();
 }
@@ -520,11 +541,12 @@ void ObservationTableModel::setStationFilter(const QString& value)
 void ObservationTableModel::showStation(const QString& station)
 {
 	setRadarMode(false);
+	beginObservationFilterChange();
 	m_filter.clear();
 	m_excludedOnly = false;
 	m_stationFilter = station;
 	m_selectedSourceRow = -1;
-	invalidateFilter();
+	endObservationFilterChange();
 	emit filterChanged();
 	emit countChanged();
 	emit selectionChanged();

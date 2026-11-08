@@ -1,14 +1,11 @@
-function Component()
-{
+function Component() {
     component.loaded.connect(this, Component.prototype.onLoaded);
 }
 
-Component.prototype.onLoaded = function()
-{
+Component.prototype.onLoaded = function () {
     if (!installer.isCommandLineInstance()) {
         var finishedPage = gui.pageByObjectName("FinishedPage");
-        if (finishedPage)
-            finishedPage.entered.connect(this, Component.prototype.onFinishedPageEntered);
+        if (finishedPage) finishedPage.entered.connect(this, Component.prototype.onFinishedPageEntered);
     }
     if (installer.isInstaller()) {
         installer.installationFinished.connect(this, Component.prototype.onInstallFinished);
@@ -16,14 +13,11 @@ Component.prototype.onLoaded = function()
         // Hide unnecessary pages
         installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
         installer.setDefaultPageVisible(QInstaller.StartMenuSelection, false);
-
     }
-}
+};
 
-Component.prototype.onFinishedPageEntered = function()
-{
-    if (!installer.isUpdater() || installer.status !== QInstaller.Success)
-        return;
+Component.prototype.onFinishedPageEntered = function () {
+    if (!installer.isUpdater() || installer.status !== QInstaller.Success) return;
     var page = gui.pageByObjectName("FinishedPage");
     if (page && page.RunItCheckBox) {
         page.RunItCheckBox.checked = true;
@@ -31,15 +25,13 @@ Component.prototype.onFinishedPageEntered = function()
     }
 };
 
-Component.prototype.onInstallFinished = function()
-{
+Component.prototype.onInstallFinished = function () {
     if (installer.isInstaller() && installer.status === QInstaller.Success) {
         var targetDir = installer.value("TargetDir");
-        installer.execute("cmd", ["/c",
-            "for /r \"" + targetDir + "\" %f in (*.tmpUpdate) do @del /q /f \"%f\""]);
+        installer.execute("cmd", ["/c", 'for /r "' + targetDir + '" %f in (*.tmpUpdate) do @del /q /f "%f"']);
         var bootstrapDir = targetDir + "/installerResources/catalog-bootstrap";
         if (installer.fileExists(bootstrapDir))
-            installer.execute("cmd", ["/c", "rmdir", "\"" + bootstrapDir + "\""]);
+            installer.execute("cmd", ["/c", "rmdir", '"' + bootstrapDir + '"']);
     }
 
     try {
@@ -47,44 +39,43 @@ Component.prototype.onInstallFinished = function()
             var page = gui.pageWidgetByObjectName("FinishedPage");
             if (page) {
                 var checkBox = page.RunItCheckBox;
-                if (checkBox)
-                    checkBox.checked = true;
+                if (checkBox) checkBox.checked = true;
             }
         }
-    } catch(e) {}
-}
+    } catch (e) {}
+};
 
-Component.prototype.createOperations = function()
-{
+Component.prototype.createOperations = function () {
     component.createOperations();
 
     if (systemInfo.productType === "windows") {
         // Start menu shortcut
-        component.addOperation("CreateShortcut",
+        component.addOperation(
+            "CreateShortcut",
             "@TargetDir@/Trajecta.exe",
             "@StartMenuDir@/Trajecta.lnk",
             "workingDirectory=@TargetDir@",
             "iconPath=@TargetDir@/icon.ico",
-            "description=Trajecta");
+            "description=Trajecta"
+        );
 
         // Desktop shortcut
-        component.addOperation("CreateShortcut",
+        component.addOperation(
+            "CreateShortcut",
             "@TargetDir@/Trajecta.exe",
             "@DesktopDir@/Trajecta.lnk",
             "workingDirectory=@TargetDir@",
             "iconPath=@TargetDir@/icon.ico",
-            "description=Trajecta");
+            "description=Trajecta"
+        );
     }
-}
+};
 
-Component.prototype.createOperationsForArchive = function(archive)
-{
+Component.prototype.createOperationsForArchive = function (archive) {
     var filename = "";
     var subdirectory = "observatories";
-    if (archive.indexOf("obscode.7z") !== -1)
-        filename = "OBSCODE.dat";
-    else if (archive.indexOf("radcode.7z") !== -1)
-        filename = "RADCODE.dat";
+    if (archive.indexOf("obscode.7z") !== -1) filename = "OBSCODE.dat";
+    else if (archive.indexOf("radcode.7z") !== -1) filename = "RADCODE.dat";
     else if (archive.indexOf("de440.7z") !== -1) {
         filename = "linux_p1550p2650.440";
         subdirectory = "ephemerides";
@@ -95,14 +86,19 @@ Component.prototype.createOperationsForArchive = function(archive)
     }
 
     var local = installer.environmentVariable("LOCALAPPDATA");
-    if (!local)
-        throw "LOCALAPPDATA is unavailable; cannot install runtime data.";
+    if (!local) throw "LOCALAPPDATA is unavailable; cannot install runtime data.";
     var directory = local + "/Trajecta/Trajecta/" + subdirectory;
     if (!installer.fileExists(directory + "/" + filename)) {
         var staging = "@TargetDir@/installerResources/catalog-bootstrap";
         component.addOperation("Extract", archive, staging);
         component.addOperation("Mkdir", directory, "UNDOOPERATION", "");
-        component.addOperation("Copy", staging + "/" + filename, directory + "/" + filename, "UNDOOPERATION", "");
+        component.addOperation(
+            "Copy",
+            staging + "/" + filename,
+            directory + "/" + filename,
+            "UNDOOPERATION",
+            ""
+        );
         component.addOperation("Delete", staging + "/" + filename, "UNDOOPERATION", "");
     }
-}
+};

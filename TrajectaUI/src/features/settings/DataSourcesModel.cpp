@@ -208,7 +208,8 @@ void DataSourcesModel::refresh()
 		return;
 	}
 	m_running = true;
-	const auto installed = std::filesystem::u8path(Sb441Download::installedPath().toUtf8().toStdString());
+	const auto path = Sb441Download::installedPath().toUtf8();
+	const auto installed = std::filesystem::path(std::u8string(path.begin(), path.end()));
 	m_watcher.setFuture(QtConcurrent::run([installed] { return orbital_core::inspectRuntimeData(installed); }));
 	emit changed();
 }
