@@ -106,7 +106,7 @@ namespace orbital_core::hazard {
 			if (!entry.is_null()) {
 				entry["clone"] = clone.at("index");
 				entry["epoch_utc"] = utc(entry.at("epoch"));
-				trial.entry = McBoundaryEntry{.mjdTdb = entry.at("epoch").get<double>()};
+				trial.entry = BoundaryCrossing{.mjdTdb = entry.at("epoch").get<double>()};
 				entries.push_back(std::move(entry));
 			}
 			if (!nominal)

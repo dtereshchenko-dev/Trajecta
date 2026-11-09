@@ -5,6 +5,7 @@
 #include <orbital_core/TimeScale.h>
 #include <orbital_core/hazard/EquinoctialCoordinates.h>
 #include <orbital_core/hazard/ImpactEnergy.h>
+#include <orbital_core/hazard/PhaClassifier.h>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -99,6 +100,28 @@ namespace {
 }  // namespace
 
 SolutionViewModel::SolutionViewModel(QObject* parent) : QObject(parent) {}
+
+QVariantMap SolutionViewModel::nominalEarthEntry() const
+{
+	if (!m_snapshot || !m_snapshot->nominalEarthEntry)
+		return {};
+	const auto& entry = *m_snapshot->nominalEarthEntry;
+	const auto& crossing = entry.crossing;
+	const double utc = orbital_core::time::fromMjdTdb(crossing.mjdTdb, orbital_core::time::Scale::UTC);
+	const auto coordinate = [](double value, const char* positive, const char* negative) {
+		return QString::number(std::abs(value), 'f', 5) + QString::fromUtf8("° ") +
+		       QString::fromLatin1(value < 0 ? negative : positive);
+	};
+	return {{"utc", CalculationTime::formatUtc(utc)},
+	        {"latitude", coordinate(crossing.latitudeDeg, "N", "S")},
+	        {"longitude", coordinate(crossing.longitudeDeg, "E", "W")},
+	        {"altitudeKm", entry.altitudeKm}};
+}
+
+QString SolutionViewModel::nominalEarthEntryError() const
+{
+	return m_snapshot ? QString::fromStdString(m_snapshot->nominalEarthEntryError) : QString();
+}
 
 bool SolutionViewModel::publish(const orbital_core::FitPipelineResult& result, const QString& directory,
                                 const orbital_core::hazard::PlanetMoidTable& moids)
@@ -340,6 +363,35 @@ QVariantMap SolutionViewModel::typicalSize() const
 double SolutionViewModel::earthMoidKm() const
 {
 	return m_moids[orbital_core::hazard::Planet::Earth] * (Constants::AU_IN_METERS / 1000.0);
+}
+
+orbital_core::hazard::PhaStatus SolutionViewModel::phaClassification() const
+{
+	if (!m_snapshot)
+		return orbital_core::hazard::PhaStatus::NotApplicable;
+	using namespace orbital_core::hazard;
+	return classifyPha(!cometPhotometry(), absoluteMagnitude(), m_moids[Planet::Earth]);
+}
+
+bool SolutionViewModel::potentiallyHazardous() const
+{
+	return phaClassification() == orbital_core::hazard::PhaStatus::Pha;
+}
+
+QString SolutionViewModel::phaStatus() const
+{
+	using orbital_core::hazard::PhaStatus;
+	switch (phaClassification()) {
+		case PhaStatus::Pha:
+			return tr("PHA");
+		case PhaStatus::NotPha:
+			return tr("Not PHA");
+		case PhaStatus::Unknown:
+			return tr("Unknown");
+		case PhaStatus::NotApplicable:
+			return {};
+	}
+	return {};
 }
 
 QVariantList SolutionViewModel::planetMoids() const

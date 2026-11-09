@@ -104,6 +104,8 @@ void OrbitWorker::process(const OrbitFitJob& job, std::stop_token cancel)
 			exportContext.objectName =
 			    observations.objectName.empty() ? observations.source.stem().string() : observations.objectName;
 			exportContext.fitResult = &result.fit;
+			exportContext.nominalEarthEntry = result.nominalEarthEntry ? &*result.nominalEarthEntry : nullptr;
+			exportContext.nominalEarthEntryError = result.nominalEarthEntryError;
 			exportContext.observations = observations.all;
 			exportContext.gaiaPhotocenterRadiusKm = observations.gaiaPhotocenterRadiusKm;
 			exportContext.weightProfile = result.effectiveConfig.weightProfile;
@@ -112,6 +114,8 @@ void OrbitWorker::process(const OrbitFitJob& job, std::stop_token cancel)
 			exportContext.photometry = result.effectiveConfig.photometry;
 
 			const auto exportReport = orbital_core::Exporter::save(exportContext, {orbital_core::ExportProduct::All});
+			if (result.nominalEarthEntry || !result.nominalEarthEntryError.empty())
+				(void)orbital_core::Exporter::save(exportContext, {orbital_core::ExportProduct::FitSummary});
 			LOG_INFO << "Fit export written to " << exportReport.directory.string();
 			m_solutionDirectory = exportReport.directory;
 		}

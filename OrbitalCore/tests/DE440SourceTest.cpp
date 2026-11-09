@@ -89,14 +89,17 @@ TEST_F(DE440SourceTest, DoesNotLoadFromExecutableDirectoryWhenConfiguredDataIsMi
 {
 	const auto originalDirectory = orbital_core::ephemerisDataDirectory();
 	const auto originalExecutable = getExecutableDir();
+
 	struct Restore {
 		std::filesystem::path data, executable;
+
 		~Restore()
 		{
 			orbital_core::setEphemerisDataDirectory(data);
 			getExecutableDir() = executable;
 		}
 	} restore{originalDirectory, originalExecutable};
+
 	getExecutableDir() = originalDirectory;
 	ASSERT_TRUE(std::filesystem::exists(getExecutableDir() / "linux_p1550p2650.440"));
 	orbital_core::setEphemerisDataDirectory(originalDirectory / "missing-ephemeris-directory");

@@ -124,6 +124,39 @@ class NBodyPropagatorTest : public ::testing::Test {
 	NBodyPropagator propagator;
 };
 
+TEST_F(NBodyPropagatorTest, DenseVariationsMatchPropagationAcrossEarthEncounter)
+{
+	if (!de440->isAvailable())
+		GTEST_SKIP() << "DE440 unavailable";
+	constexpr double epoch = 59964.0;
+	const Vec3D r(-4.887497265974482E-01, 8.649413611927270E-01, 5.352552184023343E-03);
+	const Vec3D v(-1.437612291038726E-02, -9.412434053643936E-03, -7.248763353981187E-04);
+	const std::vector<double> times{epoch - 3.0, epoch + 1.0, 59971.02, epoch + 40.0, epoch + 200.0};
+	for (const auto kind : {IntegratorKind::RA15, IntegratorKind::IAS15}) {
+		SCOPED_TRACE(static_cast<int>(kind));
+		NBodyPropagator base(kind);
+		auto p = base.forEncounterMonitoring(*de440);
+		NonGravModel ng;
+		ng.setModel(NgModel::InverseSquare);
+		ng.setEnabled(true);
+		ng.setParams(1e-10, -2e-11, 1e-11);
+		IntegrationReport report;
+		const auto reference = p.propagateAllWithStmAndSensMjd(r, v, epoch, times, ng, &report);
+		ASSERT_EQ(reference.size(), times.size());
+		ASSERT_GT(report.encounterRestarts, 0u);
+		auto dense = p.propagateDenseMjd(r, v, epoch, epoch - 1.0, times.back(), ng, true, true);
+		p.extendDenseBackwardMjd(dense, times.front(), ng, true, true);
+		for (std::size_t i = 0; i < times.size(); ++i) {
+			const auto state = dense.at(times[i]);
+			ASSERT_TRUE(state);
+			EXPECT_LT((state->R - reference[i].R).magnitude(), 1e-9);
+			EXPECT_LT((state->V - reference[i].V).magnitude(), 1e-9);
+			EXPECT_TRUE(state->Phi.isApprox(reference[i].Phi, 1e-6));
+			EXPECT_TRUE(state->Sens.isApprox(reference[i].SensA, 1e-6));
+		}
+	}
+}
+
 TEST_F(NBodyPropagatorTest, CopiesPreserveConfigurationAndPropagateIndependently)
 {
 	NBodyPropagator original(IntegratorKind::RA15);
@@ -445,10 +478,13 @@ TEST(ImpactMonteCarloTest, SurfaceCrossingOverridesConicAndKeepsEventWindow)
 
 		std::optional<LunarLibration> lunarLibrationMjdTdb(double) override { return LunarLibration{{0, 0, 0}, 440}; }
 	} moon;
+
 	const auto previous = getDefaultEphemerisSource();
 	setDefaultEphemerisSource(&moon);
+
 	struct RestoreSource {
 		IEphemerisSource* source;
+
 		~RestoreSource() { setDefaultEphemerisSource(source); }
 	} restore{previous};
 

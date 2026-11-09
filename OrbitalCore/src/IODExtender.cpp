@@ -11,7 +11,7 @@
 #include "fit/FitObservations.h"
 #include "obs/AstrometricResidual.h"
 #include "obs/LightDeflection.h"
-#include "obs/LightTime.h"
+#include "obs/LightTimeSeries.h"
 #include "obs/ObserverGeometry.h"
 #include "obs/PreparedObservation.h"
 #include "orbital_core/Constants.h"
@@ -65,6 +65,22 @@ namespace Calculations {
 			bool valid{false};
 		};
 
+		[[nodiscard]] orbital_core::obs::LightTimeSeries emissionStates(
+		    const Orbit& orbit, std::span<const orbital_core::obs::PreparedObservation> prepared, NBodyPropagator& nbody)
+		{
+			std::vector<double> epochs;
+			std::vector<Vec3D> observers;
+			epochs.reserve(prepared.size());
+			observers.reserve(prepared.size());
+			for (const auto& observation : prepared) {
+				epochs.push_back(observation.mjdTdb);
+				observers.push_back(observation.earthR + observation.observerOffsetEclAu);
+			}
+			return orbital_core::obs::propagateDenseLightTimeSeries(
+			           orbit.getR(), orbit.getV() * Constants::GAUSS_K, orbit.epochMjd(), epochs, observers,
+			           std::vector<bool>(prepared.size(), true), nbody, nbody.nonGrav(), false, false).light;
+		}
+
 		[[nodiscard]] ProjectedRaDec projectRaDec(const Vec3D& helioPosition,
 		                                          const orbital_core::obs::PreparedObservation& po, double cosObl,
 		                                          double sinObl) noexcept
@@ -87,36 +103,21 @@ namespace Calculations {
 		    const Orbit_p& orbit, std::span<const orbital_core::obs::PreparedObservation> prepared,
 		    NBodyPropagator& nbody, const ArcScheduledPerturberSelector* perturberSelector = nullptr)
 		{
-			const Vec3D R0 = orbit->getR();
-			const Vec3D V0_real = orbit->getV() * Constants::GAUSS_K;
-			const double epochTdb = orbit->getEpoch();
 			const double cosObl = std::cos(Constants::EARTH_INCL);
 			const double sinObl = std::sin(Constants::EARTH_INCL);
-			const auto& ng = nbody.nonGrav();
 
 			const std::size_t N = prepared.size();
 			ResidualEval out;
 			out.totalArcsec.assign(N, 1.0e30);
 			out.totalSigma.assign(N, 1.0e30);
 
-			std::vector<double> jdsTdb(N);
-			for (std::size_t i = 0; i < N; ++i)
-				jdsTdb[i] = prepared[i].jdTdb;
-
-			const auto receptionStates = nbody.propagateAllWithVelocity(R0, V0_real, epochTdb, jdsTdb, ng);
-			if (receptionStates.size() != N)
-				return out;
-
+			const auto emission = emissionStates(*orbit, prepared, nbody);
 			std::vector<NBodyPropagator::StateVel> states(N);
 			std::vector<Vec3D> positions(N);
 			for (std::size_t i = 0; i < N; ++i) {
-				const auto apparent =
-				    orbital_core::obs::solveLightTimeTwoPass(jdsTdb[i], receptionStates[i].R, receptionStates[i].V,
-				                                             prepared[i].earthR + prepared[i].observerOffsetEclAu);
-				if (!apparent.valid)
-					return out;
-				states[i] = {apparent.position, apparent.velocityAuPerDay};
-				positions[i] = apparent.position;
+				positions[i] = orbital_core::obs::apparentEmissionPosition(
+				    emission.states[i], emission.emissionMjd[i], prepared[i].mjdTdb, emission.emissionOffsetDays[i]);
+				states[i] = {positions[i], emission.states[i].V};
 			}
 
 			bool hasTimingSigma = false;
@@ -356,26 +357,13 @@ namespace Calculations {
 		    NBodyPropagator& nbody)
 		{
 			const std::size_t n = prepared.size();
-			std::vector<double> jdsTdb(n);
-			for (std::size_t i = 0; i < n; ++i)
-				jdsTdb[i] = prepared[i].jdTdb;
-
-			const Vec3D R0 = orbit.getR();
-			const Vec3D V0Real = orbit.getV() * Constants::GAUSS_K;
-			const double epochTdb = orbit.getEpoch();
-
-			const auto receptionStates = nbody.propagateAllWithVelocity(R0, V0Real, epochTdb, jdsTdb, nbody.nonGrav());
-			if (receptionStates.size() != n)
-				return {};
+			const auto emission = emissionStates(orbit, prepared, nbody);
 
 			std::vector<Vec3D> topo(n);
 			for (std::size_t i = 0; i < n; ++i) {
 				const Vec3D observer = prepared[i].earthR + prepared[i].observerOffsetEclAu;
-				const auto apparent = orbital_core::obs::solveLightTimeTwoPass(jdsTdb[i], receptionStates[i].R,
-				                                                               receptionStates[i].V, observer);
-				if (!apparent.valid)
-					return {};
-				topo[i] = apparent.position - observer;
+				topo[i] = orbital_core::obs::apparentEmissionPosition(
+				    emission.states[i], emission.emissionMjd[i], prepared[i].mjdTdb, emission.emissionOffsetDays[i]) - observer;
 			}
 
 			return topo;

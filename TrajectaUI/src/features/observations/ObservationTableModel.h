@@ -104,6 +104,8 @@ class ObservationTableModel : public QSortFilterProxyModel {
 	bool filterAcceptsRow(int row, const QModelIndex& parent) const override;
 
    private:
+	void beginObservationFilterChange();
+	void endObservationFilterChange();
 	QVariantMap rowData(int sourceRow) const;
 	int closestSourceRow(double x, double y, bool timeMode, bool declination, std::optional<bool> included = {}) const;
 	std::unique_ptr<ObservationRows> m_rows;

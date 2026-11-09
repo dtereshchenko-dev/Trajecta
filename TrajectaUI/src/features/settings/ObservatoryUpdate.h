@@ -18,7 +18,8 @@ class ObservatoryUpdate : public QObject {
 
    public:
 	explicit ObservatoryUpdate(QObject* parent = nullptr);
-	using Fetch = std::function<orbital_core::obs::ObservatoryUpdate(const QString&, std::string_view, std::stop_token)>;
+	using Fetch =
+	    std::function<orbital_core::obs::ObservatoryUpdate(const QString&, std::string_view, std::stop_token)>;
 	explicit ObservatoryUpdate(Fetch fetch, QObject* parent = nullptr);
 	~ObservatoryUpdate() override;
 	int availableCount() const;
@@ -40,6 +41,7 @@ class ObservatoryUpdate : public QObject {
 		bool existed = false;
 		bool changed = false;
 	};
+
 	struct Source {
 		QString id;
 		QFutureWatcher<Result> watcher;
@@ -49,6 +51,7 @@ class ObservatoryUpdate : public QObject {
 		bool available = false;
 		bool checking = false;
 	};
+
 	Source* source(const QString& id);
 	void checkSource(Source& source);
 	Fetch m_fetch;

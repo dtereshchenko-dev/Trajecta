@@ -127,12 +127,15 @@ TEST_F(SpkReaderTest, LoadsFromEphemerisDataDirectory)
 	if (!reader->isAvailable())
 		GTEST_SKIP() << "SB441 test data is unavailable";
 
-	const auto kernel = std::filesystem::u8path(reader->sourcePath());
+	const auto sourcePath = reader->sourcePath();
+	const auto kernel = std::filesystem::path(std::u8string(sourcePath.begin(), sourcePath.end()));
 	const auto previousEphemeris = orbital_core::ephemerisDataDirectory();
 	const auto previousExecutable = getExecutableDir();
+
 	struct RestoreDirectories {
 		std::filesystem::path ephemeris;
 		std::filesystem::path executable;
+
 		~RestoreDirectories()
 		{
 			orbital_core::setEphemerisDataDirectory(ephemeris);
@@ -144,7 +147,8 @@ TEST_F(SpkReaderTest, LoadsFromEphemerisDataDirectory)
 	getExecutableDir() = kernel.parent_path() / "missing-directory";
 	SpkReader fromDataDirectory;
 	ASSERT_TRUE(fromDataDirectory.isAvailable());
-	EXPECT_EQ(std::filesystem::u8path(fromDataDirectory.sourcePath()), kernel);
+	const auto actualPath = fromDataDirectory.sourcePath();
+	EXPECT_EQ(std::filesystem::path(std::u8string(actualPath.begin(), actualPath.end())), kernel);
 }
 
 TEST_F(SpkReaderTest, ConcurrentQueriesProduceIdenticalResults)

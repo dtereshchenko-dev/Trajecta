@@ -192,17 +192,23 @@ class TestWorkspace : public QObject {
 	}
 
    private slots:
+
 	void applicationUpdateParsesMaintenanceToolOutput()
 	{
-		const QByteArray output = "[12] Loading component scripts...\n<?xml version=\"1.0\"?>\n"
+		const QByteArray output =
+		    "[12] Loading component scripts...\n<?xml version=\"1.0\"?>\n"
 		    "<updates><update id=\"other\" version=\"9.0.0\"/>"
 		    "<update id=\"com.trajecta.app\" version=\"1.0.2\"/></updates>\n";
 		QCOMPARE(ApplicationUpdate::availableVersion(output, "1.0.1"), QStringLiteral("1.0.2"));
 		QVERIFY(ApplicationUpdate::availableVersion(output, "1.0.2").isEmpty());
 		QVERIFY(ApplicationUpdate::availableVersion(output, "2.0.0").isEmpty());
 		QVERIFY(ApplicationUpdate::availableVersion("network error", "1.0.1").isEmpty());
-		QVERIFY(ApplicationUpdate::availableVersion("<updates><update id=\"com.trajecta.app\" version=\"1.0.2\"></updates>", "1.0.1").isEmpty());
-		QVERIFY(ApplicationUpdate::availableVersion("<updates><update id=\"com.trajecta.app\" version=\"1.0.2-beta\"/></updates>", "1.0.1").isEmpty());
+		QVERIFY(ApplicationUpdate::availableVersion(
+		            "<updates><update id=\"com.trajecta.app\" version=\"1.0.2\"></updates>", "1.0.1")
+		            .isEmpty());
+		QVERIFY(ApplicationUpdate::availableVersion(
+		            "<updates><update id=\"com.trajecta.app\" version=\"1.0.2-beta\"/></updates>", "1.0.1")
+		            .isEmpty());
 	}
 
 	void sb441DownloadVerifiesBeforeReplacing()
@@ -2165,11 +2171,11 @@ class TestWorkspace : public QObject {
 		QCOMPARE(root->property("monoFamily").toString(), QStringLiteral("JetBrains Mono"));
 		QCOMPARE(root->property("monoBoldFamily").toString(), QStringLiteral("JetBrains Mono"));
 		const QString textFamily = root->property("uiTextFamily").toString();
-		QVERIFY(textFamily == QStringLiteral("Segoe UI Variable Text") || textFamily == QStringLiteral("Segoe UI")
-		        || textFamily == root->property("textFamily").toString());
+		QVERIFY(textFamily == QStringLiteral("Segoe UI Variable Text") || textFamily == QStringLiteral("Segoe UI") ||
+		        textFamily == root->property("textFamily").toString());
 		const QString monoFamily = root->property("uiMonoFamily").toString();
-		QVERIFY(monoFamily == QStringLiteral("Cascadia Mono") || monoFamily == QStringLiteral("Consolas")
-		        || monoFamily == root->property("monoFamily").toString());
+		QVERIFY(monoFamily == QStringLiteral("Cascadia Mono") || monoFamily == QStringLiteral("Consolas") ||
+		        monoFamily == root->property("monoFamily").toString());
 #else
 		QCOMPARE(root->property("textFamily").toString(), QStringLiteral("Source Sans 3"));
 		QCOMPARE(root->property("italicFamily").toString(), QStringLiteral("Source Sans 3"));
@@ -4389,7 +4395,8 @@ class TestWorkspace : public QObject {
 		QCOMPARE(file.write("original"), 8);
 		file.close();
 		ObservatoryUpdate updater([](const QString& id, std::string_view current, std::stop_token) {
-			if (id == "radar") throw std::runtime_error("offline");
+			if (id == "radar")
+				throw std::runtime_error("offline");
 			return orbital_core::obs::ObservatoryUpdate{"updated", 1, 0, current != "updated"};
 		});
 		QSignalSpy installed(&updater, &ObservatoryUpdate::installed);
@@ -5117,6 +5124,65 @@ class TestWorkspace : public QObject {
 		window->close();
 	}
 
+	void ephemerisColumnSelection()
+	{
+		EphemerisTableModel model;
+		QAbstractItemModelTester tester(&model, QAbstractItemModelTester::FailureReportingMode::QtTest);
+		QCOMPARE(model.columns(), 7);
+		QVERIFY(model.includesColumn(EphemerisTableModel::Distance));
+		QVERIFY(model.includesColumn(EphemerisTableModel::SolarDistance));
+		QVERIFY(model.includesColumn(EphemerisTableModel::Magnitude));
+		QVERIFY(model.includesColumn(EphemerisTableModel::Elongation));
+		QVERIFY(!model.includesColumn(EphemerisTableModel::LongitudeRate));
+		QVERIFY(!model.includesColumn(EphemerisTableModel::Phase));
+		QVERIFY(!model.uncertaintySelected());
+		QStringList optionKeys;
+		for (const auto& option : model.columnOptions())
+			optionKeys << option.toMap().value("key").toString();
+		QVERIFY(optionKeys.contains("ellipseMajor"));
+		QVERIFY(!optionKeys.contains("ellipseMinor"));
+		QVERIFY(!optionKeys.contains("ellipseAngle"));
+		QVERIFY(!optionKeys.contains("rangeUncertainty"));
+		QVERIFY(!optionKeys.contains("longitudeUncertainty"));
+		model.setColumnEnabled(EphemerisTableModel::EllipseMajor, true);
+		QVERIFY(model.includesColumn(EphemerisTableModel::EllipseMajor));
+		QVERIFY(model.includesColumn(EphemerisTableModel::EllipseMinor));
+		QVERIFY(model.includesColumn(EphemerisTableModel::EllipseAngle));
+		model.setColumnEnabled(EphemerisTableModel::EllipseMajor, false);
+		QVERIFY(!model.uncertaintySelected());
+		orbital_core::EphemerisRow row;
+		row.mjd = 60000;
+		row.longitudeRate = 3.0 / (206264.80624709636 / 24.0);
+		row.latitudeRate = 4.0 / (206264.80624709636 / 24.0);
+		model.setRows({row}, orbital_core::EphemerisPlane::Equatorial, orbital_core::time::Scale::UTC, false);
+		QVERIFY(model.header(-1).isEmpty());
+		QVERIFY(model.header(model.columns()).isEmpty());
+		QVERIFY(model.cell(0, -1).isEmpty());
+		QVERIFY(model.cell(0, model.columns()).isEmpty());
+		model.setColumnEnabled(EphemerisTableModel::Distance, false);
+		model.setColumnEnabled(EphemerisTableModel::SkyMotion, true);
+		model.setColumnEnabled(EphemerisTableModel::SkyPositionAngle, true);
+		QCOMPARE(model.columns(), 8);
+		QVERIFY(!model.includesColumn(EphemerisTableModel::Distance));
+		QCOMPARE(model.cell(0, 6), QString("5.000"));
+		QCOMPARE(model.cell(0, 7), QString("36.870"));
+		EphemerisTableModel reloaded;
+		QVERIFY(reloaded.includesColumn(EphemerisTableModel::Distance));
+		QVERIFY(!reloaded.includesColumn(EphemerisTableModel::SkyMotion));
+		model.setLayout(EphemerisTableModel::Layout::Cartesian);
+		QCOMPARE(model.columns(), 7);
+		QVERIFY(!model.includesColumn(EphemerisTableModel::SkyMotion));
+		model.setColumnEnabled(EphemerisTableModel::SkyMotion, true);
+		QCOMPARE(model.columns(), 8);
+		QCOMPARE(model.header(7), QString::fromUtf8("Sky motion, \u2033/h"));
+		QCOMPARE(model.cell(0, 7), QString("5.000"));
+		model.setLayout(EphemerisTableModel::Layout::Spherical);
+		QCOMPARE(model.columns(), 8);
+		row.longitudeRate = row.latitudeRate = 0.0;
+		model.setRows({row}, orbital_core::EphemerisPlane::Equatorial, orbital_core::time::Scale::UTC, false);
+		QCOMPARE(model.cell(0, 7), QString::fromUtf8("\u2014"));
+	}
+
 	void ephemeridesPage()
 	{
 		const auto oldExecutableDir = getExecutableDir();
@@ -5132,9 +5198,11 @@ class TestWorkspace : public QObject {
 		ApplicationSession session(settings);
 		const auto result = fixture();
 		QVERIFY(session.solution()->publish(result, "test"));
+		const QTemporaryDir exports;
+		QVERIFY(exports.isValid());
 		auto* ephemerides = session.ephemerides();
 		QVERIFY(!ephemerides->available());
-		ephemerides->setSolution(result, "Fixture", 18.0);
+		ephemerides->setSolution(result, "Fixture", 18.0, nullptr, exports.path());
 		QVERIFY(ephemerides->available());
 		QAbstractItemModelTester tester(ephemerides->table(), QAbstractItemModelTester::FailureReportingMode::QtTest);
 		QCOMPARE(ephemerides->startDate(), QString("2023-02-24"));
@@ -5163,18 +5231,158 @@ class TestWorkspace : public QObject {
 		QTRY_VERIFY(page->isVisible());
 		QCOMPARE(findItem(page, "ephemeris-planned-epochs")->property("text").toString(), QString("15 epochs"));
 		QVERIFY(findItem(page, "ephemeris-station")->isVisible());
+		click("ephemeris-settings-button");
+		auto* ephemerisDialog = window->findChild<QObject*>("ephemeris-settings-dialog");
+		QVERIFY(ephemerisDialog);
+		QTRY_VERIFY(ephemerisDialog->property("visible").toBool());
+		auto* dialogContent = ephemerisDialog->property("contentItem").value<QQuickItem*>();
+		QVERIFY(dialogContent);
+		auto* motionOption = findItem(dialogContent, "ephemeris-column-skyMotion");
+		QVERIFY(motionOption);
+		QVERIFY(!motionOption->property("checked").toBool());
+		QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+		                  motionOption->mapToScene({motionOption->width() / 2, motionOption->height() / 2}).toPoint());
+		QVERIFY(ephemerides->table()->includesColumn(EphemerisTableModel::SkyMotion));
+		motionOption = findItem(dialogContent, "ephemeris-column-skyMotion");
+		QVERIFY(motionOption);
+		QTRY_VERIFY(motionOption->y() > 0);
+		QVERIFY(motionOption->property("checked").toBool());
+		QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+		                  motionOption->mapToScene({motionOption->width() / 2, motionOption->height() / 2}).toPoint());
+		QVERIFY(!ephemerides->table()->includesColumn(EphemerisTableModel::SkyMotion));
+		QVERIFY(QMetaObject::invokeMethod(ephemerisDialog, "close"));
 
 		click("ephemeris-generate");
 		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
 		QVERIFY2(ephemerides->error().isEmpty(), qPrintable(ephemerides->error()));
 		QCOMPARE(ephemerides->epochCount(), 15);
+		const auto firstArchive = ephemerides->archivePath();
+		QVERIFY(firstArchive.startsWith(exports.filePath("Ephemerides/run-")));
+		QVERIFY(QFileInfo::exists(QDir(firstArchive).filePath("ephemeris.txt")));
+		QVERIFY(QFileInfo::exists(QDir(firstArchive).filePath("result.json")));
+		QFile autoJson(QDir(firstArchive).filePath("result.json"));
+		QVERIFY(autoJson.open(QIODevice::ReadOnly));
+		const auto autoDocument = QJsonDocument::fromJson(autoJson.readAll()).object();
+		QCOMPARE(autoDocument.value("rows").toArray().size(), 15);
+		QVERIFY(autoDocument.value("rows").toArray().first().toObject().value("range_3sigma_km").isDouble());
+		QFile autoText(QDir(firstArchive).filePath("ephemeris.txt"));
+		QVERIFY(autoText.open(QIODevice::ReadOnly));
+		QVERIFY(autoText.readAll().contains("$$SOE"));
+		QVERIFY(findItem(page, "ephemeris-open-archive")->isEnabled());
+		QVERIFY(!findItem(page, "ephemeris-export"));
+		ephemerides->setEndDate("2100-01-01");
+		ephemerides->generate();
+		ephemerides->cancel();
+		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
+		QCOMPARE(ephemerides->archivePath(), firstArchive);
+		QCOMPARE(QDir(exports.filePath("Ephemerides")).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot).size(), 1);
+		ephemerides->setEndDate("2023-03-10");
 		auto* table = ephemerides->table();
+		auto* tableView = findItem(page, "ephemeris-table");
+		QVERIFY(tableView);
+		const auto columnOptions = table->columnOptions();
+		for (const auto& option : columnOptions)
+			table->setColumnEnabled(option.toMap().value("id").toInt(), false);
+		QTRY_VERIFY_WITH_TIMEOUT(tableView->property("contentWidth").toDouble()
+		                                 >= tableView->width() - tableView->property("rightMargin").toDouble() - 2
+		                             && tableView->property("contentWidth").toDouble() <= tableView->width(),
+		                         5000);
+		for (const auto& option : columnOptions)
+			table->setColumnEnabled(option.toMap().value("id").toInt(), true);
+		QTRY_VERIFY_WITH_TIMEOUT(tableView->property("contentWidth").toDouble() > tableView->width(), 5000);
+		for (const auto& option : columnOptions) {
+			const auto values = option.toMap();
+			table->setColumnEnabled(values.value("id").toInt(), values.value("enabled").toBool());
+		}
 		QCOMPARE(table->header(0), QString("Date UTC"));
 		QCOMPARE(table->cell(0, 0), QString("2023-02-24 00:00"));
 		QCOMPARE(table->cell(14, 0), QString("2023-03-10 00:00"));
 		QVERIFY(table->cell(0, 5) != QString::fromUtf8("\u2014"));
-		QVERIFY2(ephemerides->summary().startsWith("Topocentric 500"), qPrintable(ephemerides->summary()));
+		QVERIFY2(ephemerides->summary().startsWith("Geocentric (MPC 500)"), qPrintable(ephemerides->summary()));
 		QVERIFY(ephemerides->summary().contains("two-body"));
+		const auto originalRows = table->rows();
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("station500.json")), 1));
+		QVERIFY(!ephemerides->busy());
+		QCOMPARE(table->rows().front().longitude, originalRows.front().longitude);
+		QVERIFY2(ephemerides->error().isEmpty(), qPrintable(ephemerides->error()));
+		QFile stationJson(exports.filePath("station500.json"));
+		QVERIFY(stationJson.open(QIODevice::ReadOnly));
+		const auto stationDocument = QJsonDocument::fromJson(stationJson.readAll()).object();
+		QCOMPARE(stationDocument.value("center").toString(), QString("geocentric"));
+		QCOMPARE(stationDocument.value("station").toString(), QString("500"));
+		QCOMPARE(stationDocument.value("elongation_definition").toString(), QString("apparent"));
+		QVERIFY(stationDocument.value("uncertainty_computed").toBool());
+		QVERIFY(stationDocument.value("rows").toArray().first().toObject().value("range_3sigma_km").isDouble());
+		QVERIFY(stationDocument.value("rows").toArray().first().toObject().value("range_rate_3sigma_km_s").isDouble());
+		QVERIFY(!table->uncertaintySelected());
+		click("ephemeris-settings-button");
+		auto* ellipseOption = findItem(dialogContent, "ephemeris-column-ellipseMajor");
+		QVERIFY(ellipseOption);
+		QVERIFY(!ellipseOption->property("checked").toBool());
+		QVERIFY(QMetaObject::invokeMethod(ellipseOption, "click"));
+		QVERIFY(table->includesColumn(EphemerisTableModel::EllipseMajor));
+		QVERIFY(table->includesColumn(EphemerisTableModel::EllipseMinor));
+		QVERIFY(table->includesColumn(EphemerisTableModel::EllipseAngle));
+		QVERIFY(QMetaObject::invokeMethod(ephemerisDialog, "close"));
+		QVERIFY(!ephemerides->busy());
+		QVERIFY2(ephemerides->error().isEmpty(), qPrintable(ephemerides->error()));
+		QVERIFY(!ephemerides->uncertaintyUnavailable());
+		QVERIFY(table->rows().front().uncertainty);
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("uncertainty.json")), 1));
+		QFile uncertaintyJson(exports.filePath("uncertainty.json"));
+		QVERIFY(uncertaintyJson.open(QIODevice::ReadOnly));
+		const auto uncertaintyDocument = QJsonDocument::fromJson(uncertaintyJson.readAll()).object();
+		QVERIFY(uncertaintyDocument.value("uncertainty_computed").toBool());
+		const auto uncertaintyRow = uncertaintyDocument.value("rows").toArray().first().toObject();
+		for (const auto* key : {"ra_cosdec_3sigma_arcsec", "dec_3sigma_arcsec", "ellipse_major_3sigma_arcsec",
+		                        "ellipse_minor_3sigma_arcsec", "ellipse_angle_deg", "ellipse_area_3sigma_arcsec2",
+		                        "sky_3sigma_arcsec", "range_3sigma_km", "range_rate_3sigma_km_s"})
+			QVERIFY2(uncertaintyRow.value(QLatin1String(key)).isDouble(), key);
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("uncertainty.txt")), 0));
+		QFile uncertaintyText(exports.filePath("uncertainty.txt"));
+		QVERIFY(uncertaintyText.open(QIODevice::ReadOnly));
+		const auto uncertaintyTextContent = uncertaintyText.readAll();
+		for (const auto* label : {"RA cos Dec 3sigma", "Dec 3sigma", "Ellipse major 3sigma",
+		                          "Ellipse minor 3sigma", "Ellipse angle", "Ellipse area 3sigma",
+		                          "Sky 3sigma RSS", "Range 3sigma"})
+			QVERIFY2(uncertaintyTextContent.contains(label), label);
+		QCOMPARE(uncertaintyTextContent.count("Ellipse major 3sigma"), 1);
+		table->setColumnEnabled(EphemerisTableModel::EllipseMajor, false);
+		table->setColumnEnabled(EphemerisTableModel::Distance, false);
+		table->setColumnEnabled(EphemerisTableModel::SkyMotion, true);
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("selected.txt")), 0));
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("selected.json")), 1));
+		QFile selectedText(exports.filePath("selected.txt"));
+		QVERIFY(selectedText.open(QIODevice::ReadOnly));
+		const auto selectedTextContent = QString::fromUtf8(selectedText.readAll());
+		QVERIFY(selectedTextContent.contains("Sky motion"));
+		QVERIFY(!selectedTextContent.contains("Delta, AU"));
+		QVERIFY(selectedTextContent.contains("Ellipse major 3sigma"));
+		QVERIFY(selectedTextContent.contains("Range 3sigma"));
+		QFile selectedJson(exports.filePath("selected.json"));
+		QVERIFY(selectedJson.open(QIODevice::ReadOnly));
+		const auto selectedRow =
+		    QJsonDocument::fromJson(selectedJson.readAll()).object().value("rows").toArray().first().toObject();
+		QVERIFY(selectedRow.contains("sky_motion_arcsec_h"));
+		QVERIFY(!selectedRow.contains("delta_au"));
+		QVERIFY(selectedRow.value("ellipse_major_3sigma_arcsec").isDouble());
+		QVERIFY(selectedRow.value("range_3sigma_km").isDouble());
+		QVERIFY(selectedRow.value("range_rate_3sigma_km_s").isDouble());
+		table->setColumnEnabled(EphemerisTableModel::Distance, true);
+		table->setColumnEnabled(EphemerisTableModel::SkyMotion, false);
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("spherical.txt")), 0));
+		QFile spherical(exports.filePath("spherical.txt"));
+		QVERIFY(spherical.open(QIODevice::ReadOnly));
+		const auto sphericalLines = QString::fromUtf8(spherical.readAll()).split(QLatin1Char('\n'));
+		const auto start = sphericalLines.indexOf(QStringLiteral("$$SOE"));
+		QVERIFY(start >= 2);
+		QVERIFY(sphericalLines[start - 2].contains("RA, h m s"));
+		QVERIFY(sphericalLines[start - 2].contains("Delta, AU"));
+		QVERIFY(sphericalLines.contains(QStringLiteral(
+		    "# Elongation: apparent directions with light time, solar deflection and stellar aberration.")));
+		QVERIFY(sphericalLines[start - 1].contains("---"));
+		for (int row = 1; row <= ephemerides->epochCount(); ++row)
+			QCOMPARE(sphericalLines[start + row].size(), sphericalLines[start - 2].size());
 		const auto topocentric = table->rows();
 		for (const auto& row : topocentric) {
 			QCOMPARE(row.mjd, row.mjdUtc);
@@ -5187,6 +5395,9 @@ class TestWorkspace : public QObject {
 		QTRY_VERIFY(!findItem(page, "ephemeris-station")->isVisible());
 		click("ephemeris-generate");
 		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy() && ephemerides->summary().startsWith("Geocentric"), 30000);
+		QVERIFY(!ephemerides->archivePath().isEmpty());
+		QVERIFY(ephemerides->archivePath() != firstArchive);
+		QVERIFY(QFileInfo::exists(QDir(firstArchive).filePath("result.json")));
 		for (std::size_t i = 0; i < topocentric.size(); ++i) {
 			QCOMPARE(table->rows()[i].longitude, topocentric[i].longitude);
 			QCOMPARE(table->rows()[i].latitude, topocentric[i].latitude);
@@ -5197,23 +5408,67 @@ class TestWorkspace : public QObject {
 		QCOMPARE(table->header(1), QString("X, AU"));
 		QCOMPARE(ephemerides->epochCount(), 15);
 
-		const QTemporaryDir exports;
-		QVERIFY(exports.isValid());
-		QCOMPARE(ephemerides->suggestedFileName(0), QString("Fixture_ephemerides.txt"));
 		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("e.txt")), 0));
+		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
+		QVERIFY2(ephemerides->error().isEmpty(), qPrintable(ephemerides->error()));
 		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("e.json")), 1));
-		QVERIFY(!ephemerides->exportFormats().contains("CSV"));
+		QVERIFY(!ephemerides->save(QUrl(QStringLiteral("https://example.com/e.json")), 1));
+		QVERIFY(!ephemerides->error().isEmpty());
+		QVERIFY(!ephemerides->save(QUrl::fromLocalFile(exports.filePath("missing/e.txt")), 0));
+		QVERIFY(ephemerides->error().contains(QStringLiteral("e.txt")));
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("e.txt")), 0));
+		QVERIFY(ephemerides->error().isEmpty());
 		QFile json(exports.filePath("e.json"));
 		QVERIFY(json.open(QIODevice::ReadOnly));
 		const auto document = QJsonDocument::fromJson(json.readAll()).object();
 		QCOMPARE(document.value("center").toString(), QString("geocentric"));
 		QCOMPARE(document.value("time_scale").toString(), QString("UTC"));
+		QCOMPARE(document.value("range_rate_definition").toString(), QString("radial_relative_velocity"));
+		QVERIFY(document.value("solar_range_light_time").toBool());
 		QCOMPARE(document.value("rows").toArray().size(), 15);
-		QCOMPARE(document.value("rows").toArray().first().toObject().value("ra_deg").toDouble(),
-		         topocentric.front().longitude * 180.0 / 3.14159265358979323846);
+		QCOMPARE(document.value("layout").toString(), QString("cartesian"));
+		QVERIFY(document.value("rows").toArray().first().toObject().value("x_au").isDouble());
+		QVERIFY(!document.value("rows").toArray().first().toObject().contains("ra_deg"));
+		QVERIFY(!document.value("rows").toArray().first().toObject().contains("delta_rate_km_s"));
 		QFile text(exports.filePath("e.txt"));
 		QVERIFY(text.open(QIODevice::ReadOnly));
-		QVERIFY(QString::fromUtf8(text.readAll()).contains("Vx, AU/d"));
+		const QString textContent = QString::fromUtf8(text.readAll());
+		QVERIFY(textContent.contains("Vx, AU/d"));
+		QVERIFY(textContent.contains("light time applied"));
+		QVERIFY(textContent.contains("not derivatives of light-time-corrected ranges"));
+		QVERIFY(textContent.contains("$$SOE\n"));
+		QVERIFY(textContent.contains("$$EOE\n"));
+		const auto textLines = textContent.split(QLatin1Char('\n'));
+		const auto textStart = textLines.indexOf(QStringLiteral("$$SOE"));
+		QVERIFY(textStart >= 2);
+		for (int row = 1; row <= ephemerides->epochCount(); ++row)
+			QCOMPARE(textLines[textStart + row].size(), textLines[textStart - 2].size());
+		text.close();
+		table->setColumnEnabled(EphemerisTableModel::Distance, true);
+		QCOMPARE(table->columns(), 8);
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("cartesian-extra.json")), 1));
+		QFile cartesianExtra(exports.filePath("cartesian-extra.json"));
+		QVERIFY(cartesianExtra.open(QIODevice::ReadOnly));
+		const auto extraRow =
+		    QJsonDocument::fromJson(cartesianExtra.readAll()).object().value("rows").toArray().first().toObject();
+		QVERIFY(extraRow.contains("delta_au"));
+		QVERIFY(extraRow.contains("x_au"));
+		table->setColumnEnabled(EphemerisTableModel::Distance, false);
+		table->setColumnEnabled(EphemerisTableModel::Elongation, true);
+		ephemerides->setLightTime(false);
+		ephemerides->generate();
+		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
+		QVERIFY2(ephemerides->error().isEmpty(), qPrintable(ephemerides->error()));
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("geometric.txt")), 0));
+		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
+		QVERIFY2(ephemerides->error().isEmpty(), qPrintable(ephemerides->error()));
+		QFile geometric(exports.filePath("geometric.txt"));
+		QVERIFY(geometric.open(QIODevice::ReadOnly));
+		const auto geometricContent = QString::fromUtf8(geometric.readAll());
+		QVERIFY(geometricContent.contains("geometric; no light time"));
+		QVERIFY(!geometricContent.contains("Solar range includes Sun-to-target light time"));
+		QVERIFY(geometricContent.contains("# Elongation: geometric Sun and target directions."));
+		ephemerides->setLightTime(true);
 
 		ephemerides->setScale(1);
 		QCOMPARE(ephemerides->scaleName(), QString("TT"));
@@ -5245,11 +5500,37 @@ class TestWorkspace : public QObject {
 		QCOMPARE(ephemerides->epochCount(), 15);
 		QVERIFY(ephemerides->summary().startsWith("Geocentric"));
 
-		ephemerides->setSolution(result, "Fixture", std::nullopt);
+		ephemerides->setSolution(result, "Fixture", std::nullopt, nullptr, exports.path());
 		QCOMPARE(ephemerides->epochCount(), 0);
 		QVERIFY(ephemerides->error().isEmpty());
 		QVERIFY(ephemerides->summary().isEmpty());
 		QCOMPARE(ephemerides->startDate(), QString("2023-02-24"));
+		ephemerides->setSolution(result, "C/2020 F3 #1", 18.0, nullptr, exports.path());
+		auto withoutCovariance = result;
+		withoutCovariance.fit.uncertainty = {};
+		ephemerides->setSolution(withoutCovariance, "Fixture", 18.0, nullptr, exports.path());
+		ephemerides->setCenter(1);
+		ephemerides->generate();
+		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
+		QVERIFY2(ephemerides->error().isEmpty(), qPrintable(ephemerides->error()));
+		QVERIFY(ephemerides->save(QUrl::fromLocalFile(exports.filePath("no-covariance.json")), 1));
+		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
+		QFile missingCovariance(exports.filePath("no-covariance.json"));
+		QVERIFY(missingCovariance.open(QIODevice::ReadOnly));
+		const auto missingDocument = QJsonDocument::fromJson(missingCovariance.readAll()).object();
+		QVERIFY(!missingDocument.value("uncertainty_computed").toBool());
+		QVERIFY(missingDocument.value("rows").toArray().first().toObject().value("range_3sigma_km").isNull());
+		QVERIFY(missingDocument.value("rows").toArray().first().toObject().value("range_rate_3sigma_km_s").isNull());
+
+		QFile invalidRoot(exports.filePath("not-a-directory"));
+		QVERIFY(invalidRoot.open(QIODevice::WriteOnly));
+		invalidRoot.close();
+		ephemerides->setSolution(result, "Fixture", 18.0, nullptr, invalidRoot.fileName());
+		ephemerides->generate();
+		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
+		QCOMPARE(ephemerides->epochCount(), 15);
+		QVERIFY(ephemerides->archivePath().isEmpty());
+		QVERIFY(ephemerides->error().contains("could not be saved"));
 	}
 
 	void cleanupTestCase() { QSettings::setDefaultFormat(QSettings::NativeFormat); }

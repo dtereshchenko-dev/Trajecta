@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "orbital_core/hazard/IntervalMonteCarlo.h"
 #include "hazard/McBoundaryScan.h"
+#include "hazard/BoundaryScan.h"
 #include "orbital_core/TimeScale.h"
 #include "orbital_core/hazard/SurfaceGeometry.h"
 #include "orbital_core/hazard/BodyFixedFrame.h"
@@ -76,6 +77,46 @@ namespace {
 			EXPECT_NEAR(entry.relativePositionKm.magnitude(), Constants::EARTH_EQ_RADIUS_KM + 100, .05);
 			EXPECT_LT(entry.mjdTdb, config.endMjdTdb);
 		}
+	}
+
+	TEST_F(IntervalMonteCarloTest, SharedBoundarySearchMatchesNominal)
+	{
+		const auto result = hz::runIntervalMonteCarlo(source, config);
+		ASSERT_TRUE(result.nominal.entry);
+		NBodyPropagator propagator(config.integrator);
+		propagator.setStepSize(source.effectiveConfig.nbody.stepSize);
+		propagator.setPlanetMask(source.effectiveConfig.nbody.planetMask);
+		propagator = propagator.forEncounterMonitoring(eph);
+		const auto crossing = hz::boundary::search(result.nominal.state, result.nominal.epochMjdTdb,
+		                                           result.nominal.nonGrav, config.target, config.startMjdTdb,
+		                                           config.endMjdTdb, config.altitudeKm, propagator, eph, {});
+		ASSERT_TRUE(crossing.entry);
+		EXPECT_DOUBLE_EQ(crossing.entry->mjdTdb, result.nominal.entry->mjdTdb);
+		EXPECT_DOUBLE_EQ(crossing.entry->latitudeDeg, result.nominal.entry->latitudeDeg);
+		EXPECT_DOUBLE_EQ(crossing.entry->longitudeDeg, result.nominal.entry->longitudeDeg);
+	}
+
+	TEST_F(IntervalMonteCarloTest, NearbyNominalEntryMatchesMonteCarloAtSameBoundary)
+	{
+		source.fit.orbit = source.fit.fitEpochOrbit;
+		config.altitudeKm = 50;
+		const auto entry = hz::boundary::nearbyNominalEarthEntry(source.fit, source.effectiveConfig.nbody, {});
+		ASSERT_TRUE(entry);
+		const auto mc = hz::runIntervalMonteCarlo(source, config);
+		ASSERT_TRUE(mc.nominal.entry);
+		EXPECT_DOUBLE_EQ(entry->altitudeKm, 50);
+		EXPECT_DOUBLE_EQ(entry->crossing.mjdTdb, mc.nominal.entry->mjdTdb);
+		EXPECT_DOUBLE_EQ(entry->crossing.latitudeDeg, mc.nominal.entry->latitudeDeg);
+		EXPECT_DOUBLE_EQ(entry->crossing.longitudeDeg, mc.nominal.entry->longitudeDeg);
+	}
+
+	TEST_F(IntervalMonteCarloTest, NearbyNominalEntryDoesNotReportOutboundOrUnconvergedOrbit)
+	{
+		source.fit.orbit = source.fit.fitEpochOrbit;
+		source.fit.orbit->setV({10.0 * 86400.0 / auKm / Constants::GAUSS_K, 0, 0});
+		EXPECT_FALSE(hz::boundary::nearbyNominalEarthEntry(source.fit, source.effectiveConfig.nbody, {}));
+		source.fit.converged = false;
+		EXPECT_FALSE(hz::boundary::nearbyNominalEarthEntry(source.fit, source.effectiveConfig.nbody, {}));
 	}
 
 	TEST_F(IntervalMonteCarloTest, LunarOrientationChangesCoordinatesNotPhysicalEvents)
@@ -158,9 +199,11 @@ namespace {
 				EXPECT_DOUBLE_EQ(fromFit.clones[i].entry->mjdTdb, fromFile.clones[i].entry->mjdTdb);
 		}
 		imported.covariance(0, 0) = -1;
-		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config), std::invalid_argument);
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config),
+		             std::invalid_argument);
 		config.method = hz::McMethod::Observations;
-		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config), std::invalid_argument);
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(imported, source.effectiveConfig.nbody, config),
+		             std::invalid_argument);
 	}
 
 	TEST_F(IntervalMonteCarloTest, CloseFlybyDoesNotCreateBoundaryEvent)
@@ -221,10 +264,10 @@ namespace {
 		result.clones[1].status = hz::McCloneStatus::Complete;
 		result.clones[2].status = hz::McCloneStatus::PropagationFailed;
 		result.clones[3].status = hz::McCloneStatus::Cancelled;
-		result.clones[0].entry = hz::McBoundaryEntry{.mjdTdb = 60000.5};
-		result.clones[2].entry = hz::McBoundaryEntry{.mjdTdb = 60001.5};
+		result.clones[0].entry = hz::BoundaryCrossing{.mjdTdb = 60000.5};
+		result.clones[2].entry = hz::BoundaryCrossing{.mjdTdb = 60001.5};
 		result.nominal.status = hz::McCloneStatus::Complete;
-		result.nominal.entry = hz::McBoundaryEntry{.mjdTdb = 60002.5};
+		result.nominal.entry = hz::BoundaryCrossing{.mjdTdb = 60002.5};
 		hz::mc::summarize(result);
 		ASSERT_EQ(result.events.size(), 1);
 		EXPECT_EQ(result.completed, 2);
@@ -242,7 +285,7 @@ namespace {
 			auto& clone = result.clones[i];
 			clone.index = i;
 			clone.status = hz::McCloneStatus::Complete;
-			clone.entry = hz::McBoundaryEntry{
+			clone.entry = hz::BoundaryCrossing{
 			    .mjdTdb = orbital_core::time::toMjdTdb(60001 + (i ? .0001 : -.0001), orbital_core::time::Scale::UTC)};
 		}
 		hz::mc::summarize(result);
@@ -259,7 +302,7 @@ namespace {
 		for (const double epoch : {60003.0, 60000.0, 60001.0, 60000.5}) {
 			hz::McClone clone;
 			clone.status = hz::McCloneStatus::Complete;
-			clone.entry = hz::McBoundaryEntry{.mjdTdb = epoch};
+			clone.entry = hz::BoundaryCrossing{.mjdTdb = epoch};
 			result.clones.push_back(clone);
 		}
 		hz::mc::summarize(result);

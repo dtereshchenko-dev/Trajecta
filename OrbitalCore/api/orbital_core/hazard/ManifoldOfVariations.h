@@ -36,7 +36,18 @@ namespace orbital_core::hazard {
 		double jacobianMov{}, jacobianSampling{}, weight{};
 		std::optional<double> absoluteMagnitude;
 		bool outerBoundary{}, entryBeforeInterval{};
-		std::optional<McBoundaryEntry> entry;
+		std::optional<BoundaryCrossing> entry;
+		std::string error;
+	};
+
+	enum class NominalPropagationStatus { Complete, PropagationFailed, Cancelled };
+
+	struct MovNominal {
+		std::array<double, 6> state{};
+		double epochMjdTdb{};
+		NominalPropagationStatus status{NominalPropagationStatus::Complete};
+		bool entryBeforeInterval{};
+		std::optional<BoundaryCrossing> entry;
 		std::string error;
 	};
 
@@ -46,6 +57,7 @@ namespace orbital_core::hazard {
 		double epochMjdTdb{}, curvatureSnr{};
 		std::array<double, 4> attributable{};
 		std::string observerCode, bodyFixedFrame, bodyFixedModel;
+		std::optional<MovNominal> nominal;
 		std::vector<MovNode> preliminary, nodes;
 		bool preliminaryLogRange{}, logRange{};
 		// Weighted quadrature on the sampled chi-limited MOV, not MC frequencies.

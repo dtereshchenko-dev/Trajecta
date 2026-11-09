@@ -17,9 +17,13 @@ class ApplicationUpdate : public QObject {
 	explicit ApplicationUpdate(QObject* parent = nullptr);
 	~ApplicationUpdate() override;
 	static QString availableVersion(const QByteArray& output, const QString& currentVersion);
+
 	bool available() const { return !m_version.isEmpty(); }
+
 	QString version() const { return m_version; }
+
 	QString error() const { return m_error; }
+
 	Q_INVOKABLE void check();
 	Q_INVOKABLE bool openUpdater();
 

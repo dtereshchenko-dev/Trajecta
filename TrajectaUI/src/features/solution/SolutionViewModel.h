@@ -6,6 +6,7 @@
 #include <optional>
 #include <orbital_core/Photometry.h>
 #include <orbital_core/hazard/Moid.h>
+#include <orbital_core/hazard/PhaClassifier.h>
 #include "features/observations/ObservationTableModel.h"
 #include "models/OrbitModel.h"
 #include "models/DiagnosticsModel.h"
@@ -56,7 +57,11 @@ class SolutionViewModel : public QObject {
 	Q_PROPERTY(QVariantList sizeEstimates READ sizeEstimates NOTIFY changed)
 	Q_PROPERTY(QVariantMap typicalSize READ typicalSize NOTIFY changed)
 	Q_PROPERTY(double earthMoidKm READ earthMoidKm NOTIFY changed)
+	Q_PROPERTY(QString phaStatus READ phaStatus NOTIFY changed)
+	Q_PROPERTY(bool potentiallyHazardous READ potentiallyHazardous NOTIFY changed)
 	Q_PROPERTY(QVariantList planetMoids READ planetMoids NOTIFY changed)
+	Q_PROPERTY(QVariantMap nominalEarthEntry READ nominalEarthEntry NOTIFY changed)
+	Q_PROPERTY(QString nominalEarthEntryError READ nominalEarthEntryError NOTIFY changed)
 	Q_PROPERTY(QVariantList equinoctialElements READ equinoctialElements NOTIFY changed)
 	Q_PROPERTY(bool nonGravEnabled READ nonGravEnabled NOTIFY changed)
 	Q_PROPERTY(QString nonGravModel READ nonGravModel NOTIFY changed)
@@ -130,7 +135,11 @@ class SolutionViewModel : public QObject {
 	QVariantList sizeEstimates() const;
 	QVariantMap typicalSize() const;
 	double earthMoidKm() const;
+	QString phaStatus() const;
+	bool potentiallyHazardous() const;
 	QVariantList planetMoids() const;
+	QVariantMap nominalEarthEntry() const;
+	QString nominalEarthEntryError() const;
 
 	QVariantList equinoctialElements() const { return m_equinoctialElements; }
 
@@ -142,6 +151,7 @@ class SolutionViewModel : public QObject {
 	void changed();
 
    private:
+	orbital_core::hazard::PhaStatus phaClassification() const;
 	OrbitModel m_orbit;
 	OrbitSceneModel m_scene;
 	ObservationTableModel m_observations;

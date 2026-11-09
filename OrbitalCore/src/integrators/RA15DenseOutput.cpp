@@ -25,26 +25,11 @@ void RA15DenseOutput::prepare(double epoch, double offset, double timeCompensati
 
 IntegratedState RA15DenseOutput::interpolate(double mjd) const
 {
-	const auto& rc = radauConstants();
-	const auto& b = *m_coefficients;
-	const auto& f1 = *m_acceleration;
-	const double step = m_step, step2 = step * step;
 	const double delta = ((mjd - m_epoch) - m_offset) + m_timeCompensation;
-	const double s = std::clamp(delta / step, 0.0, 1.0);
+	const double s = std::clamp(delta / m_step, 0.0, 1.0);
 	Vector x, v;
-	for (int k = 0; k < 3; ++k) {
-		double temp =
-		    rc.w[3] * b[3](k) +
-		    s * (rc.w[4] * b[4](k) + s * (rc.w[5] * b[5](k) + s * (rc.w[6] * b[6](k) + s * rc.w[7] * b[7](k))));
-		x(k) = (*m_x)(k) +
-		       (s * (step * (*m_v)(k) +
-		             step2 * s * (f1(k) * rc.w1 + s * (rc.w[1] * b[1](k) + s * (rc.w[2] * b[2](k) + s * temp)))) -
-		        m_positionCompensation(k) - s * step * m_velocityCompensation(k));
-		temp = rc.u[3] * b[3](k) +
-		       s * (rc.u[4] * b[4](k) + s * (rc.u[5] * b[5](k) + s * (rc.u[6] * b[6](k) + s * rc.u[7] * b[7](k))));
-		v(k) = (*m_v)(k) + (s * step * (f1(k) + s * (rc.u[1] * b[1](k) + s * (rc.u[2] * b[2](k) + s * temp))) -
-		                    m_velocityCompensation(k));
-	}
+	predictRa15State(*m_x, *m_v, m_positionCompensation, m_velocityCompensation, *m_coefficients, *m_acceleration,
+	                 s, m_step, x, v);
 	return {positionFromRadau(x), velocityFromRadau(v)};
 }
 

@@ -98,8 +98,10 @@ TEST(AstrometryBiasPaths, PrefersCurrentFileAndFallsBackToLegacy)
 	const auto legacyDir = base / "debias_2018";
 	const auto current = currentDir / "efcc18.dat";
 	const auto legacy = legacyDir / "bias.dat";
+
 	struct Cleanup {
 		fs::path current, legacy, currentDir, legacyDir, base;
+
 		~Cleanup()
 		{
 			std::error_code ec;
@@ -110,15 +112,22 @@ TEST(AstrometryBiasPaths, PrefersCurrentFileAndFallsBackToLegacy)
 			fs::remove(base, ec);
 		}
 	} cleanup{current, legacy, currentDir, legacyDir, base};
+
 	ASSERT_TRUE(fs::create_directories(currentDir));
 	ASSERT_TRUE(fs::create_directories(legacyDir));
 	const auto pathFor = [&](orbital_core::AstrometricWeightProfile profile) {
 		return Calculations::astrometryBiasPathForProfile(base, profile);
 	};
 	EXPECT_EQ(pathFor(orbital_core::AstrometricWeightProfile::Vfcc17), current);
-	{ std::ofstream file(legacy); ASSERT_TRUE(file); }
+	{
+		std::ofstream file(legacy);
+		ASSERT_TRUE(file);
+	}
 	EXPECT_EQ(pathFor(orbital_core::AstrometricWeightProfile::Vfcc17), legacy);
-	{ std::ofstream file(current); ASSERT_TRUE(file); }
+	{
+		std::ofstream file(current);
+		ASSERT_TRUE(file);
+	}
 	EXPECT_EQ(pathFor(orbital_core::AstrometricWeightProfile::Vfcc17), current);
 	EXPECT_EQ(pathFor(orbital_core::AstrometricWeightProfile::Uniform), current);
 }

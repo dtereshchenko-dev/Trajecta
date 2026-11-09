@@ -68,7 +68,7 @@ namespace {
 
 QHash<int, QByteArray> CloseApproachTableModel::roleNames() const
 {
-	return {{Qt::DisplayRole, "display"}, {Qt::ToolTipRole, "toolTip"}};
+	return {{Qt::DisplayRole, "display"}};
 }
 
 QVariant CloseApproachTableModel::data(const QModelIndex& index, int role) const
@@ -77,14 +77,6 @@ QVariant CloseApproachTableModel::data(const QModelIndex& index, int role) const
 		return {};
 	if (role == Qt::DisplayRole)
 		return cell(index.row(), index.column());
-	if (role == Qt::ToolTipRole) {
-		const auto& row = m_rows[index.row()];
-		if (index.column() == 0 || index.column() == 3 || index.column() == 4)
-			return QString::fromStdString(row.uncertaintyNote);
-		if (index.column() == 6 && row.encounter.vInfKmS <= 0.0)
-			return tr("No hyperbolic excess speed for a bound encounter");
-		return cell(index.row(), index.column());
-	}
 	return {};
 }
 

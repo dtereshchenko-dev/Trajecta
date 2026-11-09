@@ -153,11 +153,14 @@ struct SpkReader::Impl {
 		available = false;
 		segByTarget.clear();
 
-		if (path.empty() || !std::filesystem::exists(std::filesystem::u8path(path)))
+		if (path.empty())
+			return false;
+		const auto filePath = std::filesystem::path(std::u8string(path.begin(), path.end()));
+		if (!std::filesystem::exists(filePath))
 			return false;
 
 		std::error_code sizeError;
-		const auto fileSize = std::filesystem::file_size(std::filesystem::u8path(path), sizeError);
+		const auto fileSize = std::filesystem::file_size(filePath, sizeError);
 		source = !sizeError && fileSize >= 16ull * 1024 * 1024 ? DataSourceFactory::openMmapped(path)
 		                                                       : DataSourceFactory::open(path);
 		if (source && !source->isOpen())

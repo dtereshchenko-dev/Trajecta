@@ -20,7 +20,11 @@ cat > "$tmp/config.xml" <<EOF
 <ControlScript>controller.qs</ControlScript></Installer>
 EOF
 write_version() {
-    sed "s/@TRAJECTA_VERSION@/$1/g" "$root/installer/linux/package.xml" > "$meta/package.xml"
+    sed -e "s/@TRAJECTA_VERSION@/$1/g" -e 's/@TRAJECTA_RELEASE_DATE@/2026-01-01/g' \
+        "$root/installer/linux/package.xml" > "$meta/package.xml"
+    if [[ $1 == 1.0.1 ]]; then
+        sed -i 's/<Essential>false<\/Essential>/<Essential>true<\/Essential>/' "$meta/package.xml"
+    fi
     printf '%s' "$1" > "$data/version.txt"
     mkdir -p "$data/usr/bin" "$data/usr/share/trajecta-seed"
     printf '%s\n' '#include <unistd.h>' 'int main(void) { sleep(120); return 0; }' > "$tmp/process.c"
@@ -92,7 +96,7 @@ set +e
 "$target/TrajectaMaintenance" --set-temp-repository "file://$tmp/repository" --default-answer --confirm-command update
 status=$?
 set -e
-[[ $status -eq 0 || $status -eq 6 ]]
+[[ $status -eq 0 ]]
 test "$(cat "$target/version.txt")" = 1.0.2
 test "$(cat "$XDG_DATA_HOME/Trajecta/work/keep.txt")" = 'user work'
 test "$(cat "$XDG_DATA_HOME/Trajecta/Trajecta/observatories/OBSCODE.dat")" = 'updated stations'

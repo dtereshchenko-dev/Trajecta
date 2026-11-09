@@ -14,14 +14,15 @@ namespace orbital_core::obs {
 		std::size_t unmapped{};
 		bool changed = true;
 	};
+
 	ORBITAL_CORE_API void validateOpticalObservatoryCatalog(std::string_view contents);
 
-	[[nodiscard]] ORBITAL_CORE_API ObservatoryUpdate prepareOpticalObservatoryUpdate(
-	    std::string_view source, std::string_view current);
-	[[nodiscard]] ORBITAL_CORE_API ObservatoryUpdate prepareRadarObservatoryUpdate(
-	    std::string_view source, std::string_view current);
-	[[nodiscard]] ORBITAL_CORE_API ObservatoryUpdate downloadOpticalObservatoryUpdate(
-	    std::string_view current, std::stop_token cancel = {});
-	[[nodiscard]] ORBITAL_CORE_API ObservatoryUpdate downloadRadarObservatoryUpdate(
-	    std::string_view current, std::stop_token cancel = {});
-}
+	[[nodiscard]] ORBITAL_CORE_API ObservatoryUpdate prepareOpticalObservatoryUpdate(std::string_view source,
+	                                                                                 std::string_view current);
+	[[nodiscard]] ORBITAL_CORE_API ObservatoryUpdate prepareRadarObservatoryUpdate(std::string_view source,
+	                                                                               std::string_view current);
+	[[nodiscard]] ORBITAL_CORE_API ObservatoryUpdate downloadOpticalObservatoryUpdate(std::string_view current,
+	                                                                                  std::stop_token cancel = {});
+	[[nodiscard]] ORBITAL_CORE_API ObservatoryUpdate downloadRadarObservatoryUpdate(std::string_view current,
+	                                                                                std::stop_token cancel = {});
+}  // namespace orbital_core::obs

@@ -13,24 +13,30 @@ namespace {
 	QString catalogPath(const QString& id)
 	{
 		const auto directory = orbital_core::observatoryDataDirectory();
-		if (directory.empty()) return {};
+		if (directory.empty())
+			return {};
 		return QDir(QString::fromStdU16String(directory.u16string()))
 		    .filePath(id == "observatories" ? "OBSCODE.dat" : "RADCODE.dat");
 	}
 
 	QByteArray readCatalog(const QString& path, bool& exists)
 	{
-		if (path.isEmpty()) throw std::runtime_error("Observatory data directory is not configured");
+		if (path.isEmpty())
+			throw std::runtime_error("Observatory data directory is not configured");
 		QFile file(path);
 		exists = file.exists();
-		if (!exists) return {};
-		if (!file.open(QIODevice::ReadOnly)) throw std::runtime_error(file.errorString().toStdString());
-		if (file.size() > 4 * 1024 * 1024) throw std::runtime_error("Observatory catalog is too large");
+		if (!exists)
+			return {};
+		if (!file.open(QIODevice::ReadOnly))
+			throw std::runtime_error(file.errorString().toStdString());
+		if (file.size() > 4 * 1024 * 1024)
+			throw std::runtime_error("Observatory catalog is too large");
 		const auto data = file.readAll();
-		if (file.error() != QFileDevice::NoError) throw std::runtime_error(file.errorString().toStdString());
+		if (file.error() != QFileDevice::NoError)
+			throw std::runtime_error(file.errorString().toStdString());
 		return data;
 	}
-}
+}  // namespace
 
 ObservatoryUpdate::ObservatoryUpdate(QObject* parent) : ObservatoryUpdate(Fetch{}, parent) {}
 
@@ -38,9 +44,8 @@ ObservatoryUpdate::ObservatoryUpdate(Fetch fetch, QObject* parent) : QObject(par
 {
 	if (!m_fetch)
 		m_fetch = [](const QString& id, std::string_view current, std::stop_token token) {
-			return id == "observatories"
-			    ? orbital_core::obs::downloadOpticalObservatoryUpdate(current, token)
-			    : orbital_core::obs::downloadRadarObservatoryUpdate(current, token);
+			return id == "observatories" ? orbital_core::obs::downloadOpticalObservatoryUpdate(current, token)
+			                             : orbital_core::obs::downloadRadarObservatoryUpdate(current, token);
 		};
 	m_optical.id = "observatories";
 	m_radar.id = "radar";
@@ -49,7 +54,8 @@ ObservatoryUpdate::ObservatoryUpdate(Fetch fetch, QObject* parent) : QObject(par
 			item->result = item->watcher.result();
 			item->checking = false;
 			item->available = item->result.error.isEmpty() && item->result.changed;
-			item->message = item->result.error.isEmpty() ? QString() : tr("Update check unavailable: %1").arg(item->result.error);
+			item->message =
+			    item->result.error.isEmpty() ? QString() : tr("Update check unavailable: %1").arg(item->result.error);
 			emit changed();
 		});
 	}
@@ -65,24 +71,29 @@ ObservatoryUpdate::~ObservatoryUpdate()
 
 ObservatoryUpdate::Source* ObservatoryUpdate::source(const QString& id)
 {
-	if (id == m_optical.id) return &m_optical;
-	if (id == m_radar.id) return &m_radar;
+	if (id == m_optical.id)
+		return &m_optical;
+	if (id == m_radar.id)
+		return &m_radar;
 	return nullptr;
 }
 
 int ObservatoryUpdate::availableCount() const { return int(m_optical.available) + int(m_radar.available); }
+
 QVariantMap ObservatoryUpdate::states() const
 {
 	QVariantMap result;
 	for (const auto* item : {&m_optical, &m_radar})
-		result.insert(item->id, QVariantMap{{"available", item->available}, {"checking", item->checking},
-		                                     {"message", item->message}});
+		result.insert(
+		    item->id,
+		    QVariantMap{{"available", item->available}, {"checking", item->checking}, {"message", item->message}});
 	return result;
 }
 
 void ObservatoryUpdate::checkSource(Source& item)
 {
-	if (item.checking) return;
+	if (item.checking)
+		return;
 	const auto id = item.id;
 	const auto path = catalogPath(id);
 	item.cancel = std::stop_source{};
@@ -118,7 +129,8 @@ void ObservatoryUpdate::check()
 void ObservatoryUpdate::install(const QString& id)
 {
 	auto* item = source(id);
-	if (!item || !item->available || item->checking) return;
+	if (!item || !item->available || item->checking)
+		return;
 	const auto path = catalogPath(id);
 	try {
 		bool exists = false;
@@ -133,7 +145,8 @@ void ObservatoryUpdate::install(const QString& id)
 			throw std::runtime_error("Cannot create the observatory data directory");
 		QSaveFile file(path);
 		file.setDirectWriteFallback(false);
-		if (!file.open(QIODevice::WriteOnly) || file.write(item->result.contents) != item->result.contents.size() || !file.commit())
+		if (!file.open(QIODevice::WriteOnly) || file.write(item->result.contents) != item->result.contents.size() ||
+		    !file.commit())
 			throw std::runtime_error(file.errorString().toStdString());
 		item->available = false;
 		item->message = tr("Update installed. Restart the application to use it.");

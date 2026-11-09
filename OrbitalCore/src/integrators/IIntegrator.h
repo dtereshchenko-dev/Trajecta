@@ -77,6 +77,12 @@ struct IntegratedStateFull {
 	Eigen::Matrix<double, 6, 4> Sens{Eigen::Matrix<double, 6, 4>::Zero()};
 };
 
+struct DenseIntegratedStep {
+	double beginMjd{};
+	double endMjd{};
+	std::function<IntegratedStateFull(double)> evaluate;
+};
+
 struct IntegrationOptions {
 	double initialStepDays{10.0};
 	// A signed fixed step for the next accepted-step interval; nullopt
@@ -88,6 +94,8 @@ struct IntegrationOptions {
 	// Prefer this observer when the accepted epoch must retain the small
 	// offset separately. It supersedes variationalObserver when both are set.
 	std::function<bool(double, double, const IntegratedStateFull&)> variationalObserverOffset;
+	// Owns the accepted-step polynomial, including any propagated variations.
+	std::function<void(DenseIntegratedStep)> denseStepObserver;
 	// Preserve the force epoch for encounter control. When provided, this
 	// callback takes step, base epoch and offset, superseding nextEncounterStep.
 	std::function<std::optional<double>(double, double, double, const IntegratedState&)> nextEncounterStepOffset;

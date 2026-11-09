@@ -38,12 +38,12 @@ function Set-InstallerVersion([string]$Path, [string]$Version, [string]$RootElem
         throw "Version placeholder missing from $Path"
     }
     $node.InnerText = $Version
-    if ($RootElement -eq 'Installer') {
-        $title = $document.SelectSingleNode('/Installer/Title')
-        if (!$title -or !$title.InnerText.Contains('@TRAJECTA_VERSION@')) {
-            throw "Title version placeholder missing from $Path"
+    if ($RootElement -eq 'Package') {
+        $releaseDate = $document.SelectSingleNode('/Package/ReleaseDate')
+        if (!$releaseDate -or $releaseDate.InnerText -ne '@TRAJECTA_RELEASE_DATE@') {
+            throw "Release date placeholder missing from $Path"
         }
-        $title.InnerText = $title.InnerText.Replace('@TRAJECTA_VERSION@', $Version)
+        $releaseDate.InnerText = [DateTime]::UtcNow.ToString('yyyy-MM-dd', [Globalization.CultureInfo]::InvariantCulture)
     }
     $document.Save($Path)
 }

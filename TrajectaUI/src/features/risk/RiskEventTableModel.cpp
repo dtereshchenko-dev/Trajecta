@@ -35,8 +35,7 @@ void RiskEventTableModel::setEvents(const std::vector<orbital_core::hazard::McEv
 		    {{QString::number(m_rows.size() + 1), utc(e.startMjdTdb), utc(e.endMjdTdb), QString::number(e.entryClones),
 		      number(e.probability), number(e.probabilityLow), number(e.probabilityHigh)},
 		     tr("Physical crossings grouped by time; a gap over 24 hours starts another group. Nominal is not an MC "
-		        "trial."),
-		     e.entryClones > 0});
+		        "trial.")});
 	endResetModel();
 	emit countChanged();
 }
@@ -50,8 +49,6 @@ QVariant RiskEventTableModel::data(const QModelIndex& index, int role) const
 		return row.cells[index.column()];
 	if (role == Qt::ToolTipRole)
 		return row.detail;
-	if (role == Qt::UserRole)
-		return row.entry;
 	return {};
 }
 
@@ -66,5 +63,5 @@ QVariant RiskEventTableModel::headerData(int section, Qt::Orientation orientatio
 
 QHash<int, QByteArray> RiskEventTableModel::roleNames() const
 {
-	return {{Qt::DisplayRole, "display"}, {Qt::ToolTipRole, "detail"}, {Qt::UserRole, "hasEntry"}};
+	return {{Qt::DisplayRole, "display"}, {Qt::ToolTipRole, "detail"}};
 }

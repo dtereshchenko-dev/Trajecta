@@ -22,8 +22,8 @@
 // cancel() stops the previous one and its late result is discarded. The form
 // is interpreted in the selected time scale: both dates are combined with the
 // start time from the page settings and the end epoch is inclusive. Exports:
-// JSON carries every numeric field of a row at full precision, TXT the
-// table as displayed with a description of the request.
+// JSON carries selected numeric fields at full precision; TXT follows the table.
+// Both formats include uncertainties computed with the ephemeris.
 class EphemerisViewModel : public QObject {
 	Q_OBJECT
 	QML_ELEMENT
@@ -40,6 +40,7 @@ class EphemerisViewModel : public QObject {
 	Q_PROPERTY(bool endValid READ endValid NOTIFY formChanged)
 	Q_PROPERTY(bool timeValid READ timeValid NOTIFY formChanged)
 	Q_PROPERTY(bool canGenerate READ canGenerate NOTIFY changed)
+	Q_PROPERTY(bool uncertaintyUnavailable READ uncertaintyUnavailable NOTIFY changed)
 	Q_PROPERTY(int layout READ layout WRITE setLayout NOTIFY formChanged)
 	Q_PROPERTY(int center READ center WRITE setCenter NOTIFY formChanged)
 	Q_PROPERTY(QString station READ station WRITE setStation NOTIFY formChanged)
@@ -51,7 +52,7 @@ class EphemerisViewModel : public QObject {
 	Q_PROPERTY(int scale READ scale WRITE setScale NOTIFY formChanged)
 	Q_PROPERTY(bool lightTime READ lightTime WRITE setLightTime NOTIFY formChanged)
 	Q_PROPERTY(QString scaleName READ scaleName NOTIFY formChanged)
-	Q_PROPERTY(QStringList exportFormats READ exportFormats CONSTANT)
+	Q_PROPERTY(QString archivePath READ archivePath NOTIFY changed)
 
    public:
 	enum Center { Heliocentric = 0, Geocentric = 1, Topocentric = 2 };
@@ -62,7 +63,8 @@ class EphemerisViewModel : public QObject {
 
 	void setSolution(const orbital_core::FitPipelineResult& result, const QString& designation,
 	                 std::optional<double> absoluteMagnitude,
-	                 const orbital_core::photometry::CometSolution* cometPhotometry = nullptr);
+	                 const orbital_core::photometry::CometSolution* cometPhotometry = nullptr,
+	                 const QString& directory = {});
 	void clearSolution();
 
 	EphemerisTableModel* table() { return &m_table; }
@@ -70,6 +72,11 @@ class EphemerisViewModel : public QObject {
 	bool available() const { return m_solution.has_value(); }
 
 	bool busy() const { return m_busy; }
+	bool uncertaintyUnavailable() const
+	{
+		return m_table.count() > 0 && m_table.uncertaintySelected() && m_lastRequest.uncertainty &&
+		       !m_lastResult.uncertaintyComputed;
+	}
 
 	QString error() const { return m_error; }
 
@@ -134,12 +141,12 @@ class EphemerisViewModel : public QObject {
 	void setLightTime(bool value);
 	QString scaleName() const;
 
-	QStringList exportFormats() const { return {QStringLiteral("TXT"), QStringLiteral("JSON")}; }
+	QString archivePath() const { return m_archivePath; }
 
 	Q_INVOKABLE void generate();
 	Q_INVOKABLE void cancel();
-	Q_INVOKABLE QString suggestedFileName(int format) const;
-	Q_INVOKABLE bool save(const QUrl& file, int format);
+	Q_INVOKABLE bool openArchive();
+	bool save(const QUrl& file, int format);
 
    signals:
 	void changed();
@@ -147,7 +154,8 @@ class EphemerisViewModel : public QObject {
 
    private:
 	void finish(quint64 generation, orbital_core::EphemerisRequest request,
-	            std::shared_ptr<orbital_core::EphemerisResult> result);
+	            std::shared_ptr<orbital_core::EphemerisResult> result, const QString& archive,
+	            const QString& archiveError);
 	void fail(quint64 generation, const QString& message);
 	std::optional<orbital_core::EphemerisRequest> request(QString* error) const;
 	QString describe() const;
@@ -158,6 +166,8 @@ class EphemerisViewModel : public QObject {
 	std::optional<orbital_core::EphemerisSolution> m_solution;
 	bool m_solutionConverged{};
 	QString m_designation;
+	QString m_directory;
+	QString m_archivePath;
 	int m_center{Topocentric};
 	QString m_station{QStringLiteral("500")};
 	QString m_startDate;

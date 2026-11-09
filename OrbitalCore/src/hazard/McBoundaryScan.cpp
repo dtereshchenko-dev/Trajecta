@@ -1,7 +1,5 @@
 #include "McBoundaryScan.h"
-#include "orbital_core/hazard/BodyFixedFrame.h"
-#include "orbital_core/hazard/SurfaceGeometry.h"
-#include "orbital_core/hazard/PlanetData.h"
+#include "BoundaryScan.h"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -10,41 +8,11 @@ namespace orbital_core::hazard::mc {
 	void scan(McClone& clone, const IntervalMcConfig& config, NBodyPropagator& propagator, IEphemerisSource& ephemeris,
 	          std::stop_token cancel)
 	{
-		constexpr double auKm = Constants::AU_IN_METERS / 1000.0;
-		const auto target = toEphemerisPlanet(config.target);
-		std::vector<double> targets;
-		if (config.startMjdTdb > clone.epochMjdTdb)
-			targets.push_back(config.startMjdTdb);
-		targets.push_back(config.endMjdTdb);
-		std::vector<NBodyPropagator::StateVel> outputs;
-		const auto& x = clone.state;
-		const auto terminal = propagator.propagateUntilSurfaceMjd(
-		    {x[0], x[1], x[2]}, {x[3], x[4], x[5]}, clone.epochMjdTdb, targets, outputs, target,
-		    planetRadiusKm(config.target), ephemeris, clone.nonGrav,
-		    config.target == Planet::Earth ? NBodyPropagator::SurfaceShape::ReferenceEllipsoid
-		                                   : NBodyPropagator::SurfaceShape::Sphere,
-		    config.altitudeKm, cancel);
-		if (cancel.stop_requested())
-			throw std::runtime_error("MC cancelled");
-		if (terminal.hitSurface && terminal.mjd == clone.epochMjdTdb)
-			throw std::runtime_error("MC clone starts inside the requested boundary");
-		if (!terminal.hitSurface && terminal.mjd != config.endMjdTdb)
-			throw std::runtime_error("Incomplete MC interval propagation");
-		if (!terminal.hitSurface)
-			return;
-		clone.entryBeforeInterval = terminal.mjd < config.startMjdTdb;
-		if (clone.entryBeforeInterval)
-			return;
-		const auto body = ephemeris.queryMjd(target, terminal.mjd);
-		const auto r = (terminal.R - body.R) * auKm;
-		const auto v = (terminal.V - body.V) * (auKm / 86400.0);
-		if (!std::isfinite(r.dot(r)) || !std::isfinite(v.dot(v)))
-			throw std::runtime_error("Non-finite MC boundary state");
-		const auto fixed = icrfToBodyFixedMjd(config.target, r, terminal.mjd, &ephemeris);
-		const auto ll = latLonFromBodyFixed(config.target, fixed);
-		if (!ll.valid)
-			throw std::runtime_error("MC body-fixed conversion failed");
-		clone.entry = McBoundaryEntry{terminal.mjd, r, v, ll.latitudeDeg, ll.longitudeDeg};
+		const auto result = boundary::search(clone.state, clone.epochMjdTdb, clone.nonGrav, config.target,
+		                                     config.startMjdTdb, config.endMjdTdb, config.altitudeKm, propagator,
+		                                     ephemeris, cancel);
+		clone.entryBeforeInterval = result.beforeInterval;
+		clone.entry = result.entry;
 	}
 
 	void summarize(IntervalMcResult& result)

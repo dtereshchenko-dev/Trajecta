@@ -9,7 +9,9 @@
 namespace orbital_core::forces {
 	class EarthJ2 {
 	   public:
-        ORBITAL_CORE_API void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& /*dadv*/) const noexcept;
+		ORBITAL_CORE_API void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr,
+		                               Eigen::Matrix3d& /*dadv*/) const noexcept;
+
 		[[nodiscard]] std::string_view name() const noexcept { return "EarthJ2"; }
 
 	   private:

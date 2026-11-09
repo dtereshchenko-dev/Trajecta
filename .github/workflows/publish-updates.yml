@@ -3,6 +3,12 @@ name: Publish application updates
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Published stable release tag
+        required: true
+        type: string
 
 concurrency:
   group: trajecta-update-publication
@@ -15,7 +21,7 @@ permissions:
 
 jobs:
   publish:
-    if: github.event.release.prerelease == false
+    if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -26,7 +32,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
         run: |
           $ErrorActionPreference = 'Stop'
           if ($env:RELEASE_TAG -cnotmatch '^v\d+\.\d+\.\d+$') { throw 'Invalid release tag.' }
@@ -44,14 +50,17 @@ jobs:
           $downloads = Join-Path $env:RUNNER_TEMP 'trajecta-update-downloads'
           New-Item -ItemType Directory -Path $site, $downloads -Force | Out-Null
           $platforms = @(
-            @{ Name = 'windows'; Prefix = 'Trajecta-IFW-'; Required = $true },
-            @{ Name = 'linux'; Prefix = 'Trajecta-IFW-linux-x86_64-'; Required = $false }
+            @{ Name = 'windows'; Prefixes = @('Trajecta-IFW-windows-x86_64-', 'Trajecta-IFW-'); Required = $true },
+            @{ Name = 'linux'; Prefixes = @('Trajecta-IFW-linux-x86_64-'); Required = $false }
           )
           foreach ($platform in $platforms) {
             $available = @($releases | Where-Object {
               $release = $_
               -not $release.draft -and -not $release.prerelease -and $release.tag_name -cmatch '^v\d+\.\d+\.\d+$' -and
-                @($release.assets | Where-Object { $_.name -ceq "$($platform.Prefix)$($release.tag_name).zip" }).Count -gt 0
+                @($platform.Prefixes | Where-Object {
+                  $archiveName = "$_$($release.tag_name).zip"
+                  @($release.assets | Where-Object { $_.name -ceq $archiveName }).Count -gt 0
+                }).Count -gt 0
             } | Sort-Object published_at -Descending | Select-Object -First 2)
             if ($platform.Required -and ($available.Count -eq 0 -or $available[0].tag_name -cne $env:RELEASE_TAG)) {
               throw "The latest release is missing the $($platform.Name) update repository."
@@ -61,7 +70,11 @@ jobs:
             New-Item -ItemType Directory -Path $repository -Force | Out-Null
             [array]::Reverse($available)
             foreach ($release in $available) {
-              $archive = "$($platform.Prefix)$($release.tag_name).zip"
+              $prefix = @($platform.Prefixes | Where-Object {
+                $archiveName = "$_$($release.tag_name).zip"
+                @($release.assets | Where-Object { $_.name -ceq $archiveName }).Count -gt 0
+              } | Select-Object -First 1)[0]
+              $archive = "$prefix$($release.tag_name).zip"
               gh release download "$($release.tag_name)" --pattern "$archive" --dir "$downloads"
               if ($LASTEXITCODE -ne 0) { throw "Missing update repository asset: $archive." }
               Expand-Archive -LiteralPath (Join-Path $downloads $archive) -DestinationPath $repository -Force

@@ -16,7 +16,7 @@ Trajecta is in active development and testing. If you encounter a bug or
 unexpected behavior, please [open an issue](https://github.com/dtereshchenko-dev/Trajecta/issues)
 with the steps to reproduce it.
 
-**Downloads:** The Windows installer is available on
+**Downloads:** Windows and Linux installers are available on
 [GitHub Releases](https://github.com/dtereshchenko-dev/Trajecta/releases).
 For a source build, see the [developer guide](DEVELOPMENT.md#build).
 
@@ -72,17 +72,23 @@ The Risk Monitor supports covariance Monte Carlo, observation Monte Carlo and
 the Manifold of Variations (MOV). Results can be inspected in the application
 and in interactive HTML reports.
 
+For suitable near-Earth solutions, the solution view can also show the
+nominal orbit's crossing of the 50 km Earth boundary shortly after the solution
+epoch. This is a deterministic propagation, not an impact probability or an
+atmospheric simulation. The search is limited; absence of a displayed entry
+does not rule out an impact.
+
 Both orbital Monte Carlo modes support non-gravitational models. Covariance MC
 samples the orbital state and fitted non-gravitational parameters together,
 including their correlations; observation MC refits the configured parameters
 for each perturbed observation set. MOV currently uses gravity-only dynamics.
 
-Covariance MC and MOV can map atmospheric boundary crossings, as in these
-simulations of the historical impactor 2019 MO:
+Covariance MC and MOV can map boundary crossings, as in these simulations of
+the historical impactor 2019 MO:
 
 ![Covariance Monte Carlo atmospheric boundary crossings for 2019 MO](.github/assets/screenshots/earth-mc.png)
 
-![MOV atmospheric boundary crossings for 2019 MO](.github/assets/screenshots/mov-map-wide.png)
+![MOV Earth surface boundary crossings for 2019 MO](.github/assets/screenshots/mov-map-wide.png)
 
 These maps show simulated boundary crossings, not meteorites on the ground.
 Earth imagery: Esri, Vantor, Earthstar Geographics, GIS User Community.

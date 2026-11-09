@@ -142,7 +142,6 @@ namespace Calculations {
 		return StateVectors(R1, V1);
 	}
 
-
 	namespace {
 		inline double residualCost(const Vec3D& R1, const Vec3D& V1, double t1JD,
 		                           const std::vector<ObsNode>& obs) noexcept

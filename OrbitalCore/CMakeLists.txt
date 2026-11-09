@@ -338,6 +338,7 @@ add_library(OrbitalCore SHARED
     src/uncertainty/CovarianceDiagnostics.cpp
     src/optimizers/EigenLevenbergMarquardt.cpp
     src/obs/PreparedObservation.h
+    src/obs/LightTimeSeries.h
     src/obs/AstrometricResidual.h src/obs/AstrometricResidual.cpp
     src/obs/AstrometricSigma.h     src/obs/AstrometricSigma.cpp
     src/obs/Vfcc17Rules.h          src/obs/Vfcc17Rules.cpp
@@ -385,6 +386,7 @@ add_library(OrbitalCore SHARED
 
 target_sources(OrbitalCore PRIVATE
     api/orbital_core/hazard/Planet.h
+    api/orbital_core/hazard/BoundaryCrossing.h
     api/orbital_core/hazard/PlanetData.h
     api/orbital_core/hazard/Moid.h
     api/orbital_core/hazard/CloseApproach.h
@@ -458,6 +460,8 @@ if(ORBITAL_CORE_BUILD_HAZARD)
     src/export/MovReport.cpp
         src/hazard/mov/MovCoordinates.cpp
         src/hazard/McBoundaryScan.cpp
+        src/hazard/BoundaryScan.cpp
+        src/hazard/BoundaryScan.h
         src/hazard/McObservationSampler.cpp
         src/hazard/ImpactEnergy.cpp
     )
@@ -645,6 +649,7 @@ add_executable(OrbitalCoreTests
     tests/ManifoldOfVariationsTest.cpp
     src/hazard/mov/MovCoordinates.cpp
     src/hazard/McBoundaryScan.cpp
+    src/hazard/BoundaryScan.cpp
     tests/IAS15IntegratorTest.cpp
     tests/RA15EncounterEpochTest.cpp
     src/integrators/RA15Integrator.cpp

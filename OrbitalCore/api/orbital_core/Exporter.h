@@ -14,16 +14,9 @@
 #include <vector>
 
 namespace orbital_core {
+	struct NominalEarthEntry;
 
-	enum class ExportProduct {
-		FitSummary,
-		OrbitElements,
-		StateVectors,
-		Covariance,
-		Residuals,
-		Observations,
-		All
-	};
+	enum class ExportProduct { FitSummary, OrbitElements, StateVectors, Covariance, Residuals, Observations, All };
 
 	struct ExportContext {
 		std::string objectName;
@@ -35,6 +28,8 @@ namespace orbital_core {
 		PhotometryOptions photometry;
 		std::filesystem::path rootDirectory{};
 		std::optional<double> gaiaPhotocenterRadiusKm;
+		const NominalEarthEntry* nominalEarthEntry{nullptr};
+		std::string nominalEarthEntryError;
 	};
 
 	struct ExportReport {

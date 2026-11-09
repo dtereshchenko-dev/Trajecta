@@ -54,9 +54,9 @@ namespace trajecta::http {
 					const auto end = value.find_last_not_of(" \t\r\n");
 					transfer.location =
 					    start == std::string_view::npos ? "" : std::string(value.substr(start, end - start + 1));
-                }
+				}
 
-                catch (...) {
+				catch (...) {
 					transfer.error = std::current_exception();
 					return 0;
 				}
@@ -97,9 +97,9 @@ namespace trajecta::http {
 			const auto bytes = size * count;
 			try {
 				transfer.body.append(data, bytes);
-            }
+			}
 
-            catch (...) {
+			catch (...) {
 				transfer.error = std::current_exception();
 				return 0;
 			}

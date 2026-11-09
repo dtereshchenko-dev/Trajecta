@@ -1556,7 +1556,8 @@ TEST_F(FitSessionTest, PreparationMatchesSelectedDebiasForBothPools)
 	const auto input = std::filesystem::path(__FILE__).parent_path() / "data/2020VV_ADES_2022.ESA11_table_replay.xml";
 	auto loaded = oc::loadObservations(input);
 	auto expected = loaded;
-	const auto table = Calculations::astrometryBiasPathForProfile(getExecutableDir(), oc::AstrometricWeightProfile::Vfcc17);
+	const auto table =
+	    Calculations::astrometryBiasPathForProfile(getExecutableDir(), oc::AstrometricWeightProfile::Vfcc17);
 	ASSERT_TRUE(std::filesystem::is_regular_file(table));
 	const auto allCount = Calculations::debiasObservations(expected.all, table);
 	const auto iodCount = Calculations::debiasObservations(expected.iod, table);

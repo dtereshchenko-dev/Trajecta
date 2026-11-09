@@ -3,6 +3,7 @@
 #include "orbital_core/FitPipeline.h"
 #include "orbital_core/IntegratorKind.h"
 #include "orbital_core/OrbitSolution.h"
+#include "orbital_core/hazard/BoundaryCrossing.h"
 #include "orbital_core/hazard/Planet.h"
 #include <array>
 #include <filesystem>
@@ -26,14 +27,6 @@ namespace orbital_core::hazard {
 		IntegratorKind integrator{IntegratorKind::RA15};
 	};
 
-	struct McBoundaryEntry {
-		double mjdTdb{};
-		Vec3D relativePositionKm;
-		Vec3D relativeVelocityKmS;
-		double latitudeDeg{};
-		double longitudeDeg{};
-	};
-
 	struct McClone {
 		int index{-1};  // -1 is the nominal, never a random trial.
 		McCloneStatus status{McCloneStatus::Unstarted};
@@ -41,7 +34,7 @@ namespace orbital_core::hazard {
 		std::array<double, 6> state{};  // heliocentric ecliptic AU, AU/day
 		NonGravModel nonGrav;
 		bool entryBeforeInterval{};
-		std::optional<McBoundaryEntry> entry;
+		std::optional<BoundaryCrossing> entry;
 		std::string error;
 	};
 

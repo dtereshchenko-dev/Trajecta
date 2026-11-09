@@ -226,7 +226,7 @@ jobs:
           & "$ifw/bin/binarycreator.exe" --hybrid --compression 5 -c "$stage/config/config.xml" `
             -p "$stage/packages" "$output/TrajectaSetup-x86_64.exe"
           if ($LASTEXITCODE -ne 0) { throw 'Installer creation failed.' }
-          Compress-Archive -Path "$stage/repository/*" -DestinationPath "$output/Trajecta-IFW-$env:GITHUB_REF_NAME.zip" -CompressionLevel Optimal
+          Compress-Archive -Path "$stage/repository/*" -DestinationPath "$output/Trajecta-IFW-windows-x86_64-$env:GITHUB_REF_NAME.zip" -CompressionLevel Optimal
 
       - name: Upload release packages
         if: startsWith(github.ref, 'refs/tags/v')
@@ -263,5 +263,5 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           gh release create "$RELEASE_TAG" --draft --verify-tag --title "Trajecta $RELEASE_TAG" \
-            "release/TrajectaSetup-x86_64.exe" "release/Trajecta-IFW-$RELEASE_TAG.zip" \
+            "release/TrajectaSetup-x86_64.exe" "release/Trajecta-IFW-windows-x86_64-$RELEASE_TAG.zip" \
             "release/TrajectaSetup-x86_64.run" "release/Trajecta-IFW-linux-x86_64-$RELEASE_TAG.zip"

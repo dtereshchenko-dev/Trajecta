@@ -56,7 +56,8 @@ namespace orbital_core::obs {
 			return catalog;
 		}
 
-		template <typename Catalog> struct LoadedCatalog {
+		template <typename Catalog>
+		struct LoadedCatalog {
 			Catalog data;
 			std::filesystem::path path;
 		};
@@ -175,13 +176,12 @@ namespace orbital_core::obs {
 		return data;
 	}
 
-	const ObservatoryCatalog& observatoryCatalog()
-	{
-		return opticalCatalogData().data;
-	}
+	const ObservatoryCatalog& observatoryCatalog() { return opticalCatalogData().data; }
+
 	std::filesystem::path activeOpticalCatalogPath() { return opticalCatalogData().path; }
 
 	const ObservatoryCatalog& radarObservatoryCatalog() { return radarCatalogData().data.stations; }
+
 	std::filesystem::path activeRadarCatalogPath() { return radarCatalogData().path; }
 
 	const ObservatoryRecord& radarObservatory(std::string_view code)

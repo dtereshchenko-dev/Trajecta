@@ -2,7 +2,7 @@
 #include "TwoBodyPropagation.h"
 #include "orbital_core/Types.h"
 #include "obs/LightDeflection.h"
-#include "obs/LightTime.h"
+#include "obs/LightTimeSeries.h"
 #include "obs/RadarPrediction.h"
 #include "logger/Logger.h"
 #include <algorithm>
@@ -13,6 +13,47 @@
 
 namespace orbital_core::fit {
 	using obs::PreparedObservation;
+
+	namespace {
+		struct LightTimeInputs {
+			std::vector<double> epochs;
+			std::vector<Vec3D> observers;
+			std::vector<bool> optical;
+		};
+
+		LightTimeInputs lightTimeInputs(const std::vector<PreparedObservation>& observations)
+		{
+			LightTimeInputs inputs;
+			inputs.epochs.reserve(observations.size());
+			inputs.observers.reserve(observations.size());
+			inputs.optical.reserve(observations.size());
+			for (const auto& observation : observations) {
+				inputs.epochs.push_back(observation.mjdTdb);
+				inputs.observers.push_back(observation.earthR + observation.observerOffsetEclAu);
+				inputs.optical.push_back(!observation.radar);
+			}
+			return inputs;
+		}
+
+		obs::DenseLightTimeSeries denseEmissionStates(
+		    const Orbit& orbit, const LightTimeInputs& inputs, const NBodyPropagator& propagator,
+		    const NonGravModel& ng, bool variational, bool sensitivities)
+		{
+			return obs::propagateDenseLightTimeSeries(orbit.getR(), orbit.getV() * Constants::GAUSS_K,
+			                                          orbit.epochMjd(), inputs.epochs, inputs.observers, inputs.optical,
+			                                          propagator, ng, variational, sensitivities);
+		}
+
+		obs::LightTimeSeries emissionStates(const Orbit& orbit, const LightTimeInputs& inputs,
+		                                    const std::vector<NBodyPropagator::StateVel>& reception, bool nBody,
+		                                    const NBodyPropagator& propagator, const NonGravModel& ng)
+		{
+			const Vec3D velocity = orbit.getV() * Constants::GAUSS_K;
+			return obs::solveLightTimeSeries(orbit.getR(), velocity, orbit.epochMjd(),
+			                                 inputs.epochs, reception, inputs.observers, inputs.optical, nBody, propagator, ng);
+		}
+
+	}  // namespace
 
 	OrbitFitModel::OrbitFitModel(Orbit_p initial, std::vector<PreparedObservation> observations,
 	                             const OrbitOptimizerConfig& config)
@@ -124,26 +165,9 @@ namespace orbital_core::fit {
 		}
 
 		auto orbit = orbitFromStateVector(params);
-		const Vec3D R0 = orbit->getR();
-		const Vec3D V0_real = orbit->getV() * Constants::GAUSS_K;
-		const double epochMjd = orbit->epochMjd();
-
-		std::vector<double> receptionMjds(N);
-		for (int i = 0; i < N; ++i)
-			receptionMjds[i] = observations_[i].mjdTdb;
-
-		std::vector<NBodyPropagator::PropagationResultFull> fullResults;
-		std::vector<NBodyPropagator::PropagationResult> stmResults;
-		if (nAcols > 0)
-			fullResults = nbody_.propagateAllWithStmAndSensMjd(R0, V0_real, epochMjd, receptionMjds, ng);
-		else
-			stmResults = nbody_.propagateAllWithStmMjd(R0, V0_real, epochMjd, receptionMjds, ng);
-
-		if ((nAcols > 0 && fullResults.size() != static_cast<std::size_t>(N)) ||
-		    (nAcols == 0 && stmResults.size() != static_cast<std::size_t>(N))) {
-			out.residuals = computeResiduals(params);
-			return out;
-		}
+		const auto inputs = lightTimeInputs(observations_);
+		const auto dense = denseEmissionStates(*orbit, inputs, nbody_, ng, true, nAcols > 0);
+		const auto& emission = dense.light;
 
 		out.residuals.resize(residualCount_);
 		out.stateJ.resize(residualCount_, jacCols);
@@ -153,10 +177,9 @@ namespace orbital_core::fit {
 		std::vector<Eigen::Matrix<double, 3, 6>> emissionJacobians(static_cast<std::size_t>(N));
 
 		for (int i = 0; i < N; ++i) {
-			const Vec3D& rReception =
-			    nAcols > 0 ? fullResults[static_cast<std::size_t>(i)].R : stmResults[static_cast<std::size_t>(i)].R;
-			const Vec3D& vReception =
-			    nAcols > 0 ? fullResults[static_cast<std::size_t>(i)].V : stmResults[static_cast<std::size_t>(i)].V;
+			const auto& propagated = dense.variationalStates[static_cast<std::size_t>(i)];
+			const Vec3D& rReception = propagated.R;
+			const Vec3D& vReception = propagated.V;
 			const auto& observation = observations_[i];
 			if (observation.radar) {
 				auto* eph = getDefaultEphemerisSource();
@@ -169,28 +192,22 @@ namespace orbital_core::fit {
 				if (observation.radar->dopplerHz)
 					out.residuals[row] = observation.radar->dopplerHz->value - prediction.dopplerHz;
 				Eigen::MatrixXd transport = Eigen::MatrixXd::Zero(6, jacCols);
-				transport.leftCols(6) = nAcols > 0 ? fullResults[i].Phi : stmResults[i].Phi;
+				transport.leftCols(6) = propagated.Phi;
 				transport.middleCols(3, 3) *= Constants::GAUSS_K;
 				for (int col = 0; col < nAcols; ++col)
-					transport.col(6 + col) = fullResults[i].SensA.col(ng.sensitivityColumnForFitParameter(col));
+					transport.col(6 + col) = propagated.Sens.col(ng.sensitivityColumnForFitParameter(col));
 				out.stateJ.middleRows(residualOffset(i), observation.measurementDimensions()) =
 				    obs::radarResidualJacobian(observation, rReception, vReception, *eph) * transport;
 				continue;
 			}
-			const auto apparent = orbital_core::obs::solveLightTimeTwoPass(
-			    observations_[static_cast<std::size_t>(i)].jdTdb, rReception, vReception,
-			    observations_[static_cast<std::size_t>(i)].earthR +
-			        observations_[static_cast<std::size_t>(i)].observerOffsetEclAu,
-			    &emissionJacobians[static_cast<std::size_t>(i)]);
-			if (!apparent.valid) {
-				out.residuals = computeResiduals(params);
-				out.stateJ.resize(0, 0);
-				out.transforms.clear();
-				emissionPositions.clear();
-				return out;
-			}
-			emissionPositions[static_cast<std::size_t>(i)] = apparent.position;
-			emissionVelocities[static_cast<std::size_t>(i)] = apparent.velocityAuPerDay;
+			const NBodyPropagator::StateVel state{rReception + vReception * emission.emissionOffsetDays[i], vReception};
+			const auto position = obs::apparentEmissionPosition(state, emission.emissionMjd[i], observation.mjdTdb,
+			                                               emission.emissionOffsetDays[i]);
+			const auto ray = position - observation.earthR - observation.observerOffsetEclAu;
+			emissionJacobians[i] << obs::emissionPositionFactor(ray, state.V + obs::sunVelocityMjd(emission.emissionMjd[i])),
+			                        Eigen::Matrix3d::Zero();
+			emissionPositions[i] = position;
+			emissionVelocities[i] = state.V;
 		}
 
 #pragma omp parallel for
@@ -217,11 +234,11 @@ namespace orbital_core::fit {
 			    orbital_core::obs::opticalObservationDirectionJacobian(r_em, obs);
 
 			Eigen::Matrix<double, 6, kMaxJacCols> transport = Eigen::Matrix<double, 6, kMaxJacCols>::Zero();
-			transport.leftCols<6>() = nAcols > 0 ? fullResults[i].Phi : stmResults[i].Phi;
+			transport.leftCols<6>() = dense.variationalStates[i].Phi;
 			transport.middleCols<3>(3) *= Constants::GAUSS_K;
 			if (nAcols > 0) {
 				for (int col = 0; col < nAcols; ++col)
-					transport.col(6 + col) = fullResults[i].SensA.col(ng.sensitivityColumnForFitParameter(col));
+					transport.col(6 + col) = dense.variationalStates[i].Sens.col(ng.sensitivityColumnForFitParameter(col));
 			}
 
 			out.stateJ.block(row, 0, 2, jacCols) =
@@ -235,12 +252,19 @@ namespace orbital_core::fit {
 
 	std::vector<double> OrbitFitModel::computeResiduals(const std::vector<double>& params, const NonGravModel& ng) const
 	{
-		const auto states = receptionStates(params, ng);
-
 		const int N = static_cast<int>(observations_.size());
 		std::vector<double> res(residualCount_, 1.0e30);
-		if (states.size() != observations_.size())
-			return res;
+		const auto orbit = orbitFromStateVector(params);
+		const auto inputs = lightTimeInputs(observations_);
+		obs::LightTimeSeries emission;
+		if (useNBody_)
+			emission = denseEmissionStates(*orbit, inputs, nbody_, ng, false, false).light;
+		else {
+			const auto reception = receptionStates(params, ng);
+			if (reception.size() != observations_.size())
+				return res;
+			emission = emissionStates(*orbit, inputs, reception, useNBody_, nbody_, ng);
+		}
 
 		for (int i = 0; i < N; ++i) {
 			const auto& obs = observations_[i];
@@ -249,18 +273,16 @@ namespace orbital_core::fit {
 				auto* eph = getDefaultEphemerisSource();
 				if (!eph)
 					throw std::runtime_error("Radar requires planetary ephemerides");
-				const auto prediction = orbital_core::obs::predictRadar(obs, states[i].R, states[i].V, *eph);
+				const auto& state = emission.states[i];
+				const auto prediction = orbital_core::obs::predictRadar(obs, state.R, state.V, *eph);
 				if (obs.radar->delaySeconds)
 					res[row++] = obs.radar->delaySeconds->value - prediction.delaySeconds;
 				if (obs.radar->dopplerHz)
 					res[row] = obs.radar->dopplerHz->value - prediction.dopplerHz;
 				continue;
 			}
-			const auto apparent = orbital_core::obs::solveLightTimeTwoPass(obs.jdTdb, states[i].R, states[i].V,
-			                                                               obs.earthR + obs.observerOffsetEclAu);
-			if (!apparent.valid)
-				continue;
-			Vec3D R_eq = toTopocentric(apparent.position, obs);
+			Vec3D R_eq = toTopocentric(orbital_core::obs::apparentEmissionPosition(emission.states[i], emission.emissionMjd[i], obs.mjdTdb,
+			                                                       emission.emissionOffsetDays[i]), obs);
 			auto [raModel, decModel] = toRADEC(R_eq);
 
 			const double dRA = Helpers::wrapPi(obs.raObs - raModel);
@@ -308,21 +330,25 @@ namespace orbital_core::fit {
 	std::vector<Vec3D> OrbitFitModel::computeLightTimePositions(const std::vector<double>& params,
 	                                                            const NonGravModel& ng) const
 	{
-		const auto states = receptionStates(params, ng);
-		if (states.size() != observations_.size())
-			return {};
+		const auto orbit = orbitFromStateVector(params);
+		const auto inputs = lightTimeInputs(observations_);
+		obs::LightTimeSeries emission;
+		if (useNBody_)
+			emission = denseEmissionStates(*orbit, inputs, nbody_, ng, false, false).light;
+		else {
+			const auto states = receptionStates(params, ng);
+			if (states.size() != observations_.size())
+				return {};
+			emission = emissionStates(*orbit, inputs, states, useNBody_, nbody_, ng);
+		}
 		std::vector<Vec3D> positions(observations_.size());
 		for (size_t i = 0; i < observations_.size(); ++i) {
 			if (observations_[i].radar) {
-				positions[i] = states[i].R;
+				positions[i] = emission.states[i].R;
 				continue;
 			}
-			const auto apparent = orbital_core::obs::solveLightTimeTwoPass(
-			    observations_[i].jdTdb, states[i].R, states[i].V,
-			    observations_[i].earthR + observations_[i].observerOffsetEclAu);
-			if (!apparent.valid)
-				return {};
-			positions[i] = apparent.position;
+			positions[i] = obs::apparentEmissionPosition(emission.states[i], emission.emissionMjd[i], observations_[i].mjdTdb,
+			                                        emission.emissionOffsetDays[i]);
 		}
 		return positions;
 	}

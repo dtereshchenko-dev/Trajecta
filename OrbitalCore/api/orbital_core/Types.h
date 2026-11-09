@@ -278,17 +278,23 @@ namespace Convertors {
 		double dayFrac;
 		jdToYMD(jd, year, month, dayFrac);
 
-		const int day = static_cast<int>(std::floor(dayFrac));
-		const double hourFrac = (dayFrac - day) * 24.0;
-		const int hour = static_cast<int>(std::floor(hourFrac));
-		const double minuteFrac = (hourFrac - hour) * 60.0;
-		const int minute = static_cast<int>(std::floor(minuteFrac));
-		const double second = (minuteFrac - minute) * 60.0;
+		constexpr int centisecondsPerDay = 8640000;
+		int day = static_cast<int>(std::floor(dayFrac));
+		int centiseconds = static_cast<int>(std::llround((dayFrac - day) * centisecondsPerDay));
+		if (centiseconds == centisecondsPerDay) {
+			jdToYMD(std::floor(jd + 0.5) + 0.5, year, month, dayFrac);
+			day = static_cast<int>(std::floor(dayFrac));
+			centiseconds = 0;
+		}
+		const int hour = centiseconds / 360000;
+		const int minute = centiseconds / 6000 % 60;
+		const int second = centiseconds / 100 % 60;
+		const int fraction = centiseconds % 100;
 
 		std::ostringstream oss;
 		oss << year << "-" << std::setfill('0') << std::setw(2) << month << "-" << std::setfill('0') << std::setw(2)
 		    << day << " " << std::setfill('0') << std::setw(2) << hour << ":" << std::setfill('0') << std::setw(2)
-		    << minute << ":" << std::fixed << std::setprecision(2) << second;
+		    << minute << ":" << std::setw(2) << second << "." << std::setw(2) << fraction;
 
 		return oss.str();
 	}
@@ -420,19 +426,39 @@ namespace Calculations {
 
 	inline double kepler_solve_h(const double& M, const double& e, double tolerance = 1e-10)
 	{
-		double F = 2 * std::atan(std::sqrt((e - 1) / (e + 1)) * std::tan(M / 2));
-		double F_prev;
+		if (!std::isfinite(M) || !std::isfinite(e) || e < 1.0 || !std::isfinite(tolerance) || tolerance <= 0.0)
+			return std::numeric_limits<double>::quiet_NaN();
+		if (M == 0.0)
+			return 0.0;
 
-		auto kepler_eq = [&](const double& F, const double& M, const double& e) -> double {
-			return e * std::sinh(F) - F - M;
-		};
-
-		do {
-			F_prev = F;
-			F = F - kepler_eq(F, M, e) / (e * std::cosh(F) - 1);
-		} while (std::fabs(F - F_prev) > tolerance);
-
-		return F;
+		const double mean = std::abs(M);
+		double lower = 0.0;
+		double upper = std::max(1.0, std::asinh(mean / e) + 1.0);
+		while (e * std::sinh(upper) - upper < mean)
+			upper *= 2.0;
+		double anomaly = std::asinh(mean / e);
+		for (int i = 0; i < 100; ++i) {
+			const double residual = e * std::sinh(anomaly) - anomaly - mean;
+			if (residual == 0.0)
+				break;
+			const double next = anomaly - residual / (e * std::cosh(anomaly) - 1.0);
+			if (std::isfinite(next) &&
+			    std::abs(next - anomaly) <= tolerance * std::max(1.0, std::abs(next))) {
+				anomaly = next;
+				break;
+			}
+			if (residual > 0.0)
+				upper = anomaly;
+			else
+				lower = anomaly;
+			const double candidate = std::isfinite(next) && next > lower && next < upper ? next : (lower + upper) / 2.0;
+			if (std::abs(candidate - anomaly) <= tolerance * std::max(1.0, std::abs(candidate))) {
+				anomaly = candidate;
+				break;
+			}
+			anomaly = candidate;
+		}
+		return std::copysign(anomaly, M);
 	}
 
 	inline Vec3D angMomentum(const Vec3D& R, const Vec3D& V) noexcept { return R.cross(V); }

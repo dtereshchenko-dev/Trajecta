@@ -17,8 +17,10 @@ class TestRecentFiles : public QObject {
 	{
 		QString path = m_files.filePath(name);
 		QFile f(path);
-		f.open(QIODevice::WriteOnly);
-		f.write("test");
+		if (!f.open(QIODevice::WriteOnly) || f.write("test") != 4) {
+			QTest::qFail("Could not create recent file fixture", __FILE__, __LINE__);
+			return {};
+		}
 		f.close();
 		m_tempFiles.append(path);
 		return path;

@@ -321,6 +321,36 @@ namespace {
 
 				const RadauVector<N> stepStartX = x;
 				const RadauVector<N> stepStartV = v;
+				if (options.denseStepObserver) {
+					const auto denseAccumulated = accumulated;
+					const bool composeVariations = report.encounterRestarts > 0;
+					const double stepOffset = tm;
+					const double timeCorrection = timeCompensation;
+					const auto posCorrection = positionCompensation;
+					const auto velCorrection = velocityCompensation;
+					const auto acceleration = f1;
+					const auto coefficients = b;
+					DenseIntegratedStep dense;
+					dense.beginMjd = tini + stepOffset - timeCorrection;
+					dense.endMjd = dense.beginMjd + step;
+					dense.evaluate = [stepStartX, stepStartV, posCorrection, velCorrection, acceleration, coefficients,
+					                  tini, stepOffset, timeCorrection, step, denseAccumulated, composeVariations](double mjd) {
+						const double fraction = ((mjd - tini - stepOffset) + timeCorrection) / step;
+						RadauVector<N> outputX, outputV;
+						predictRa15State(stepStartX, stepStartV, posCorrection, velCorrection, coefficients, acceleration,
+						                 fraction, step, outputX, outputV);
+						auto state = radauState(outputX, outputV);
+						if constexpr (N >= 21) {
+							if (composeVariations) {
+								if constexpr (N >= 33)
+									state.Sens = (state.Phi * denseAccumulated.Sens + state.Sens).eval();
+								state.Phi = (state.Phi * denseAccumulated.Phi).eval();
+							}
+						}
+						return state;
+					};
+					options.denseStepObserver(std::move(dense));
+				}
 
 				while (targetIndex < targetMjds.size()) {
 					const double outputOffset = targetMjds[targetIndex] - tini;
@@ -334,25 +364,8 @@ namespace {
 					const double s = std::clamp(outputDelta / step, 0.0, 1.0);
 					RadauVector<N> outputX;
 					RadauVector<N> outputV;
-					for (int k = 0; k < N; ++k) {
-						double temp = rc.w[3] * b[3](k) +
-						              s * (rc.w[4] * b[4](k) +
-						                   s * (rc.w[5] * b[5](k) + s * (rc.w[6] * b[6](k) + s * rc.w[7] * b[7](k))));
-						outputX(k) =
-						    stepStartX(k) +
-						    (s * (step * stepStartV(k) +
-						          step2 * s *
-						              (f1(k) * rc.w1 + s * (rc.w[1] * b[1](k) + s * (rc.w[2] * b[2](k) + s * temp)))) -
-						     positionCompensation(k) - s * step * velocityCompensation(k));
-
-						temp = rc.u[3] * b[3](k) +
-						       s * (rc.u[4] * b[4](k) +
-						            s * (rc.u[5] * b[5](k) + s * (rc.u[6] * b[6](k) + s * rc.u[7] * b[7](k))));
-						outputV(k) =
-						    stepStartV(k) +
-						    (s * step * (f1(k) + s * (rc.u[1] * b[1](k) + s * (rc.u[2] * b[2](k) + s * temp))) -
-						     velocityCompensation(k));
-					}
+					predictRa15State(stepStartX, stepStartV, positionCompensation, velocityCompensation, b, f1, s, step,
+					                 outputX, outputV);
 					writeGlobalOutput(targetIndex, targetMjds[targetIndex], outputX, outputV);
 					++targetIndex;
 					report.completedOutputs = targetIndex;

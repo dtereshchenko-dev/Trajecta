@@ -3,7 +3,7 @@
     <!-- deploy.ps1 fills version placeholders in a staged copy. -->
     <Name>Trajecta</Name>
     <Version>@TRAJECTA_VERSION@</Version>
-    <Title>Trajecta @TRAJECTA_VERSION@ Installer</Title>
+    <Title>Trajecta Installer</Title>
     <Publisher>Trajecta</Publisher>
     <StartMenuDir>Trajecta</StartMenuDir>
     <TargetDir>@ApplicationsDir@/Trajecta</TargetDir>

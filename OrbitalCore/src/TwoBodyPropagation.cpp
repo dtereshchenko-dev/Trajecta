@@ -14,12 +14,12 @@ namespace Calculations {
 		constexpr double kHyperbolicAlphaThreshold = -1.0e-9;
 		constexpr double kMinStateMagAU = 1.0e-12;
 		constexpr double kMinKeplerR = 1.0e-14;
-	}
+	}  // namespace
 
 	namespace detail {
 		[[nodiscard]] bool keplerPropUV(const Vec3D& R0, const Vec3D& V0, double tau, Vec3D& Rout, Vec3D& Vout,
-		                                const StateVectors* initialRate, double tauRate,
-		                                Vec3D* positionRate) noexcept
+		                                const StateVectors* initialRate, double tauRate, Vec3D* positionRate,
+		                                Vec3D* velocityRate) noexcept
 		{
 			const double r0 = R0.magnitude();
 			if (r0 < kMinStateMagAU) {
@@ -31,7 +31,10 @@ namespace Calculations {
 			const double alpha = 2.0 / r0 - v02;
 
 			double chi;
-			if (alpha > kEllipticAlphaThreshold) {
+			// The hyperbolic logarithmic seed is ill-conditioned for short steps far from the Sun.
+			if (std::abs(tau) * std::sqrt(v02 + 1.0 / r0) < 0.5 * r0) {
+				chi = tau / r0;
+			} else if (alpha > kEllipticAlphaThreshold) {
 				chi = tau * alpha;
 			} else if (alpha < kHyperbolicAlphaThreshold) {
 				const double a = 1.0 / alpha;
@@ -87,7 +90,7 @@ namespace Calculations {
 			Rout = R0 * f + V0 * g;
 			Vout = R0 * fd + V0 * gd;
 
-			if (initialRate && positionRate) {
+			if (initialRate && (positionRate || velocityRate)) {
 				const double dr0 = R0.dot(initialRate->first) / r0;
 				const double dsigma = initialRate->first.dot(V0) + R0.dot(initialRate->second);
 				const double dalpha = -2.0 * dr0 / (r0 * r0) - 2.0 * V0.dot(initialRate->second);
@@ -105,7 +108,17 @@ namespace Calculations {
 				const double df =
 				    -(2.0 * chi * dchi * c2 + chi * chi * dc2 * dpsi) / r0 + chi * chi * c2 * dr0 / (r0 * r0);
 				const double dg = tauRate - 3.0 * chi * chi * dchi * c3 - chi * chi * chi * dc3 * dpsi;
-				*positionRate = initialRate->first * f + R0 * df + initialRate->second * g + V0 * dg;
+				const Vec3D dposition = initialRate->first * f + R0 * df + initialRate->second * g + V0 * dg;
+				if (positionRate)
+					*positionRate = dposition;
+				if (velocityRate) {
+					const double dr = Rout.dot(dposition) / r;
+					const double dgd = -(2.0 * chi * dchi * c2 + chi * chi * dc2 * dpsi) / r +
+					                   chi * chi * c2 * dr / (r * r);
+					const double dfd = (dchi * (psi * c3 - 1.0) + chi * dpsi * (c3 + psi * dc3)) / (r * r0) -
+					                   fd * (dr / r + dr0 / r0);
+					*velocityRate = initialRate->first * fd + R0 * dfd + initialRate->second * gd + V0 * dgd;
+				}
 			}
 
 			return std::fabs(Rout.x) < kCostSentinel && std::fabs(Vout.x) < kCostSentinel;
@@ -126,14 +139,14 @@ namespace Calculations {
 		return StateVectors(R, V);
 	}
 
-	Vec3D propagateKeplerPositionRate(const StateVectors& initial, double dtDays, const StateVectors& initialRate,
-	                                  double dtRate)
+	StateVectors propagateKeplerStateRate(const StateVectors& initial, double dtDays, const StateVectors& initialRate,
+	                                      double dtRate)
 	{
-		Vec3D r, v, rate;
+		Vec3D r, v, dr, dv;
 		if (!detail::keplerPropUV(initial.first, initial.second, Constants::GAUSS_K * dtDays, r, v, &initialRate,
-		                  Constants::GAUSS_K * dtRate, &rate))
-			throw std::runtime_error("Kepler position derivative failed");
-		return rate;
+		                          Constants::GAUSS_K * dtRate, &dr, &dv))
+			throw std::runtime_error("Kepler state derivative failed");
+		return {dr, dv};
 	}
 
 }  // namespace Calculations

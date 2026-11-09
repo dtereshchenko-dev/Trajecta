@@ -41,8 +41,8 @@ class ORBITAL_CORE_API AstrometryBias {
 
 namespace Calculations {
 	enum class AstrometryBiasScheme { Efcc18, Fcct14 };
-	[[nodiscard]] std::filesystem::path astrometryBiasPathForScheme(
-	    const std::filesystem::path& runtimeDirectory, AstrometryBiasScheme scheme);
+	[[nodiscard]] std::filesystem::path astrometryBiasPathForScheme(const std::filesystem::path& runtimeDirectory,
+	                                                                AstrometryBiasScheme scheme);
 	[[nodiscard]] ORBITAL_CORE_API std::filesystem::path astrometryBiasPathForProfile(
 	    const std::filesystem::path& runtimeDirectory, orbital_core::AstrometricWeightProfile profile);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "orbital_core/FitConfig.h"
+#include "orbital_core/FitResult.h"
 #include "orbital_core/FitRunControl.h"
 #include "orbital_core/OrbitalCoreExport.h"
 #include "orbital_core/TimeScale.h"
@@ -50,6 +51,8 @@ namespace orbital_core {
 		EphemerisMagnitudeType magnitudeType{EphemerisMagnitudeType::Asteroid};
 		double cometSlope{10.0};
 		double cometPhaseCoefficient{0.0};
+		// Fit-epoch covariance of [R, V, fitted non-gravitational parameters].
+		FitParameterCovariance covariance;
 	};
 
 	struct EphemerisRequest {
@@ -62,6 +65,19 @@ namespace orbital_core {
 		double endMjd{0.0};
 		double stepDays{1.0};
 		bool lightTime{true};
+		bool uncertainty{false};
+	};
+
+	struct EphemerisUncertainty {
+		double longitude3SigmaArcsec{};  // longitude multiplied by cos(latitude)
+		double latitude3SigmaArcsec{};
+		double major3SigmaArcsec{};
+		double minor3SigmaArcsec{};
+		double positionAngleDeg{};  // from increasing longitude toward increasing latitude, modulo 180
+		double area3SigmaArcsec2{};
+		double sky3SigmaArcsec{};
+		double range3SigmaKm{};
+		double rangeRate3SigmaKmPerSecond{};
 	};
 
 	// Angles in radians, rates in radians per day, distances in AU. Position and
@@ -77,11 +93,17 @@ namespace orbital_core {
 		double latitude{};       // Dec or ecliptic latitude
 		double longitudeRate{};  // d(longitude)/dt * cos(latitude)
 		double latitudeRate{};
-		double distanceAu{};                                          // Delta, from the centre
-		double heliocentricAu{};                                      // r
-		double elongation{std::numeric_limits<double>::quiet_NaN()};  // heliocentric: NaN
+		double distanceAu{};                // Delta, from the centre
+		double heliocentricAu{};            // r; includes Sun-to-target light time when enabled
+		double distanceRateAuPerDay{};      // relative physical velocity projected along the observed ray
+		double heliocentricRateAuPerDay{};  // heliocentric radial velocity at target emission
+		double oneWayLightTimeDays{};       // displayed distance divided by c
+		// Apparent Sun-observer-target angle with light time, deflection and
+		// stellar aberration; geometric when light time is disabled. Heliocentric: NaN.
+		double elongation{std::numeric_limits<double>::quiet_NaN()};
 		double phase{std::numeric_limits<double>::quiet_NaN()};       // heliocentric: NaN
 		std::optional<double> visualMagnitude;
+		std::optional<EphemerisUncertainty> uncertainty;
 		Vec3D position;
 		Vec3D velocity;
 	};
@@ -92,6 +114,7 @@ namespace orbital_core {
 		bool lightTimeApplied{false};
 		bool nBody{false};
 		bool nonGravitational{false};
+		bool uncertaintyComputed{false};
 	};
 
 	inline constexpr std::size_t kMaxEphemerisEpochs = 100000;

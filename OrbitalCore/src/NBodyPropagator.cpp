@@ -700,6 +700,76 @@ std::vector<NBodyPropagator::StateVel> NBodyPropagator::propagateAllWithVelocity
 	    [](const IntegratedState& state) { return StateVel{state.R, state.V}; });
 }
 
+std::optional<IntegratedStateFull> NBodyPropagator::DenseTrajectory::at(double mjd) const
+{
+	if (mjd == epochMjd)
+		return initial;
+	const double tolerance = 2.0 * std::numeric_limits<double>::epsilon() * std::max(1.0, std::abs(mjd));
+	const auto it = std::lower_bound(steps.begin(), steps.end(), mjd, [tolerance](const DenseIntegratedStep& step, double t) {
+		return std::max(step.beginMjd, step.endMjd) + tolerance < t;
+	});
+	if (it == steps.end() || mjd < std::min(it->beginMjd, it->endMjd) - tolerance || !it->evaluate)
+		return std::nullopt;
+	return it->evaluate(mjd);
+}
+
+NBodyPropagator::DenseTrajectory NBodyPropagator::propagateDenseMjd(
+    const Vec3D& R0, const Vec3D& V0, double epochMjd, double firstMjd, double lastMjd, const NonGravModel& ng,
+    bool variational, bool sensitivities) const
+{
+	if (!std::isfinite(epochMjd) || !std::isfinite(firstMjd) || !std::isfinite(lastMjd) || firstMjd > lastMjd ||
+	    (sensitivities && !variational))
+		throw std::invalid_argument("Invalid dense trajectory interval");
+	DenseTrajectory result;
+	result.epochMjd = epochMjd;
+	result.initial.R = R0;
+	result.initial.V = V0;
+	if (firstMjd < epochMjd)
+		integrateDenseSegment(result, result.initial, epochMjd, firstMjd, ng, variational, sensitivities);
+	if (lastMjd > epochMjd)
+		integrateDenseSegment(result, result.initial, epochMjd, lastMjd, ng, variational, sensitivities);
+	std::sort(result.steps.begin(), result.steps.end(), [](const DenseIntegratedStep& a, const DenseIntegratedStep& b) {
+		return std::min(a.beginMjd, a.endMjd) < std::min(b.beginMjd, b.endMjd);
+	});
+	return result;
+}
+
+void NBodyPropagator::integrateDenseSegment(DenseTrajectory& trajectory, const IntegratedStateFull& initial,
+                                            double epochMjd, double targetMjd, const NonGravModel& ng,
+                                            bool variational, bool sensitivities) const
+{
+	auto options = integrationOptions();
+	options.denseStepObserver = [&trajectory](DenseIntegratedStep step) { trajectory.steps.push_back(std::move(step)); };
+	const std::array targets{targetMjd};
+	if (sensitivities) {
+		std::array<IntegratedStateFull, 1> output;
+		m_integrator->integrateStateWithStmAndSens(m_dynamics, ng, initial, epochMjd, targets, output, options);
+	} else if (variational) {
+		IntegratedStateWithStm state{initial.R, initial.V, initial.Phi};
+		std::array<IntegratedStateWithStm, 1> output;
+		m_integrator->integrateStateWithStm(m_dynamics, ng, state, epochMjd, targets, output, options);
+	} else {
+		std::array<IntegratedState, 1> output;
+		m_integrator->integrateState(m_dynamics, ng, {initial.R, initial.V}, epochMjd, targets, output, options);
+	}
+}
+
+void NBodyPropagator::extendDenseBackwardMjd(DenseTrajectory& trajectory, double firstMjd, const NonGravModel& ng,
+                                             bool variational, bool sensitivities) const
+{
+	const double current = trajectory.steps.empty() ? trajectory.epochMjd :
+	    std::min(trajectory.steps.front().beginMjd, trajectory.steps.front().endMjd);
+	if (!std::isfinite(firstMjd) || firstMjd >= current || (sensitivities && !variational))
+		throw std::invalid_argument("Invalid dense trajectory extension");
+	const auto state = trajectory.at(current);
+	if (!state)
+		throw std::runtime_error("Dense trajectory has no initial state for extension");
+	integrateDenseSegment(trajectory, *state, current, firstMjd, ng, variational, sensitivities);
+	std::sort(trajectory.steps.begin(), trajectory.steps.end(), [](const DenseIntegratedStep& a, const DenseIntegratedStep& b) {
+		return std::min(a.beginMjd, a.endMjd) < std::min(b.beginMjd, b.endMjd);
+	});
+}
+
 std::vector<NBodyPropagator::PropagationResult> NBodyPropagator::propagateAllWithStmMjd(
     const Vec3D& R0, const Vec3D& V0, double epochMjd, const std::vector<double>& targetMjds, const NonGravModel& ng,
     IntegrationReport* report) const

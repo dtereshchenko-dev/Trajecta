@@ -97,6 +97,50 @@ ColumnLayout {
         Layout.bottomMargin: 16
     }
     CustomTextLink { text: qsTr("All parameters and vectors"); implicitHeight: 16; Layout.topMargin: 12; onClicked: details.open() }
+    Rectangle {
+        Layout.fillWidth: true
+        Layout.topMargin: 16
+        implicitHeight: entryContent.implicitHeight + 24
+        color: UI.mix(AppTheme.amber, AppTheme.surface, 0.08)
+        visible: table.solution.nominalEarthEntry.utc !== undefined
+        Rectangle { width: 3; height: parent.height; color: AppTheme.amber }
+        ColumnLayout {
+            id: entryContent
+            anchors.fill: parent
+            anchors.leftMargin: 15
+            anchors.rightMargin: 12
+            anchors.topMargin: 12
+            anchors.bottomMargin: 12
+            spacing: 6
+            RowLayout {
+                Layout.fillWidth: true
+                CustomText { text: qsTr("Nominal Earth entry"); color: AppTheme.amber; font.pixelSize: 12; Layout.fillWidth: true }
+                CustomText { text: qsTr("%1 km").arg(table.solution.nominalEarthEntry.altitudeKm); secondary: true; font.pixelSize: 10 }
+            }
+            Repeater {
+                model: [
+                    { label: qsTr("Time, UTC"), value: table.solution.nominalEarthEntry.utc || "" },
+                    { label: qsTr("Latitude"), value: table.solution.nominalEarthEntry.latitude || "" },
+                    { label: qsTr("Longitude"), value: table.solution.nominalEarthEntry.longitude || "" }
+                ]
+                RowLayout {
+                    required property var modelData
+                    Layout.fillWidth: true
+                    CustomText { text: modelData.label; secondary: true; font.pixelSize: 11; Layout.fillWidth: true }
+                    CustomText { text: modelData.value; numeric: true; font.pixelSize: 11 }
+                }
+            }
+        }
+    }
+    CustomText {
+        text: qsTr("Nominal entry check failed: %1").arg(table.solution.nominalEarthEntryError)
+        visible: table.solution.nominalEarthEntryError.length > 0
+        Layout.fillWidth: true
+        Layout.topMargin: 12
+        wrapMode: Text.Wrap
+        color: AppTheme.amber
+        font.pixelSize: 11
+    }
     MoidSummary { solution: table.solution; Layout.fillWidth: true; Layout.topMargin: 17 }
     OrbitDetailsDialog { id: details; solution: table.solution }
 }

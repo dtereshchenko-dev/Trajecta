@@ -5,6 +5,7 @@
 #include "fit/OrbitFitProblem.h"
 #include "obs/ObserverGeometry.h"
 #include "hazard/McBoundaryScan.h"
+#include "hazard/BoundaryScan.h"
 #include "orbital_core/optimizers/EigenLevenbergMarquardt.h"
 #include "orbital_core/Photometry.h"
 #include "orbital_core/TimeScale.h"
@@ -455,6 +456,28 @@ namespace orbital_core::hazard {
 		scan.startMjdTdb = config.startMjdTdb;
 		scan.endMjdTdb = config.endMjdTdb;
 		scan.altitudeKm = config.altitudeKm;
+		if (nominal && nominal->converged && !nominal->cancelled && nominal->fitEpochOrbit) {
+			MovNominal trajectory;
+			const auto& orbit = *nominal->fitEpochOrbit;
+			const auto r = orbit.getR(), v = orbit.getV() * Constants::GAUSS_K;
+			trajectory.epochMjdTdb = orbit.epochMjd();
+			trajectory.state = {r.x, r.y, r.z, v.x, v.y, v.z};
+			try {
+				if (trajectory.epochMjdTdb > scan.startMjdTdb)
+					throw std::runtime_error("Nominal epoch is later than the MOV scan start");
+				auto p = propagator;
+				const auto crossing = boundary::search(trajectory.state, trajectory.epochMjdTdb, nominal->finalNonGrav,
+				                                       scan.target, scan.startMjdTdb, scan.endMjdTdb, scan.altitudeKm,
+				                                       p, *eph, cancel);
+				trajectory.entryBeforeInterval = crossing.beforeInterval;
+				trajectory.entry = crossing.entry;
+			} catch (const std::exception& e) {
+				trajectory.status = cancel.stop_requested() ? NominalPropagationStatus::Cancelled
+				                                            : NominalPropagationStatus::PropagationFailed;
+				trajectory.error = e.what();
+			}
+			result.nominal = std::move(trajectory);
+		}
 		const auto earth = eph->queryMjd(EphemerisPlanet::Earth, result.epochMjdTdb);
 		total += static_cast<int>(result.nodes.size());
 #pragma omp parallel for schedule(dynamic, 1) num_threads(config.workers)

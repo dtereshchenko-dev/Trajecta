@@ -423,6 +423,36 @@ namespace {
 
 				const RadauVector<N> stepStartX = x;
 				const RadauVector<N> stepStartV = v;
+				if (options.denseStepObserver) {
+					const auto denseAccumulated = accumulated;
+					const bool composeVariations = report.encounterRestarts > 0;
+					const double stepOffset = tm;
+					const double timeCorrection = timeCompensation;
+					const auto posCorrection = csx;
+					const auto velCorrection = csv;
+					const auto acceleration = f1;
+					const auto coefficients = b;
+					DenseIntegratedStep dense;
+					dense.beginMjd = tini + stepOffset - timeCorrection;
+					dense.endMjd = dense.beginMjd + step;
+					dense.evaluate = [stepStartX, stepStartV, posCorrection, velCorrection, acceleration, coefficients,
+					                  tini, stepOffset, timeCorrection, step, denseAccumulated, composeVariations](double mjd) {
+						const double fraction = ((mjd - tini - stepOffset) + timeCorrection) / step;
+						RadauVector<N> outputX, outputV;
+						predictIas15State(stepStartX, stepStartV, posCorrection, velCorrection, coefficients, acceleration,
+						                  fraction, step, outputX, outputV);
+						auto state = radauState(outputX, outputV);
+						if constexpr (N >= 21) {
+							if (composeVariations) {
+								if constexpr (N >= 33)
+									state.Sens = (state.Phi * denseAccumulated.Sens + state.Sens).eval();
+								state.Phi = (state.Phi * denseAccumulated.Phi).eval();
+							}
+						}
+						return state;
+					};
+					options.denseStepObserver(std::move(dense));
+				}
 
 				while (targetIndex < targetMjds.size()) {
 					const double outputOffset = targetMjds[targetIndex] - tini;
