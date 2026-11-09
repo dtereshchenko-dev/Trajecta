@@ -1,4 +1,5 @@
 #include "orbital_core/Exporter.h"
+#include "orbital_core/FitPipeline.h"
 #include "OefLayout.h"
 #include "obs/RwoMetadata.h"
 #include "OefCoordinates.h"
@@ -1221,6 +1222,18 @@ namespace orbital_core {
 			os << "sigma_clip_passes " << fit.sigmaClipPassesRun << '\n';
 			os << "sigma_clip_rejected " << fit.sigmaClipRejected << '\n';
 			os << "covariance_objective_scale " << fit.uncertainty.covarianceObjectiveScale << "\n\n";
+			if (context.nominalEarthEntry) {
+				const auto& nominal = *context.nominalEarthEntry;
+				const auto precision = os.precision();
+				os << "[nominal_earth_entry]\n" << std::setprecision(15)
+				   << "altitude_km " << nominal.altitudeKm << '\n'
+				   << "epoch_mjd_tdb " << nominal.crossing.mjdTdb << '\n'
+				   << "latitude_deg " << nominal.crossing.latitudeDeg << '\n'
+				   << "longitude_deg " << nominal.crossing.longitudeDeg << "\n\n";
+				os.precision(precision);
+			}
+			if (!context.nominalEarthEntryError.empty())
+				os << "nominal_earth_entry_error " << context.nominalEarthEntryError << "\n\n";
 			if (context.cometPhotometry) {
 				const auto photometry = orbital_core::photometry::fitComet(
 				    orbital_core::photometry::observations(fit).data(), context.photometry);

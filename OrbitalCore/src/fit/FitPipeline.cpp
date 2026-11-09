@@ -11,6 +11,9 @@
 #include "fit/OptimizerConfigFactory.h"
 #include "fit/ObservationSelection.h"
 #include "logger/Logger.h"
+#ifdef ORBITAL_CORE_HAZARD_AVAILABLE
+#include "hazard/BoundaryScan.h"
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -245,7 +248,18 @@ namespace orbital_core {
 	FitPipelineResult FitPipeline::run(FitPipelineInput input, const FitRunControl& control,
 	                                   const InitialOrbitCallback& initialOrbitReady) const
 	try {
-		return PipelineRun{config_, options_, input, control, initialOrbitReady}.run();
+		auto result = PipelineRun{config_, options_, input, control, initialOrbitReady}.run();
+#ifdef ORBITAL_CORE_HAZARD_AVAILABLE
+		try {
+			result.nominalEarthEntry =
+			    hazard::boundary::nearbyNominalEarthEntry(result.fit, result.effectiveConfig.nbody, control.cancel);
+		} catch (const std::exception& error) {
+			if (control.cancel.stop_requested())
+				throw fit::FitCancelled{};
+			result.nominalEarthEntryError = error.what();
+		}
+#endif
+		return result;
 	} catch (const fit::FitCancelled&) {
 		return {.fit = {.cancelled = true}};
 	}

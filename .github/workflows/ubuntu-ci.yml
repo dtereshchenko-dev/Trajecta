@@ -101,11 +101,35 @@ jobs:
       - name: Build
         run: cmake --build build/ubuntu --parallel 4
 
+      - name: Record build environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "Commit: $GITHUB_SHA"
+            echo "Runner image: ${ImageVersion:-unknown}"
+            echo "Platform: $(uname -srm)"
+            echo "Compiler: $(g++ --version | head -n 1)"
+            echo "CMake: $(cmake --version | head -n 1)"
+            echo "Qt: $(qmake6 -query QT_VERSION)"
+            if [[ -x "$RUNNER_TEMP/trajecta-gdal/bin/gdal-config" ]]; then
+              echo "GDAL: $("$RUNNER_TEMP/trajecta-gdal/bin/gdal-config" --version)"
+            else
+              echo 'GDAL: gdal-config unavailable (see build-gdal.sh)'
+            fi
+          } | tee build/ubuntu/ci-environment.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check CLI startup
+        run: build/ubuntu/TrajectaCLI/TrajectaCLI --help
+
       - name: Test
         env:
           QT_QPA_PLATFORM: offscreen
           QT_QUICK_BACKEND: software
-        run: ctest --test-dir build/ubuntu --output-on-failure --no-tests=error --parallel 2
+          TRAJECTA_QT_TEST_LOG_DIR: ${{ runner.temp }}/trajecta-qt-test-logs
+        run: >-
+          ctest --test-dir build/ubuntu --output-on-failure --no-tests=error
+          --output-junit test-results.xml --parallel 2
 
       - name: Install packaging tools
         if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
@@ -164,11 +188,15 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Upload test logs
-        if: failure()
+      - name: Upload test results and environment
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ubuntu-test-logs
+          name: ubuntu-test-results
           path: |
+            build/ubuntu/ci-environment.txt
+            build/ubuntu/test-results.xml
             build/ubuntu/Testing/Temporary/LastTest.log
+            ${{ runner.temp }}/trajecta-qt-test-logs/
           if-no-files-found: ignore
+          retention-days: 7

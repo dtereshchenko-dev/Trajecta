@@ -338,12 +338,16 @@ or establish cross-platform numerical equivalence.
 
 ### Continuous integration
 
-The Windows CI workflow builds the project and runs CTest on pushes, pull
-requests, and manual dispatches. It caches vcpkg binary packages and obtains
-DE440 and the two debias tables from JPL or a cache, verifying their SHA-256
-hashes each time. An initial run must populate the caches; GitHub may evict
-them, and cache access can differ between branches and pull requests.
-SB441-N16 is not downloaded, so tests requiring it are skipped. The workflow
-does not build or publish an installer and does not establish numerical
-equivalence across platforms.
+CI builds and runs CTest on Windows and Ubuntu for pull requests, version-tag
+pushes and manual dispatches. The two platform jobs run independently. They
+cache their build dependencies and obtain DE440 and the two debias tables from
+JPL or a cache, verifying their SHA-256 hashes. Initial runs must populate the
+caches; GitHub may evict them, and cache access can differ between branches and
+pull requests. SB441-N16 is not downloaded, so tests requiring it are skipped.
+
+The Ubuntu job also checks CLI startup and retains its CTest results, Qt test
+logs and build-environment summary as an artifact for seven days. Installer and
+update smoke tests run on version tags and, for Ubuntu, manual dispatches;
+version-tag runs also build the release packages. Passing CI does not establish
+numerical equivalence across platforms.
 

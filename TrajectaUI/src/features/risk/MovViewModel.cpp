@@ -211,12 +211,10 @@ void MovViewModel::run(const QVariantMap& options)
 				for (const auto& o : accepted.fittedObservations())
 					source->all.push_back(o);
 			}
-			if (config.sampling != hz::MovSampling::Grid) {
-				nominal = accepted.fit;
-				if (nominal->fitEpochOrbit)
-					nominal->fitEpochOrbit = std::make_shared<Orbit>(*nominal->fitEpochOrbit);
-				refitNominal = all && accepted.fittedObservations().size() != source->all.size();
-			}
+			nominal = accepted.fit;
+			if (nominal->fitEpochOrbit)
+				nominal->fitEpochOrbit = std::make_shared<Orbit>(*nominal->fitEpochOrbit);
+			refitNominal = all && accepted.fittedObservations().size() != source->all.size();
 		}
 		if (settings.nonGrav.enabled || !settings.nbody.enabled || !settings.useWeights)
 			throw std::invalid_argument(

@@ -6,6 +6,7 @@
 #include "orbital_core/FitPipelineOptions.h"
 #include "orbital_core/FitSession.h"
 #include "orbital_core/ObservationSet.h"
+#include "orbital_core/hazard/BoundaryCrossing.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -44,6 +45,11 @@ namespace orbital_core {
 		std::uint16_t blockedMask{};
 	};
 
+	struct NominalEarthEntry {
+		double altitudeKm{};
+		hazard::BoundaryCrossing crossing;
+	};
+
 	struct FitPipelineResult {
 		FitResult fit;
 		FitConfig effectiveConfig;
@@ -56,6 +62,8 @@ namespace orbital_core {
 		ObservationSet observations;
 		FitSelectionMode selection{FitSelectionMode::Configured};
 		std::vector<ObservationOverride> observationOverrides;
+		std::optional<NominalEarthEntry> nominalEarthEntry;
+		std::string nominalEarthEntryError;
 
 		// Derived from the display-epoch orbit and the submitted designation.
 		// A failed fit cannot establish an orbital group, but a designation

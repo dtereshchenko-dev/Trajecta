@@ -29,17 +29,21 @@ namespace orbital_core::hazard {
 
 		Json vector(const Vec3D& v) { return {v.x, v.y, v.z}; }
 
+		Json crossing(const std::optional<BoundaryCrossing>& entry)
+		{
+			if (!entry)
+				return nullptr;
+			return {{"epoch", entry->mjdTdb},
+			        {"latitude_deg", entry->latitudeDeg},
+			        {"longitude_deg", entry->longitudeDeg},
+			        {"relative_position_km", vector(entry->relativePositionKm)},
+			        {"relative_velocity_km_s", vector(entry->relativeVelocityKmS)}};
+		}
+
 		Json nodes(const std::vector<MovNode>& values)
 		{
 			auto rows = Json::array();
 			for (const auto& n : values) {
-				Json entry = nullptr;
-				if (n.entry)
-					entry = {{"epoch", n.entry->mjdTdb},
-					         {"latitude_deg", n.entry->latitudeDeg},
-					         {"longitude_deg", n.entry->longitudeDeg},
-					         {"relative_position_km", vector(n.entry->relativePositionKm)},
-					         {"relative_velocity_km_s", vector(n.entry->relativeVelocityKmS)}};
 				rows.push_back({{"row", n.row},
 				                {"column", n.column},
 				                {"status", static_cast<int>(n.status)},
@@ -53,7 +57,7 @@ namespace orbital_core::hazard {
 				                {"H", optional(n.absoluteMagnitude)},
 				                {"outer_boundary", n.outerBoundary},
 				                {"entry_before_interval", n.entryBeforeInterval},
-				                {"entry", entry},
+				                {"entry", crossing(n.entry)},
 				                {"error", n.error}});
 			}
 			return rows;
@@ -116,6 +120,18 @@ namespace orbital_core::hazard {
 		    {"preliminary", nodes(result.preliminary)},
 		    {"nodes", nodes(result.nodes)},
 		    {"observations", Json::array()}};
+		data["nominal"] = nullptr;
+		if (result.nominal) {
+			const auto& nominal = *result.nominal;
+			data["nominal"] = {{"status", nominal.status == NominalPropagationStatus::Complete ? "complete"
+			                             : nominal.status == NominalPropagationStatus::Cancelled ? "cancelled"
+			                                                                        : "propagation_failed"},
+			                   {"epoch", nominal.epochMjdTdb},
+			                   {"state", nominal.state},
+			                   {"entry_before_interval", nominal.entryBeforeInterval},
+			                   {"entry", crossing(nominal.entry)},
+			                   {"error", nominal.error}};
+		}
 		OrbitOptimizerConfig cfg;
 		cfg.nbody = f;
 		cfg.useWeights = settings.useWeights;

@@ -101,6 +101,28 @@ namespace {
 
 SolutionViewModel::SolutionViewModel(QObject* parent) : QObject(parent) {}
 
+QVariantMap SolutionViewModel::nominalEarthEntry() const
+{
+	if (!m_snapshot || !m_snapshot->nominalEarthEntry)
+		return {};
+	const auto& entry = *m_snapshot->nominalEarthEntry;
+	const auto& crossing = entry.crossing;
+	const double utc = orbital_core::time::fromMjdTdb(crossing.mjdTdb, orbital_core::time::Scale::UTC);
+	const auto coordinate = [](double value, const char* positive, const char* negative) {
+		return QString::number(std::abs(value), 'f', 5) + QString::fromUtf8("° ") +
+		       QString::fromLatin1(value < 0 ? negative : positive);
+	};
+	return {{"utc", CalculationTime::formatUtc(utc)},
+	        {"latitude", coordinate(crossing.latitudeDeg, "N", "S")},
+	        {"longitude", coordinate(crossing.longitudeDeg, "E", "W")},
+	        {"altitudeKm", entry.altitudeKm}};
+}
+
+QString SolutionViewModel::nominalEarthEntryError() const
+{
+	return m_snapshot ? QString::fromStdString(m_snapshot->nominalEarthEntryError) : QString();
+}
+
 bool SolutionViewModel::publish(const orbital_core::FitPipelineResult& result, const QString& directory,
                                 const orbital_core::hazard::PlanetMoidTable& moids)
 {

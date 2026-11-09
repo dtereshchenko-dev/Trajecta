@@ -441,11 +441,16 @@ namespace Calculations {
 			const double residual = e * std::sinh(anomaly) - anomaly - mean;
 			if (residual == 0.0)
 				break;
+			const double next = anomaly - residual / (e * std::cosh(anomaly) - 1.0);
+			if (std::isfinite(next) &&
+			    std::abs(next - anomaly) <= tolerance * std::max(1.0, std::abs(next))) {
+				anomaly = next;
+				break;
+			}
 			if (residual > 0.0)
 				upper = anomaly;
 			else
 				lower = anomaly;
-			const double next = anomaly - residual / (e * std::cosh(anomaly) - 1.0);
 			const double candidate = std::isfinite(next) && next > lower && next < upper ? next : (lower + upper) / 2.0;
 			if (std::abs(candidate - anomaly) <= tolerance * std::max(1.0, std::abs(candidate))) {
 				anomaly = candidate;

@@ -5245,6 +5245,8 @@ class TestWorkspace : public QObject {
 		QVERIFY(ephemerides->table()->includesColumn(EphemerisTableModel::SkyMotion));
 		motionOption = findItem(dialogContent, "ephemeris-column-skyMotion");
 		QVERIFY(motionOption);
+		QTRY_VERIFY(motionOption->y() > 0);
+		QVERIFY(motionOption->property("checked").toBool());
 		QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
 		                  motionOption->mapToScene({motionOption->width() / 2, motionOption->height() / 2}).toPoint());
 		QVERIFY(!ephemerides->table()->includesColumn(EphemerisTableModel::SkyMotion));

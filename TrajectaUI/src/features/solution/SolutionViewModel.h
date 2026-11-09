@@ -60,6 +60,8 @@ class SolutionViewModel : public QObject {
 	Q_PROPERTY(QString phaStatus READ phaStatus NOTIFY changed)
 	Q_PROPERTY(bool potentiallyHazardous READ potentiallyHazardous NOTIFY changed)
 	Q_PROPERTY(QVariantList planetMoids READ planetMoids NOTIFY changed)
+	Q_PROPERTY(QVariantMap nominalEarthEntry READ nominalEarthEntry NOTIFY changed)
+	Q_PROPERTY(QString nominalEarthEntryError READ nominalEarthEntryError NOTIFY changed)
 	Q_PROPERTY(QVariantList equinoctialElements READ equinoctialElements NOTIFY changed)
 	Q_PROPERTY(bool nonGravEnabled READ nonGravEnabled NOTIFY changed)
 	Q_PROPERTY(QString nonGravModel READ nonGravModel NOTIFY changed)
@@ -136,6 +138,8 @@ class SolutionViewModel : public QObject {
 	QString phaStatus() const;
 	bool potentiallyHazardous() const;
 	QVariantList planetMoids() const;
+	QVariantMap nominalEarthEntry() const;
+	QString nominalEarthEntryError() const;
 
 	QVariantList equinoctialElements() const { return m_equinoctialElements; }
 

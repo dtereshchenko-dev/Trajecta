@@ -246,6 +246,18 @@ TEST(Calculations, KeplerSolveHConsistency)
 	}
 }
 
+TEST(Calculations, KeplerSolveHConvergedNewtonStepAtBracketBoundary)
+{
+	const double eccentricity = 4.6593943665217923;
+	const double mean = 6.9365390392339732;
+	const double expected = 1.3387468026245832;
+	for (const double sign : {-1.0, 1.0}) {
+		const double anomaly = Calculations::kepler_solve_h(sign * mean, eccentricity);
+		EXPECT_NEAR(anomaly, sign * expected, 2e-14);
+		EXPECT_NEAR(eccentricity * std::sinh(anomaly) - anomaly, sign * mean, 1e-13);
+	}
+}
+
 TEST(Calculations, KeplerSolveHLargeAndNearParabolicAnomalies)
 {
 	for (const double e : {1.000001, 1.01, 2.0, 5.0}) {
