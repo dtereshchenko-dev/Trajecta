@@ -1,5 +1,10 @@
 # StrewnField C++ engine
 
+> The historical GUI and orbital archive workflow described below is not the
+> current Risk Monitor workflow. For the desktop application's current archive
+> layout, see the [Monte Carlo archive reference](../wiki/src/content/docs/reference/mc-archive.md).
+> Standalone interfaces should be checked against their current implementation.
+
 The atmospheric solver is a shared C++20 library (`StrewnCore`) with a thin
 standalone executable (`StrewnCLI`). Both clients use the same numerical path.
 The Qt application calls the library in a worker thread; no process protocol

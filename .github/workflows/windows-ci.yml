@@ -238,7 +238,7 @@ jobs:
           retention-days: 7
 
   linux:
-    name: Ubuntu 26.04
+    name: Ubuntu 26.04 / GCC / Qt 6
     uses: ./.github/workflows/ubuntu-ci.yml
 
   draft-release:

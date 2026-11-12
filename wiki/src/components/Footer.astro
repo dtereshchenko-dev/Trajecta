@@ -1,0 +1,84 @@
+---
+import Footer from '@astrojs/starlight/components/Footer.astro';
+---
+
+<Footer />
+
+<dialog id="image-viewer" class="image-viewer" aria-label="Image viewer">
+  <div class="image-viewer__layout">
+    <div class="image-viewer__toolbar">
+      <button type="button" data-viewer-zoom aria-label="Zoom in" title="Zoom in">+</button>
+      <button type="button" data-viewer-close aria-label="Close image viewer" title="Close">&times;</button>
+    </div>
+    <div class="image-viewer__viewport">
+      <img alt="" />
+    </div>
+  </div>
+</dialog>
+
+<script>
+  function prepareImages() {
+    document.querySelectorAll('.sl-markdown-content img').forEach((image) => {
+      if (!(image instanceof HTMLImageElement) || image.closest('a, button')) return;
+      image.dataset.imageViewer = '';
+      image.tabIndex = 0;
+      image.setAttribute('role', 'button');
+      image.setAttribute('aria-label', `Enlarge image: ${image.alt || 'illustration'}`);
+    });
+  }
+
+  function openImage(image: HTMLImageElement) {
+    const dialog = document.querySelector<HTMLDialogElement>('#image-viewer');
+    const viewport = dialog?.querySelector<HTMLElement>('.image-viewer__viewport');
+    const preview = viewport?.querySelector('img');
+    const zoom = dialog?.querySelector<HTMLButtonElement>('[data-viewer-zoom]');
+    if (!dialog || !viewport || !preview || !zoom) return;
+    preview.src = image.currentSrc || image.src;
+    preview.alt = image.alt;
+    viewport.dataset.zoomed = 'false';
+    zoom.textContent = '+';
+    zoom.title = 'Zoom in';
+    zoom.setAttribute('aria-label', zoom.title);
+    dialog.showModal();
+  }
+
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) return;
+    const image = event.target.closest<HTMLImageElement>('.sl-markdown-content img[data-image-viewer]');
+    if (image) return openImage(image);
+
+    const dialog = document.querySelector<HTMLDialogElement>('#image-viewer');
+    if (!dialog?.open) return;
+    if (event.target === dialog || event.target.classList.contains('image-viewer__viewport') ||
+        event.target.classList.contains('image-viewer__layout') || event.target.closest('[data-viewer-close]')) {
+      dialog.close();
+    } else if (event.target.closest('[data-viewer-zoom]') || event.target.matches('.image-viewer__viewport img')) {
+      const viewport = dialog.querySelector<HTMLElement>('.image-viewer__viewport');
+      const button = dialog.querySelector<HTMLButtonElement>('[data-viewer-zoom]');
+      if (!viewport || !button) return;
+      const zoomed = viewport.dataset.zoomed !== 'true';
+      if (zoomed) {
+        const preview = viewport.querySelector('img');
+        if (preview) {
+          const width = Math.max(preview.naturalWidth, preview.getBoundingClientRect().width * 1.5);
+          viewport.style.setProperty('--image-zoom-width', `${width}px`);
+        }
+      }
+      viewport.dataset.zoomed = String(zoomed);
+      button.textContent = zoomed ? '−' : '+';
+      button.title = zoomed ? 'Show image at original size' : 'Zoom in';
+      button.setAttribute('aria-label', button.title);
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if ((event.key === 'Enter' || event.key === ' ') &&
+        event.target instanceof HTMLImageElement && event.target.matches('[data-image-viewer]')) {
+      event.preventDefault();
+      openImage(event.target);
+    }
+  });
+
+  prepareImages();
+  document.addEventListener('astro:page-load', prepareImages);
+</script>

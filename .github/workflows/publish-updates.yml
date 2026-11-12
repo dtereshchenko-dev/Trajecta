@@ -1,6 +1,12 @@
 name: Publish application updates
 
 on:
+  push:
+    branches: [master]
+    paths:
+      - 'wiki/**'
+      - 'TrajectaUI/resources/icons/workspace/app-logo.svg'
+      - '.github/workflows/publish-updates.yml'
   release:
     types: [published]
   workflow_dispatch:
@@ -21,12 +27,44 @@ permissions:
 
 jobs:
   publish:
-    if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false
+    if: github.event_name != 'release' || github.event.release.prerelease == false
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Checkout documentation
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Check documentation availability
+        id: documentation
+        shell: bash
+        run: |
+          if [[ -d wiki ]]; then
+            test -f wiki/package-lock.json || { echo 'Documentation lockfile is missing.'; exit 1; }
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            echo '::notice::Documentation is not present in the default branch; publishing updates only.'
+          fi
+
+      - name: Set up Node.js
+        if: steps.documentation.outputs.available == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: wiki/package-lock.json
+
+      - name: Build documentation
+        if: steps.documentation.outputs.available == 'true'
+        working-directory: wiki
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
       - name: Prepare update repository
         shell: pwsh
         env:
@@ -35,9 +73,13 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
         run: |
           $ErrorActionPreference = 'Stop'
-          if ($env:RELEASE_TAG -cnotmatch '^v\d+\.\d+\.\d+$') { throw 'Invalid release tag.' }
           $latest = gh release view --json tagName | ConvertFrom-Json
-          if ($LASTEXITCODE -ne 0 -or $latest.tagName -cne $env:RELEASE_TAG) {
+          if ($LASTEXITCODE -ne 0 -or -not $latest.tagName) { throw 'Failed to find the latest release.' }
+          if (-not $env:RELEASE_TAG -and $env:GITHUB_EVENT_NAME -eq 'push') {
+            $env:RELEASE_TAG = $latest.tagName
+          }
+          if ($env:RELEASE_TAG -cnotmatch '^v\d+\.\d+\.\d+$') { throw 'Invalid release tag.' }
+          if ($latest.tagName -cne $env:RELEASE_TAG) {
             throw 'The published release is not the latest stable release; refusing to replace the update repository.'
           }
           $releases = gh api "repos/$env:GH_REPO/releases?per_page=100" | ConvertFrom-Json
@@ -87,6 +129,23 @@ jobs:
             }
           }
           Set-Content -LiteralPath (Join-Path $site 'index.html') -Value '<!doctype html><title>Trajecta updates</title>' -Encoding utf8
+
+      - name: Add documentation to Pages
+        if: steps.documentation.outputs.available == 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $site = Join-Path $env:RUNNER_TEMP 'trajecta-pages'
+          $documentation = Join-Path $env:GITHUB_WORKSPACE 'wiki/dist'
+          if (-not (Test-Path -LiteralPath (Join-Path $documentation 'index.html'))) {
+            throw 'Built documentation is missing.'
+          }
+          if (-not (Test-Path -LiteralPath (Join-Path $site 'updates/windows/Updates.xml'))) {
+            throw 'Windows update repository is missing.'
+          }
+          $destination = Join-Path $site 'docs'
+          New-Item -ItemType Directory -Path $destination -Force | Out-Null
+          Copy-Item -Path (Join-Path $documentation '*') -Destination $destination -Recurse -Force
 
       - uses: actions/upload-pages-artifact@v3
         with:

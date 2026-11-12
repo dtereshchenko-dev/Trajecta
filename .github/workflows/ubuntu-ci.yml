@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build-test-package:
-    name: GCC / Qt 6
+    name: Build and test
     runs-on: ubuntu-26.04
     timeout-minutes: 120
     steps:

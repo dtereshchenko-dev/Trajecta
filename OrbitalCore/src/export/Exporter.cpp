@@ -177,6 +177,7 @@ namespace orbital_core {
 			std::ofstream os(file, std::ios::out | std::ios::trunc);
 			if (!os)
 				throw std::runtime_error("failed to open export file: " + file.string());
+			os.exceptions(std::ios::failbit | std::ios::badbit);
 			os << std::setprecision(17);
 			return os;
 		}
@@ -656,6 +657,7 @@ namespace orbital_core {
 			writeLspLine(os, fit);
 			writeCovarianceAndNormal(os, oef::scaledCovariance(physicalCovarianceForExport(fit), fit.finalNonGrav));
 
+			os.close();
 			report.files.push_back(file);
 		}
 
@@ -689,6 +691,7 @@ namespace orbital_core {
 				writeNormalFromCovariance(os, cov);
 			}
 
+			os.close();
 			report.files.push_back(file);
 		}
 
@@ -728,6 +731,7 @@ namespace orbital_core {
 			if (cov)
 				writeCovarianceAndNormal(os, oef::scaledCovariance(*cov, fit.finalNonGrav));
 
+			os.close();
 			report.files.push_back(file);
 		}
 
@@ -774,6 +778,7 @@ namespace orbital_core {
 			} else {
 				os << "! COVARIANCE_UNAVAILABLE\n";
 			}
+			os.close();
 			report.files.push_back(file);
 		}
 
@@ -1123,7 +1128,6 @@ namespace orbital_core {
 				}
 			}
 
-			report.files.push_back(file);
 			if (std::ranges::any_of(context.observations, [](const auto& obs) { return obs.radar.has_value(); })) {
 				os << "! Object   Obser ====== Date =======  ============ Radar range/range rate (km or km/d) "
 				      "============= "
@@ -1173,6 +1177,8 @@ namespace orbital_core {
 				write(residual->radar->delaySeconds, 'R', cKmSec / 2.0);
 				write(residual->radar->dopplerHz, 'V', -cKmSec * 86400.0 / (2.0 * obs.radar->frequencyHz));
 			}
+			os.close();
+			report.files.push_back(file);
 		}
 
 		template <class Matrix>
@@ -1259,6 +1265,7 @@ namespace orbital_core {
 			}
 
 			writeNonGrav(os, fit.finalNonGrav);
+			os.close();
 			report.files.push_back(file);
 		}
 
@@ -1303,6 +1310,7 @@ namespace orbital_core {
 				writeMatrix(os, "cometary_element_covariance_formal_q_e_i_node_peri_nu", cot.formalCovariance);
 			}
 
+			os.close();
 			report.files.push_back(file);
 		}
 
@@ -1366,6 +1374,17 @@ namespace orbital_core {
 					break;
 				case ExportProduct::All:
 					break;
+			}
+		}
+		if (includesAll(products)) {
+			if (context.nominalEarthEntry || !context.nominalEarthEntryError.empty())
+				writeSummary(context, report.directory, report);
+			for (const char* name : {"orbit_cartesian_oef.txt", "orbit_equinoctial_oef.txt", "orbit_keplerian_oef.txt",
+			                         "orbit_cometary_oef.txt", "weighted_residuals_rwo.txt", "fit_summary.txt"}) {
+				const auto file = report.directory / name;
+				if (std::find(report.files.begin(), report.files.end(), file) == report.files.end() &&
+				    std::filesystem::is_regular_file(file))
+					std::filesystem::remove(file);
 			}
 		}
 

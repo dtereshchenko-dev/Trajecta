@@ -179,6 +179,73 @@ namespace {
 	};
 }  // namespace
 
+TEST_F(ExporterOefTest, FullExportReplacesOnlyStaleAutomaticSolutionFiles)
+{
+	ExportContext context;
+	context.objectName = "2020VV";
+	context.fitResult = &fit;
+	context.rootDirectory = root;
+	context.nominalEarthEntryError = "entry unavailable";
+	const auto first = Exporter::save(context, {ExportProduct::All});
+	ASSERT_TRUE(std::filesystem::exists(first.directory / "fit_summary.txt"));
+	ASSERT_TRUE(std::filesystem::exists(first.directory / "orbit_equinoctial_oef.txt"));
+	ASSERT_TRUE(std::filesystem::exists(first.directory / "orbit_keplerian_oef.txt"));
+	std::filesystem::create_directories(first.directory / "MC" / "run-example");
+	std::ofstream(first.directory / "MC" / "run-example" / "result.json") << "archive";
+	std::ofstream(first.directory / "notes.txt") << "notes";
+	std::ofstream(first.directory / "covariance.txt") << "explicit export";
+
+	ASSERT_NO_FATAL_FAILURE(setCometaryOrbit(1.2));
+	context.nominalEarthEntryError.clear();
+	const auto second = Exporter::save(context, {ExportProduct::All});
+	EXPECT_EQ(second.directory, first.directory);
+	EXPECT_TRUE(std::filesystem::exists(second.directory / "orbit_cartesian_oef.txt"));
+	EXPECT_TRUE(std::filesystem::exists(second.directory / "orbit_cometary_oef.txt"));
+	EXPECT_TRUE(std::filesystem::exists(second.directory / "weighted_residuals_rwo.txt"));
+	EXPECT_FALSE(std::filesystem::exists(second.directory / "fit_summary.txt"));
+	EXPECT_FALSE(std::filesystem::exists(second.directory / "orbit_equinoctial_oef.txt"));
+	EXPECT_FALSE(std::filesystem::exists(second.directory / "orbit_keplerian_oef.txt"));
+	EXPECT_EQ(readFileBytes(second.directory / "MC" / "run-example" / "result.json"), "archive");
+	EXPECT_EQ(readFileBytes(second.directory / "notes.txt"), "notes");
+	EXPECT_EQ(readFileBytes(second.directory / "covariance.txt"), "explicit export");
+
+	ASSERT_NO_FATAL_FAILURE(setCometaryOrbit(0.2));
+	const auto third = Exporter::save(context, {ExportProduct::All});
+	EXPECT_FALSE(std::filesystem::exists(third.directory / "orbit_cometary_oef.txt"));
+	EXPECT_TRUE(std::filesystem::exists(third.directory / "orbit_keplerian_oef.txt"));
+}
+
+TEST_F(ExporterOefTest, PartialExportDoesNotRemoveOtherSolutionFiles)
+{
+	const auto full = save({ExportProduct::All});
+	const auto keplerian = full.directory / "orbit_keplerian_oef.txt";
+	ASSERT_TRUE(std::filesystem::exists(keplerian));
+	const auto original = readFileBytes(keplerian);
+	ASSERT_NO_FATAL_FAILURE(setCometaryOrbit(1.2));
+	(void)save({ExportProduct::StateVectors});
+	EXPECT_EQ(readFileBytes(keplerian), original);
+}
+
+TEST_F(ExporterOefTest, FailedFullExportDoesNotRemoveStaleSolutionFiles)
+{
+	ExportContext context;
+	context.objectName = "2020VV";
+	context.fitResult = &fit;
+	context.rootDirectory = root;
+	context.nominalEarthEntryError = "entry unavailable";
+	const auto first = Exporter::save(context, {ExportProduct::All});
+	const auto oldSummary = readFileBytes(first.directory / "fit_summary.txt");
+	const auto oldKeplerian = readFileBytes(first.directory / "orbit_keplerian_oef.txt");
+
+	ASSERT_NO_FATAL_FAILURE(setCometaryOrbit(1.2));
+	fit.fitEpochOrbit->setR(Vec3D(0.8, 0.0, 0.0));
+	fit.fitEpochOrbit->setV(Vec3D(std::sqrt(2.2 / 0.8), 0.0, 0.0));
+	context.nominalEarthEntryError.clear();
+	EXPECT_THROW((void)Exporter::save(context, {ExportProduct::All}), std::runtime_error);
+	EXPECT_EQ(readFileBytes(first.directory / "fit_summary.txt"), oldSummary);
+	EXPECT_EQ(readFileBytes(first.directory / "orbit_keplerian_oef.txt"), oldKeplerian);
+}
+
 TEST_F(ExporterOefTest, PhaExportRequiresKnownMagnitudeAndUsesSharedClassifier)
 {
 	setCometaryOrbit(0.2);
@@ -374,14 +441,14 @@ TEST_F(ExporterOefTest, CometaryAllAndReorderedProductsReportCartesianExactlyOnc
 	EXPECT_EQ(readFileBytes(reordered.directory / "orbit_cartesian_oef.txt"), car);
 }
 
-TEST_F(ExporterOefTest, ReusedDirectoryDoesNotReportPreviousKeplerianOrEquinoctialFiles)
+TEST_F(ExporterOefTest, ReusedDirectoryRemovesPreviousKeplerianAndEquinoctialFiles)
 {
 	const auto previous = save({ExportProduct::StateVectors, ExportProduct::OrbitElements});
 	const auto equFile = previous.directory / "orbit_equinoctial_oef.txt";
 	const auto kepFile = previous.directory / "orbit_keplerian_oef.txt";
 	const auto carFile = previous.directory / "orbit_cartesian_oef.txt";
-	const std::string equ = readFileBytes(equFile);
-	const std::string kep = readFileBytes(kepFile);
+	ASSERT_TRUE(std::filesystem::exists(equFile));
+	ASSERT_TRUE(std::filesystem::exists(kepFile));
 	const std::string car = readFileBytes(carFile);
 	ASSERT_NO_FATAL_FAILURE(setCometaryOrbit(1.2));
 	const auto current = save({ExportProduct::All});
@@ -389,8 +456,8 @@ TEST_F(ExporterOefTest, ReusedDirectoryDoesNotReportPreviousKeplerianOrEquinocti
 	EXPECT_EQ(std::count(current.files.begin(), current.files.end(), equFile), 0);
 	EXPECT_EQ(std::count(current.files.begin(), current.files.end(), kepFile), 0);
 	EXPECT_EQ(std::count(current.files.begin(), current.files.end(), carFile), 1);
-	EXPECT_EQ(readFileBytes(equFile), equ);
-	EXPECT_EQ(readFileBytes(kepFile), kep);
+	EXPECT_FALSE(std::filesystem::exists(equFile));
+	EXPECT_FALSE(std::filesystem::exists(kepFile));
 	EXPECT_NE(readFileBytes(carFile), car);
 	EXPECT_TRUE(readOef(current.directory / "orbit_cometary_oef.txt").vector("COT").allFinite());
 }

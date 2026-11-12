@@ -920,8 +920,6 @@ int main(int argc, char* argv[])
 			exportContext.cometPhotometry = result.usesCometPhotometry();
 			exportContext.photometry = result.effectiveConfig.photometry;
 			const auto exportReport = orbital_core::Exporter::save(exportContext, {orbital_core::ExportProduct::All});
-			if (result.nominalEarthEntry || !result.nominalEarthEntryError.empty())
-				(void)orbital_core::Exporter::save(exportContext, {orbital_core::ExportProduct::FitSummary});
 			solutionDirectory = exportReport.directory;
 			std::cout << "Fit export written to: " << exportReport.directory.string() << '\n';
 		}

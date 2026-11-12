@@ -1,0 +1,113 @@
+:root {
+  --sl-content-width: 75rem;
+  --sl-color-accent-low: #123b38;
+  --sl-color-accent: #48bda8;
+  --sl-color-accent-high: #b6f0e2;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #d7f3eb;
+  --sl-color-accent: #087967;
+  --sl-color-accent-high: #123b38;
+}
+
+.site-title img {
+  width: 2rem;
+  height: 2rem;
+}
+
+@media (min-width: 72rem) {
+  .right-sidebar-container {
+    width: 15rem;
+    flex: 0 0 15rem;
+  }
+
+  .right-sidebar-container .right-sidebar {
+    width: 15rem;
+  }
+
+  [data-has-sidebar][data-has-toc] .main-pane {
+    width: calc(100% - 15rem);
+    --sl-content-margin-inline: auto;
+  }
+}
+
+.sl-markdown-content img[data-image-viewer] {
+  cursor: zoom-in;
+}
+
+.sl-markdown-content img[data-image-viewer]:focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 3px;
+}
+
+.image-viewer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+}
+
+.image-viewer::backdrop {
+  background: rgb(0 0 0 / 80%);
+}
+
+.image-viewer__layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.image-viewer__toolbar {
+  position: absolute;
+  z-index: 1;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.image-viewer__toolbar button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 4px;
+  color: #fff;
+  background: rgb(20 24 27 / 90%);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image-viewer__viewport {
+  display: flex;
+  align-items: safe center;
+  justify-content: safe center;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 3.5rem 1rem 1rem;
+}
+
+.image-viewer__viewport img {
+  display: block;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  height: auto;
+  object-fit: contain;
+  cursor: zoom-in;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 35%);
+}
+
+.image-viewer__viewport[data-zoomed='true'] img {
+  width: var(--image-zoom-width, auto);
+  cursor: zoom-out;
+}

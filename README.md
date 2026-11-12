@@ -20,6 +20,8 @@ with the steps to reproduce it.
 [GitHub Releases](https://github.com/dtereshchenko-dev/Trajecta/releases).
 For a source build, see the [developer guide](DEVELOPMENT.md#build).
 
+**Documentation:** Read the [Trajecta user guide and technical reference](https://dtereshchenko-dev.github.io/Trajecta/docs/).
+
 ## Key features
 
 - Import MPC 80-column and ADES XML/PSV observations, with optional Gaia FPR data.
@@ -34,9 +36,10 @@ For a source build, see the [developer guide](DEVELOPMENT.md#build).
 
 ## Getting started
 
-1. Install Trajecta and open an MPC or ADES observation file.
-2. Review the calculation settings and select **Solve**.
-3. Inspect the solution, residuals and covariance; generate ephemerides or
+1. Install Trajecta and check **Data sources** and the fit settings.
+2. Open an MPC or ADES observation file, or drag it into the application.
+   Processing starts automatically; review observations if prompted.
+3. Once the fit finishes, inspect the solution, residuals and covariance; generate ephemerides or
    close approaches.
 4. Use Risk Monitor for a suitable solution and review the resulting reports.
 
@@ -123,8 +126,31 @@ RA15 and IAS15 integrators and non-gravitational models are available.
 - Atmospheric simulation results are conditional on the supplied entry states;
   they are not a new estimate of orbital impact probability.
 
-For confirmed bugs or unexpected behavior, see or open a
-[GitHub issue](https://github.com/dtereshchenko-dev/Trajecta/issues).
+## Verification
+
+The documentation records the inputs, methods and results of selected checks:
+
+- [Dynamics and state transition matrix](https://dtereshchenko-dev.github.io/Trajecta/docs/verification/dynamics-holman/):
+  propagation of 3666 Holman compared with ASSIST under selected matching forces.
+- [Integrator checks](https://dtereshchenko-dev.github.io/Trajecta/docs/verification/integrator-round-trip/):
+  analytic two-body cases and forward/backward propagation with RA15 and IAS15.
+- [2019 MO MOV](https://dtereshchenko-dev.github.io/Trajecta/docs/verification/2019-mo/):
+  sampled solutions and crossing distributions compared with OrbFit.
+- [2023 CX1](https://dtereshchenko-dev.github.io/Trajecta/docs/verification/2023-cx1/)
+  and [2008 TC3](https://dtereshchenko-dev.github.io/Trajecta/docs/verification/2008-tc3/):
+  orbit and retrospective atmospheric comparisons with published observations.
+
+Each comparison covers the configurations described on its page. The
+[verification map](https://dtereshchenko-dev.github.io/Trajecta/docs/verification/map/)
+also lists existing tests and areas that need further independent checks.
+
+## Testing and feedback
+
+We welcome testing by astronomers, observers and researchers, especially
+comparisons of orbit solutions, ephemerides and impact-analysis results with
+other tools or observations. For a bug or numerical discrepancy, please
+[open an issue](https://github.com/dtereshchenko-dev/Trajecta/issues) and
+include the input data, settings, steps to reproduce and relevant results.
 
 ## For developers
 
@@ -135,8 +161,7 @@ impact-monitoring interfaces, dependencies, runtime data, building and tests.
 
 - [TrajectaCLI](TrajectaCLI/README.md) — build and usage.
 - [StrewnField](StrewnField/README.md) — atmospheric jobs, physics and reports.
-- MC archive reference: [EN](data/docs/strewn/mc-archive-reference-en.html),
-  [RU](data/docs/strewn/mc-archive-reference-ru.html).
+- [MC archive reference](wiki/src/content/docs/reference/mc-archive.md).
 
 ## License
 
