@@ -170,6 +170,7 @@ namespace orbital_core::hazard {
 			prop.setStepSize(forces.stepSize);
 			prop.setPlanetMask(forces.planetMask);
 			prop.setUseSb441(forces.useSb441);
+			prop.setForceModel(forces.forceModel);
 			prop.setTargetNaifId(forces.targetNaifId);
 			prop.setInactiveInteriorMassPolicy(forces.inactiveInteriorMassPolicy);
 			prop = prop.forEncounterMonitoring(*eph);

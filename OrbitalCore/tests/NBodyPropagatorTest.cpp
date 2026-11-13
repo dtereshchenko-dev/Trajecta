@@ -163,6 +163,11 @@ TEST_F(NBodyPropagatorTest, CopiesPreserveConfigurationAndPropagateIndependently
 	original.setStepSize(2.0);
 	original.setPlanetMask(0);
 	original.setUseSb441(false);
+	orbital_core::ForceModelSettings forces;
+	forces.relativity = orbital_core::RelativityMode::SunOuter;
+	forces.earthJ3 = false;
+	forces.rotatingEarthPole = false;
+	original.setForceModel(forces);
 	original.setTargetNaifId(2000001);
 	original.setInactiveInteriorMassPolicy(orbital_core::InactiveInteriorMassPolicy::SmoothCentralMass);
 	original.nonGrav().setModel(NgModel::Yarkovsky);
@@ -179,6 +184,9 @@ TEST_F(NBodyPropagatorTest, CopiesPreserveConfigurationAndPropagateIndependently
 		EXPECT_DOUBLE_EQ(p->stepSize(), 2.0);
 		EXPECT_EQ(p->planetMask(), 0);
 		EXPECT_FALSE(p->useSb441());
+		EXPECT_EQ(p->forceModel().relativity, orbital_core::RelativityMode::SunOuter);
+		EXPECT_FALSE(p->forceModel().earthJ3);
+		EXPECT_FALSE(p->forceModel().rotatingEarthPole);
 		EXPECT_EQ(p->targetNaifId(), 2000001);
 		EXPECT_EQ(p->inactiveInteriorMassPolicy(), orbital_core::InactiveInteriorMassPolicy::SmoothCentralMass);
 		EXPECT_TRUE(p->nonGravEnabled());
@@ -1218,6 +1226,55 @@ TEST_F(NBodyPropagatorTest, StmMatchesPropagateFD)
 	EXPECT_NEAR(stm[0].R.x, R_base.x, 1e-10);
 	EXPECT_NEAR(stm[0].R.y, R_base.y, 1e-10);
 	EXPECT_NEAR(stm[0].R.z, R_base.z, 1e-10);
+}
+
+TEST_F(NBodyPropagatorTest, ConfiguredForcesPreserveFullStmNearEarth)
+{
+	if (!de440 || !de440->isAvailable())
+		GTEST_SKIP() << "DE440 unavailable";
+	const double epoch = 2462240.4;
+	const Vec3D r0 = de440->getPlanetPosition(EphemerisPlanet::Earth, epoch) + Vec3D(0.00025, -0.00015, 0.00013);
+	const Vec3D v0(-0.01, 0.014, 0.003);
+	const double target = epoch + 0.02;
+	propagator.nonGrav().setEnabled(false);
+	propagator.setAllPlanetsEnabled(true);
+	for (const auto mode : {orbital_core::RelativityMode::Full, orbital_core::RelativityMode::SunOuter,
+	                        orbital_core::RelativityMode::Disabled}) {
+		for (const bool rotating : {false, true}) {
+			for (int mask = 0; mask < 8; ++mask) {
+				orbital_core::ForceModelSettings settings;
+				settings.relativity = mode;
+				settings.rotatingEarthPole = rotating;
+				settings.earthJ2 = (mask & 1) != 0;
+				settings.earthJ3 = (mask & 2) != 0;
+				settings.earthJ4 = (mask & 4) != 0;
+				propagator.setForceModel(settings);
+				SCOPED_TRACE(::testing::Message() << "mode=" << static_cast<int>(mode) << " rotating=" << rotating
+				                                  << " mask=" << mask);
+				const auto result = propagator.propagateAllWithStm(r0, v0, epoch, {target});
+				ASSERT_EQ(result.size(), 1u);
+				constexpr double h = 1e-8;
+				for (int col = 0; col < 6; ++col) {
+					auto rp = r0, rm = r0, vp = v0, vm = v0;
+					auto& plus = col < 3 ? rp : vp;
+					auto& minus = col < 3 ? rm : vm;
+					const int axis = col % 3;
+					(axis == 0 ? plus.x : axis == 1 ? plus.y : plus.z) += h;
+					(axis == 0 ? minus.x : axis == 1 ? minus.y : minus.z) -= h;
+					const auto p = propagator.propagateAllWithVelocity(rp, vp, epoch, {target});
+					const auto m = propagator.propagateAllWithVelocity(rm, vm, epoch, {target});
+					ASSERT_EQ(p.size(), 1u);
+					ASSERT_EQ(m.size(), 1u);
+					const auto dr = (p[0].R - m[0].R) / (2 * h);
+					const auto dv = (p[0].V - m[0].V) / (2 * h);
+					const std::array<double, 6> numerical{dr.x, dr.y, dr.z, dv.x, dv.y, dv.z};
+					for (int row = 0; row < 6; ++row)
+						EXPECT_NEAR(result[0].Phi(row, col), numerical[row], 5e-6 * std::max(1.0, std::abs(numerical[row])))
+						    << "row=" << row << " column=" << col;
+				}
+			}
+		}
+	}
 }
 
 TEST_F(NBodyPropagatorTest, RelativisticVelocityPartialsMatchFullAcceleration)

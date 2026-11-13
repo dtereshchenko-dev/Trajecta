@@ -853,6 +853,7 @@ namespace Calculations {
 		NBodyPropagator nbody;
 		nbody.setStepSize(baseCfg.nbody.stepSize);
 		nbody.setUseSb441(baseCfg.nbody.useSb441);
+		nbody.setForceModel(baseCfg.nbody.forceModel);
 		nbody.setTargetNaifId(baseCfg.nbody.targetNaifId);
 		nbody.setInactiveInteriorMassPolicy(baseCfg.nbody.inactiveInteriorMassPolicy);
 		if (baseCfg.nbody.enabled) {

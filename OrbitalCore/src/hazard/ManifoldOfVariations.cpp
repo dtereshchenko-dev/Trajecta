@@ -225,6 +225,7 @@ namespace orbital_core::hazard {
 		propagator.setStepSize(settings.nbody.stepSize);
 		propagator.setPlanetMask(settings.nbody.planetMask);
 		propagator.setUseSb441(settings.nbody.useSb441);
+		propagator.setForceModel(settings.nbody.forceModel);
 		propagator.setTargetNaifId(settings.nbody.targetNaifId);
 		propagator.setInactiveInteriorMassPolicy(settings.nbody.inactiveInteriorMassPolicy);
 		propagator = propagator.forEncounterMonitoring(*eph);

@@ -703,6 +703,13 @@ QByteArray EphemerisViewModel::exportJson() const
 	root[QStringLiteral("solar_range_light_time")] = m_lastResult.lightTimeApplied;
 	root[QStringLiteral("light_time_definition")] = QStringLiteral("displayed_range_divided_by_c");
 	root[QStringLiteral("n_body")] = m_lastResult.nBody;
+	const auto& forces = m_lastRequest.solution.forces;
+	root[QStringLiteral("forces")] = QJsonObject{
+	    {"planet_mask", forces.planetMask}, {"sb441", forces.useSb441},
+	    {"relativity", orbital_core::relativityModeName(forces.forceModel.relativity)},
+	    {"sun_j2", true}, {"earth_j2", forces.forceModel.earthJ2},
+	    {"earth_j3", forces.forceModel.earthJ3}, {"earth_j4", forces.forceModel.earthJ4},
+	    {"earth_rotating_pole", forces.forceModel.rotatingEarthPole}};
 	root[QStringLiteral("non_gravitational")] = m_lastResult.nonGravitational;
 	root[QStringLiteral("solution_epoch_mjd_tdb")] = m_lastRequest.solution.epochMjdTdb;
 	root[QStringLiteral("absolute_magnitude")] = m_lastRequest.solution.absoluteMagnitude

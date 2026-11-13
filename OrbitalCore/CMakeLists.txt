@@ -242,6 +242,7 @@ add_library(OrbitalCore SHARED
     api/orbital_core/Residuals.h
     api/orbital_core/AstrometricWeights.h
     api/orbital_core/ForceModelPolicy.h
+    api/orbital_core/ForceModelSettings.h
     api/orbital_core/Types.h
     api/orbital_core/IEphemerisSource.h
     api/orbital_core/PlanetaryBodyMask.h

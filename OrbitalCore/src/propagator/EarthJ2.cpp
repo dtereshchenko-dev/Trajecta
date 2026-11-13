@@ -87,6 +87,9 @@ namespace orbital_core::forces {
 	void EarthJ2::evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d&) const noexcept
 	{
 		constexpr uint16_t kEarthBodyMask = static_cast<uint16_t>(1u << 2);
+		if (!ctx.forceModel.earthJ2 && !ctx.forceModel.earthJ3 && !ctx.forceModel.earthJ4)
+			return;
+
 		if ((ctx.bodyMask & kEarthBodyMask) == 0 || !ctx.ephemerisSource || !ctx.ephemerisSource->isAvailable())
 			return;
 
@@ -99,11 +102,28 @@ namespace orbital_core::forces {
 		if (rGeo >= Constants::EARTH_LOCAL_DYNAMICS_AU || rGeo < 1e-12)
 			return;
 
-		const Eigen::Matrix3d rot = equatorialToEclipticAtMjd(ctx.mjd);
+		Eigen::Matrix3d rot;
+		if (ctx.forceModel.rotatingEarthPole) {
+			rot = equatorialToEclipticAtMjd(ctx.mjd);
+		} else {
+			const Vec3D pole = Helpers::ecvToEcl(Vec3D(0.0, 0.0, 1.0));
+			const Eigen::Vector3d z = Eigen::Vector3d(pole.x, pole.y, pole.z).normalized();
+			const Eigen::Vector3d x = (Eigen::Vector3d::UnitX() - z.x() * z).normalized();
+			rot.col(0) = x;
+			rot.col(1) = z.cross(x);
+			rot.col(2) = z;
+		}
 		const Eigen::Vector3d rEq = rot.transpose() * Eigen::Vector3d(dGeoEcl.x, dGeoEcl.y, dGeoEcl.z);
 
 		const double gm = ctx.earthGm > 0.0 ? ctx.earthGm : detail::kDE440EarthGm;
-		const auto zonals = detail::evaluateEarthZonals(rEq, gm, detail::kDE440EarthZonals, ctx.computePartials);
+		auto parameters = detail::kDE440EarthZonals;
+		if (!ctx.forceModel.earthJ2)
+			parameters.j2 = 0.0;
+		if (!ctx.forceModel.earthJ3)
+			parameters.j3 = 0.0;
+		if (!ctx.forceModel.earthJ4)
+			parameters.j4 = 0.0;
+		const auto zonals = detail::evaluateEarthZonals(rEq, gm, parameters, ctx.computePartials);
 
 		const Eigen::Vector3d aEcl = rot * zonals.a;
 

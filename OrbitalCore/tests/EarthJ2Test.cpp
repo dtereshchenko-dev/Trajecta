@@ -155,6 +155,86 @@ TEST_F(EarthJ2Test, EarthBodyMaskControlsTerm)
 	EXPECT_GT(enabledAcceleration.magnitude(), 0.0);
 }
 
+TEST_F(EarthJ2Test, ConfigurableZonalsAndFixedPole)
+{
+	if (!m_de440->isAvailable())
+		GTEST_SKIP() << "DE440 kernel not present";
+	orbital_core::forces::ForceContext ctx{};
+	ctx.R = Vec3D(2.5e-5, -1.7e-5, 2.0e-5);
+	ctx.setEpochMjd(60000.0);
+	ctx.ephemerisSource = m_de440.get();
+	ctx.havePlanets = true;
+	ctx.planetPositions[2] = {};
+	ctx.bodyMask = 1u << 2;
+	ctx.forceModel.rotatingEarthPole = false;
+	const auto evaluate = [](orbital_core::forces::ForceContext input) {
+		Vec3D a;
+		Eigen::Matrix3d dr = Eigen::Matrix3d::Zero(), dv = Eigen::Matrix3d::Zero();
+		orbital_core::forces::EarthJ2{}.evaluate(input, a, dr, dv);
+		return std::pair{a, dr};
+	};
+	const auto full = evaluate(ctx);
+	ctx.forceModel.earthJ3 = false;
+	ctx.forceModel.earthJ4 = false;
+	const auto j2 = evaluate(ctx);
+	EXPECT_GT((full.first - j2.first).magnitude(), 0.0);
+	EXPECT_GT((full.second - j2.second).norm(), 0.0);
+	ctx.setEpochMjd(61000.0);
+	const auto later = evaluate(ctx);
+	EXPECT_DOUBLE_EQ((j2.first - later.first).magnitude(), 0.0);
+	ctx.forceModel.earthJ2 = false;
+	const auto off = evaluate(ctx);
+	EXPECT_DOUBLE_EQ(off.first.magnitude(), 0.0);
+	EXPECT_TRUE(off.second.isZero(0.0));
+}
+
+TEST_F(EarthJ2Test, AllZonalConfigurationsMatchStateDifferences)
+{
+	if (!m_de440->isAvailable())
+		GTEST_SKIP() << "DE440 kernel not present";
+	for (const bool rotating : {false, true}) {
+		for (int mask = 0; mask < 8; ++mask) {
+			orbital_core::forces::ForceContext ctx{};
+			ctx.R = Vec3D(2.5e-5, -1.7e-5, 2.0e-5);
+			ctx.setEpochMjd(60000.0);
+			ctx.ephemerisSource = m_de440.get();
+			ctx.havePlanets = true;
+			ctx.bodyMask = 1u << 2;
+			ctx.forceModel.earthJ2 = (mask & 1) != 0;
+			ctx.forceModel.earthJ3 = (mask & 2) != 0;
+			ctx.forceModel.earthJ4 = (mask & 4) != 0;
+			ctx.forceModel.rotatingEarthPole = rotating;
+			ctx.computePartials = true;
+			SCOPED_TRACE(::testing::Message() << "rotating=" << rotating << " mask=" << mask);
+			Vec3D a;
+			Eigen::Matrix3d dr = Eigen::Matrix3d::Zero(), dv = Eigen::Matrix3d::Zero(), numerical;
+			orbital_core::forces::EarthJ2{}.evaluate(ctx, a, dr, dv);
+			if (mask != 0) {
+				ASSERT_GT(a.magnitude(), 0.0);
+				ASSERT_GT(dr.norm(), 0.0);
+			}
+			const double h = ctx.R.magnitude() * 1e-4;
+			const auto sample = [&](int col, double offset) {
+				auto perturbed = ctx;
+				perturbed.computePartials = false;
+				double* coordinate = col == 0 ? &perturbed.R.x : col == 1 ? &perturbed.R.y : &perturbed.R.z;
+				*coordinate += offset;
+				Vec3D value;
+				Eigen::Matrix3d ignoredR = Eigen::Matrix3d::Identity(), ignoredV = Eigen::Matrix3d::Identity();
+				orbital_core::forces::EarthJ2{}.evaluate(perturbed, value, ignoredR, ignoredV);
+				EXPECT_TRUE(ignoredR.isIdentity(0.0));
+				EXPECT_TRUE(ignoredV.isIdentity(0.0));
+				return Eigen::Vector3d(value.x, value.y, value.z);
+			};
+			for (int col = 0; col < 3; ++col)
+				numerical.col(col) = (8 * (sample(col, h) - sample(col, -h)) -
+				                      (sample(col, 2 * h) - sample(col, -2 * h))) / (12 * h);
+			EXPECT_LT((dr - numerical).norm(), std::max(dr.norm(), 1e-30) * 1e-7);
+			EXPECT_TRUE(dv.isZero(0.0));
+		}
+	}
+}
+
 TEST_F(EarthJ2Test, PartialMatchesFiniteDifference)
 {
 	if (!m_de440->isAvailable())

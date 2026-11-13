@@ -135,6 +135,28 @@ namespace {
 		throw std::invalid_argument("unknown --weight-profile: " + value);
 	}
 
+	[[nodiscard]] orbital_core::RelativityMode parseRelativity(const std::string& value)
+	{
+		const std::string v = lower(value);
+		if (v == "full")
+			return orbital_core::RelativityMode::Full;
+		if (v == "sun-outer")
+			return orbital_core::RelativityMode::SunOuter;
+		if (v == "off")
+			return orbital_core::RelativityMode::Disabled;
+		throw std::invalid_argument("unknown --relativity: " + value + " (expected full, sun-outer or off)");
+	}
+
+	[[nodiscard]] bool parseEarthPole(const std::string& value)
+	{
+		const std::string v = lower(value);
+		if (v == "time-varying")
+			return true;
+		if (v == "fixed-j2000")
+			return false;
+		throw std::invalid_argument("unknown --earth-pole: " + value + " (expected time-varying or fixed-j2000)");
+	}
+
 	[[nodiscard]] orbital_core::NonGravModelKind parseNonGravModel(const std::string& value)
 	{
 		const std::string v = lower(value);
@@ -226,6 +248,12 @@ namespace {
 		   << "  --step <days>                     Initial integration step (default: 10)\n"
 		   << "  --planet-mask <int>               Perturber mask (default: planets+Moon)\n"
 		   << "  --sb441                           Enable SB441-N16 if available\n"
+		   << "  --relativity full|sun-outer|off   EIH mode (default: full)\n"
+		   << "  --earth-j2 / --no-earth-j2        Earth J2 (default: on)\n"
+		   << "  --earth-j3 / --no-earth-j3        Earth J3 (default: on)\n"
+		   << "  --earth-j4 / --no-earth-j4        Earth J4 (default: on)\n"
+		   << "  --earth-pole time-varying|fixed-j2000\n"
+		   << "                                    Earth zonal gravity pole (default: time-varying)\n"
 		   << "  --non-grav                        Enable non-grav fit\n"
 		   << "  --non-grav-model <name>           h2o|co|inverse-square|yarkovsky\n"
 		   << "  --ng-solve <set>                  default|a12|a123|a123dt|a2\n"
@@ -323,6 +351,16 @@ namespace {
 					opt.cfg.nbody.planetMask = parseMask(requireValue(i, arg));
 				else if (arg == "--sb441")
 					opt.cfg.nbody.useSb441 = true;
+				else if (arg == "--relativity")
+					opt.cfg.nbody.forceModel.relativity = parseRelativity(requireValue(i, arg));
+				else if (arg == "--earth-j2" || arg == "--no-earth-j2")
+					opt.cfg.nbody.forceModel.earthJ2 = arg == "--earth-j2";
+				else if (arg == "--earth-j3" || arg == "--no-earth-j3")
+					opt.cfg.nbody.forceModel.earthJ3 = arg == "--earth-j3";
+				else if (arg == "--earth-j4" || arg == "--no-earth-j4")
+					opt.cfg.nbody.forceModel.earthJ4 = arg == "--earth-j4";
+				else if (arg == "--earth-pole")
+					opt.cfg.nbody.forceModel.rotatingEarthPole = parseEarthPole(requireValue(i, arg));
 				else if (arg == "--non-grav")
 					opt.cfg.nonGrav.enabled = true;
 				else if (arg == "--non-grav-model") {
@@ -546,6 +584,7 @@ namespace {
 		prop.setUseSb441(cfg.nbody.useSb441);
 		prop.setTargetNaifId(cfg.nbody.targetNaifId);
 		prop.setInactiveInteriorMassPolicy(cfg.nbody.inactiveInteriorMassPolicy);
+		prop.setForceModel(cfg.nbody.forceModel);
 		prop.nonGrav() = fit.finalNonGrav;
 		if (IEphemerisSource* eph = getDefaultEphemerisSource())
 			prop = prop.forEncounterMonitoring(*eph, Constants::ENCOUNTER_STEP_POINTS, encounterRadiusAu);
@@ -795,6 +834,12 @@ void printForceModel(const CliOptions& opt, const orbital_core::FitPipelineResul
 	          << "  (--ca-scan / --lov-impact / --obs-mc / --state-at)" << '\n';
 	std::cout << "[ForceModel] nbody=" << (eff.enabled ? "on" : "off") << " step=" << eff.stepSize << "d accuracy=fixed"
 	          << '\n';
+	const auto& forces = eff.forceModel;
+	std::cout << "[ForceModel] relativity=" << orbital_core::relativityModeName(forces.relativity)
+	          << " earthJ2=" << (forces.earthJ2 ? "on" : "off")
+	          << " earthJ3=" << (forces.earthJ3 ? "on" : "off")
+	          << " earthJ4=" << (forces.earthJ4 ? "on" : "off")
+	          << " earthPole=" << (forces.rotatingEarthPole ? "time-varying" : "fixed-j2000") << '\n';
 	std::cout << "[ForceModel] sb441 requested=" << (req.useSb441 ? "on" : "off")
 	          << " effective=" << (eff.useSb441 ? "on" : "off") << " kernel=" << (sb441Available ? "loaded" : "ABSENT")
 	          << " -> asteroids=" << (sb441Live ? "SB441-N16 (SPK)" : "Kepler-3 fallback (Ceres/Pallas/Vesta)") << '\n';

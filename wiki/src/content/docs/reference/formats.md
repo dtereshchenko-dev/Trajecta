@@ -57,6 +57,7 @@ data are available:
 | `orbit_keplerian_oef.txt` | Keplerian orbital elements and available derived quantities. |
 | `orbit_cometary_oef.txt` | Cometary elements for a solution using the cometary representation. |
 | `weighted_residuals_rwo.txt` | Observation records and weighted residual information in RWO format. |
+| `Trajecta.ini` | Snapshot of application settings when the fit was started. |
 
 The element files produced depend on the solution representation. A
 `fit_summary.txt` is also written when a nominal Earth entry or its calculation

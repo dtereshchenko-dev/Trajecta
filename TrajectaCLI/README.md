@@ -43,7 +43,18 @@ TrajectaCLI observations.xml --residuals residuals.txt
 TrajectaCLI observations.xml --lov-impact --survey-integrator ra15 --survey-horizon 30
 TrajectaCLI observations.xml --mc 10000 --mc-method covariance --mc-start-mjd 61000 --mc-end-mjd 62000 --survey-integrator ra15
 TrajectaCLI observations.xml --mc 1000 --mc-method observations --mc-start-mjd 61000 --mc-end-mjd 62000
+TrajectaCLI observations.xml --relativity sun-outer --no-earth-j3 --no-earth-j4 --earth-pole fixed-j2000
 ```
+
+The force model defaults to full EIH, Earth J2/J3/J4 and a time-varying Earth
+gravity pole. Use `--relativity full|sun-outer|off`, `--earth-j2` /
+`--no-earth-j2` (likewise for J3 and J4), and `--earth-pole
+time-varying|fixed-j2000` to change it. Sun-outer retains planetary terms in
+the inner EIH sums. The Earth-pole setting applies to the Earth zonal gravity
+model, not the position of an observer. Solar J2 remains enabled as usual.
+These settings are used in the fit and subsequent propagation, including close
+approaches, LOV, MC and `--state-at`. They do not affect a two-body fit when
+`--no-nbody` is selected. CLI options do not read the GUI's `Trajecta.ini`.
 
 Use `--help` for weighting, clipping, non-gravitational fitting, close approaches,
 LOV and diagnostic options. `--survey-integrator` selects survey propagation;

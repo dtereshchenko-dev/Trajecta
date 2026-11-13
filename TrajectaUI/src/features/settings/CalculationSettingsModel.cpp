@@ -56,6 +56,9 @@ QString CalculationSettingsModel::validationError() const
 		return tr("Integrator: DE440 is unavailable.");
 	if (m_perturbations.enabled() && m_perturbations.useSb441() && !orbital_core::asteroidEphemerisAvailable())
 		return tr("Perturbations: SB441 is unavailable.");
+	const int relativity = static_cast<int>(m_perturbations.forceModel().relativity);
+	if (relativity < 0 || relativity > 2)
+		return tr("Forces: select a valid relativity model.");
 	if (m_weighting.weightProfile() < 1 || m_weighting.weightProfile() > 2)
 		return tr("Fit: select a valid weighting profile.");
 	if (!std::isfinite(m_sigmaClip.threshold()) || m_sigmaClip.threshold() <= 0 ||

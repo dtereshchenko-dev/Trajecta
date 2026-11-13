@@ -81,6 +81,7 @@ namespace orbital_core::fit {
 		nbody_.setStepSize(config.nbody.stepSize);
 		nbody_.setPlanetMask(config.nbody.enabled ? config.nbody.planetMask : 0);
 		nbody_.setUseSb441(config.nbody.useSb441);
+		nbody_.setForceModel(config.nbody.forceModel);
 		nbody_.setTargetNaifId(config.nbody.targetNaifId);
 		nbody_.setInactiveInteriorMassPolicy(config.nbody.inactiveInteriorMassPolicy);
 		if (useNBody_) {

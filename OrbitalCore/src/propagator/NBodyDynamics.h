@@ -2,6 +2,7 @@
 
 #include "integrators/IIntegrator.h"
 #include "orbital_core/ForceModelPolicy.h"
+#include "orbital_core/ForceModelSettings.h"
 #include "orbital_core/IEphemerisSource.h"
 #include "orbital_core/PlanetaryBodyMask.h"
 
@@ -65,6 +66,8 @@ class NBodyDynamics final : public IIntegrationDynamics {
 
 	void setUseSb441(bool enabled) noexcept;
 	[[nodiscard]] bool useSb441() const noexcept;
+	void setForceModel(const orbital_core::ForceModelSettings& settings) noexcept { m_forceModel = settings; }
+	[[nodiscard]] const orbital_core::ForceModelSettings& forceModel() const noexcept { return m_forceModel; }
 
 	void setTargetNaifId(int id) noexcept { m_targetNaifId = id; }
 
@@ -83,6 +86,7 @@ class NBodyDynamics final : public IIntegrationDynamics {
 
 	std::uint16_t m_bodyMask{FULL_BODY_MASK};
 	bool m_useSb441{false};
+	orbital_core::ForceModelSettings m_forceModel;
 	int m_targetNaifId{0};
 
 	orbital_core::InactiveInteriorMassPolicy m_inactiveInteriorMassPolicy{

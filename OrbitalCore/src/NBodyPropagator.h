@@ -199,6 +199,8 @@ class ORBITAL_CORE_API NBodyPropagator {
 
 	void setUseSb441(bool enabled);
 	bool useSb441() const noexcept;
+	void setForceModel(const orbital_core::ForceModelSettings& settings) noexcept { m_dynamics.setForceModel(settings); }
+	[[nodiscard]] const orbital_core::ForceModelSettings& forceModel() const noexcept { return m_dynamics.forceModel(); }
 	void setTargetNaifId(int id) noexcept;
 	[[nodiscard]] int targetNaifId() const noexcept;
 

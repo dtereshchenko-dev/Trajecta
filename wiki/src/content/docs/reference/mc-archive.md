@@ -60,7 +60,7 @@ recorded in `time_scale`, `frame` and `state_units`.
 | `start`, `end` | Inclusive search interval, in MJD TDB. |
 | `requested`, `seed`, `workers`, `integrator` | Sampling and propagation settings. |
 | `earth_frame`, `body_fixed_frame`, `body_fixed_model` | Identifiers for the saved Earth and target-body frame models. |
-| `forces` | `step_days`, `planet_mask`, `sb441`, `target_naif_id` and `interior_mass_policy` from the effective force settings. |
+| `forces` | Effective propagation settings: `step_days`, `planet_mask`, `sb441`, `relativity`, `sun_j2`, `earth_j2`, `earth_j3`, `earth_j4`, `earth_rotating_pole`, `target_naif_id` and `interior_mass_policy`. |
 | `weight_profile`, `use_weights`, `accepted_indices` | Fit weighting settings and the indices of observations accepted for the source fit. |
 | `fit_parameter_covariance` | The source fit's objective-scaled parameter covariance, serialized as rows. It includes correlations between the Cartesian state and fitted non-gravitational parameters, when present. |
 | `event_grouping`, `event_max_gap_days` | The convention and maximum consecutive-crossing gap used to group events for presentation. |
@@ -69,6 +69,11 @@ Enum values such as `target`, `weight_profile` and force-policy codes are
 integers, not descriptive names; their definitions are in the corresponding
 OrbitalCore headers. The force fields do not by themselves identify every
 external data file used in a run.
+
+The `relativity` field is `full_eih`, `sun_outer_eih` or `off`. The Earth-pole
+field selects the pole for the Earth zonal terms, not the coordinate frame for
+boundary crossings. Archives created before these settings were added may not
+contain the corresponding fields.
 
 ### Status and results
 

@@ -121,7 +121,7 @@ inverse-square model.
 
 ![Apophis solution with inverse-square A1 and A2](../../assets/orbit-determination/apophis-a1-a2-overview.png)
 
-The screenshot shows a calculation with Pluto disabled under **Perturbations**.
+The screenshot shows a calculation with Pluto disabled under **Forces**.
 Other choices, including weights and the observation selection, also affect the
 result.
 

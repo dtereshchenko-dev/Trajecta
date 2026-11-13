@@ -41,6 +41,7 @@ namespace orbital_core::hazard::boundary {
 		propagator.setStepSize(forces.stepSize);
 		propagator.setPlanetMask(forces.planetMask);
 		propagator.setUseSb441(forces.useSb441);
+		propagator.setForceModel(forces.forceModel);
 		propagator.setTargetNaifId(forces.targetNaifId);
 		propagator.setInactiveInteriorMassPolicy(forces.inactiveInteriorMassPolicy);
 		propagator = propagator.forEncounterMonitoring(*eph);

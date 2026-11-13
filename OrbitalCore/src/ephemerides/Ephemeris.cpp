@@ -52,6 +52,7 @@ namespace orbital_core {
 			propagator.setStepSize(solution.forces.stepSize);
 			propagator.setPlanetMask(solution.forces.enabled ? solution.forces.planetMask : 0);
 			propagator.setUseSb441(solution.forces.useSb441);
+			propagator.setForceModel(solution.forces.forceModel);
 			propagator.setTargetNaifId(solution.forces.targetNaifId);
 			propagator.setInactiveInteriorMassPolicy(solution.forces.inactiveInteriorMassPolicy);
 			if (auto* ephemeris = getDefaultEphemerisSource())

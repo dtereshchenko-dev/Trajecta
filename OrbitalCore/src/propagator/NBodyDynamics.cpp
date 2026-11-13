@@ -220,6 +220,7 @@ void NBodyDynamics::evaluate(const Vec3D& r, const Vec3D& v, double epochMjd, do
 				context.bodyMask &= static_cast<std::uint16_t>(~orbital_core::planetaryBodyMask(body.planet));
 	context.targetNaifId = m_targetNaifId;
 	context.useSb441 = m_useSb441;
+	context.forceModel = m_forceModel;
 	context.computePartials = computePartials;
 	context.nonGrav = &ng;
 

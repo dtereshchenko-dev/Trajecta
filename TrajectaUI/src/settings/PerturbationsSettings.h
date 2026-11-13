@@ -14,6 +14,11 @@ class PerturbationsSettings : public QObject {
 	Q_PROPERTY(uint planetMask MEMBER m_planetMask NOTIFY changed)
 	Q_PROPERTY(bool useSb441 MEMBER m_useSb441 NOTIFY changed)
 	Q_PROPERTY(double integratorInitialStepDays MEMBER m_integratorInitialStepDays NOTIFY changed)
+	Q_PROPERTY(int relativityMode MEMBER m_relativityMode NOTIFY changed)
+	Q_PROPERTY(bool earthJ2 MEMBER m_earthJ2 NOTIFY changed)
+	Q_PROPERTY(bool earthJ3 MEMBER m_earthJ3 NOTIFY changed)
+	Q_PROPERTY(bool earthJ4 MEMBER m_earthJ4 NOTIFY changed)
+	Q_PROPERTY(bool rotatingEarthPole MEMBER m_rotatingEarthPole NOTIFY changed)
 
 
    public:
@@ -26,6 +31,11 @@ class PerturbationsSettings : public QObject {
 	[[nodiscard]] bool useSb441() const noexcept { return m_useSb441; }
 
 	[[nodiscard]] double integratorInitialStepDays() const noexcept { return m_integratorInitialStepDays; }
+	[[nodiscard]] orbital_core::ForceModelSettings forceModel() const noexcept
+	{
+		return {static_cast<orbital_core::RelativityMode>(m_relativityMode), m_earthJ2, m_earthJ3,
+		        m_earthJ4, m_rotatingEarthPole};
+	}
 
 	void setPlanetMask(uint v)
 	{
@@ -53,4 +63,9 @@ class PerturbationsSettings : public QObject {
 	uint m_planetMask{kDefaultPlanetMask};
 	bool m_useSb441{false};
 	double m_integratorInitialStepDays{10.0};
+	int m_relativityMode{0};
+	bool m_earthJ2{true};
+	bool m_earthJ3{true};
+	bool m_earthJ4{true};
+	bool m_rotatingEarthPole{true};
 };

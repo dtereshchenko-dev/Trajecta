@@ -2,6 +2,7 @@
 
 #include "orbital_core/Vec3D.h"
 #include "orbital_core/DE440Source.h"
+#include "orbital_core/ForceModelSettings.h"
 
 #include <Eigen/Core>
 #include <cstdint>
@@ -48,6 +49,7 @@ namespace orbital_core::forces {
 		uint16_t bodyMask = 0;
 		int targetNaifId = 0;
 		bool useSb441 = false;
+		ForceModelSettings forceModel;
 		bool computePartials = true;
 		const NonGravModel* nonGrav = nullptr;
 

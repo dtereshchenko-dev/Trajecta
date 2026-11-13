@@ -6,6 +6,7 @@
 
 #include <QCoreApplication>
 #include <QFileInfo>
+#include <QSaveFile>
 
 #include <cmath>
 #include <cstdint>
@@ -47,6 +48,7 @@ orbital_core::FitConfig OrbitWorker::makeFitConfig(const OptimizationSettings& s
 	cfg.nbody.stepSize = saneNBodyStepDays(settings.integratorInitialStepDays);
 	cfg.nbody.planetMask = settings.pertPlanetMask;
 	cfg.nbody.useSb441 = settings.useSb441;
+	cfg.nbody.forceModel = settings.forceModel;
 	if (cfg.nbody.stepSize != settings.integratorInitialStepDays) {
 		LOG_INFO << "[NBody] invalid initial step " << settings.integratorInitialStepDays << "d; using "
 		         << cfg.nbody.stepSize << "d";
@@ -114,6 +116,11 @@ void OrbitWorker::process(const OrbitFitJob& job, std::stop_token cancel)
 			exportContext.photometry = result.effectiveConfig.photometry;
 
 			const auto exportReport = orbital_core::Exporter::save(exportContext, {orbital_core::ExportProduct::All});
+			QSaveFile settingsFile(QString::fromStdWString((exportReport.directory / "Trajecta.ini").wstring()));
+			if (!settingsFile.open(QIODevice::WriteOnly) ||
+			    settingsFile.write(job.settingsSnapshot) != job.settingsSnapshot.size() || !settingsFile.commit()) {
+				throw std::runtime_error("Could not save the settings snapshot with the solution");
+			}
 			LOG_INFO << "Fit export written to " << exportReport.directory.string();
 			m_solutionDirectory = exportReport.directory;
 		}

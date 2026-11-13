@@ -4312,7 +4312,10 @@ class TestWorkspace : public QObject {
 	{
 		const auto clear = qScopeGuard([] { QSettings().clear(); });
 		QSettings().clear();
+		QSettings().setValue("forces/sunJ2", false);
 		FitSettingsAggregator settings;
+		settings.load();
+		QVERIFY(!QSettings().contains("forces/sunJ2"));
 		ApplicationSession session(settings);
 		settings.weighting()->setProperty("useWeights", false);
 		settings.perturbations()->setProperty("enabled", false);
@@ -4324,7 +4327,7 @@ class TestWorkspace : public QObject {
 		draft->sigmaClip()->setProperty("threshold", 4.5);
 		QVERIFY(!settings.weighting()->useWeights());
 		QCOMPARE(settings.sigmaClip()->threshold(), 3.0);
-		QVERIFY(!QSettings().value("optimizer/useWeights").toBool());
+		QVERIFY(!QSettings().value("fit/useWeights").toBool());
 		session.setTheme("slate");
 		draft->reset();
 		QVERIFY(!draft->weighting()->useWeights());
@@ -4333,6 +4336,10 @@ class TestWorkspace : public QObject {
 		draft->weighting()->setProperty("useWeights", true);
 		draft->sigmaClip()->setProperty("threshold", 4.5);
 		draft->perturbations()->setProperty("integratorInitialStepDays", 2.5);
+		draft->perturbations()->setProperty("relativityMode", 1);
+		draft->perturbations()->setProperty("earthJ3", false);
+		draft->perturbations()->setProperty("earthJ4", false);
+		draft->perturbations()->setProperty("rotatingEarthPole", false);
 		draft->photometry()->setProperty("asteroidG", 0.42);
 		draft->photometry()->setProperty("cometK1", 8.0);
 		draft->photometry()->setProperty("cometK2", 5.0);
@@ -4348,15 +4355,22 @@ class TestWorkspace : public QObject {
 		QCOMPARE(changes.count(), 1);
 		QVERIFY(settings.weighting()->useWeights());
 		QCOMPARE(settings.sigmaClip()->threshold(), 4.5);
-		QCOMPARE(QSettings().value("optimizer/integratorInitialStepDays").toDouble(), 2.5);
-		QCOMPARE(QSettings().value("optimizer/nonGravModel").toInt(), 4);
-		QCOMPARE(QSettings().value("optimizer/nonGravSolveMask").toInt(), 2);
-		QCOMPARE(QSettings().value("optimizer/photometry/asteroidG").toDouble(), 0.42);
-		QCOMPARE(QSettings().value("optimizer/photometry/cometK1").toDouble(), 8.0);
-		QCOMPARE(QSettings().value("optimizer/photometry/cometK2").toDouble(), 5.0);
-		QCOMPARE(QSettings().value("optimizer/photometry/nuclearPhaseCoefficient").toDouble(), 0.03);
+		QCOMPARE(QSettings().value("integrator/initialStepDays").toDouble(), 2.5);
+		QCOMPARE(QSettings().value("forces/relativityMode").toInt(), 1);
+		QCOMPARE(QSettings().value("non-gravitational/model").toInt(), 4);
+		QCOMPARE(QSettings().value("non-gravitational/solveMask").toInt(), 2);
+		QCOMPARE(QSettings().value("photometry/asteroidG").toDouble(), 0.42);
+		QCOMPARE(QSettings().value("photometry/cometK1").toDouble(), 8.0);
+		QCOMPARE(QSettings().value("photometry/cometK2").toDouble(), 5.0);
+		QCOMPARE(QSettings().value("photometry/nuclearPhaseCoefficient").toDouble(), 0.03);
 		FitSettingsAggregator restored;
 		restored.load();
+		const auto restoredForces = restored.perturbations()->forceModel();
+		QVERIFY(restoredForces.relativity == orbital_core::RelativityMode::SunOuter);
+		QVERIFY(restoredForces.earthJ2);
+		QVERIFY(!restoredForces.earthJ3);
+		QVERIFY(!restoredForces.earthJ4);
+		QVERIFY(!restoredForces.rotatingEarthPole);
 		QCOMPARE(restored.photometry()->options().asteroidG, 0.42);
 		QCOMPARE(restored.photometry()->options().cometK1, 8.0);
 		QCOMPARE(restored.photometry()->options().cometK2, 5.0);
@@ -4474,7 +4488,7 @@ class TestWorkspace : public QObject {
 	{
 		const auto clear = qScopeGuard([] { QSettings().clear(); });
 		QSettings().clear();
-		QSettings().setValue("optimizer/pertEnabled", false);
+		QSettings().setValue("integrator/nBodyPropagation", false);
 		FitSettingsAggregator settings;
 		settings.weighting()->setProperty("debiasEnabled", false);
 		ApplicationSession session(settings);

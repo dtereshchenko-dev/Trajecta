@@ -1,6 +1,7 @@
 #pragma once
 #include "orbital_core/AstrometricWeights.h"
 #include "orbital_core/ForceModelPolicy.h"
+#include "orbital_core/ForceModelSettings.h"
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -19,6 +20,7 @@ namespace orbital_core {
 		double stepSize = 10.0;
 		uint16_t planetMask = 0x18FF;  // Mercury..Neptune, Moon (bit 11), Pluto (bit 12).
 		bool useSb441 = false;
+		ForceModelSettings forceModel;
 		// NAIF identifier of the body being fitted; zero means unknown.
 		int targetNaifId = 0;
 		InactiveInteriorMassPolicy inactiveInteriorMassPolicy{InactiveInteriorMassPolicy::ExplicitOnly};

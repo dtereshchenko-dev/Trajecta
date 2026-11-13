@@ -31,3 +31,11 @@ if(WIN32)
 endif()
 
 orbital_core_deploy_data(${PROJECT_NAME})
+
+add_test(NAME TrajectaCLI.ForceSettings
+    COMMAND ${CMAKE_COMMAND}
+        "-DCLI=$<TARGET_FILE:${PROJECT_NAME}>"
+        "-DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/../data/examples/NEO/2020VV.xml"
+        "-DDATA_DIR=${ORBITAL_CORE_DATA_DIR}"
+        "-DOUTPUT_ROOT=${CMAKE_CURRENT_BINARY_DIR}/test-output"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/force_settings.cmake")

@@ -91,6 +91,7 @@ namespace orbital_core::hazard {
 		base.setStepSize(forces.stepSize);
 		base.setPlanetMask(forces.planetMask);
 		base.setUseSb441(forces.useSb441);
+		base.setForceModel(forces.forceModel);
 		base.setTargetNaifId(forces.targetNaifId);
 		base.setInactiveInteriorMassPolicy(forces.inactiveInteriorMassPolicy);
 		base = base.forEncounterMonitoring(*eph);

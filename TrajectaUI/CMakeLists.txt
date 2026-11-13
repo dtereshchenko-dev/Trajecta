@@ -74,6 +74,7 @@ set(CLIENT_SOURCES
     src/settings/PhotometrySettings.h src/settings/PhotometrySettings.cpp
     src/settings/SigmaClipSettings.h src/settings/SigmaClipSettings.cpp
     src/settings/FitSettingsAggregator.h src/settings/FitSettingsAggregator.cpp
+    src/settings/SettingsStorage.h src/settings/SettingsStorage.cpp
     src/features/risk/RiskMonitorViewModel.h src/features/risk/RiskMonitorViewModel.cpp
     src/features/risk/MovViewModel.h src/features/risk/MovViewModel.cpp
     src/features/atmosphere/AtmosphereViewModel.h src/features/atmosphere/AtmosphereViewModel.cpp
@@ -351,6 +352,7 @@ qt_add_executable(Tests
     tests/cpp/tst_gridgeometry.h
     tests/cpp/tst_diagnosticsmodel.h
     tests/cpp/tst_nongravsettings.h
+    tests/cpp/tst_settingsstorage.h
     tests/cpp/tst_orbitengine.h
 )
 

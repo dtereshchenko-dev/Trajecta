@@ -157,11 +157,9 @@ include the input data, settings, steps to reproduce and relevant results.
 The [developer guide](DEVELOPMENT.md) covers the project structure, C++ API,
 impact-monitoring interfaces, dependencies, runtime data, building and tests.
 
-## Sub-project docs
-
-- [TrajectaCLI](TrajectaCLI/README.md) — build and usage.
+- [TrajectaCLI](TrajectaCLI/README.md) — command-line tool for development and testing.
 - [StrewnField](StrewnField/README.md) — atmospheric jobs, physics and reports.
-- [MC archive reference](wiki/src/content/docs/reference/mc-archive.md).
+- [MC archive reference](https://dtereshchenko-dev.github.io/Trajecta/docs/reference/mc-archive/).
 
 ## License
 

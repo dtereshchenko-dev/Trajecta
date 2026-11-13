@@ -31,20 +31,25 @@ force evaluation, the acceleration combines:
 | Planets, Moon and Pluto | Direct point-mass accelerations for the enabled bodies. Earth and Moon are separate perturbers. |
 | Solar System origin | Correction for the barycentric acceleration of the Sun supplied by DE440. |
 | Massive asteroids | Optional direct perturbations from the SB441-N16 kernel. |
-| Relativity | Einstein–Infeld–Hoffmann (EIH) correction for the Sun and enabled planetary bodies. |
+| Relativity | Configurable Einstein–Infeld–Hoffmann (EIH) correction. |
 | Solar oblateness | Solar J2, with a fixed tilted pole in the J2000 frame. |
-| Earth oblateness | Earth J2, J3 and J4 within 0.1 AU of Earth. |
+| Earth oblateness | Configurable Earth J2, J3 and J4 within 0.1 AU of Earth. |
 | Non-gravitational | An optional acceleration defined by the selected model and parameters. |
 
 DE440 supplies body states and gravitational parameters. If the selected
 calculation enables massive asteroids, SB441-N16 must also be available. Its
 asteroid point-mass terms are separate from the EIH correction. A body's
-selection in **Perturbations** controls its direct contribution; the Sun's
+selection in **Forces** controls its direct contribution; the Sun's
 DE440 origin acceleration is still used for the heliocentric transformation.
 
 The Earth zonal terms are applied only while Earth is enabled and the object
-is within 0.1 AU of its centre. Their axis follows the modelled Earth pole at
-the calculation epoch. Solar J2 uses the DE440 J2 and reference-radius pair.
+is within 0.1 AU of its centre. Their axis can follow the modelled Earth pole at
+the calculation epoch or remain fixed at the J2000 pole. Solar J2 uses the DE440
+J2 and reference-radius pair. Full EIH includes the Sun and enabled planetary
+bodies in the outer sum; the Sun-only option retains planetary terms in the
+inner sums. EIH can also be disabled. The Earth-pole choice applies to the
+zonal gravity model; it does not change Earth orientation for observers or
+coordinate transformations.
 
 For an object identified as one of the perturbers, the corresponding direct
 self-perturbation can be excluded through its target identifier. Compare force

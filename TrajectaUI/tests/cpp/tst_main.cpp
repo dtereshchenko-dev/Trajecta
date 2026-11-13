@@ -15,6 +15,7 @@
 #include "tst_gridgeometry.h"
 #include "tst_diagnosticsmodel.h"
 #include "tst_nongravsettings.h"
+#include "tst_settingsstorage.h"
 #include "tst_orbitengine.h"
 #include "tst_workspace.h"
 
@@ -59,6 +60,10 @@ int main(int argc, char* argv[])
 	    QDir(QStringLiteral(ORBITAL_UI_SOURCE_DIR)).filePath("../data").toStdWString());
 	if (qEnvironmentVariableIsSet("ORBITAL_DIAGNOSTICS_ONLY")) {
 		TestDiagnosticsModel test;
+		return runTest(&test, argc, argv);
+	}
+	if (qEnvironmentVariableIsSet("ORBITAL_SETTINGS_STORAGE_ONLY")) {
+		TestSettingsStorage test;
 		return runTest(&test, argc, argv);
 	}
 
@@ -113,6 +118,10 @@ int main(int argc, char* argv[])
 	}
 	{
 		TestNonGravSettings test;
+		status |= runTest(&test, argc, argv);
+	}
+	{
+		TestSettingsStorage test;
 		status |= runTest(&test, argc, argv);
 	}
 	{

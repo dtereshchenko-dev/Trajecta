@@ -51,6 +51,7 @@ namespace orbital_core::fit {
 			prop.setStepSize(cfg.nbody.stepSize);
 			prop.setPlanetMask(cfg.nbody.enabled ? cfg.nbody.planetMask : 0);
 			prop.setUseSb441(cfg.nbody.useSb441);
+			prop.setForceModel(cfg.nbody.forceModel);
 			prop.setTargetNaifId(cfg.nbody.targetNaifId);
 			prop.setInactiveInteriorMassPolicy(cfg.nbody.inactiveInteriorMassPolicy);
 			prop.nonGrav() = ng;
