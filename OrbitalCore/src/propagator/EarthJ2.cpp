@@ -2,6 +2,7 @@
 #include "orbital_core/TimeScale.h"
 #include "orbital_core/Types.h"
 #include "earth_orientation/EarthOrientation.h"
+#include "earth_orientation/EarthPck.h"
 #include "earth_orientation/EarthRotation.h"
 #include <Eigen/Geometry>
 
@@ -13,6 +14,7 @@ namespace orbital_core::forces::detail {
 		double j4;
 	};
 
+	// DE440 reference radius and coefficients form one gravity model.
 	inline constexpr EarthZonalParameters kDE440EarthZonals{6378.1366 / 149597870.7, 1.08262539e-3, -2.532410e-6,
 	                                                        -1.619898e-6};
 
@@ -141,9 +143,19 @@ namespace orbital_core::forces {
 		thread_local double cachedMjd = 0.0;
 		thread_local Eigen::Matrix3d rotation;
 		if (!cached || mjdTdb != cachedMjd) {
-			const double mjdTt = time::fromMjdTdb(mjdTdb, time::Scale::TT);
-			const auto eop = earthOrientation().lookupMjdTt(mjdTt);
-			const Vec3D pole = Helpers::ecvToEcl(EarthRotation::WithEop::poleEquatorialMjd(mjdTt, eop));
+			Vec3D poleEq;
+			bool pckAvailable = false;
+			try {
+				pckAvailable = earthPckPole(mjdTdb, poleEq);
+			} catch (...) {
+				pckAvailable = false;
+			}
+			if (!pckAvailable) {
+				const double mjdTt = time::fromMjdTdb(mjdTdb, time::Scale::TT);
+				const auto eop = earthOrientation().lookupMjdTt(mjdTt);
+				poleEq = EarthRotation::WithEop::poleEquatorialMjd(mjdTt, eop);
+			}
+			const Vec3D pole = Helpers::ecvToEcl(poleEq);
 			const Eigen::Vector3d z = Eigen::Vector3d(pole.x, pole.y, pole.z).normalized();
 			const Eigen::Vector3d x = (Eigen::Vector3d::UnitX() - z.x() * z).normalized();
 			rotation.col(0) = x;

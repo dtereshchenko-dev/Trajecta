@@ -17,8 +17,12 @@ cmake --build --preset Release --target TrajectaCLI
 The C++20 executable links to `OrbitalCore`, with the same public compiler flags
 and Eigen ABI settings. On Windows, its build refreshes `OrbitalCore.dll` beside
 the executable even when relinking is unnecessary. The shared deployment helper
-copies kernels, observatory data, weights, debias tables and Earth-orientation
-data, including `earth_orientation/finals2000A.all`.
+copies kernels, observatory data, weights and debias tables. The CLI reads PCK,
+C04 and `ET-UT.dat` from the same user directory as the desktop
+application: `%LOCALAPPDATA%/Trajecta/Trajecta/earth_orientation` on Windows or
+`${XDG_DATA_HOME:-$HOME/.local/share}/Trajecta/Trajecta/earth_orientation` on
+Linux. The installer places missing files there; for a build without the installer,
+copy the three PCK files, two C04 files and `ET-UT.dat` from `data/earth_orientation`.
 
 For a CLI-only Linux build without Qt, configure this subdirectory directly:
 

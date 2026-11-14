@@ -8,7 +8,7 @@
 
 namespace orbital_core::hazard::boundary {
 	std::optional<NominalEarthEntry> nearbyNominalEarthEntry(const FitResult& fit, const NBodySettings& forces,
-	                                                        std::stop_token cancel)
+	                                                         std::stop_token cancel)
 	{
 		if (!fit.converged || !fit.orbit || !forces.enabled)
 			return std::nullopt;
@@ -23,8 +23,8 @@ namespace orbital_core::hazard::boundary {
 		const double distance = r.magnitude(), sunDistance = position.magnitude();
 		if (!std::isfinite(distance) || distance <= 0 || !std::isfinite(sunDistance) || sunDistance <= 0)
 			throw std::runtime_error("Invalid state for nominal entry search");
-		if (r.dot(v) >= 0 || Constants::GM_EARTH_ALONE / std::pow(distance, 2.5) <=
-		                         Constants::GM_SUN / std::pow(sunDistance, 2.5))
+		if (r.dot(v) >= 0 ||
+		    Constants::GM_EARTH_ALONE / std::pow(distance, 2.5) <= Constants::GM_SUN / std::pow(sunDistance, 2.5))
 			return std::nullopt;
 		constexpr double altitudeKm = 50.0;
 		const auto h = r.cross(v);
@@ -66,10 +66,10 @@ namespace orbital_core::hazard::boundary {
 		std::vector<NBodyPropagator::StateVel> outputs;
 		const auto& x = state;
 		const auto terminal = propagator.propagateUntilSurfaceMjd(
-		    {x[0], x[1], x[2]}, {x[3], x[4], x[5]}, epochMjdTdb, targets, outputs, target,
-		    planetRadiusKm(planet), ephemeris, nonGrav,
+		    {x[0], x[1], x[2]}, {x[3], x[4], x[5]}, epochMjdTdb, targets, outputs, target, planetRadiusKm(planet),
+		    ephemeris, nonGrav,
 		    planet == Planet::Earth ? NBodyPropagator::SurfaceShape::ReferenceEllipsoid
-		                                   : NBodyPropagator::SurfaceShape::Sphere,
+		                            : NBodyPropagator::SurfaceShape::Sphere,
 		    altitudeKm, cancel);
 		if (cancel.stop_requested())
 			throw std::runtime_error("MC cancelled");

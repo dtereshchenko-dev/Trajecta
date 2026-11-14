@@ -132,11 +132,11 @@ class ORBITAL_CORE_API NBodyPropagator {
 		[[nodiscard]] ORBITAL_CORE_API std::optional<IntegratedStateFull> at(double mjd) const;
 	};
 
-	[[nodiscard]] DenseTrajectory propagateDenseMjd(const Vec3D& R0, const Vec3D& V0, double epochMjd,
-	                                                double firstMjd, double lastMjd, const NonGravModel& ng,
-	                                                bool variational, bool sensitivities) const;
-	void extendDenseBackwardMjd(DenseTrajectory& trajectory, double firstMjd, const NonGravModel& ng,
-	                            bool variational, bool sensitivities) const;
+	[[nodiscard]] DenseTrajectory propagateDenseMjd(const Vec3D& R0, const Vec3D& V0, double epochMjd, double firstMjd,
+	                                                double lastMjd, const NonGravModel& ng, bool variational,
+	                                                bool sensitivities) const;
+	void extendDenseBackwardMjd(DenseTrajectory& trajectory, double firstMjd, const NonGravModel& ng, bool variational,
+	                            bool sensitivities) const;
 
 	struct PropagationWithStmSurfaceStop {
 		PropagationResultFull state;
@@ -199,8 +199,17 @@ class ORBITAL_CORE_API NBodyPropagator {
 
 	void setUseSb441(bool enabled);
 	bool useSb441() const noexcept;
-	void setForceModel(const orbital_core::ForceModelSettings& settings) noexcept { m_dynamics.setForceModel(settings); }
-	[[nodiscard]] const orbital_core::ForceModelSettings& forceModel() const noexcept { return m_dynamics.forceModel(); }
+
+	void setForceModel(const orbital_core::ForceModelSettings& settings) noexcept
+	{
+		m_dynamics.setForceModel(settings);
+	}
+
+	[[nodiscard]] const orbital_core::ForceModelSettings& forceModel() const noexcept
+	{
+		return m_dynamics.forceModel();
+	}
+
 	void setTargetNaifId(int id) noexcept;
 	[[nodiscard]] int targetNaifId() const noexcept;
 

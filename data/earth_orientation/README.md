@@ -1,50 +1,50 @@
-# Earth Orientation Data
+# Earth orientation and time data
 
-All Earth-orientation files live here and deploy under `earth_orientation/`
-beside each executable. The common `EarthOrientation` provider currently uses
-the **IAU1980 (C04) pole profile** by default. `IAU2000` selects
-the finals2000A pole explicitly, not a second service or an automatic fallback.
-There is no environment-variable profile override.
+The Earth binary PCK files `earth_historic.bpc`, `earth_latest.bpc` and
+`earth_predict.bpc` supply ITRF93 orientation for the Earth gravity pole,
+terrestrial stations and Earth-fixed crossing coordinates. Their observed and predictive coverage and
+accuracy differ. Source: [NAIF generic PCK kernels](https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/).
 
-The frozen C04 datasets are identified by these checksums:
+The current CI and installer inputs use the following NAIF files, renamed for
+use by Trajecta. The binary data are not modified. These large files are ignored
+by Git; the CI workflows download them and check the hashes below.
+
+| Local file | NAIF source file | SHA-256 |
+| --- | --- | --- |
+| `earth_historic.bpc` | `earth_620120_260806.bpc` | `652b02c0b3a5a283d393497f7f96e1fe4aa47ee6dcc035a089eb9e6b5df86643` |
+| `earth_latest.bpc` | `earth_000101_270208_261112.bpc` | `eb72aef57bcedb247e282510a881a608fe74e4d9e7869aaa130474f5efe8dc54` |
+| `earth_predict.bpc` | `earth_2026_260806_2126_predict.bpc` | `9f565ab5aaccd33afe54f3a1b20cb8b136636c31a0bd4c0986fac722b931c280` |
+
+The desktop application checks for newer versions in Data sources and lets the
+user update each file separately. Updates are staged and applied on restart in
+the user data directory. On Windows and Linux, the installer places all three
+PCKs there and preserves existing files. Consult the actual file coverage rather
+than assuming a future epoch is covered.
+
+On Windows and Linux, `eopc04.62-now` and `eopc04.cnc` are installed in the user Earth
+orientation directory with the PCK files. These C04 data supply the gravity-pole
+fallback when PCK does not cover the epoch. C04 is also used for TT-UT1
+conversion within its observed coverage and as a station-orientation fallback
+within that coverage. The gravity fallback applies the consistency corrections
+in `eopc04.cnc` and extrapolates outside the observed C04 span. Explicit time conversion
+instead interpolates the uncorrected observed TT-UT1 values. The supplied C04
+series is used from 1972-01-19 through 2023-01-15; earlier records in the file
+are not loaded.
+
+The frozen C04 inputs have these SHA-256 hashes:
 
 | File | SHA-256 |
-|---|---|
+| --- | --- |
 | `eopc04.62-now` | `91c60678740044b6f3b32395b63bc886d94ad3b5592bd50929f031e9a9ebfb9b` |
 | `eopc04.cnc` | `cad01734f7d75a35fd20cfa98ceee5450c42504a45f657ec59f2af4884f71051` |
 
-C04 supplies daily UTC epochs, polar motion in arcseconds, UT1-UTC in seconds,
-and IAU-1980 dpsi/deps in arcseconds. It is not interchangeable with the dX/dY
-columns of `finals2000A.all`. Both readers convert UTC epochs to TT MJD and interpolate
-continuous TT-UT1, including across leap seconds.
+The gravity-pole interpolation uses 15th-degree Chebyshev windows with
+overlap blending and endpoint extensions. The IAU1980 profile preserves the
+native 80-column input convention; FullC04 reads the full nutation column.
+The consistency trend is not a physical prediction of future polar motion.
+Changing these files changes the force model and requires renewed comparison.
 
-`finals2000A.all` uses Bulletin A xp/yp (arcseconds), UT1-UTC (seconds), and
-IAU2000A dX/dY (milliarcseconds). Its reader uses linear interpolation, accepts
-observed and predicted records, and keeps missing celestial offsets separate
-from missing rotation data. Outside coverage it returns an invalid sample with
-zero observed pole corrections and UT1=UTC, never C04 data. Field definitions:
-[USNO format description](https://maia.usno.navy.mil/ser7/readme.finals2000A).
-
-The compatibility policy uses the native 15th-degree Chebyshev windows, three
-unused intervals, three overlap intervals, C6 blending, and C2 end extensions.
-After the extended range the observed pole/nutation terms vanish and TT-UT1
-continues with the series' secular slope. `eopc04.cnc` is applied afterward.
-Its historical IERS-1993 consistency trend is **not a physical prediction of
-future polar motion**. Replacing a dataset changes the force model and requires
-a new documented mirror baseline.
-
-`EarthOrientationProfile::IAU1980` explicitly reproduces the native 80-column input
-buffer; `FullC04` preserves the complete dEps column. Neither convention reads
-future EOP from orbit-fit results. The selected convention, source path and
-extrapolation policy are logged as `[EarthOrientation]`.
-
-Missing or invalid C04 files produce an explicit warning and a nominal-pole
-fallback; it does not reproduce measured pole corrections. No network download occurs at runtime.
-
-The optical clock is independent of the dynamical pole profile.
-`EarthOrientation::ttToUt1Mjd` uses the finals2000A TT-UT1 series with the
-historical cnvtim-style iteration on daily epochs. Optical observers apply
-this UT1 correction to GAST but do not apply polar motion. Observer diagnostics
-report `ut1FromEop` separately from the available (not applied) xp/yp values.
-Missing time data leaves the caller's UTC fallback unchanged; it never silently
-substitutes the dynamical C04 clock and its consistency corrections.
+`ET-UT.dat` is installed in the same user directory. It supplies historical TT-UT1 values and supports the historical
+orientation fallback with a nominal pole. Explicit UT1 conversions fail
+outside the coverage of both sources. The Earth PCK supplies an orientation,
+not an independent conversion between UT1 and TT.

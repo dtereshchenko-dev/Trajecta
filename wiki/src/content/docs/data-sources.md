@@ -10,6 +10,9 @@ the observations and settings you choose.
 
 ![Data sources dialog showing connected ephemerides and observatory catalogues](../../assets/data-sources/source-status.png)
 
+The screenshots on this page show an earlier layout; the current dialog also
+lists the three Earth PCK files.
+
 ## Ephemerides and observatories
 
 | Source | Used for |
@@ -27,25 +30,31 @@ perturbations in the calculation settings when you want to use it.
 
 | Source | Used for |
 | --- | --- |
-| Earth orientation: finals2000A | UT1 information for time and Earth-orientation calculations. |
-| Earth orientation: C04 | Earth-pole orientation in the gravity model. |
-| Historical time: TT-UT1 | Historical time conversion when finals2000A does not cover the epoch. |
+| IERS C04: orientation and UT1 | UT1 conversion within observed coverage and a fallback for Earth orientation. |
+| PCK: historical orientation, recent orientation and long-term prediction | Earth gravity pole, stations, topocentric ephemerides and Earth-fixed crossing coordinates. The predictive file is less accurate in the long term. |
+| Historical TT-UT1 | Historical time conversion. |
 | Astrometric weights: VFCC17 | Observation weights when the VFCC17 scheme is selected. |
 | Astrometric debias: FCCT14 and EFCC18 | Catalogue corrections when the corresponding debias model is selected. |
 
-For epochs beyond the available C04 data, Trajecta uses extrapolated and
-modelled Earth-orientation values rather than measurements. This can affect
-near-Earth trajectory calculations.
+The time-varying Earth gravity pole uses PCK when it covers the epoch. Outside
+PCK coverage, the gravity model falls back to C04; beyond its observed records,
+the pole is extrapolated rather than measured. The predictive PCK also contains
+predictions, not measured future orientations. These choices can affect near-Earth
+trajectory calculations. Station and crossing coordinates use PCK independently
+of the gravity-pole setting.
 
-When finals2000A does not cover an epoch, other time data or an approximation
-may be used. If C04 data are missing, the gravity model uses a nominal pole.
+UT1 conversions require observed C04 coverage or the historical TT-UT1 table.
+The bundled C04 series is used from 19 January 1972 through 15 January 2023;
+earlier records in the file are not loaded. PCK provides orientation for
+later epochs, but not an independent UT1 time conversion. If neither PCK nor
+C04 is available for the gravity pole, the model uses a nominal pole.
 Missing VFCC17 rules fall back to a weight of one arcsecond. Check the selected
 weighting and debias settings as well as the source status before a fit.
 
 ## Check and update sources
 
 The warning icon beside **Data sources** draws attention to a source that
-needs checking, a pending restart or an available observatory update. Open the
+needs checking, a pending restart or an available data update. Open the
 dialog to see the current status.
 
 ![Data sources warning in the sidebar](../../assets/data-sources/sidebar-warning.png)
@@ -54,8 +63,13 @@ dialog to see the current status.
   be **Verified on disk**, **Missing** or **Invalid**. Some entries report that
   a previously loaded file is no longer on disk.
 - Use **Check again** to refresh source status and check the observatory
-  catalogues for updates. An **Update** button appears when a catalogue update
-  is available.
+  catalogues and Earth PCK files for updates. PCK updates are also checked
+  when the dialog opens. An **Update** button appears beside each available
+  update; files are downloaded only when selected.
+- PCK updates are checked separately for the historical, recent and predictive
+  files. A downloaded file is checked for ITRF93 coverage and prepared for
+  installation when Trajecta next starts. The existing file is kept if the
+  download or installation fails.
 - Use **Download SB441** if you need massive-asteroid perturbations and the
   ephemeris is not available.
 - Restart Trajecta when the dialog asks you to reload changed data. Also check
@@ -71,12 +85,12 @@ object, use **Add Gaia FPR and re-solve** on the solution page.
 
 ## Where files are stored
 
-The installed application includes the correction tables and Earth-orientation
-files. The planetary ephemeris and observatory catalogues are stored in the
-user data directory, separately from the application binaries:
+On Windows and Linux, the installer places the three Earth PCK files, both C04 files and `ET-UT.dat`
+in the user data directory, alongside the planetary ephemeris and observatory catalogues.
+PCK updates are stored there too:
 
-- **Windows:** `%LOCALAPPDATA%\Trajecta\Trajecta\`, in the `ephemerides` and
-  `observatories` folders.
+- **Windows:** `%LOCALAPPDATA%\Trajecta\Trajecta\`, in the `ephemerides`,
+  `observatories` and `earth_orientation` folders.
 - **Linux:** `~/.local/share/Trajecta/Trajecta/` by default. If `XDG_DATA_HOME`
   is set, it replaces `~/.local/share`.
 

@@ -6,6 +6,7 @@
 #include "orbital_core/forces/EarthJ2.h"
 #include "orbital_core/TimeScale.h"
 #include "earth_orientation/EarthOrientation.h"
+#include "earth_orientation/EarthPck.h"
 #include "earth_orientation/EarthRotation.h"
 #include <cmath>
 #include <filesystem>
@@ -53,8 +54,8 @@ TEST(NutationReferenceModel, DynamicalPoleMatchesRotsys2044)
 
 TEST_F(EarthJ2Test, RotatingPoleAndZonalForceMatchPotential)
 {
-	if (!m_de440->isAvailable() || !orbital_core::earthOrientation().isAvailable())
-		GTEST_SKIP() << "DE440 or C04 data unavailable";
+	if (!m_de440->isAvailable())
+		GTEST_SKIP() << "DE440 data unavailable";
 
 	orbital_core::forces::ForceContext ctx;
 	ctx.R = {2.5e-5, -1.7e-5, 2.0e-5};
@@ -68,10 +69,15 @@ TEST_F(EarthJ2Test, RotatingPoleAndZonalForceMatchPotential)
 
 	for (const double mjd : {60000.0, 61000.0}) {
 		ctx.setEpochMjd(mjd);
-		const double tt = orbital_core::time::fromMjdTdb(mjd, orbital_core::time::Scale::TT);
-		const auto eop = orbital_core::earthOrientation().lookupMjdTt(tt);
-		ASSERT_TRUE(eop.valid);
-		const Vec3D p = Helpers::ecvToEcl(EarthRotation::WithEop::poleEquatorialMjd(tt, eop));
+		Vec3D pole, poleVelocity;
+		if (!orbital_core::earthPckState(mjd, {0.0, 0.0, 1.0}, pole, poleVelocity)) {
+			const double tt = orbital_core::time::fromMjdTdb(mjd, orbital_core::time::Scale::TT);
+			const auto eop = orbital_core::earthOrientation().lookupMjdTt(tt);
+			if (!eop.valid)
+				GTEST_SKIP() << "Neither PCK nor C04 data available";
+			pole = EarthRotation::WithEop::poleEquatorialMjd(tt, eop);
+		}
+		const Vec3D p = Helpers::ecvToEcl(pole);
 		const Eigen::Vector3d axis = Eigen::Vector3d(p.x, p.y, p.z).normalized();
 		const Eigen::Vector3d r(ctx.R.x, ctx.R.y, ctx.R.z);
 		const auto potential = [&](const Eigen::Vector3d& pos) {
@@ -227,8 +233,8 @@ TEST_F(EarthJ2Test, AllZonalConfigurationsMatchStateDifferences)
 				return Eigen::Vector3d(value.x, value.y, value.z);
 			};
 			for (int col = 0; col < 3; ++col)
-				numerical.col(col) = (8 * (sample(col, h) - sample(col, -h)) -
-				                      (sample(col, 2 * h) - sample(col, -2 * h))) / (12 * h);
+				numerical.col(col) =
+				    (8 * (sample(col, h) - sample(col, -h)) - (sample(col, 2 * h) - sample(col, -2 * h))) / (12 * h);
 			EXPECT_LT((dr - numerical).norm(), std::max(dr.norm(), 1e-30) * 1e-7);
 			EXPECT_TRUE(dv.isZero(0.0));
 		}

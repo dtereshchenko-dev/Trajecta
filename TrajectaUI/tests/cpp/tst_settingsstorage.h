@@ -20,7 +20,8 @@
 class TestSettingsStorage : public QObject {
 	Q_OBJECT
 
-private slots:
+   private slots:
+
 	void migratesAllValuesOnce()
 	{
 		QTemporaryDir directory;
@@ -147,10 +148,14 @@ private slots:
 	{
 		QTemporaryDir directory;
 		QVERIFY(directory.isValid());
-		const QString name = QStringLiteral("SettingsMigrationTest-") + QUuid::createUuid().toString(QUuid::WithoutBraces);
+		const QString name =
+		    QStringLiteral("SettingsMigrationTest-") + QUuid::createUuid().toString(QUuid::WithoutBraces);
 		QSettings source(QSettings::NativeFormat, QSettings::UserScope, name, QStringLiteral("Test"));
 		source.setFallbacksEnabled(false);
-		const auto cleanup = qScopeGuard([&source] { source.clear(); source.sync(); });
+		const auto cleanup = qScopeGuard([&source] {
+			source.clear();
+			source.sync();
+		});
 		source.setValue("optimizer/pertEnabled", true);
 		source.setValue("optimizer/planetMask", 6399u);
 		source.setValue("optimizer/integratorInitialStepDays", 2.5);
@@ -171,15 +176,20 @@ private slots:
 	{
 		QTemporaryDir directory;
 		QVERIFY(directory.isValid());
-		const QString name = QStringLiteral("SettingsMigrationTest-") + QUuid::createUuid().toString(QUuid::WithoutBraces);
+		const QString name =
+		    QStringLiteral("SettingsMigrationTest-") + QUuid::createUuid().toString(QUuid::WithoutBraces);
 		QSettings source(QSettings::NativeFormat, QSettings::UserScope, name, QStringLiteral("Test"));
 		source.setFallbacksEnabled(false);
-		const auto cleanup = qScopeGuard([&source] { source.clear(); source.sync(); });
+		const auto cleanup = qScopeGuard([&source] {
+			source.clear();
+			source.sync();
+		});
 		const QString optimizerKey = QStringLiteral("Software\\%1\\Test\\optimizer").arg(name);
 		const QString childKey = optimizerKey + QStringLiteral("\\photometry");
 		HKEY key = nullptr;
 		QCOMPARE(RegCreateKeyExW(HKEY_CURRENT_USER, reinterpret_cast<LPCWSTR>(childKey.utf16()), 0, nullptr, 0,
-		                         KEY_WRITE, nullptr, &key, nullptr), LSTATUS(ERROR_SUCCESS));
+		                         KEY_WRITE, nullptr, &key, nullptr),
+		         LSTATUS(ERROR_SUCCESS));
 		RegCloseKey(key);
 		const QString path = directory.filePath("new.ini");
 		QSettings result(path, QSettings::IniFormat);
@@ -187,8 +197,8 @@ private slots:
 		result.sync();
 		QVERIFY(SettingsStorage::migrate(source, path, true));
 		key = nullptr;
-		const LSTATUS status = RegOpenKeyExW(HKEY_CURRENT_USER, reinterpret_cast<LPCWSTR>(optimizerKey.utf16()), 0,
-		                                     KEY_READ, &key);
+		const LSTATUS status =
+		    RegOpenKeyExW(HKEY_CURRENT_USER, reinterpret_cast<LPCWSTR>(optimizerKey.utf16()), 0, KEY_READ, &key);
 		if (status == ERROR_SUCCESS)
 			RegCloseKey(key);
 		QCOMPARE(status, LSTATUS(ERROR_FILE_NOT_FOUND));

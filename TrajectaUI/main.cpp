@@ -35,7 +35,9 @@ int main(int argc, char* argv[])
 	if (!logDir.isEmpty()) {
 		orbital_core::setObservatoryDataDirectory(QDir(logDir).filePath("observatories").toStdWString());
 		orbital_core::setEphemerisDataDirectory(QDir(logDir).filePath("ephemerides").toStdWString());
+		orbital_core::setEarthPckDataDirectory(QDir(logDir).filePath("earth_orientation").toStdWString());
 	}
+	EarthPckUpdate::applyPending();
 	QDir().mkpath(logDir + "/log");
 	Logger::setLogFile((logDir + "/log/process.log").toStdString());
 

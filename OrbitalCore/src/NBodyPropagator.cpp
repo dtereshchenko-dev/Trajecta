@@ -705,17 +705,19 @@ std::optional<IntegratedStateFull> NBodyPropagator::DenseTrajectory::at(double m
 	if (mjd == epochMjd)
 		return initial;
 	const double tolerance = 2.0 * std::numeric_limits<double>::epsilon() * std::max(1.0, std::abs(mjd));
-	const auto it = std::lower_bound(steps.begin(), steps.end(), mjd, [tolerance](const DenseIntegratedStep& step, double t) {
-		return std::max(step.beginMjd, step.endMjd) + tolerance < t;
-	});
+	const auto it =
+	    std::lower_bound(steps.begin(), steps.end(), mjd, [tolerance](const DenseIntegratedStep& step, double t) {
+		    return std::max(step.beginMjd, step.endMjd) + tolerance < t;
+	    });
 	if (it == steps.end() || mjd < std::min(it->beginMjd, it->endMjd) - tolerance || !it->evaluate)
 		return std::nullopt;
 	return it->evaluate(mjd);
 }
 
-NBodyPropagator::DenseTrajectory NBodyPropagator::propagateDenseMjd(
-    const Vec3D& R0, const Vec3D& V0, double epochMjd, double firstMjd, double lastMjd, const NonGravModel& ng,
-    bool variational, bool sensitivities) const
+NBodyPropagator::DenseTrajectory NBodyPropagator::propagateDenseMjd(const Vec3D& R0, const Vec3D& V0, double epochMjd,
+                                                                    double firstMjd, double lastMjd,
+                                                                    const NonGravModel& ng, bool variational,
+                                                                    bool sensitivities) const
 {
 	if (!std::isfinite(epochMjd) || !std::isfinite(firstMjd) || !std::isfinite(lastMjd) || firstMjd > lastMjd ||
 	    (sensitivities && !variational))
@@ -735,11 +737,13 @@ NBodyPropagator::DenseTrajectory NBodyPropagator::propagateDenseMjd(
 }
 
 void NBodyPropagator::integrateDenseSegment(DenseTrajectory& trajectory, const IntegratedStateFull& initial,
-                                            double epochMjd, double targetMjd, const NonGravModel& ng,
-                                            bool variational, bool sensitivities) const
+                                            double epochMjd, double targetMjd, const NonGravModel& ng, bool variational,
+                                            bool sensitivities) const
 {
 	auto options = integrationOptions();
-	options.denseStepObserver = [&trajectory](DenseIntegratedStep step) { trajectory.steps.push_back(std::move(step)); };
+	options.denseStepObserver = [&trajectory](DenseIntegratedStep step) {
+		trajectory.steps.push_back(std::move(step));
+	};
 	const std::array targets{targetMjd};
 	if (sensitivities) {
 		std::array<IntegratedStateFull, 1> output;
@@ -757,17 +761,19 @@ void NBodyPropagator::integrateDenseSegment(DenseTrajectory& trajectory, const I
 void NBodyPropagator::extendDenseBackwardMjd(DenseTrajectory& trajectory, double firstMjd, const NonGravModel& ng,
                                              bool variational, bool sensitivities) const
 {
-	const double current = trajectory.steps.empty() ? trajectory.epochMjd :
-	    std::min(trajectory.steps.front().beginMjd, trajectory.steps.front().endMjd);
+	const double current = trajectory.steps.empty()
+	                           ? trajectory.epochMjd
+	                           : std::min(trajectory.steps.front().beginMjd, trajectory.steps.front().endMjd);
 	if (!std::isfinite(firstMjd) || firstMjd >= current || (sensitivities && !variational))
 		throw std::invalid_argument("Invalid dense trajectory extension");
 	const auto state = trajectory.at(current);
 	if (!state)
 		throw std::runtime_error("Dense trajectory has no initial state for extension");
 	integrateDenseSegment(trajectory, *state, current, firstMjd, ng, variational, sensitivities);
-	std::sort(trajectory.steps.begin(), trajectory.steps.end(), [](const DenseIntegratedStep& a, const DenseIntegratedStep& b) {
-		return std::min(a.beginMjd, a.endMjd) < std::min(b.beginMjd, b.endMjd);
-	});
+	std::sort(trajectory.steps.begin(), trajectory.steps.end(),
+	          [](const DenseIntegratedStep& a, const DenseIntegratedStep& b) {
+		          return std::min(a.beginMjd, a.endMjd) < std::min(b.beginMjd, b.endMjd);
+	          });
 }
 
 std::vector<NBodyPropagator::PropagationResult> NBodyPropagator::propagateAllWithStmMjd(

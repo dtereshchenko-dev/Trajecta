@@ -442,8 +442,7 @@ namespace Calculations {
 			if (residual == 0.0)
 				break;
 			const double next = anomaly - residual / (e * std::cosh(anomaly) - 1.0);
-			if (std::isfinite(next) &&
-			    std::abs(next - anomaly) <= tolerance * std::max(1.0, std::abs(next))) {
+			if (std::isfinite(next) && std::abs(next - anomaly) <= tolerance * std::max(1.0, std::abs(next))) {
 				anomaly = next;
 				break;
 			}

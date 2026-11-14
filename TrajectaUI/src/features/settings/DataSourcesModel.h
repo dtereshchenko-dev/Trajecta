@@ -9,6 +9,7 @@
 #include "orbital_core/RuntimeData.h"
 #include "features/settings/Sb441Download.h"
 #include "features/settings/ObservatoryUpdate.h"
+#include "features/settings/EarthPckUpdate.h"
 
 class FitSettingsAggregator;
 
@@ -29,6 +30,7 @@ class DataSourcesModel : public QObject {
 	Q_PROPERTY(bool asteroidsAvailable READ asteroidsAvailable CONSTANT)
 	Q_PROPERTY(Sb441Download* sb441Download READ sb441Download CONSTANT)
 	Q_PROPERTY(ObservatoryUpdate* observatoryUpdate READ observatoryUpdate CONSTANT)
+	Q_PROPERTY(EarthPckUpdate* earthPckUpdate READ earthPckUpdate CONSTANT)
 
    public:
 	explicit DataSourcesModel(FitSettingsAggregator* settings = nullptr, QObject* parent = nullptr);
@@ -51,7 +53,7 @@ class DataSourcesModel : public QObject {
 	bool hasWarning() const
 	{
 		return (m_checked && (m_unavailableCount > 0 || m_selectedUnavailableCount > 0 || m_restartRequired)) ||
-		       m_observatoryUpdate.availableCount() > 0;
+		       m_observatoryUpdate.availableCount() > 0 || m_earthPckUpdate.availableCount() > 0;
 	}
 
 	QString readinessMessage() const { return m_readinessMessage; }
@@ -64,6 +66,8 @@ class DataSourcesModel : public QObject {
 
 	ObservatoryUpdate* observatoryUpdate() { return &m_observatoryUpdate; }
 
+	EarthPckUpdate* earthPckUpdate() { return &m_earthPckUpdate; }
+
 	Q_INVOKABLE void refresh();
 
    signals:
@@ -75,6 +79,7 @@ class DataSourcesModel : public QObject {
 	FitSettingsAggregator* m_settings;
 	Sb441Download m_sb441Download;
 	ObservatoryUpdate m_observatoryUpdate;
+	EarthPckUpdate m_earthPckUpdate;
 	QFutureWatcher<std::vector<orbital_core::RuntimeDataEntry>> m_watcher;
 	QFileSystemWatcher m_files;
 	QTimer m_debounce;

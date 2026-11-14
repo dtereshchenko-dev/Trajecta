@@ -31,19 +31,20 @@ namespace orbital_core {
 
 	enum class EarthOrientationProfile {
 		IAU1980,  // C04/IAU1980, native 80-column records and consistency corrections.
-		IAU2000,  // Bulletin A xp/yp, UT1 and IAU2000A dX/dY.
 		FullC04,  // Same interpolation/corrections, without native record truncation.
 	};
 
 	class ORBITAL_CORE_API EarthOrientation {
 	   public:
 		explicit EarthOrientation(const std::filesystem::path& dataDirectory,
-		                          EarthOrientationProfile profile = EarthOrientationProfile::IAU1980);
+		                          EarthOrientationProfile profile = EarthOrientationProfile::IAU1980,
+		                          const std::filesystem::path& orientationDirectory = {});
 		EarthOrientation(const EarthOrientation&) = delete;
 		EarthOrientation& operator=(const EarthOrientation&) = delete;
 		~EarthOrientation();
 
 		[[nodiscard]] EarthOrientationSample lookupMjdTt(double mjdTt) const noexcept;
+		[[nodiscard]] bool coversObservedMjdTt(double mjdTt) const noexcept;
 		[[nodiscard]] bool ttToUt1Mjd(double mjdTt, double& mjdUt1) const noexcept;
 		[[nodiscard]] bool ut1ToTtSeconds(double mjdUt1, double& seconds) const noexcept;
 		[[nodiscard]] EarthOrientationProfile profile() const noexcept;

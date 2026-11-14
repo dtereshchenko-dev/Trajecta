@@ -35,13 +35,13 @@ namespace orbital_core::fit {
 			return inputs;
 		}
 
-		obs::DenseLightTimeSeries denseEmissionStates(
-		    const Orbit& orbit, const LightTimeInputs& inputs, const NBodyPropagator& propagator,
-		    const NonGravModel& ng, bool variational, bool sensitivities)
+		obs::DenseLightTimeSeries denseEmissionStates(const Orbit& orbit, const LightTimeInputs& inputs,
+		                                              const NBodyPropagator& propagator, const NonGravModel& ng,
+		                                              bool variational, bool sensitivities)
 		{
-			return obs::propagateDenseLightTimeSeries(orbit.getR(), orbit.getV() * Constants::GAUSS_K,
-			                                          orbit.epochMjd(), inputs.epochs, inputs.observers, inputs.optical,
-			                                          propagator, ng, variational, sensitivities);
+			return obs::propagateDenseLightTimeSeries(orbit.getR(), orbit.getV() * Constants::GAUSS_K, orbit.epochMjd(),
+			                                          inputs.epochs, inputs.observers, inputs.optical, propagator, ng,
+			                                          variational, sensitivities);
 		}
 
 		obs::LightTimeSeries emissionStates(const Orbit& orbit, const LightTimeInputs& inputs,
@@ -49,8 +49,8 @@ namespace orbital_core::fit {
 		                                    const NBodyPropagator& propagator, const NonGravModel& ng)
 		{
 			const Vec3D velocity = orbit.getV() * Constants::GAUSS_K;
-			return obs::solveLightTimeSeries(orbit.getR(), velocity, orbit.epochMjd(),
-			                                 inputs.epochs, reception, inputs.observers, inputs.optical, nBody, propagator, ng);
+			return obs::solveLightTimeSeries(orbit.getR(), velocity, orbit.epochMjd(), inputs.epochs, reception,
+			                                 inputs.observers, inputs.optical, nBody, propagator, ng);
 		}
 
 	}  // namespace
@@ -203,10 +203,11 @@ namespace orbital_core::fit {
 			}
 			const NBodyPropagator::StateVel state{rReception + vReception * emission.emissionOffsetDays[i], vReception};
 			const auto position = obs::apparentEmissionPosition(state, emission.emissionMjd[i], observation.mjdTdb,
-			                                               emission.emissionOffsetDays[i]);
+			                                                    emission.emissionOffsetDays[i]);
 			const auto ray = position - observation.earthR - observation.observerOffsetEclAu;
-			emissionJacobians[i] << obs::emissionPositionFactor(ray, state.V + obs::sunVelocityMjd(emission.emissionMjd[i])),
-			                        Eigen::Matrix3d::Zero();
+			emissionJacobians[i] << obs::emissionPositionFactor(ray,
+			                                                    state.V + obs::sunVelocityMjd(emission.emissionMjd[i])),
+			    Eigen::Matrix3d::Zero();
 			emissionPositions[i] = position;
 			emissionVelocities[i] = state.V;
 		}
@@ -239,7 +240,8 @@ namespace orbital_core::fit {
 			transport.middleCols<3>(3) *= Constants::GAUSS_K;
 			if (nAcols > 0) {
 				for (int col = 0; col < nAcols; ++col)
-					transport.col(6 + col) = dense.variationalStates[i].Sens.col(ng.sensitivityColumnForFitParameter(col));
+					transport.col(6 + col) =
+					    dense.variationalStates[i].Sens.col(ng.sensitivityColumnForFitParameter(col));
 			}
 
 			out.stateJ.block(row, 0, 2, jacCols) =
@@ -282,8 +284,10 @@ namespace orbital_core::fit {
 					res[row] = obs.radar->dopplerHz->value - prediction.dopplerHz;
 				continue;
 			}
-			Vec3D R_eq = toTopocentric(orbital_core::obs::apparentEmissionPosition(emission.states[i], emission.emissionMjd[i], obs.mjdTdb,
-			                                                       emission.emissionOffsetDays[i]), obs);
+			Vec3D R_eq =
+			    toTopocentric(orbital_core::obs::apparentEmissionPosition(emission.states[i], emission.emissionMjd[i],
+			                                                              obs.mjdTdb, emission.emissionOffsetDays[i]),
+			                  obs);
 			auto [raModel, decModel] = toRADEC(R_eq);
 
 			const double dRA = Helpers::wrapPi(obs.raObs - raModel);
@@ -348,8 +352,8 @@ namespace orbital_core::fit {
 				positions[i] = emission.states[i].R;
 				continue;
 			}
-			positions[i] = obs::apparentEmissionPosition(emission.states[i], emission.emissionMjd[i], observations_[i].mjdTdb,
-			                                        emission.emissionOffsetDays[i]);
+			positions[i] = obs::apparentEmissionPosition(emission.states[i], emission.emissionMjd[i],
+			                                             observations_[i].mjdTdb, emission.emissionOffsetDays[i]);
 		}
 		return positions;
 	}

@@ -62,9 +62,9 @@ namespace orbital_core::obs {
 	}
 
 	template <typename Sample>
-	DenseLightTimeSeries solveDenseLightTimeSeries(
-	    Sample&& sample, const std::vector<double>& receptionMjd,
-	    const std::vector<Vec3D>& observers, const std::vector<bool>& optical)
+	DenseLightTimeSeries solveDenseLightTimeSeries(Sample&& sample, const std::vector<double>& receptionMjd,
+	                                               const std::vector<Vec3D>& observers,
+	                                               const std::vector<bool>& optical)
 	{
 		const std::size_t count = receptionMjd.size();
 		if (observers.size() != count || optical.size() != count)
@@ -112,10 +112,12 @@ namespace orbital_core::obs {
 		return result;
 	}
 
-	inline DenseLightTimeSeries propagateDenseLightTimeSeries(
-	    const Vec3D& initialR, const Vec3D& initialV, double epochMjd, const std::vector<double>& epochs,
-	    const std::vector<Vec3D>& observers, const std::vector<bool>& optical, const NBodyPropagator& propagator,
-	    const NonGravModel& ng, bool variational, bool sensitivities)
+	inline DenseLightTimeSeries propagateDenseLightTimeSeries(const Vec3D& initialR, const Vec3D& initialV,
+	                                                          double epochMjd, const std::vector<double>& epochs,
+	                                                          const std::vector<Vec3D>& observers,
+	                                                          const std::vector<bool>& optical,
+	                                                          const NBodyPropagator& propagator, const NonGravModel& ng,
+	                                                          bool variational, bool sensitivities)
 	{
 		if (observers.size() != epochs.size() || optical.size() != epochs.size())
 			throw std::invalid_argument("Light-time input size mismatch");
@@ -126,15 +128,16 @@ namespace orbital_core::obs {
 		for (const auto& observer : observers)
 			observerRadius = std::max(observerRadius, observer.magnitude());
 		const double span = std::max(std::abs(*first - epochMjd), std::abs(*last - epochMjd));
-		const double margin = std::max(0.25, 2.0 * (initialR.magnitude() + initialV.magnitude() * span +
-		                                             observerRadius + 1.0) / Constants::AU_PER_DAY);
+		const double margin =
+		    std::max(0.25, 2.0 * (initialR.magnitude() + initialV.magnitude() * span + observerRadius + 1.0) /
+		                       Constants::AU_PER_DAY);
 		double start = *first - margin;
 		if (auto* source = getDefaultEphemerisSource()) {
 			if (source->barycentricSunMjd(*first) && !source->barycentricSunMjd(start))
 				start = *first;
 		}
-		auto trajectory = propagator.propagateDenseMjd(initialR, initialV, epochMjd, start, *last, ng,
-		                                               variational, sensitivities);
+		auto trajectory =
+		    propagator.propagateDenseMjd(initialR, initialV, epochMjd, start, *last, ng, variational, sensitivities);
 		auto sample = [&](double mjd) {
 			auto state = trajectory.at(mjd);
 			if (!state && mjd < start) {
@@ -148,11 +151,13 @@ namespace orbital_core::obs {
 	}
 
 	// Solve all emission epochs together so one integration covers the complete arc.
-	inline LightTimeSeries solveLightTimeSeries(
-	    const Vec3D& initialR, const Vec3D& initialV, double epochMjd, const std::vector<double>& receptionMjd,
-	    const std::vector<NBodyPropagator::StateVel>& receptionStates, const std::vector<Vec3D>& observerPositions,
-	    const std::vector<bool>& optical, bool nBody, const NBodyPropagator& propagator, const NonGravModel& ng,
-	    std::stop_token cancel = {})
+	inline LightTimeSeries solveLightTimeSeries(const Vec3D& initialR, const Vec3D& initialV, double epochMjd,
+	                                            const std::vector<double>& receptionMjd,
+	                                            const std::vector<NBodyPropagator::StateVel>& receptionStates,
+	                                            const std::vector<Vec3D>& observerPositions,
+	                                            const std::vector<bool>& optical, bool nBody,
+	                                            const NBodyPropagator& propagator, const NonGravModel& ng,
+	                                            std::stop_token cancel = {})
 	{
 		const std::size_t count = receptionMjd.size();
 		if (receptionStates.size() != count || observerPositions.size() != count || optical.size() != count)
@@ -172,8 +177,8 @@ namespace orbital_core::obs {
 			if (cancel.stop_requested())
 				return {};
 			if (nBody)
-				result.states = propagator.propagateAllWithVelocityMjd(initialR, initialV, epochMjd,
-				                                                         result.emissionMjd, ng, cancel);
+				result.states = propagator.propagateAllWithVelocityMjd(initialR, initialV, epochMjd, result.emissionMjd,
+				                                                       ng, cancel);
 			else {
 				result.states.resize(count);
 				for (std::size_t i = 0; i < count; ++i) {
@@ -192,13 +197,14 @@ namespace orbital_core::obs {
 			for (std::size_t i = 0; i < count; ++i) {
 				if (!optical[i])
 					continue;
-				const Vec3D ray = result.states[i].R + sunPositionMjd(result.emissionMjd[i]) - receptionSun[i] -
-				                  observerPositions[i];
+				const Vec3D ray =
+				    result.states[i].R + sunPositionMjd(result.emissionMjd[i]) - receptionSun[i] - observerPositions[i];
 				const double distance = ray.magnitude();
 				if (!std::isfinite(distance) || !(distance > 0.0))
 					throw std::runtime_error("Invalid light-time distance");
 				next[i] = receptionMjd[i] - distance / Constants::AU_PER_DAY;
-				result.emissionOffsetDays[i] = (receptionMjd[i] - result.emissionMjd[i]) - distance / Constants::AU_PER_DAY;
+				result.emissionOffsetDays[i] =
+				    (receptionMjd[i] - result.emissionMjd[i]) - distance / Constants::AU_PER_DAY;
 				const double ulp = std::nextafter(result.emissionMjd[i], std::numeric_limits<double>::infinity()) -
 				                   result.emissionMjd[i];
 				if (std::abs(next[i] - result.emissionMjd[i]) > ulp)

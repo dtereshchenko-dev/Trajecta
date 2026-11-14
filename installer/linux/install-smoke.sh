@@ -13,6 +13,10 @@ mkdir -p "$HOME/.local/share/applications"
 target="$tmp/installed"
 "$setup" --root "$target" --default-answer --confirm-command --accept-licenses install
 test -s "$XDG_DATA_HOME/Trajecta/Trajecta/ephemerides/linux_p1550p2650.440"
+for name in earth_historic.bpc earth_latest.bpc earth_predict.bpc eopc04.62-now eopc04.cnc ET-UT.dat; do
+    test -s "$XDG_DATA_HOME/Trajecta/Trajecta/earth_orientation/$name"
+    test ! -e "$target/usr/bin/earth_orientation/$name"
+done
 test ! -e "$target/usr/share/trajecta-seed"
 test ! -e "$target/usr/bin/linux_p1550p2650.440"
 test -f "$target/usr/plugins/wayland-graphics-integration-client/libqt-plugin-wayland-egl.so"

@@ -87,6 +87,7 @@ set(CLIENT_SOURCES
     src/features/settings/DataSourcesModel.h src/features/settings/DataSourcesModel.cpp
     src/features/settings/Sb441Download.h src/features/settings/Sb441Download.cpp
     src/features/settings/ObservatoryUpdate.h src/features/settings/ObservatoryUpdate.cpp
+    src/features/settings/EarthPckUpdate.h src/features/settings/EarthPckUpdate.cpp
     src/features/settings/ApplicationUpdate.h src/features/settings/ApplicationUpdate.cpp
     src/app/ApplicationSession.h src/app/ApplicationSession.cpp
     src/features/solution/SolutionViewModel.h src/features/solution/SolutionViewModel.cpp
@@ -316,6 +317,9 @@ if(WIN32)
             $<TARGET_FILE_DIR:TrajectaUI>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:OrbitalCore>
+            $<TARGET_FILE_DIR:TrajectaUI>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_RUNTIME_DLLS:OrbitalCore>
             $<TARGET_FILE_DIR:TrajectaUI>
         DEPENDS OrbitalCore
         COMMAND_EXPAND_LISTS

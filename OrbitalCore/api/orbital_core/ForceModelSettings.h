@@ -6,9 +6,12 @@ namespace orbital_core {
 	[[nodiscard]] constexpr const char* relativityModeName(RelativityMode mode) noexcept
 	{
 		switch (mode) {
-			case RelativityMode::Full: return "full_eih";
-			case RelativityMode::SunOuter: return "sun_outer_eih";
-			case RelativityMode::Disabled: return "off";
+			case RelativityMode::Full:
+				return "full_eih";
+			case RelativityMode::SunOuter:
+				return "sun_outer_eih";
+			case RelativityMode::Disabled:
+				return "off";
 		}
 		return "unknown";
 	}
@@ -20,4 +23,4 @@ namespace orbital_core {
 		bool earthJ4{true};
 		bool rotatingEarthPole{true};
 	};
-}
+}  // namespace orbital_core

@@ -11,7 +11,14 @@ BaseDialog {
     acceptText: qsTr("Close")
     width: Math.min(650, parent ? parent.width - 40 : 650)
     height: Math.min(730, parent ? parent.height - 40 : 730)
-    onAboutToShow: sources.refresh()
+    function sourceGroup(id) {
+        if (id === "planetary" || id === "asteroids") return qsTr("Ephemerides")
+        if (id === "observatories" || id === "radar") return qsTr("Observatories")
+        if (id.indexOf("earth_pck_") === 0 || id === "c04" || id === "delta_t") return qsTr("Earth orientation and time")
+        if (id === "weights" || id.indexOf("debias_") === 0) return qsTr("Astrometric weights and corrections")
+        return qsTr("Other data")
+    }
+    onAboutToShow: { sources.refresh(); sources.earthPckUpdate.check() }
     contentItem: ColumnLayout {
         spacing: 8
         RowLayout {
@@ -22,7 +29,7 @@ BaseDialog {
                 font.pixelSize: 11
                 Layout.fillWidth: true
             }
-            CustomButton { iconName: "rotate-ccw"; flat: true; accessibleLabel: qsTr("Check again"); enabled: !dialog.sources.checking; onClicked: { dialog.sources.refresh(); dialog.sources.observatoryUpdate.check() } }
+            CustomButton { iconName: "rotate-ccw"; flat: true; accessibleLabel: qsTr("Check again"); enabled: !dialog.sources.checking; onClicked: { dialog.sources.refresh(); dialog.sources.observatoryUpdate.check(); dialog.sources.earthPckUpdate.check() } }
         }
         CustomText {
             visible: dialog.sources.restartRequired
@@ -54,9 +61,23 @@ BaseDialog {
                     delegate: ColumnLayout {
                         id: row
                         required property var modelData
-                        readonly property var updateState: dialog.sources.observatoryUpdate.states[row.modelData.id] || ({})
+                        required property int index
+                        readonly property bool pck: row.modelData.id.indexOf("earth_pck_") === 0
+                        readonly property string groupName: dialog.sourceGroup(row.modelData.id)
+                        readonly property bool firstInGroup: index === 0 || groupName !== dialog.sourceGroup((dialog.sources.entries[index - 1] || {}).id || "")
+                        readonly property var updateState: (pck ? dialog.sources.earthPckUpdate.states[row.modelData.id] : dialog.sources.observatoryUpdate.states[row.modelData.id]) || ({})
                         Layout.fillWidth: true
                         spacing: 4
+                        CustomText {
+                            visible: row.firstInGroup
+                            text: row.groupName
+                            color: AppTheme.accent
+                            font.pixelSize: 12
+                            font.weight: Font.DemiBold
+                            Layout.fillWidth: true
+                            Layout.topMargin: row.index === 0 ? 8 : 20
+                            Layout.bottomMargin: 2
+                        }
                         RowLayout {
                             Layout.fillWidth: true
                             Layout.topMargin: 12
@@ -66,18 +87,19 @@ BaseDialog {
                         CustomText { text: row.modelData.detail; secondary: true; font.pixelSize: 10; wrapMode: Text.Wrap; elide: Text.ElideNone; Layout.fillWidth: true }
                         CustomText { text: row.modelData.impact; secondary: true; font.pixelSize: 10; wrapMode: Text.Wrap; elide: Text.ElideNone; Layout.fillWidth: true }
                         RowLayout {
-                            visible: !!row.updateState.available || !!row.updateState.checking
+                            visible: !!row.updateState.available || !!row.updateState.checking || !!row.updateState.downloading
                             Layout.fillWidth: true
                             Layout.topMargin: visible ? 5 : 0
                             CustomButton {
                                 objectName: "update-source-" + row.modelData.id
-                                visible: !!row.updateState.available
+                                visible: !!row.updateState.available && !row.updateState.downloading
                                 enabled: !dialog.sources.checking
                                 text: qsTr("Update")
                                 iconName: "download"
-                                onClicked: dialog.sources.observatoryUpdate.install(row.modelData.id)
+                                onClicked: row.pck ? dialog.sources.earthPckUpdate.install(row.modelData.id) : dialog.sources.observatoryUpdate.install(row.modelData.id)
                             }
                             CustomText { visible: !!row.updateState.checking; text: qsTr("Checking for updates..."); secondary: true; font.pixelSize: 10 }
+                            CustomText { visible: !!row.updateState.downloading; text: qsTr("Downloading..."); secondary: true; font.pixelSize: 10 }
                         }
                         CustomText {
                             visible: !!row.updateState.message

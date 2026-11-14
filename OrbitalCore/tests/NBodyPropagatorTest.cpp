@@ -7,6 +7,7 @@
 #include "orbital_core/Types.h"
 #include "orbital_core/TimeScale.h"
 #include "orbital_core/hazard/PlanetData.h"
+#include "orbital_core/hazard/BodyFixedFrame.h"
 #include "orbital_core/hazard/IntervalMonteCarlo.h"
 #include "orbital_core/perturbations/PlanetaryPerturbations.h"
 #include "orbital_core/perturbations/AsteroidPerturbations.h"
@@ -467,6 +468,47 @@ TEST(SurfaceStopTest, DetectsInteriorCrossingInEitherTimeDirection)
 				}
 			}
 		}
+	}
+}
+
+TEST(SurfaceStopTest, MissingBodyOrientationIsNotReportedAsMiss)
+{
+	class MoonWithoutLibration final : public IEphemerisSource {
+	   public:
+		EphemerisRecord queryJD(EphemerisPlanet, double jd) override { return {jd, Vec3D(1, 0, 0), Vec3D()}; }
+
+		std::vector<EphemerisRecord> fetchWindow(EphemerisPlanet, double, int) override { return {}; }
+
+		bool isAvailable() const override { return true; }
+
+		std::string name() const override { return "moon-without-libration"; }
+	} moon;
+
+	const auto previous = getDefaultEphemerisSource();
+	setDefaultEphemerisSource(&moon);
+
+	struct RestoreSource {
+		IEphemerisSource* source;
+
+		~RestoreSource() { setDefaultEphemerisSource(source); }
+	} restore{previous};
+
+	NBodyPropagator propagator(IntegratorKind::RA15);
+	constexpr double epoch = 2460000.5;
+	const double radius = orbital_core::hazard::planetRadiusKm(orbital_core::hazard::Planet::Moon);
+	EXPECT_THROW(propagator.propagateUntilSurface(Vec3D(1, .001, 0), Vec3D(0, -.01, 0), epoch, epoch + .01,
+	                                              EphemerisPlanet::Moon, radius, moon,
+	                                              NBodyPropagator::SurfaceShape::ReferenceEllipsoid),
+	             std::runtime_error);
+
+	constexpr double futureMjd = 200000.0;
+	if (!orbital_core::hazard::bodyFixedTransformMjd(orbital_core::hazard::Planet::Earth, futureMjd).valid) {
+		const double futureJd = orbital_core::time::jdFromMjd(futureMjd);
+		const double earthRadius = orbital_core::hazard::planetRadiusKm(orbital_core::hazard::Planet::Earth);
+		EXPECT_THROW(propagator.propagateUntilSurface(Vec3D(1, .001, 0), Vec3D(0, -.01, 0), futureJd, futureJd + .01,
+		                                              EphemerisPlanet::Earth, earthRadius, moon,
+		                                              NBodyPropagator::SurfaceShape::ReferenceEllipsoid),
+		             std::runtime_error);
 	}
 }
 
@@ -1249,8 +1291,8 @@ TEST_F(NBodyPropagatorTest, ConfiguredForcesPreserveFullStmNearEarth)
 				settings.earthJ3 = (mask & 2) != 0;
 				settings.earthJ4 = (mask & 4) != 0;
 				propagator.setForceModel(settings);
-				SCOPED_TRACE(::testing::Message() << "mode=" << static_cast<int>(mode) << " rotating=" << rotating
-				                                  << " mask=" << mask);
+				SCOPED_TRACE(::testing::Message()
+				             << "mode=" << static_cast<int>(mode) << " rotating=" << rotating << " mask=" << mask);
 				const auto result = propagator.propagateAllWithStm(r0, v0, epoch, {target});
 				ASSERT_EQ(result.size(), 1u);
 				constexpr double h = 1e-8;
@@ -1269,7 +1311,8 @@ TEST_F(NBodyPropagatorTest, ConfiguredForcesPreserveFullStmNearEarth)
 					const auto dv = (p[0].V - m[0].V) / (2 * h);
 					const std::array<double, 6> numerical{dr.x, dr.y, dr.z, dv.x, dv.y, dv.z};
 					for (int row = 0; row < 6; ++row)
-						EXPECT_NEAR(result[0].Phi(row, col), numerical[row], 5e-6 * std::max(1.0, std::abs(numerical[row])))
+						EXPECT_NEAR(result[0].Phi(row, col), numerical[row],
+						            5e-6 * std::max(1.0, std::abs(numerical[row])))
 						    << "row=" << row << " column=" << col;
 				}
 			}

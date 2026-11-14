@@ -69,7 +69,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$env:VCPKG_INSTALLATION_ROOT/bootstrap-vcpkg.bat" -disableMetrics
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe" install eigen3 nlohmann-json curl openssl gtest "gdal[core,openjpeg,png]"
+          & "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe" install eigen3 nlohmann-json curl openssl gtest cspice "gdal[core,openjpeg,png]"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
@@ -88,7 +88,8 @@ jobs:
             data/linux_p1550p2650.440
             data/debias/efcc18.dat
             data/debias/fcct14.dat
-          key: runtime-data-de440-efcc18-fcct14-v1
+            data/earth_orientation/*.bpc
+          key: runtime-data-de440-efcc18-fcct14-pck-v1
 
       - name: Prepare runtime data
         shell: pwsh
@@ -113,6 +114,14 @@ jobs:
 
           Get-CheckedFile 'https://ssd.jpl.nasa.gov/ftp/eph/planets/Linux/de440/linux_p1550p2650.440' `
             'data/linux_p1550p2650.440' '29915576D0A6555766B99485AC3056EE415E86DF4FCE282611C31AFB329AD062'
+
+          foreach ($pck in @(
+            @{ Remote = 'earth_620120_260806.bpc'; Name = 'earth_historic.bpc'; Hash = '652B02C0B3A5A283D393497F7F96E1FE4AA47EE6DCC035A089EB9E6B5DF86643' },
+            @{ Remote = 'earth_000101_270208_261112.bpc'; Name = 'earth_latest.bpc'; Hash = 'EB72AEF57BCEDB247E282510A881A608FE74E4D9E7869AAA130474F5EFE8DC54' },
+            @{ Remote = 'earth_2026_260806_2126_predict.bpc'; Name = 'earth_predict.bpc'; Hash = '9F565AB5AACCD33AFE54F3A1B20CB8B136636C31A0BD4C0986FAC722B931C280' }
+          )) {
+            Get-CheckedFile "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/$($pck.Remote)" "data/earth_orientation/$($pck.Name)" $pck.Hash
+          }
 
           New-Item -ItemType Directory -Force -Path 'data/debias' | Out-Null
           foreach ($table in @(
@@ -143,6 +152,7 @@ jobs:
             data/linux_p1550p2650.440
             data/debias/efcc18.dat
             data/debias/fcct14.dat
+            data/earth_orientation/*.bpc
           key: ${{ steps.runtime-data-cache.outputs.cache-primary-key }}
 
       - name: Configure

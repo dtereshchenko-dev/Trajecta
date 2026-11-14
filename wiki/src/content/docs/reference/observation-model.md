@@ -33,16 +33,17 @@ the observatory catalogue. A supported roving observation can instead supply
 its own terrestrial coordinates. Spacecraft observations use the supplied
 geocentric observer offset.
 
-The optical ground-station path combines Earth rotation, precession and
-nutation to obtain the observer position in the J2000 ecliptic frame. It uses
-the IAU 1976/1980 rotation path; polar motion is not applied in this path.
-UT1 is used for Earth rotation when available, with UTC used as a fallback.
-Earth's ephemeris position is then combined with the station offset.
+For optical and radar stations, Trajecta uses the Earth PCK to transform the
+terrestrial position and velocity from ITRF93 to J2000, then rotates them into
+ecliptic axes. Earth's DE440 state is combined with the station offset. The
+radar calculation evaluates the receiver at reception and the transmitter at
+transmission.
 
-Radar station positions use a separate Earth-orientation path for the transmitter
-and receiver. Radar prediction requires a valid Earth-orientation sample at
-the relevant epochs; the configured orientation model may provide extrapolated
-values outside the measured data interval. See
+When the PCK does not cover an epoch, the station calculation can use observed
+C04 or historical UT1 data with the IAU 1976/1980 rotation model. The historical
+path uses a nominal pole. Without suitable time data, the calculation reports
+an error. Historical and predictive PCKs have different coverage and
+accuracy; a prediction is not a measurement. See
 [Dynamics and time](../dynamics/#earth-orientation) for the data sources.
 
 ## Optical prediction

@@ -171,13 +171,14 @@ function Invoke-PayloadVerification {
     }
     $null = New-Item -ItemType Directory -Path $ReportDirectory -Force
     $required = @('Trajecta.exe', 'TrajectaCLI.exe', 'StrewnCLI.exe', 'OrbitalCore.dll', 'StrewnCore.dll',
-        'gdal.dll', 'libcurl.dll', 'Qt6Core.dll', 'Qt6Network.dll', 'platforms\qwindows.dll', 'tls\qschannelbackend.dll',
+        'gdal.dll', 'libcurl.dll', 'cspice.dll', 'Qt6Core.dll', 'Qt6Network.dll', 'platforms\qwindows.dll', 'tls\qschannelbackend.dll',
         'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll', 'vcomp140.dll',
         'share\proj\proj.db', 'share\gdal\grib2_table_4_2_0_0.csv',
         'linux_p1550p2650.440', 'OBSCODE.dat', 'RADCODE.dat',
         'debias\efcc18.dat', 'debias\fcct14.dat', 'weights\vfcc17.rules',
-        'earth_orientation\finals2000A.all', 'earth_orientation\eopc04.62-now', 'earth_orientation\eopc04.cnc',
-        'earth_orientation\ET-UT.dat')
+        'earth_orientation\eopc04.62-now', 'earth_orientation\eopc04.cnc',
+        'earth_orientation\ET-UT.dat', 'earth_orientation\earth_historic.bpc',
+        'earth_orientation\earth_latest.bpc', 'earth_orientation\earth_predict.bpc')
     foreach ($file in $required) {
         if (!(Test-Path -LiteralPath "$Payload\$file" -PathType Leaf) -or (Get-Item -LiteralPath "$Payload\$file").Length -eq 0) {
             throw "Missing/empty payload file: $file"
@@ -310,8 +311,9 @@ $binaries = [ordered]@{
 }
 $requiredData = @('linux_p1550p2650.440', 'OBSCODE.dat', 'RADCODE.dat',
     'debias\efcc18.dat', 'debias\fcct14.dat', 'weights\vfcc17.rules',
-    'earth_orientation\finals2000A.all', 'earth_orientation\eopc04.62-now', 'earth_orientation\eopc04.cnc',
-    'earth_orientation\ET-UT.dat')
+    'earth_orientation\eopc04.62-now', 'earth_orientation\eopc04.cnc',
+    'earth_orientation\ET-UT.dat', 'earth_orientation\earth_historic.bpc',
+    'earth_orientation\earth_latest.bpc', 'earth_orientation\earth_predict.bpc')
 foreach ($path in $binaries.Values) { Require-Path $path }
 foreach ($file in $requiredData) { Require-Path "$Repository\data\$file" }
 Require-Path "$BuildDirectory\StrewnField\StrewnCoreTests.exe"
@@ -411,6 +413,14 @@ foreach ($catalog in @(@('OBSCODE.dat', 'obscode.7z'), @('RADCODE.dat', 'radcode
         @('linux_p1550p2650.440', 'de440.7z'))) {
     Invoke-Checked $archivegen @("$payload\$($catalog[1])", "$payload\$($catalog[0])")
     Remove-StagedPath -Payload $payload -Relative $catalog[0]
+}
+foreach ($name in @('earth_historic', 'earth_latest', 'earth_predict')) {
+    Invoke-Checked $archivegen @("$payload\$name.7z", "$payload\earth_orientation\$name.bpc")
+    Remove-StagedPath -Payload $payload -Relative "earth_orientation\$name.bpc"
+}
+foreach ($file in @(@('eopc04.62-now', 'eopc04-data.7z'), @('eopc04.cnc', 'eopc04-corrections.7z'), @('ET-UT.dat', 'historical-time.7z'))) {
+    Invoke-Checked $archivegen @("$payload\$($file[1])", "$payload\earth_orientation\$($file[0])")
+    Remove-StagedPath -Payload $payload -Relative "earth_orientation\$($file[0])"
 }
 
 $manifest = [ordered]@{

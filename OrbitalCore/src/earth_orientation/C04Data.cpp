@@ -168,6 +168,8 @@ namespace orbital_core::earth_orientation_detail {
 
 		const auto& first = observed.front();
 		const auto& last = observed.back();
+		m_observedBegin = first.mjdTt;
+		m_observedEnd = last.mjdTt;
 
 		m_ut1Slope = (last.values[2] - first.values[2]) / (last.mjdTt - first.mjdTt);
 		m_ut1Begin = first.values[2] + m_ut1Slope * (m_begin - first.mjdTt);
@@ -271,6 +273,24 @@ namespace orbital_core::earth_orientation_detail {
 		}
 
 		return result;
+	}
+
+	bool C04Data::observedTtMinusUt1(double mjdTt, double& seconds) const noexcept
+	{
+		if (!coversObserved(mjdTt))
+			return false;
+		const auto upper = std::lower_bound(m_records.begin(), m_records.end(), mjdTt,
+		                                    [](const Record& record, double epoch) { return record.mjdTt < epoch; });
+		if (upper == m_records.end())
+			return false;
+		if (upper->mjdTt == mjdTt || upper == m_records.begin()) {
+			seconds = upper->values[2];
+			return true;
+		}
+		const auto& before = *(upper - 1);
+		const double fraction = (mjdTt - before.mjdTt) / (upper->mjdTt - before.mjdTt);
+		seconds = before.values[2] + fraction * (upper->values[2] - before.values[2]);
+		return std::isfinite(seconds);
 	}
 
 	EarthOrientationSample C04Data::lookupMjdTt(double mjdTt) const noexcept

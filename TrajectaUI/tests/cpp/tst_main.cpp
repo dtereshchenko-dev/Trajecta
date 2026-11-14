@@ -58,6 +58,8 @@ int main(int argc, char* argv[])
 	    QDir(QStringLiteral(ORBITAL_UI_SOURCE_DIR)).filePath("../data").toStdWString());
 	orbital_core::setEphemerisDataDirectory(
 	    QDir(QStringLiteral(ORBITAL_UI_SOURCE_DIR)).filePath("../data").toStdWString());
+	orbital_core::setEarthPckDataDirectory(
+	    QDir(QStringLiteral(ORBITAL_UI_SOURCE_DIR)).filePath("../data/earth_orientation").toStdWString());
 	if (qEnvironmentVariableIsSet("ORBITAL_DIAGNOSTICS_ONLY")) {
 		TestDiagnosticsModel test;
 		return runTest(&test, argc, argv);

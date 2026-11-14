@@ -10,6 +10,7 @@
 #include "EphemeridesContainer.h"
 #include "earth_orientation/EarthRotation.h"
 #include "earth_orientation/EarthOrientation.h"
+#include "earth_orientation/EarthPck.h"
 #include "obs/ObserverGeometry.h"
 
 using namespace Convertors;
@@ -119,12 +120,18 @@ ObsNode::ObsNode(const orbital_core::obs::ParsedObservation& data, const Observa
 	const double mjdUtc = hasSplitUtc ? static_cast<double>(utcMjdDay) + utcSecondsOfDay / 86400.0 : JD - 2400000.5;
 	const double mjdTdt = mjdUtc + ttOffsetSeconds() / 86400.0;
 	const double jdTdt = 2400000.5 + mjdTdt;
-	double mjdUt1 = mjdUtc;
-	(void)orbital_core::earthOrientation().ttToUt1Mjd(mjdTdt, mjdUt1);
-
-	const double gast =
-	    EarthRotation::Iau1976_1980::gmstRadiansMjd(mjdUt1) + EarthRotation::Iau1976_1980::equationOfEquinoxes(jdTdt);
-	LST = Helpers::wrapTwoPi(gast + Convertors::degreesToRadians(longitude));
+	const double lon = Convertors::degreesToRadians(longitude);
+	Vec3D equatorial, velocity;
+	if (orbital_core::earthPckState(epochMjdTdb(), Vec3D(std::cos(lon), std::sin(lon), 0.0), equatorial, velocity)) {
+		EarthRotation::Iau1976_1980::applyPrecessionNutation(jdTdt, equatorial, +1);
+		LST = Helpers::wrapTwoPi(std::atan2(equatorial.y, equatorial.x));
+	} else if (double mjdUt1; orbital_core::earthOrientation().ttToUt1Mjd(mjdTdt, mjdUt1)) {
+		const double gast = EarthRotation::Iau1976_1980::gmstRadiansMjd(mjdUt1) +
+		                    EarthRotation::Iau1976_1980::equationOfEquinoxes(jdTdt);
+		LST = Helpers::wrapTwoPi(gast + lon);
+	} else {
+		LST = std::numeric_limits<double>::quiet_NaN();
+	}
 
 	vector = Vec3D(cos(DEC) * cos(RA), cos(DEC) * sin(RA), sin(DEC));
 
@@ -138,11 +145,9 @@ ObsNode::ObsNode(const orbital_core::obs::ParsedObservation& data, const Observa
 		satelliteOffsetEclAu = Convertors::ecvToEcl(
 		    Vec3D(data.offsetX * scale, data.offsetY * scale, data.offsetZ * scale), Constants::EARTH_INCL);
 	} else {
-		obsVector =
-		    Vec3D(-Constants::EARTH_RADIUS_IN_AU * cosPhi * std::cos(LST),
-		          -Constants::EARTH_RADIUS_IN_AU * cosPhi * std::sin(LST), -Constants::EARTH_RADIUS_IN_AU * sinPhi);
-
-		EarthRotation::Iau1976_1980::applyPrecessionNutation(jdTdt, obsVector, -1);
+		const orbital_core::obs::ObserverData station{longitude, cosPhi, sinPhi, obsCode};
+		const auto offset = orbital_core::obs::groundObserverOffsetEclAuMjd(epochMjdTdb(), mjdUtc, station);
+		obsVector = Convertors::ecvToEcl(offset * -1.0, -Constants::EARTH_INCL);
 	}
 
 	EphemeridesContainer eph(EphemeridesContainer::Planet::Sun);

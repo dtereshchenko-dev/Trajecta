@@ -31,10 +31,11 @@ class PerturbationsSettings : public QObject {
 	[[nodiscard]] bool useSb441() const noexcept { return m_useSb441; }
 
 	[[nodiscard]] double integratorInitialStepDays() const noexcept { return m_integratorInitialStepDays; }
+
 	[[nodiscard]] orbital_core::ForceModelSettings forceModel() const noexcept
 	{
-		return {static_cast<orbital_core::RelativityMode>(m_relativityMode), m_earthJ2, m_earthJ3,
-		        m_earthJ4, m_rotatingEarthPole};
+		return {static_cast<orbital_core::RelativityMode>(m_relativityMode), m_earthJ2, m_earthJ3, m_earthJ4,
+		        m_rotatingEarthPole};
 	}
 
 	void setPlanetMask(uint v)

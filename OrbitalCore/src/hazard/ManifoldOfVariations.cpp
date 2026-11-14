@@ -467,9 +467,9 @@ namespace orbital_core::hazard {
 				if (trajectory.epochMjdTdb > scan.startMjdTdb)
 					throw std::runtime_error("Nominal epoch is later than the MOV scan start");
 				auto p = propagator;
-				const auto crossing = boundary::search(trajectory.state, trajectory.epochMjdTdb, nominal->finalNonGrav,
-				                                       scan.target, scan.startMjdTdb, scan.endMjdTdb, scan.altitudeKm,
-				                                       p, *eph, cancel);
+				const auto crossing =
+				    boundary::search(trajectory.state, trajectory.epochMjdTdb, nominal->finalNonGrav, scan.target,
+				                     scan.startMjdTdb, scan.endMjdTdb, scan.altitudeKm, p, *eph, cancel);
 				trajectory.entryBeforeInterval = crossing.beforeInterval;
 				trajectory.entry = crossing.entry;
 			} catch (const std::exception& e) {

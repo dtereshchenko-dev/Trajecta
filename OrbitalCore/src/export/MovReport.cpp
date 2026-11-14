@@ -129,14 +129,15 @@ namespace orbital_core::hazard {
 		data["nominal"] = nullptr;
 		if (result.nominal) {
 			const auto& nominal = *result.nominal;
-			data["nominal"] = {{"status", nominal.status == NominalPropagationStatus::Complete ? "complete"
-			                             : nominal.status == NominalPropagationStatus::Cancelled ? "cancelled"
-			                                                                        : "propagation_failed"},
-			                   {"epoch", nominal.epochMjdTdb},
-			                   {"state", nominal.state},
-			                   {"entry_before_interval", nominal.entryBeforeInterval},
-			                   {"entry", crossing(nominal.entry)},
-			                   {"error", nominal.error}};
+			data["nominal"] = {
+			    {"status", nominal.status == NominalPropagationStatus::Complete    ? "complete"
+			               : nominal.status == NominalPropagationStatus::Cancelled ? "cancelled"
+			                                                                       : "propagation_failed"},
+			    {"epoch", nominal.epochMjdTdb},
+			    {"state", nominal.state},
+			    {"entry_before_interval", nominal.entryBeforeInterval},
+			    {"entry", crossing(nominal.entry)},
+			    {"error", nominal.error}};
 		}
 		OrbitOptimizerConfig cfg;
 		cfg.nbody = f;

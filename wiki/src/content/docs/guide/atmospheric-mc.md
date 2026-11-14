@@ -36,7 +36,10 @@ The orbital run must be complete, with no failed or cancelled trials, and
 contain at least one valid crossing. Successfully propagated trajectories that
 missed the boundary can be present in the archive; Atmospheric MC uses the
 entry states of the selected event. A cancelled or incomplete ensemble cannot
-be used. The archive must match the active Earth-orientation model.
+be used. The archive must match the active Earth-orientation model and frame.
+Archives produced with the former Earth-orientation model may need a new orbital
+run. This compatibility check does not compare PCK file hashes: for reproducible
+results, keep track of the PCK files used for both calculations.
 
 When available, the source solution's absolute magnitude `H` is filled in
 automatically. You can change it or select a different initial-size method.

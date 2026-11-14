@@ -28,8 +28,8 @@ IntegratedState RA15DenseOutput::interpolate(double mjd) const
 	const double delta = ((mjd - m_epoch) - m_offset) + m_timeCompensation;
 	const double s = std::clamp(delta / m_step, 0.0, 1.0);
 	Vector x, v;
-	predictRa15State(*m_x, *m_v, m_positionCompensation, m_velocityCompensation, *m_coefficients, *m_acceleration,
-	                 s, m_step, x, v);
+	predictRa15State(*m_x, *m_v, m_positionCompensation, m_velocityCompensation, *m_coefficients, *m_acceleration, s,
+	                 m_step, x, v);
 	return {positionFromRadau(x), velocityFromRadau(v)};
 }
 

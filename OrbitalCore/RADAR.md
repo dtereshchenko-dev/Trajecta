@@ -60,9 +60,12 @@ the lookup logic. Runtime loading, fitting and import/export never call this API
 
 `obs::predictRadar` uses a two-way model: moving transmitter and
 receiver, iterated bounce/transmit times, solar Shapiro delay, tropospheric delay,
-TT/TDB clock correction and relativistic Doppler terms. Earth orientation uses
-C04 and the full IAU1980 nutation series on this path. The short light-time arc
-uses two-body propagation; the fitted trajectory uses the requested force model.
+TT/TDB clock correction and relativistic Doppler terms. Station positions and
+velocities use the Earth PCK when it covers the relevant epochs. Otherwise,
+observed C04 or historical UT1 data can support the IAU 1976/1980 fallback;
+the historical fallback uses a nominal pole. Missing coverage produces an
+error. The short light-time arc uses two-body propagation; the fitted trajectory
+uses the requested force model.
 The source must provide Earth and barycentric Sun states. This is not a shape,
 spin, ionosphere or plasma model.
 

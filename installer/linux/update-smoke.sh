@@ -30,20 +30,35 @@ write_version() {
     printf '%s\n' '#include <unistd.h>' 'int main(void) { sleep(120); return 0; }' > "$tmp/process.c"
     cc "$tmp/process.c" -o "$data/usr/bin/Trajecta"
     cp "$root/installer/linux/install-data.sh" "$data/usr/bin/install-data.sh"
-    for name in OBSCODE.dat RADCODE.dat linux_p1550p2650.440; do
+    for name in OBSCODE.dat RADCODE.dat linux_p1550p2650.440 \
+        earth_historic.bpc earth_latest.bpc earth_predict.bpc eopc04.62-now eopc04.cnc ET-UT.dat; do
         printf '%s' "packaged $name $1" > "$data/usr/share/trajecta-seed/$name"
     done
+    if [[ $1 == 1.0.1 ]]; then
+        mkdir -p "$data/usr/bin/earth_orientation"
+        for name in earth_historic.bpc earth_latest.bpc earth_predict.bpc eopc04.62-now eopc04.cnc ET-UT.dat; do
+            printf '%s' "old bundled $name" > "$data/usr/bin/earth_orientation/$name"
+        done
+    else
+        rm -rf -- "$data/usr/bin/earth_orientation"
+    fi
 }
 write_version 1.0.1
 "$ifw/bin/binarycreator" --hybrid -c "$tmp/config.xml" -p "$tmp/packages" "$tmp/setup"
 "$tmp/setup" --root "$target" --default-answer --confirm-command --accept-licenses install
 test "$(cat "$target/version.txt")" = 1.0.1
 test "$(cat "$XDG_DATA_HOME/Trajecta/Trajecta/ephemerides/linux_p1550p2650.440")" = 'packaged linux_p1550p2650.440 1.0.1'
+for name in earth_historic.bpc earth_latest.bpc earth_predict.bpc eopc04.62-now eopc04.cnc ET-UT.dat; do
+    test "$(cat "$XDG_DATA_HOME/Trajecta/Trajecta/earth_orientation/$name")" = "packaged $name 1.0.1"
+done
 test ! -e "$target/usr/share/trajecta-seed"
 grep -Fq "Exec=\"$target/usr/bin/trajecta\"" "$HOME/.local/share/applications/trajecta.desktop"
 printf '%s' 'user work' > "$XDG_DATA_HOME/Trajecta/work/keep.txt"
 printf '%s' 'user settings' > "$XDG_CONFIG_HOME/Trajecta/Trajecta.conf"
 printf '%s' 'updated stations' > "$XDG_DATA_HOME/Trajecta/Trajecta/observatories/OBSCODE.dat"
+printf '%s' 'updated PCK' > "$XDG_DATA_HOME/Trajecta/Trajecta/earth_orientation/earth_latest.bpc"
+printf '%s' 'updated C04' > "$XDG_DATA_HOME/Trajecta/Trajecta/earth_orientation/eopc04.62-now"
+printf '%s' 'updated historical time' > "$XDG_DATA_HOME/Trajecta/Trajecta/earth_orientation/ET-UT.dat"
 set +e
 "$tmp/setup" --root "$target" --auto-answer OverwriteTargetDirectory=Yes --default-answer \
     --confirm-command --accept-licenses install > "$tmp/reinstall.log" 2>&1
@@ -101,6 +116,12 @@ test "$(cat "$target/version.txt")" = 1.0.2
 test "$(cat "$XDG_DATA_HOME/Trajecta/work/keep.txt")" = 'user work'
 test "$(cat "$XDG_DATA_HOME/Trajecta/Trajecta/observatories/OBSCODE.dat")" = 'updated stations'
 test "$(cat "$XDG_DATA_HOME/Trajecta/Trajecta/ephemerides/linux_p1550p2650.440")" = 'packaged linux_p1550p2650.440 1.0.1'
+test "$(cat "$XDG_DATA_HOME/Trajecta/Trajecta/earth_orientation/earth_latest.bpc")" = 'updated PCK'
+test "$(cat "$XDG_DATA_HOME/Trajecta/Trajecta/earth_orientation/eopc04.62-now")" = 'updated C04'
+test "$(cat "$XDG_DATA_HOME/Trajecta/Trajecta/earth_orientation/ET-UT.dat")" = 'updated historical time'
+for name in earth_historic.bpc earth_latest.bpc earth_predict.bpc eopc04.62-now eopc04.cnc ET-UT.dat; do
+    test ! -e "$target/usr/bin/earth_orientation/$name"
+done
 test ! -e "$target/usr/share/trajecta-seed"
 "$target/TrajectaMaintenance" --default-answer --confirm-command purge
 test -f "$XDG_DATA_HOME/Trajecta/work/keep.txt"

@@ -4,51 +4,51 @@
 #include <QSettings>
 
 namespace {
-void migrateOptimizerSettings(QSettings& settings)
-{
-	settings.beginGroup("optimizer");
-	const QStringList keys = settings.allKeys();
-	settings.endGroup();
-	if (keys.isEmpty())
-		return;
+	void migrateOptimizerSettings(QSettings& settings)
+	{
+		settings.beginGroup("optimizer");
+		const QStringList keys = settings.allKeys();
+		settings.endGroup();
+		if (keys.isEmpty())
+			return;
 
-	const QMap<QString, QString> destinations{
-	    {"pertEnabled", "integrator/nBodyPropagation"},
-	    {"integratorInitialStepDays", "integrator/initialStepDays"},
-	    {"planetMask", "perturbations/planetMask"},
-	    {"useSb441", "perturbations/useSb441"},
-	    {"nonGravEnabled", "non-gravitational/enabled"},
-	    {"nonGravModel", "non-gravitational/model"},
-	    {"nonGravSolveMask", "non-gravitational/solveMask"},
-	    {"useWeights", "fit/useWeights"},
-	    {"observerSigmas", "fit/observerSigmas"},
-	    {"timingEnabled", "fit/timingEnabled"},
-	    {"debiasEnabled", "fit/debiasEnabled"},
-	    {"weightProfile", "fit/weightProfile"},
-	    {"sigmaClipEnabled", "fit/sigmaClipEnabled"},
-	    {"sigmaClipThreshold", "fit/sigmaClipThreshold"},
-	    {"photometry/asteroidG", "photometry/asteroidG"},
-	    {"photometry/cometK1", "photometry/cometK1"},
-	    {"photometry/cometK2", "photometry/cometK2"},
-	    {"photometry/nuclearPhaseCoefficient", "photometry/nuclearPhaseCoefficient"},
-	};
+		const QMap<QString, QString> destinations{
+		    {"pertEnabled", "integrator/nBodyPropagation"},
+		    {"integratorInitialStepDays", "integrator/initialStepDays"},
+		    {"planetMask", "perturbations/planetMask"},
+		    {"useSb441", "perturbations/useSb441"},
+		    {"nonGravEnabled", "non-gravitational/enabled"},
+		    {"nonGravModel", "non-gravitational/model"},
+		    {"nonGravSolveMask", "non-gravitational/solveMask"},
+		    {"useWeights", "fit/useWeights"},
+		    {"observerSigmas", "fit/observerSigmas"},
+		    {"timingEnabled", "fit/timingEnabled"},
+		    {"debiasEnabled", "fit/debiasEnabled"},
+		    {"weightProfile", "fit/weightProfile"},
+		    {"sigmaClipEnabled", "fit/sigmaClipEnabled"},
+		    {"sigmaClipThreshold", "fit/sigmaClipThreshold"},
+		    {"photometry/asteroidG", "photometry/asteroidG"},
+		    {"photometry/cometK1", "photometry/cometK1"},
+		    {"photometry/cometK2", "photometry/cometK2"},
+		    {"photometry/nuclearPhaseCoefficient", "photometry/nuclearPhaseCoefficient"},
+		};
 
-	for (const QString& key : keys) {
-		const auto destination = destinations.constFind(key);
-		if (destination != destinations.cend() && !settings.contains(destination.value()))
-			settings.setValue(destination.value(), settings.value("optimizer/" + key));
+		for (const QString& key : keys) {
+			const auto destination = destinations.constFind(key);
+			if (destination != destinations.cend() && !settings.contains(destination.value()))
+				settings.setValue(destination.value(), settings.value("optimizer/" + key));
+		}
+		settings.sync();
+		if (settings.status() != QSettings::NoError) {
+			qWarning("Could not save migrated settings");
+			return;
+		}
+		settings.remove("optimizer");
+		settings.sync();
+		if (settings.status() != QSettings::NoError)
+			qWarning("Could not remove old settings section");
 	}
-	settings.sync();
-	if (settings.status() != QSettings::NoError) {
-		qWarning("Could not save migrated settings");
-		return;
-	}
-	settings.remove("optimizer");
-	settings.sync();
-	if (settings.status() != QSettings::NoError)
-		qWarning("Could not remove old settings section");
-}
-}
+}  // namespace
 
 FitSettingsAggregator::FitSettingsAggregator(QObject* parent)
     : QObject(parent),

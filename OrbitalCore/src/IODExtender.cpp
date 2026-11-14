@@ -66,7 +66,8 @@ namespace Calculations {
 		};
 
 		[[nodiscard]] orbital_core::obs::LightTimeSeries emissionStates(
-		    const Orbit& orbit, std::span<const orbital_core::obs::PreparedObservation> prepared, NBodyPropagator& nbody)
+		    const Orbit& orbit, std::span<const orbital_core::obs::PreparedObservation> prepared,
+		    NBodyPropagator& nbody)
 		{
 			std::vector<double> epochs;
 			std::vector<Vec3D> observers;
@@ -78,7 +79,8 @@ namespace Calculations {
 			}
 			return orbital_core::obs::propagateDenseLightTimeSeries(
 			           orbit.getR(), orbit.getV() * Constants::GAUSS_K, orbit.epochMjd(), epochs, observers,
-			           std::vector<bool>(prepared.size(), true), nbody, nbody.nonGrav(), false, false).light;
+			           std::vector<bool>(prepared.size(), true), nbody, nbody.nonGrav(), false, false)
+			    .light;
 		}
 
 		[[nodiscard]] ProjectedRaDec projectRaDec(const Vec3D& helioPosition,
@@ -362,8 +364,10 @@ namespace Calculations {
 			std::vector<Vec3D> topo(n);
 			for (std::size_t i = 0; i < n; ++i) {
 				const Vec3D observer = prepared[i].earthR + prepared[i].observerOffsetEclAu;
-				topo[i] = orbital_core::obs::apparentEmissionPosition(
-				    emission.states[i], emission.emissionMjd[i], prepared[i].mjdTdb, emission.emissionOffsetDays[i]) - observer;
+				topo[i] =
+				    orbital_core::obs::apparentEmissionPosition(emission.states[i], emission.emissionMjd[i],
+				                                                prepared[i].mjdTdb, emission.emissionOffsetDays[i]) -
+				    observer;
 			}
 
 			return topo;

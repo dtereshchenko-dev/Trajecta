@@ -4,6 +4,7 @@
 #include "orbital_core/Types.h"
 #include "AstrometryBias.h"
 #include "earth_orientation/EopData.h"
+#include "earth_orientation/EarthPck.h"
 #include "obs/ObservatoryCatalog.h"
 #include "obs/Vfcc17Rules.h"
 #include "EnvironmentVariable.h"
@@ -35,11 +36,34 @@ namespace orbital_core {
 		std::filesystem::path observatoryDirectory = defaultObservatoryDirectory();
 		std::filesystem::path ephemerisDirectory =
 		    observatoryDirectory.empty() ? std::filesystem::path{} : observatoryDirectory.parent_path() / "ephemerides";
+		std::filesystem::path pckDirectory = observatoryDirectory.empty()
+		                                         ? std::filesystem::path{}
+		                                         : observatoryDirectory.parent_path() / "earth_orientation";
 	}  // namespace
 
 	void setObservatoryDataDirectory(std::filesystem::path directory) { observatoryDirectory = std::move(directory); }
 
 	std::filesystem::path observatoryDataDirectory() { return observatoryDirectory; }
+
+	void setEarthPckDataDirectory(std::filesystem::path directory) { pckDirectory = std::move(directory); }
+
+	std::filesystem::path earthPckDataDirectory() { return pckDirectory; }
+
+	std::filesystem::path earthC04DataDirectory()
+	{
+		if (!pckDirectory.empty())
+			return pckDirectory;
+		return getExecutableDir() / "earth_orientation";
+	}
+
+	std::filesystem::path earthPckFilePath(const std::string& filename)
+	{
+		const auto directory = earthPckDataDirectory();
+		const auto updated = directory / filename;
+		if (!directory.empty())
+			return updated;
+		return getExecutableDir() / "earth_orientation" / filename;
+	}
 
 	void setEphemerisDataDirectory(std::filesystem::path directory) { ephemerisDirectory = std::move(directory); }
 
@@ -103,21 +127,24 @@ namespace orbital_core {
 			} else
 				e.error = "Asteroid ephemeris not connected";
 		});
-		inspect("finals", base / "earth_orientation" / "finals2000A.all", [](auto& e) {
-			earth_orientation_detail::FinalsData data(e.path);
+		for (const auto& [id, file] :
+		     {std::pair{"earth_pck_historic", "earth_historic.bpc"}, std::pair{"earth_pck_latest", "earth_latest.bpc"},
+		      std::pair{"earth_pck_predict", "earth_predict.bpc"}}) {
+			inspect(id, earthPckFilePath(file), [file](auto& e) {
+				e.active = std::filesystem::is_regular_file(e.path) && earthPckLoaded(file);
+				e.valid = e.active;
+				if (!e.valid)
+					e.error = "Earth PCK not loaded";
+			});
+		}
+		inspect("c04", earthC04DataDirectory() / "eopc04.62-now", [&](auto& e) {
+			earth_orientation_detail::C04Data data(earthC04DataDirectory(), EarthOrientationProfile::IAU1980);
 			e.valid = data.isAvailable();
 			e.records = data.size();
-			e.firstMjdUtc = data.firstMjdUtc();
-			e.lastMjdUtc = data.lastMjdUtc();
-		});
-		inspect("c04", base / "earth_orientation" / "eopc04.62-now", [&](auto& e) {
-			earth_orientation_detail::C04Data data(base / "earth_orientation", EarthOrientationProfile::IAU1980);
-			e.valid = data.isAvailable();
-			e.records = data.size();
-			if (!e.valid && !std::filesystem::is_regular_file(base / "earth_orientation" / "eopc04.cnc"))
+			if (!e.valid && !std::filesystem::is_regular_file(earthC04DataDirectory() / "eopc04.cnc"))
 				e.error = "C04 consistency file is missing: eopc04.cnc";
 		});
-		inspect("delta_t", base / "earth_orientation" / "ET-UT.dat", [](auto& e) {
+		inspect("delta_t", earthC04DataDirectory() / "ET-UT.dat", [](auto& e) {
 			earth_orientation_detail::DeltaTData data(e.path);
 			e.records = data.size();
 			e.valid = e.records > 0;

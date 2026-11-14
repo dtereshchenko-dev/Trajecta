@@ -99,6 +99,7 @@ class TestWorkspace : public QObject {
 		qmlRegisterUncreatableType<DataSourcesModel>("TrajectaUI", 1, 0, "DataSourcesModel", "Session-owned");
 		qmlRegisterUncreatableType<Sb441Download>("TrajectaUI", 1, 0, "Sb441Download", "Session-owned");
 		qmlRegisterUncreatableType<ObservatoryUpdate>("TrajectaUI", 1, 0, "ObservatoryUpdate", "Session-owned");
+		qmlRegisterUncreatableType<EarthPckUpdate>("TrajectaUI", 1, 0, "EarthPckUpdate", "Session-owned");
 		qmlRegisterUncreatableType<ApplicationUpdate>("TrajectaUI", 1, 0, "ApplicationUpdate", "Session-owned");
 		qmlRegisterUncreatableType<SolutionViewModel>("TrajectaUI", 1, 0, "SolutionViewModel", "Session-owned");
 		qmlRegisterUncreatableType<ObservationTableModel>("TrajectaUI", 1, 0, "ObservationTableModel",
@@ -154,10 +155,7 @@ class TestWorkspace : public QObject {
 			                         frame.equatorialRows[2] * v.z);
 		};
 		const auto inertial = inverse({r[0] / 1000, r[1] / 1000, r[2] / 1000});
-		const double before = tdb - 1.0 / 86400, after = tdb + 1.0 / 86400;
-		const auto rate = (hz::icrfToBodyFixedMjd(hz::Planet::Earth, inertial, after) -
-		                   hz::icrfToBodyFixedMjd(hz::Planet::Earth, inertial, before)) /
-		                  ((after - before) * 86400);
+		const auto rate = hz::bodyFixedVelocityMjd(hz::Planet::Earth, inertial, Vec3D{}, tdb);
 		const auto v = inverse(Vec3D{velocity[0] / 1000, velocity[1] / 1000, velocity[2] / 1000} - rate);
 		const QJsonObject entry{{"epoch", tt},
 		                        {"relative_position_km", QJsonArray{inertial.x, inertial.y, inertial.z}},
@@ -170,7 +168,7 @@ class TestWorkspace : public QObject {
 		        {"state_units", "AU, AU/day"},
 		        {"target", 2},
 		        {"altitude_km", 100},
-		        {"body_fixed_frame", "EARTH_OPTICAL_UT1"},
+		        {"body_fixed_frame", QString::fromStdString(std::string(frame.frame))},
 		        {"body_fixed_model", QString::fromStdString(hz::earthBodyFixedFrameModel())},
 		        {"method", "covariance"},
 		        {"requested", 2},
@@ -401,7 +399,7 @@ class TestWorkspace : public QObject {
 		QVERIFY(!sources.hasWarning());
 		sources.refresh();
 		QTRY_VERIFY_WITH_TIMEOUT(!sources.checking(), 30000);
-		QTRY_COMPARE_WITH_TIMEOUT(sources.entries().size(), 10, 30000);
+		QTRY_COMPARE_WITH_TIMEOUT(sources.entries().size(), 12, 30000);
 		bool found = false, foundEfcc18 = false, foundFcct14 = false;
 		for (const auto& value : sources.entries()) {
 			const auto entry = value.toMap();
@@ -944,6 +942,7 @@ class TestWorkspace : public QObject {
 		                                                                      {"completed", 1},
 		                                                                      {"failed_fit", 1},
 		                                                                      {"entry_clones", 2},
+		                                                                      {"body_fixed_frame", "unknown"},
 		                                                                      {"body_fixed_model", "unknown"}}) {
 			auto bad = document;
 			bad[change.first] = change.second;
@@ -4435,6 +4434,147 @@ class TestWorkspace : public QObject {
 		QCOMPARE(installed.size(), 1);
 	}
 
+	void earthPckUpdateChecksAndRejectsInvalidFile()
+	{
+		QTemporaryDir directory;
+		QVERIFY(directory.isValid());
+		QTcpServer server;
+		QVERIFY(server.listen(QHostAddress::LocalHost));
+		QByteArray payload = QByteArray("DAF/PCK") + QByteArray(2048, 'x');
+		const QByteArray listing =
+		    "earth_620120_260806.bpc earth_000101_270208_261112.bpc "
+		    "earth_2026_260806_2126_predict.bpc";
+		connect(&server, &QTcpServer::newConnection, &server, [&] {
+			auto* socket = server.nextPendingConnection();
+			connect(socket, &QTcpSocket::readyRead, socket, [socket, &listing, &payload] {
+				const auto request = socket->readAll();
+				const auto& body = request.startsWith("GET / ") ? listing : payload;
+				socket->write("HTTP/1.1 200 OK\r\nContent-Length: " + QByteArray::number(body.size()) +
+				              "\r\nConnection: close\r\n\r\n" + body);
+				socket->disconnectFromHost();
+			});
+		});
+		EarthPckUpdate updater(QUrl(QString("http://127.0.0.1:%1/").arg(server.serverPort())), directory.path(),
+		                       directory.filePath("updates.ini"));
+		QSignalSpy installed(&updater, &EarthPckUpdate::installed);
+		updater.check();
+		QTRY_VERIFY(!updater.states().value("earth_pck_latest").toMap().value("checking").toBool());
+		QCOMPARE(updater.availableCount(), 3);
+		updater.install("earth_pck_latest");
+		QTRY_VERIFY(!updater.states().value("earth_pck_latest").toMap().value("downloading").toBool());
+		QCOMPARE(installed.size(), 0);
+		QVERIFY(!QFile::exists(directory.filePath("earth_latest.bpc")));
+		QVERIFY(!updater.states().value("earth_pck_latest").toMap().value("message").toString().isEmpty());
+
+		QFile valid(QString::fromStdWString(orbital_core::earthPckFilePath("earth_latest.bpc").wstring()));
+		if (!valid.open(QIODevice::ReadOnly))
+			QSKIP("Earth PCK fixture unavailable");
+		payload = valid.readAll();
+		updater.install("earth_pck_latest");
+		QTRY_VERIFY_WITH_TIMEOUT(!updater.states().value("earth_pck_latest").toMap().value("downloading").toBool(),
+		                         30000);
+		QCOMPARE(installed.size(), 1);
+		QVERIFY(!QFile::exists(directory.filePath("earth_latest.bpc")));
+		QVERIFY(QFile::exists(directory.filePath("earth_latest.bpc.pending")));
+		QFile changedFile(directory.filePath("earth_latest.bpc"));
+		QVERIFY(changedFile.open(QIODevice::WriteOnly));
+		QCOMPARE(changedFile.write("changed"), 7);
+		changedFile.close();
+		EarthPckUpdate::applyPending(directory.path(), directory.filePath("updates.ini"));
+		QVERIFY(changedFile.open(QIODevice::ReadOnly));
+		QCOMPARE(changedFile.readAll(), QByteArray("changed"));
+		changedFile.close();
+		QVERIFY(changedFile.remove());
+		EarthPckUpdate::applyPending(directory.path(), directory.filePath("updates.ini"));
+		QFile output(directory.filePath("earth_latest.bpc"));
+		QVERIFY(output.open(QIODevice::ReadOnly));
+		QCOMPARE(output.readAll(), payload);
+		QVERIFY(!QFile::exists(directory.filePath("earth_latest.bpc.pending")));
+		updater.check();
+		QTRY_VERIFY(!updater.states().value("earth_pck_latest").toMap().value("checking").toBool());
+		QCOMPARE(updater.availableCount(), 2);
+	}
+
+	void earthPckUpdateKeepsOpenFileUntilRestart()
+	{
+		QTemporaryDir directory;
+		QVERIFY(directory.isValid());
+		QFile fixture(QString::fromStdWString(orbital_core::earthPckFilePath("earth_latest.bpc").wstring()));
+		if (!fixture.open(QIODevice::ReadOnly))
+			QSKIP("Earth PCK fixture unavailable");
+		const QByteArray payload = fixture.readAll();
+		const auto local = directory.filePath("earth_latest.bpc");
+		QFile old(local);
+		QVERIFY(old.open(QIODevice::WriteOnly));
+		QCOMPARE(old.write(payload), payload.size());
+		QCOMPARE(old.write("x", 1), 1);
+		old.close();
+		QVERIFY(old.open(QIODevice::ReadOnly));
+		QTcpServer server;
+		QVERIFY(server.listen(QHostAddress::LocalHost));
+		const QByteArray listing =
+		    "earth_620120_260806.bpc earth_000101_270209_261113.bpc "
+		    "earth_2026_260806_2126_predict.bpc";
+		connect(&server, &QTcpServer::newConnection, &server, [&] {
+			auto* socket = server.nextPendingConnection();
+			connect(socket, &QTcpSocket::readyRead, socket, [socket, &listing, &payload] {
+				const auto request = socket->readAll();
+				const auto& body = request.startsWith("GET / ") ? listing : payload;
+				socket->write("HTTP/1.1 200 OK\r\nContent-Length: " + QByteArray::number(body.size()) +
+				              "\r\nConnection: close\r\n\r\n" + body);
+				socket->disconnectFromHost();
+			});
+		});
+		const auto metadata = directory.filePath("updates.ini");
+		EarthPckUpdate updater(QUrl(QString("http://127.0.0.1:%1/").arg(server.serverPort())), directory.path(),
+		                       metadata);
+		QSignalSpy installed(&updater, &EarthPckUpdate::installed);
+		updater.check();
+		QTRY_VERIFY(!updater.states().value("earth_pck_latest").toMap().value("checking").toBool());
+		QVERIFY(updater.states().value("earth_pck_latest").toMap().value("available").toBool());
+		updater.install("earth_pck_latest");
+		QTRY_VERIFY_WITH_TIMEOUT(!updater.states().value("earth_pck_latest").toMap().value("downloading").toBool(),
+		                         30000);
+		QCOMPARE(installed.size(), 1);
+		QVERIFY(QFile::exists(local + ".pending"));
+		QCOMPARE(old.size(), payload.size() + 1);
+		old.close();
+		EarthPckUpdate::applyPending(directory.path(), metadata);
+		QVERIFY(old.open(QIODevice::ReadOnly));
+		QCOMPARE(old.readAll(), payload);
+		QVERIFY(!QFile::exists(local + ".pending"));
+	}
+
+	void earthPckUpdatedFileTakesPriority()
+	{
+		QTemporaryDir directory;
+		QVERIFY(directory.isValid());
+		const auto previousBase = getExecutableDir();
+		const auto previousPck = orbital_core::earthPckDataDirectory();
+		const auto restore = qScopeGuard([&] {
+			getExecutableDir() = previousBase;
+			orbital_core::setEarthPckDataDirectory(previousPck);
+		});
+		getExecutableDir() = directory.filePath("app").toStdWString();
+		orbital_core::setEarthPckDataDirectory(directory.filePath("user").toStdWString());
+		QVERIFY(QDir().mkpath(directory.filePath("app/earth_orientation")));
+		QVERIFY(QDir().mkpath(directory.filePath("user")));
+		QFile bundled(directory.filePath("app/earth_orientation/earth_latest.bpc"));
+		QVERIFY(bundled.open(QIODevice::WriteOnly));
+		bundled.close();
+		QCOMPARE(QDir::fromNativeSeparators(
+		             QString::fromStdWString(orbital_core::earthPckFilePath("earth_latest.bpc").wstring())),
+		         directory.filePath("user/earth_latest.bpc"));
+		QCOMPARE(QDir::fromNativeSeparators(QString::fromStdWString(orbital_core::earthC04DataDirectory().wstring())),
+		         directory.filePath("user"));
+		QFile updated(directory.filePath("user/earth_latest.bpc"));
+		QVERIFY(updated.open(QIODevice::WriteOnly));
+		updated.close();
+		QCOMPARE(QFileInfo(QString::fromStdWString(orbital_core::earthPckFilePath("earth_latest.bpc").wstring()))
+		             .canonicalFilePath(),
+		         QFileInfo(updated).canonicalFilePath());
+	}
+
 	void observatoryUpdateDoesNotOverwriteConcurrentChange()
 	{
 		QTemporaryDir directory;
@@ -4482,6 +4622,9 @@ class TestWorkspace : public QObject {
 		QTRY_VERIFY(session.dataSources()->checked());
 		QTRY_VERIFY(findItem(window->contentItem(), "update-source-observatories"));
 		QVERIFY(findItem(window->contentItem(), "update-source-radar"));
+		QVERIFY(findItem(window->contentItem(), "update-source-earth_pck_historic"));
+		QVERIFY(findItem(window->contentItem(), "update-source-earth_pck_latest"));
+		QVERIFY(findItem(window->contentItem(), "update-source-earth_pck_predict"));
 	}
 
 	void calculationSettingsDialog()
@@ -5289,7 +5432,9 @@ class TestWorkspace : public QObject {
 		ephemerides->cancel();
 		QTRY_VERIFY_WITH_TIMEOUT(!ephemerides->busy(), 30000);
 		QCOMPARE(ephemerides->archivePath(), firstArchive);
-		QCOMPARE(QDir(exports.filePath("Ephemerides")).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot).size(), 1);
+		QCOMPARE(
+		    QDir(exports.filePath("Ephemerides")).entryList(QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot).size(),
+		    1);
 		ephemerides->setEndDate("2023-03-10");
 		auto* table = ephemerides->table();
 		auto* tableView = findItem(page, "ephemeris-table");
@@ -5297,9 +5442,9 @@ class TestWorkspace : public QObject {
 		const auto columnOptions = table->columnOptions();
 		for (const auto& option : columnOptions)
 			table->setColumnEnabled(option.toMap().value("id").toInt(), false);
-		QTRY_VERIFY_WITH_TIMEOUT(tableView->property("contentWidth").toDouble()
-		                                 >= tableView->width() - tableView->property("rightMargin").toDouble() - 2
-		                             && tableView->property("contentWidth").toDouble() <= tableView->width(),
+		QTRY_VERIFY_WITH_TIMEOUT(tableView->property("contentWidth").toDouble() >=
+		                                 tableView->width() - tableView->property("rightMargin").toDouble() - 2 &&
+		                             tableView->property("contentWidth").toDouble() <= tableView->width(),
 		                         5000);
 		for (const auto& option : columnOptions)
 			table->setColumnEnabled(option.toMap().value("id").toInt(), true);
@@ -5356,9 +5501,8 @@ class TestWorkspace : public QObject {
 		QFile uncertaintyText(exports.filePath("uncertainty.txt"));
 		QVERIFY(uncertaintyText.open(QIODevice::ReadOnly));
 		const auto uncertaintyTextContent = uncertaintyText.readAll();
-		for (const auto* label : {"RA cos Dec 3sigma", "Dec 3sigma", "Ellipse major 3sigma",
-		                          "Ellipse minor 3sigma", "Ellipse angle", "Ellipse area 3sigma",
-		                          "Sky 3sigma RSS", "Range 3sigma"})
+		for (const auto* label : {"RA cos Dec 3sigma", "Dec 3sigma", "Ellipse major 3sigma", "Ellipse minor 3sigma",
+		                          "Ellipse angle", "Ellipse area 3sigma", "Sky 3sigma RSS", "Range 3sigma"})
 			QVERIFY2(uncertaintyTextContent.contains(label), label);
 		QCOMPARE(uncertaintyTextContent.count("Ellipse major 3sigma"), 1);
 		table->setColumnEnabled(EphemerisTableModel::EllipseMajor, false);

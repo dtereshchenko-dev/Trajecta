@@ -214,6 +214,16 @@ if(NOT Eigen3_FOUND)
         "      cmake --preset linux-Release -DCMAKE_PREFIX_PATH=/path/to/eigen-3.4.1")
 endif()
 find_package(OpenMP REQUIRED)
+find_path(CSPICE_INCLUDE_DIR SpiceUsr.h PATH_SUFFIXES cspice REQUIRED)
+find_library(CSPICE_LIBRARY NAMES cspice REQUIRED)
+if(WIN32 AND CSPICE_LIBRARY MATCHES "\\.lib$")
+    add_library(CSPICE::CSPICE SHARED IMPORTED)
+    find_file(CSPICE_DLL NAMES cspice.dll HINTS "${CMAKE_PREFIX_PATH}/bin" "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin" REQUIRED)
+    set_target_properties(CSPICE::CSPICE PROPERTIES IMPORTED_IMPLIB "${CSPICE_LIBRARY}" IMPORTED_LOCATION "${CSPICE_DLL}")
+else()
+    add_library(CSPICE::CSPICE UNKNOWN IMPORTED)
+    set_target_properties(CSPICE::CSPICE PROPERTIES IMPORTED_LOCATION "${CSPICE_LIBRARY}")
+endif()
 
 # Pinned, unmodified ERFA subset for the modern IAU2006/2000A dynamical pole.
 set(_erfa_root "${CMAKE_CURRENT_SOURCE_DIR}/third_party/erfa")
@@ -320,7 +330,6 @@ add_library(OrbitalCore SHARED
     src/EnvironmentVariable.h      src/RuntimeData.cpp
     src/earth_orientation/EarthOrientation.h src/earth_orientation/EarthOrientation.cpp
     src/earth_orientation/EopData.h src/earth_orientation/C04Data.cpp
-    src/earth_orientation/FinalsData.cpp
     src/earth_orientation/DeltaTData.cpp
     src/hazard/BodyFixedFrame.cpp
     src/hazard/PlanetData.cpp
@@ -350,6 +359,8 @@ add_library(OrbitalCore SHARED
 
     src/AstrometryBias.h            src/AstrometryBias.cpp
     src/earth_orientation/EarthRotation.h src/earth_orientation/EarthRotation.cpp
+    src/earth_orientation/EarthPck.h src/earth_orientation/EarthPck.cpp
+    src/earth_orientation/EarthPckPoleCache.h src/earth_orientation/EarthPckPoleCache.cpp
     src/PhysicalParams.h            src/PhysicalParams.cpp
     api/orbital_core/Photometry.h    src/Photometry.cpp
     src/Gauss.h                     src/Gauss.cpp
@@ -479,7 +490,8 @@ target_include_directories(OrbitalCore
         ${CMAKE_CURRENT_SOURCE_DIR}/src/io
 )
 
-target_link_libraries(OrbitalCore PRIVATE OrbitalErfa PUBLIC Eigen3::Eigen)
+target_include_directories(OrbitalCore PRIVATE "${CSPICE_INCLUDE_DIR}")
+target_link_libraries(OrbitalCore PRIVATE OrbitalErfa CSPICE::CSPICE PUBLIC Eigen3::Eigen)
 
 # Pin Eigen's ABI for every consumer of this library.
 #
@@ -564,7 +576,6 @@ function(orbital_core_deploy_data target)
     set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/linux_p1550p2650.440")
     set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/OBSCODE.dat")
     set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/RADCODE.dat")
-    set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/earth_orientation/ET-UT.dat")
     set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/weights/vfcc17.rules")
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${_dest}/debias"
@@ -573,10 +584,6 @@ function(orbital_core_deploy_data target)
         COMMAND ${CMAKE_COMMAND} -E make_directory "${_dest}/licenses"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/third_party/erfa/LICENSE" "${_dest}/licenses/ERFA.txt"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${_d}/earth_orientation/eopc04.62-now" "${_dest}/earth_orientation/eopc04.62-now"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${_d}/earth_orientation/eopc04.cnc" "${_dest}/earth_orientation/eopc04.cnc"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${_d}/linux_p1550p2650.440"   "${_dest}/linux_p1550p2650.440"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -591,13 +598,21 @@ function(orbital_core_deploy_data target)
             "${_d}/weights/vfcc17.rules"    "${_dest}/weights/vfcc17.rules"
         COMMAND ${CMAKE_COMMAND} -E rm -f
             "${_dest}/weights/veres_2017.dat"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${_d}/earth_orientation/finals2000A.all" "${_dest}/earth_orientation/finals2000A.all"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${_d}/earth_orientation/ET-UT.dat" "${_dest}/earth_orientation/ET-UT.dat"
-        COMMAND ${CMAKE_COMMAND} -E rm -f
-            "${_dest}/finals2000A.all"
     )
+    if(target STREQUAL "OrbitalCoreTests")
+        foreach(_c04 eopc04.62-now eopc04.cnc ET-UT.dat)
+            add_custom_command(TARGET ${target} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${_d}/earth_orientation/${_c04}" "${_dest}/earth_orientation/${_c04}")
+        endforeach()
+        foreach(_pck earth_predict.bpc earth_historic.bpc earth_latest.bpc)
+            if(EXISTS "${_d}/earth_orientation/${_pck}")
+                add_custom_command(TARGET ${target} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "${_d}/earth_orientation/${_pck}" "${_dest}/earth_orientation/${_pck}")
+            endif()
+        endforeach()
+    endif()
 endfunction()
 
 # ---------------------------------------------------------------------------
@@ -714,13 +729,13 @@ if(ORBITAL_CORE_BUILD_HAZARD)
     )
 endif()
 
-target_link_libraries(OrbitalCoreTests PRIVATE OrbitalCore GTest::gtest)
+target_link_libraries(OrbitalCoreTests PRIVATE OrbitalCore GTest::gtest CSPICE::CSPICE)
 target_compile_definitions(OrbitalCoreTests PRIVATE ORBITAL_TEST_OBSERVATORY_DIR="${ORBITAL_CORE_DATA_DIR}")
 orbital_core_deploy_data(OrbitalCoreTests)
 if(ORBITAL_CORE_BUILD_HAZARD)
     target_link_libraries(OrbitalCoreTests PRIVATE nlohmann_json::nlohmann_json)
 endif()
-target_include_directories(OrbitalCoreTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(OrbitalCoreTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CSPICE_INCLUDE_DIR}")
 
 if(WIN32)
     add_custom_command(TARGET OrbitalCoreTests POST_BUILD

@@ -41,3 +41,13 @@ Observed maximum differences: 3.33387e-11 s and 0.000487477 Hz. Test tolerances
 are 5e-10 s and 0.001 Hz. The implementations are not bit-identical; station
 velocity differentiation differs. The tolerances remain far below the supplied
 Apophis measurement sigmas (4-4.5 microseconds, 0.1-0.25 Hz).
+
+## PCK comparison with GRSS
+
+`RadarObservation.PckComparisonWithGrss` uses a geometric Apophis-like state at
+MJD 53398.0306038786 TDB, DE440, and the body-fixed station coordinates above.
+The same state was propagated with GRSS 4.5.9 on Ubuntu using the identical
+Earth PCK files. It checks the receiver state and both monostatic and bistatic
+delay and Doppler at 2380 MHz. The 1e-7 s / 0.005 Hz comparison limits allow
+for differences in the two radar models, including atmospheric and relativistic
+corrections. The test is skipped if PCK does not cover the epoch.

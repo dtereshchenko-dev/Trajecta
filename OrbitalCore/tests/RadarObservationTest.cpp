@@ -10,6 +10,7 @@
 #include "orbital_core/DE440Source.h"
 #include "fit/FitObservations.h"
 #include "obs/RadarPrediction.h"
+#include "earth_orientation/EarthPck.h"
 #include "orbital_core/SolutionRefinement.h"
 #include <filesystem>
 #include <algorithm>
@@ -247,6 +248,60 @@ TEST(RadarObservation, SameStatePredictionsMatchIndependentReference)
 		const auto prediction = obs::predictRadar(record, position, velocity, eph);
 		EXPECT_NEAR(prediction.delaySeconds, delay, 5e-10);
 		EXPECT_NEAR(prediction.dopplerHz, dopplerValue, 0.001);
+	}
+}
+
+TEST(RadarObservation, PckComparisonWithGrss)
+{
+	using namespace orbital_core;
+	Vec3D position, velocity;
+	if (!earthPckState(53398.0306038786, Vec3D(1, 0, 0), position, velocity))
+		GTEST_SKIP() << "Earth PCK does not cover the reference epoch";
+	DE440Source eph;
+	const auto eqToEcl = [](const Vec3D& v) {
+		const double c = std::cos(Constants::EARTH_INCL), s = std::sin(Constants::EARTH_INCL);
+		return Vec3D(v.x, c * v.y + s * v.z, -s * v.y + c * v.z);
+	};
+	const Vec3D target(-0.509234620995513, 0.8741860351265314, 0.31192062720034325);
+	const Vec3D targetVel(-0.014261107919596566, -0.005301452195241065, -0.00233848510505264);
+	const Vec3D sun(0.004309465807282884, -0.00005377459807188601, -0.00013797382606907447);
+	const Vec3D sunVel(3.11018104435471e-07, 6.638445944852413e-06, 2.8027487717581985e-06);
+	const auto observer = [](const Vec3D& v, const char* code) {
+		return obs::ObserverData{std::atan2(v.y, v.x) * Constants::RAD_TO_DEG,
+		                         std::hypot(v.x, v.y) / Constants::EARTH_RADIUS_IN_AU,
+		                         v.z / Constants::EARTH_RADIUS_IN_AU, code};
+	};
+	const Vec3D rx(1.5979452128291048e-05, -3.7198015198121182e-05, 1.3334e-05);
+	const Vec3D tx(-1.5732979805588661e-05, -3.1025487683466637e-05, 2.4579600000000001e-05);
+	ASSERT_TRUE(earthPckState(53398.0306038786, rx, position, velocity));
+	const Vec3D grssPosition(1.2974700944412554e-05, 3.8352280704812e-05, 1.3326307858663178e-05);
+	const Vec3D grssVelocity(-0.0002416309247645805, 8.170523254304e-05, 1.1308265004342927e-07);
+	EXPECT_LT((position - grssPosition).magnitude(), 1e-13);
+	EXPECT_LT((velocity - grssVelocity).magnitude(), 1e-13);
+
+	struct Case {
+		Vec3D station;
+		double delay;
+		double doppler;
+	};
+
+	for (const auto& item :
+	     {Case{rx, 188.43312965399295, -103075.7351165945}, Case{tx, 188.4394916266295, -100518.14497411001}}) {
+		obs::PreparedObservation record;
+		record.mjdTdb = 53398.0306038786;
+		record.observer = observer(rx, "251");
+		record.transmitter = observer(item.station, "253");
+		record.radar = obs::RadarObservation{.delaySeconds = obs::RadarMeasurement{1, 4e-6},
+		                                     .dopplerHz = obs::RadarMeasurement{0, 0.1},
+		                                     .frequencyHz = 2380e6,
+		                                     .transmitter = record.transmitter.obsCode};
+		const auto value = obs::predictRadar(record, eqToEcl(target - sun), eqToEcl(targetVel - sunVel), eph);
+		const double transmit = record.mjdTdb - value.delaySeconds / Constants::SECONDS_PER_DAY;
+		const double clock = Calculations::tdbMinusTtSeconds(time::fromMjdTdb(transmit, time::Scale::TT)) -
+		                     Calculations::tdbMinusTtSeconds(time::fromMjdTdb(record.mjdTdb, time::Scale::TT));
+		// GRSS and Trajecta use different atmospheric and relativistic corrections.
+		EXPECT_NEAR(value.delaySeconds - clock, item.delay, 1e-7);
+		EXPECT_NEAR(value.dopplerHz, item.doppler, 0.005);
 	}
 }
 

@@ -61,8 +61,10 @@ cp "$root/data/linux_p1550p2650.440" "$root/data/OBSCODE.dat" "$root/data/RADCOD
 mkdir -p "$app/usr/bin/debias" "$app/usr/bin/weights" "$app/usr/bin/earth_orientation" "$app/usr/share"
 cp "$root/data/debias/efcc18.dat" "$root/data/debias/fcct14.dat" "$app/usr/bin/debias/"
 cp "$root/data/weights/vfcc17.rules" "$app/usr/bin/weights/"
-cp "$root/data/earth_orientation/eopc04.62-now" "$root/data/earth_orientation/eopc04.cnc" \
-    "$root/data/earth_orientation/ET-UT.dat" "$root/data/earth_orientation/finals2000A.all" "$app/usr/bin/earth_orientation/"
+cp "$root/data/earth_orientation/eopc04.62-now" "$root/data/earth_orientation/eopc04.cnc" "$root/data/earth_orientation/ET-UT.dat" \
+    "$app/usr/share/trajecta-seed/"
+cp "$root/data/earth_orientation/earth_historic.bpc" "$root/data/earth_orientation/earth_latest.bpc" \
+    "$root/data/earth_orientation/earth_predict.bpc" "$app/usr/share/trajecta-seed/"
 cp -a "$gdal_data" "$app/usr/share/gdal"
 cp -a /usr/share/proj "$app/usr/share/"
 cp -a "$root/data/examples" "$app/examples"

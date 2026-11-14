@@ -35,6 +35,15 @@ jobs:
         id: runner-image
         run: echo "version=${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
 
+      - name: Install CSPICE
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --no-checkout https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
+          git -C "$RUNNER_TEMP/vcpkg" checkout --detach 6216d31bc1d529bbb40c2a1c4535ab86d081abcf
+          "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+          "$RUNNER_TEMP/vcpkg/vcpkg" install cspice:x64-linux
+
       - name: Restore GDAL cache
         id: gdal-cache
         uses: actions/cache/restore@v4
@@ -61,7 +70,8 @@ jobs:
             data/linux_p1550p2650.440
             data/debias/efcc18.dat
             data/debias/fcct14.dat
-          key: ubuntu-runtime-data-de440-efcc18-fcct14-v1
+            data/earth_orientation/*.bpc
+          key: ubuntu-runtime-data-de440-efcc18-fcct14-pck-v1
 
       - name: Prepare and verify runtime data
         shell: bash
@@ -73,6 +83,16 @@ jobs:
               https://ssd.jpl.nasa.gov/ftp/eph/planets/Linux/de440/linux_p1550p2650.440
           fi
           printf '%s  %s\n' 29915576d0a6555766b99485ac3056ee415e86df4fce282611c31afb329ad062 data/linux_p1550p2650.440 | sha256sum -c -
+          for pair in \
+            'earth_620120_260806.bpc earth_historic.bpc 652b02c0b3a5a283d393497f7f96e1fe4aa47ee6dcc035a089eb9e6b5df86643' \
+            'earth_000101_270208_261112.bpc earth_latest.bpc eb72aef57bcedb247e282510a881a608fe74e4d9e7869aaa130474f5efe8dc54' \
+            'earth_2026_260806_2126_predict.bpc earth_predict.bpc 9f565ab5aaccd33afe54f3a1b20cb8b136636c31a0bd4c0986fac722b931c280'; do
+            read -r remote file hash <<< "$pair"
+            if [[ ! -f data/earth_orientation/$file ]]; then
+              curl --fail --location --retry 3 -o "data/earth_orientation/$file" "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/$remote"
+            fi
+            printf '%s  %s\n' "$hash" "data/earth_orientation/$file" | sha256sum -c -
+          done
           for pair in '2014 fcct14.dat 3ad243953731218565cbb25937e87803165ac28e4c948f06e52c6f8b9e1af887' \
                       '2018 efcc18.dat ef6a50830bb83d8b1161e7acb391eed988ea9708e9fbcccc0c834da6109476e3'; do
             read -r year file hash <<< "$pair"
@@ -91,12 +111,15 @@ jobs:
             data/linux_p1550p2650.440
             data/debias/efcc18.dat
             data/debias/fcct14.dat
+            data/earth_orientation/*.bpc
           key: ${{ steps.runtime-data.outputs.cache-primary-key }}
 
       - name: Configure
         run: >-
           cmake -S . -B build/ubuntu -G Ninja -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_PREFIX_PATH=/usr -DGDAL_DIR="$RUNNER_TEMP/trajecta-gdal/lib/cmake/gdal"
+          -DCSPICE_INCLUDE_DIR="$RUNNER_TEMP/vcpkg/installed/x64-linux/include/cspice"
+          -DCSPICE_LIBRARY="$RUNNER_TEMP/vcpkg/installed/x64-linux/lib/libcspice.a"
 
       - name: Build
         run: cmake --build build/ubuntu --parallel 4

@@ -16,12 +16,16 @@ namespace {
 			return QObject::tr("Planetary ephemeris");
 		if (id == "asteroids")
 			return QObject::tr("Massive asteroids");
-		if (id == "finals")
-			return QObject::tr("Earth orientation: finals2000A");
 		if (id == "c04")
-			return QObject::tr("Earth orientation: C04");
+			return QObject::tr("IERS C04: orientation and UT1");
+		if (id == "earth_pck_historic")
+			return QObject::tr("PCK: historical orientation");
+		if (id == "earth_pck_latest")
+			return QObject::tr("PCK: recent orientation");
+		if (id == "earth_pck_predict")
+			return QObject::tr("PCK: long-term prediction");
 		if (id == "delta_t")
-			return QObject::tr("Historical time: TT-UT1");
+			return QObject::tr("Historical TT-UT1");
 		if (id == "weights")
 			return QObject::tr("Astrometric weights");
 		if (id == "debias_fcct14")
@@ -41,12 +45,14 @@ namespace {
 			return QObject::tr("Needed for planetary ephemerides and N-body calculations.");
 		if (id == "asteroids")
 			return QObject::tr("Needed when massive-asteroid perturbations are enabled.");
-		if (id == "finals")
-			return QObject::tr("Used for UT1; other time data or an approximation may be used outside its coverage.");
 		if (id == "c04")
-			return QObject::tr("Used for the Earth pole in the gravity model; missing data uses a nominal pole.");
+			return QObject::tr("Used for UT1 conversion and as a fallback for Earth orientation.");
+		if (id.startsWith("earth_pck_"))
+			return QObject::tr(
+			    "Used for the Earth gravity pole, stations and Earth-fixed coordinates; long-term values are "
+			    "predicted.");
 		if (id == "delta_t")
-			return QObject::tr("Used for historical TT–UT1 conversion when finals data do not cover the epoch.");
+			return QObject::tr("Used for historical TT–UT1 conversion.");
 		if (id == "weights")
 			return QObject::tr("Needed for VFCC17 weights; missing rules fall back to 1 arcsec.");
 		if (id == "debias_fcct14" || id == "debias_efcc18")
@@ -78,6 +84,15 @@ DataSourcesModel::DataSourcesModel(FitSettingsAggregator* settings, QObject* par
 		refresh();
 	});
 	connect(&m_observatoryUpdate, &ObservatoryUpdate::changed, this, [this] {
+		if (m_checked)
+			updateReadiness();
+		emit changed();
+	});
+	connect(&m_earthPckUpdate, &EarthPckUpdate::installed, this, [this] {
+		m_restartRequired = true;
+		refresh();
+	});
+	connect(&m_earthPckUpdate, &EarthPckUpdate::changed, this, [this] {
 		if (m_checked)
 			updateReadiness();
 		emit changed();
@@ -208,8 +223,8 @@ void DataSourcesModel::updateReadiness()
 		    format(unavailable, tr("Ready with limited data: %1"), tr("Ready with limited data: %1 and %2 more"));
 	else if (m_restartRequired)
 		m_readinessMessage = tr("Data changed; restart required");
-	else if (m_observatoryUpdate.availableCount() > 0)
-		m_readinessMessage = tr("Observatory updates available");
+	else if (m_observatoryUpdate.availableCount() > 0 || m_earthPckUpdate.availableCount() > 0)
+		m_readinessMessage = tr("Data updates available");
 	else
 		m_readinessMessage = tr("Ready");
 }
@@ -241,7 +256,8 @@ void DataSourcesModel::updateWatchPaths()
 	                              base.filePath("debias_fcct14"),
 	                              base.filePath("debias_2018"),
 	                              downloaded,
-	                              observatories};
+	                              observatories,
+	                              QString::fromStdWString(orbital_core::earthPckDataDirectory().wstring())};
 	QStringList wantedDirectories;
 	for (const auto& directory : directories)
 		if (QFileInfo(directory).isDir())
@@ -258,7 +274,7 @@ void DataSourcesModel::updateWatchPaths()
 		if (QFileInfo(path).isFile())
 			wantedFiles.append(path);
 	}
-	const auto corrections = base.filePath("earth_orientation/eopc04.cnc");
+	const auto corrections = QString::fromStdWString((orbital_core::earthC04DataDirectory() / "eopc04.cnc").wstring());
 	if (QFileInfo(corrections).isFile())
 		wantedFiles.append(corrections);
 	for (const auto& path : m_files.files())

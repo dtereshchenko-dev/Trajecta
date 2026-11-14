@@ -72,6 +72,7 @@ class EphemerisViewModel : public QObject {
 	bool available() const { return m_solution.has_value(); }
 
 	bool busy() const { return m_busy; }
+
 	bool uncertaintyUnavailable() const
 	{
 		return m_table.count() > 0 && m_table.uncertaintySelected() && m_lastRequest.uncertainty &&

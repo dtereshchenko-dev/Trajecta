@@ -126,7 +126,8 @@ namespace atmosphere {
 		};
 		require(count(root, "target") == static_cast<int>(hz::Planet::Earth) && number(root, "altitude_km") == 100,
 		        "Atmospheric MC requires Earth entries at 100 km");
-		require(root["body_fixed_frame"] == "EARTH_OPTICAL_UT1" &&
+		const auto initialFrame = hz::bodyFixedTransformMjd(hz::Planet::Earth, epochTdb(number(root, "start")));
+		require(initialFrame.valid && root["body_fixed_frame"].toString().toStdString() == initialFrame.frame &&
 		            root["body_fixed_model"].toString().toStdString() == hz::earthBodyFixedFrameModel(),
 		        "Archive Earth orientation model differs from the active model");
 		const auto requested = count(root, "requested");
@@ -172,11 +173,7 @@ namespace atmosphere {
 			require(event != result.events.end(), "Crossing is outside the saved event intervals");
 			const auto r = vector(entry["relative_position_km"]), v = vector(entry["relative_velocity_km_s"]);
 			const auto position = hz::icrfToBodyFixedMjd(hz::Planet::Earth, r, epoch);
-			const double before = epoch - 1.0 / 86400, after = epoch + 1.0 / 86400;
-			const auto rate = (hz::icrfToBodyFixedMjd(hz::Planet::Earth, r, after) -
-			                   hz::icrfToBodyFixedMjd(hz::Planet::Earth, r, before)) /
-			                  ((after - before) * 86400);
-			const auto velocity = hz::icrfToBodyFixedMjd(hz::Planet::Earth, v, epoch) + rate;
+			const auto velocity = hz::bodyFixedVelocityMjd(hz::Planet::Earth, r, v, epoch);
 			strewn::EntryState e{array(position * 1000), array(velocity * 1000),
 			                     orbital_core::time::fromMjdTdb(epoch, orbital_core::time::Scale::UTC), 1.0,
 			                     static_cast<std::uint64_t>(id)};
@@ -217,7 +214,7 @@ namespace atmosphere {
 		    {"entry_frame", "ECEF"},
 		    {"entry_units", "m, m/s"},
 		    {"earth_orientation", root["body_fixed_model"]},
-		    {"velocity_transform", "R*v + dR/dt*r; symmetric 1-second frame derivative"},
+		    {"velocity_transform", "R*v + dR/dt*r; PCK state transform or historical frame derivative"},
 		    {"conditioning", "selected event entry clones; not an unconditional Earth impact probability"},
 		    {"photometry_path", result.photometryPath},
 		    {"photometry_sha256", QString::fromLatin1(result.photometryHash)}};

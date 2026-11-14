@@ -79,6 +79,13 @@ namespace {
 		}
 	}
 
+	TEST_F(IntervalMonteCarloTest, RejectsIntervalWithoutEarthOrientation)
+	{
+		config.startMjdTdb = 234166.0;
+		config.endMjdTdb = 234166.002;
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(source, config), std::runtime_error);
+	}
+
 	TEST_F(IntervalMonteCarloTest, SharedBoundarySearchMatchesNominal)
 	{
 		const auto result = hz::runIntervalMonteCarlo(source, config);

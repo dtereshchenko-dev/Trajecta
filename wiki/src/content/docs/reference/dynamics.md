@@ -140,15 +140,28 @@ leap seconds or future measured Earth orientation.
 
 ## Earth orientation
 
-The default Earth-orientation profile uses C04/IAU 1980 data for pole and
-nutation-related corrections. The Earth zonal model evaluates the pole at the
-current epoch. Outside the available C04 records, the implementation uses its
-extrapolation and correction model; those values are not measured EOP data.
+Earth binary PCK files supply ITRF93-to-J2000 orientation and the corresponding
+state transformation for optical and radar stations, topocentric ephemerides
+and Earth-fixed crossing coordinates. Historical, recent and long-term
+predictive files cover different epochs. When several files cover an epoch,
+the kernel-loading order determines which data SPICE uses.
+Outside their coverage, observed C04 or historical UT1 data support an
+IAU 1976/1980 fallback. The historical path uses a nominal pole, and the
+Earth-fixed fallback does not apply polar motion. Without suitable time data,
+Earth-fixed coordinates cannot be calculated. The files, their coverage and
+their update status appear under [Data sources](../../data-sources/).
 
-For TT–UT1 conversion, Trajecta first uses `finals2000A.all` where applicable,
-then the historical `ET-UT.dat` table. Other code paths can use a documented
-fallback when orientation data are unavailable. The actual data coverage and
-frame model matter when comparing topocentric results or close Earth encounters.
+For the time-varying Earth zonal model, Trajecta transforms the ITRF93 pole to
+J2000 using PCK at the calculation epoch. If PCK does not cover the epoch, the
+model falls back to C04, including its extrapolation outside the observed
+records. Without C04 it uses a nominal pole. The fixed-pole option instead
+uses the J2000 pole.
+
+For TT–UT1 conversion, Trajecta uses observed C04 data where available, then
+the historical `ET-UT.dat` table. These conversions are unavailable outside both
+tables; the PCK does not itself supply a separate UT1 time scale. The actual
+data coverage and frame model matter when comparing topocentric results or
+close Earth encounters.
 See [Data sources](../../data-sources/) for the files and their status.
 
 ## Related checks

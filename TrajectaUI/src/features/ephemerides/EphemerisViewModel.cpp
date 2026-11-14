@@ -123,23 +123,42 @@ namespace {
 		    {"sky_motion_arcsec_h", C::SkyMotion, &C::skyMotion},
 		    {"sky_motion_pa_deg", C::SkyPositionAngle, &C::skyPositionAngle},
 		    {"lon_coslat_3sigma_arcsec", C::LongitudeUncertainty,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->longitude3SigmaArcsec : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->longitude3SigmaArcsec : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"lat_3sigma_arcsec", C::LatitudeUncertainty,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->latitude3SigmaArcsec : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->latitude3SigmaArcsec : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"ellipse_major_3sigma_arcsec", C::EllipseMajor,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->major3SigmaArcsec : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->major3SigmaArcsec : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"ellipse_minor_3sigma_arcsec", C::EllipseMinor,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->minor3SigmaArcsec : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->minor3SigmaArcsec : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"ellipse_angle_deg", C::EllipseAngle,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->positionAngleDeg : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->positionAngleDeg : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"ellipse_area_3sigma_arcsec2", C::EllipseArea,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->area3SigmaArcsec2 : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->area3SigmaArcsec2 : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"sky_3sigma_arcsec", C::SkyUncertainty,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->sky3SigmaArcsec : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->sky3SigmaArcsec : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"range_3sigma_km", C::RangeUncertainty,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->range3SigmaKm : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->range3SigmaKm : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"range_rate_3sigma_km_s", C::RangeRateUncertainty,
-		     [](const Row& r) { return r.uncertainty ? r.uncertainty->rangeRate3SigmaKmPerSecond : std::numeric_limits<double>::quiet_NaN(); }},
+		     [](const Row& r) {
+			     return r.uncertainty ? r.uncertainty->rangeRate3SigmaKmPerSecond
+			                          : std::numeric_limits<double>::quiet_NaN();
+		     }},
 		    {"v_mag", C::Magnitude,
 		     [](const Row& r) { return r.visualMagnitude.value_or(std::numeric_limits<double>::quiet_NaN()); }},
 		    {"x_au", C::X, [](const Row& r) { return r.position.x; }},
@@ -435,8 +454,10 @@ void EphemerisViewModel::generate()
 		m_worker.join();
 	const quint64 generation = ++m_generation;
 	const QString designation = m_designation;
-	const QString root = QDir(m_directory.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)
-	                                                : m_directory).filePath(QStringLiteral("Ephemerides"));
+	const QString root =
+	    QDir(m_directory.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)
+	                               : m_directory)
+	        .filePath(QStringLiteral("Ephemerides"));
 	const auto layout = m_table.layout();
 	std::vector<std::pair<int, bool>> columns;
 	for (const auto& option : m_table.columnOptions()) {
@@ -446,7 +467,8 @@ void EphemerisViewModel::generate()
 	m_busy = true;
 	m_error.clear();
 	emit changed();
-	m_worker = std::jthread([this, generation, job = std::move(*task), designation, root, layout, columns](std::stop_token stop) {
+	m_worker = std::jthread([this, generation, job = std::move(*task), designation, root, layout,
+	                         columns](std::stop_token stop) {
 		try {
 			auto result =
 			    std::make_shared<orbital_core::EphemerisResult>(orbital_core::computeEphemeris(job, {.cancel = stop}));
@@ -459,7 +481,8 @@ void EphemerisViewModel::generate()
 				for (const auto& [column, enabled] : columns)
 					archive.m_table.setColumnEnabled(column, enabled);
 				archive.m_table.setRows(std::move(result->rows), job.plane, job.scale,
-				                        job.center == orbital_core::EphemerisCenter::Heliocentric, job.solution.magnitudeType);
+				                        job.center == orbital_core::EphemerisCenter::Heliocentric,
+				                        job.solution.magnitudeType);
 				archive.m_lastResult = *result;
 				archive.m_summary = archive.describe();
 				try {
@@ -474,7 +497,8 @@ void EphemerisViewModel::generate()
 					if (stop.stop_requested()) {
 						result->cancelled = true;
 					} else {
-						const QString path = QDir(root).filePath(QStringLiteral("run-") + QUuid::createUuid().toString(QUuid::WithoutBraces));
+						const QString path = QDir(root).filePath(QStringLiteral("run-") +
+						                                         QUuid::createUuid().toString(QUuid::WithoutBraces));
 						if (!QDir().rename(staging.path(), path))
 							throw std::runtime_error("Cannot finalize ephemeris archive");
 						staging.setAutoRemove(false);
@@ -488,9 +512,11 @@ void EphemerisViewModel::generate()
 				result->cancelled = true;
 			}
 			QMetaObject::invokeMethod(
-			    this, [this, generation, job, result, archivePath, archiveError] {
+			    this,
+			    [this, generation, job, result, archivePath, archiveError] {
 				    finish(generation, job, result, archivePath, archiveError);
-			    }, Qt::QueuedConnection);
+			    },
+			    Qt::QueuedConnection);
 		} catch (const std::exception& e) {
 			QMetaObject::invokeMethod(
 			    this, [this, generation, message = QString::fromUtf8(e.what())] { fail(generation, message); },
@@ -506,8 +532,8 @@ void EphemerisViewModel::cancel()
 }
 
 void EphemerisViewModel::finish(quint64 generation, orbital_core::EphemerisRequest request,
-	                            std::shared_ptr<orbital_core::EphemerisResult> result, const QString& archive,
-	                            const QString& archiveError)
+                                std::shared_ptr<orbital_core::EphemerisResult> result, const QString& archive,
+                                const QString& archiveError)
 {
 	m_busy = false;
 	if (generation == m_generation && !result->cancelled) {
@@ -543,8 +569,9 @@ QString EphemerisViewModel::describe() const
 			parts << tr("Geocentric");
 			break;
 		case orbital_core::EphemerisCenter::Station:
-			parts << (m_lastRequest.station == "500" ? tr("Geocentric (MPC 500)")
-			                                        : tr("Topocentric %1").arg(QString::fromStdString(m_lastRequest.station)));
+			parts << (m_lastRequest.station == "500"
+			              ? tr("Geocentric (MPC 500)")
+			              : tr("Topocentric %1").arg(QString::fromStdString(m_lastRequest.station)));
 			break;
 	}
 	parts << (m_lastRequest.plane == orbital_core::EphemerisPlane::Ecliptic ? tr("ecliptic J2000")
@@ -630,10 +657,11 @@ QByteArray EphemerisViewModel::exportText() const
 	            : tr("# Positions: geometric; no light time or stellar aberration") + QLatin1Char('\n');
 	if (m_table.includesColumn(EphemerisTableModel::Elongation) &&
 	    m_lastRequest.center != orbital_core::EphemerisCenter::Heliocentric)
-		text += m_lastResult.lightTimeApplied
-		            ? tr("# Elongation: apparent directions with light time, solar deflection and stellar aberration.") +
-		                  QLatin1Char('\n')
-		            : tr("# Elongation: geometric Sun and target directions.") + QLatin1Char('\n');
+		text +=
+		    m_lastResult.lightTimeApplied
+		        ? tr("# Elongation: apparent directions with light time, solar deflection and stellar aberration.") +
+		              QLatin1Char('\n')
+		        : tr("# Elongation: geometric Sun and target directions.") + QLatin1Char('\n');
 	text += tr("# Light time: displayed range divided by the speed of light.") + QLatin1Char('\n');
 	text += tr("# Range rates: radial relative velocities in km/s.") + QLatin1Char('\n');
 	if (m_lastResult.lightTimeApplied) {
@@ -644,9 +672,11 @@ QByteArray EphemerisViewModel::exportText() const
 	if (m_table.includesColumn(EphemerisTableModel::SkyPositionAngle))
 		text += tr("# Sky motion PA is measured from north towards east in the selected plane.") + QLatin1Char('\n');
 	text += tr("# Uncertainties: linearized 3-sigma fit covariance propagated from the fit epoch.") + QLatin1Char('\n');
-	text += tr("# Ellipse angle: from increasing longitude toward increasing latitude, modulo 180 deg.") + QLatin1Char('\n');
+	text += tr("# Ellipse angle: from increasing longitude toward increasing latitude, modulo 180 deg.") +
+	        QLatin1Char('\n');
 	if (!m_lastResult.uncertaintyComputed)
-		text += tr("# Uncertainties unavailable: fit covariance missing, invalid, or not computed.") + QLatin1Char('\n');
+		text +=
+		    tr("# Uncertainties unavailable: fit covariance missing, invalid, or not computed.") + QLatin1Char('\n');
 	for (int i = 0; i < lines.size(); ++i) {
 		if (i == 1) {
 			QStringList separators;
@@ -677,8 +707,8 @@ QByteArray EphemerisViewModel::exportJson() const
 			root[QStringLiteral("center")] = QStringLiteral("geocentric");
 			break;
 		case orbital_core::EphemerisCenter::Station:
-			root[QStringLiteral("center")] = m_lastRequest.station == "500" ? QStringLiteral("geocentric")
-			                                                                : QStringLiteral("topocentric");
+			root[QStringLiteral("center")] =
+			    m_lastRequest.station == "500" ? QStringLiteral("geocentric") : QStringLiteral("topocentric");
 			root[QStringLiteral("station")] = QString::fromStdString(m_lastRequest.station);
 			break;
 	}
@@ -704,12 +734,15 @@ QByteArray EphemerisViewModel::exportJson() const
 	root[QStringLiteral("light_time_definition")] = QStringLiteral("displayed_range_divided_by_c");
 	root[QStringLiteral("n_body")] = m_lastResult.nBody;
 	const auto& forces = m_lastRequest.solution.forces;
-	root[QStringLiteral("forces")] = QJsonObject{
-	    {"planet_mask", forces.planetMask}, {"sb441", forces.useSb441},
-	    {"relativity", orbital_core::relativityModeName(forces.forceModel.relativity)},
-	    {"sun_j2", true}, {"earth_j2", forces.forceModel.earthJ2},
-	    {"earth_j3", forces.forceModel.earthJ3}, {"earth_j4", forces.forceModel.earthJ4},
-	    {"earth_rotating_pole", forces.forceModel.rotatingEarthPole}};
+	root[QStringLiteral("forces")] =
+	    QJsonObject{{"planet_mask", forces.planetMask},
+	                {"sb441", forces.useSb441},
+	                {"relativity", orbital_core::relativityModeName(forces.forceModel.relativity)},
+	                {"sun_j2", true},
+	                {"earth_j2", forces.forceModel.earthJ2},
+	                {"earth_j3", forces.forceModel.earthJ3},
+	                {"earth_j4", forces.forceModel.earthJ4},
+	                {"earth_rotating_pole", forces.forceModel.rotatingEarthPole}};
 	root[QStringLiteral("non_gravitational")] = m_lastResult.nonGravitational;
 	root[QStringLiteral("solution_epoch_mjd_tdb")] = m_lastRequest.solution.epochMjdTdb;
 	root[QStringLiteral("absolute_magnitude")] = m_lastRequest.solution.absoluteMagnitude
@@ -736,9 +769,8 @@ QByteArray EphemerisViewModel::exportJson() const
 		QJsonObject item;
 		item[dateKey] = EphemerisTableModel::calendar(row.mjd, 3);
 		for (const auto& column : numericColumns())
-			if (m_table.includesColumn(column.column) ||
-			    (column.column >= EphemerisTableModel::LongitudeUncertainty &&
-			     column.column <= EphemerisTableModel::RangeRateUncertainty))
+			if (m_table.includesColumn(column.column) || (column.column >= EphemerisTableModel::LongitudeUncertainty &&
+			                                              column.column <= EphemerisTableModel::RangeRateUncertainty))
 				item[columnKey(column, m_lastRequest.plane)] = jsonNumber(column.value(row));
 		rows.append(item);
 	}

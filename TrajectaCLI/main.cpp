@@ -735,7 +735,7 @@ namespace {
 			using nlohmann::json;
 			json data = {{"schema_version", 1},
 			             {"frame", "ECEF"},
-			             {"frame_model", "OrbitalCore IAU1976/1980 UT1/GAST; no polar motion"},
+			             {"frame_model", mc.bodyFixedModel},
 			             {"altitude_km", cfg.altitudeKm},
 			             {"boundary", "reference_ellipsoid_altitude"},
 			             {"seed", cfg.seed},
@@ -836,8 +836,7 @@ void printForceModel(const CliOptions& opt, const orbital_core::FitPipelineResul
 	          << '\n';
 	const auto& forces = eff.forceModel;
 	std::cout << "[ForceModel] relativity=" << orbital_core::relativityModeName(forces.relativity)
-	          << " earthJ2=" << (forces.earthJ2 ? "on" : "off")
-	          << " earthJ3=" << (forces.earthJ3 ? "on" : "off")
+	          << " earthJ2=" << (forces.earthJ2 ? "on" : "off") << " earthJ3=" << (forces.earthJ3 ? "on" : "off")
 	          << " earthJ4=" << (forces.earthJ4 ? "on" : "off")
 	          << " earthPole=" << (forces.rotatingEarthPole ? "time-varying" : "fixed-j2000") << '\n';
 	std::cout << "[ForceModel] sb441 requested=" << (req.useSb441 ? "on" : "off")

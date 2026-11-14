@@ -8,9 +8,9 @@ namespace orbital_core::hazard::mc {
 	void scan(McClone& clone, const IntervalMcConfig& config, NBodyPropagator& propagator, IEphemerisSource& ephemeris,
 	          std::stop_token cancel)
 	{
-		const auto result = boundary::search(clone.state, clone.epochMjdTdb, clone.nonGrav, config.target,
-		                                     config.startMjdTdb, config.endMjdTdb, config.altitudeKm, propagator,
-		                                     ephemeris, cancel);
+		const auto result =
+		    boundary::search(clone.state, clone.epochMjdTdb, clone.nonGrav, config.target, config.startMjdTdb,
+		                     config.endMjdTdb, config.altitudeKm, propagator, ephemeris, cancel);
 		clone.entryBeforeInterval = result.beforeInterval;
 		clone.entry = result.entry;
 	}

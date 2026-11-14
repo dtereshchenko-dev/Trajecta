@@ -1,4 +1,5 @@
 #include "obs/RadarPrediction.h"
+#include "obs/ObserverGeometry.h"
 #include "TwoBodyPropagation.h"
 #include "earth_orientation/EarthRotation.h"
 #include "earth_orientation/EarthOrientation.h"
@@ -19,30 +20,12 @@ namespace orbital_core::obs {
 
 		using Calculations::tdbMinusTtSeconds;
 
-		Vec3D groundPosition(double mjdTt, const ObserverData& station)
-		{
-			const auto eop = earthOrientation().lookupMjdTt(mjdTt);
-			if (!eop.valid)
-				throw std::runtime_error("Radar prediction requires Earth orientation data at observation epoch");
-			const double lon = station.longitude * Constants::DEG_TO_RAD;
-			const Vec3D body(Constants::EARTH_RADIUS_IN_AU * station.cosPhi * std::cos(lon),
-			                 Constants::EARTH_RADIUS_IN_AU * station.cosPhi * std::sin(lon),
-			                 Constants::EARTH_RADIUS_IN_AU * station.sinPhi);
-			const auto eq = EarthRotation::WithEop::terrestrialToEquatorialMjd(mjdTt, body, eop);
-			const double ce = std::cos(Constants::EARTH_INCL), se = std::sin(Constants::EARTH_INCL);
-			return {eq.x, ce * eq.y + se * eq.z, -se * eq.y + ce * eq.z};
-		}
-
 		StationState stationState(double mjdTdb, const ObserverData& station, IEphemerisSource& eph)
 		{
 			const auto earth = eph.queryMjd(EphemerisPlanet::Earth, mjdTdb);
-			const double mjdTt = time::fromMjdTdb(mjdTdb, time::Scale::TT);
-			const auto ground = groundPosition(mjdTt, station);
-			constexpr double h = 1.0 / daySeconds;
-			const auto velocity = (groundPosition(time::fromMjdTdb(mjdTdb + h, time::Scale::TT), station) -
-			                       groundPosition(time::fromMjdTdb(mjdTdb - h, time::Scale::TT), station)) /
-			                      (2 * h);
-			return {earth.R + ground, earth.V + velocity, ground, velocity};
+			const auto ground = radarStationStateEclAuMjd(mjdTdb, time::fromMjdTdb(mjdTdb, time::Scale::UTC), station);
+			return {earth.R + ground.offsetEclAu, earth.V + ground.velocityEclAuPerDay, ground.offsetEclAu,
+			        ground.velocityEclAuPerDay};
 		}
 
 		double shapiro(const Vec3D& object, const Vec3D& station)

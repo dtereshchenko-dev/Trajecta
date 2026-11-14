@@ -328,13 +328,14 @@ TEST_F(EphemerisTest, ChesleyObserverFieldsAgainstHorizonsAtSharedEpoch)
 		double ra, dec, magnitude, solarDistance, solarRate, distance, distanceRate, lightMinutes, elongation, phase;
 		double raBefore, raAfter, decBefore, decAfter;
 	};
+
 	constexpr std::array<Reference, 3> reference{{
-	    {318.751209037, -26.800558241, 18.497, 2.999534849596, 0.4179589, 3.10468362788899, 23.4204475,
-	     25.82086638, 74.7121, 18.5221, 318.751021552, 318.751396524, -26.800637075, -26.800479406},
-	    {319.022563162, -26.686605948, 18.505, 2.999776279114, 0.4181551, 3.11818760404841, 23.3412047,
-	     25.93317552, 73.9829, 18.4483, 319.022373775, 319.022752550, -26.686685379, -26.686526516},
-	    {319.296625170, -26.571798263, 18.512, 3.000017820656, 0.4183466, 3.13164466940263, 23.2580206,
-	     26.04509452, 73.2562, 18.3718, 319.296433923, 319.296816417, -26.571878286, -26.571718240},
+	    {318.751209037, -26.800558241, 18.497, 2.999534849596, 0.4179589, 3.10468362788899, 23.4204475, 25.82086638,
+	     74.7121, 18.5221, 318.751021552, 318.751396524, -26.800637075, -26.800479406},
+	    {319.022563162, -26.686605948, 18.505, 2.999776279114, 0.4181551, 3.11818760404841, 23.3412047, 25.93317552,
+	     73.9829, 18.4483, 319.022373775, 319.022752550, -26.686685379, -26.686526516},
+	    {319.296625170, -26.571798263, 18.512, 3.000017820656, 0.4183466, 3.13164466940263, 23.2580206, 26.04509452,
+	     73.2562, 18.3718, 319.296433923, 319.296816417, -26.571878286, -26.571718240},
 	}};
 	auto request = buRequest(oc::EphemerisCenter::Geocentric);
 	request.solution.position = Vec3D(2.598867861350580, -1.390029528986849, -0.5576174308536911);
@@ -378,11 +379,11 @@ TEST_F(EphemerisTest, ChesleyObserverFieldsAgainstHorizonsAtSharedEpoch)
 		RecordProperty("dec_rate_arcsec_h_" + std::to_string(i),
 		               std::to_string(row.latitudeRate * arcsecondsPerHour - referenceDecRate));
 		RecordProperty("sky_motion_arcsec_h_" + std::to_string(i), std::to_string(motion - referenceMotion));
-		RecordProperty("sky_motion_pa_deg_" + std::to_string(i), std::to_string(positionAngle - referencePositionAngle));
+		RecordProperty("sky_motion_pa_deg_" + std::to_string(i),
+		               std::to_string(positionAngle - referencePositionAngle));
 		RecordProperty("elongation_deg_" + std::to_string(i),
 		               std::to_string(row.elongation * Constants::RAD_TO_DEG - ref.elongation));
-		RecordProperty("phase_deg_" + std::to_string(i),
-		               std::to_string(row.phase * Constants::RAD_TO_DEG - ref.phase));
+		RecordProperty("phase_deg_" + std::to_string(i), std::to_string(row.phase * Constants::RAD_TO_DEG - ref.phase));
 		EXPECT_LT(skyError, 0.02);
 		EXPECT_NEAR(*row.visualMagnitude, ref.magnitude, 0.01);
 		EXPECT_NEAR(row.heliocentricAu, ref.solarDistance, 3e-9);
@@ -421,7 +422,8 @@ TEST_F(EphemerisTest, ChesleyObserverFieldsAgainstHorizonsAtSharedEpoch)
 	const double c = std::cos(Constants::EARTH_INCL), s = std::sin(Constants::EARTH_INCL);
 	const Vec3D earthEq(earth.R.x, earth.R.y * c - earth.R.z * s, earth.R.y * s + earth.R.z * c);
 	const double geometricElongation = std::acos(std::clamp(
-	    (earthEq * -1.0).dot(geometric[0].position) / (earthEq.magnitude() * geometric[0].position.magnitude()), -1.0, 1.0));
+	    (earthEq * -1.0).dot(geometric[0].position) / (earthEq.magnitude() * geometric[0].position.magnitude()), -1.0,
+	    1.0));
 	EXPECT_NEAR(geometric[0].elongation, geometricElongation, 1e-12);
 }
 
@@ -429,54 +431,54 @@ TEST_F(EphemerisTest, SkyUncertaintyMatchesPerturbedEphemerides)
 {
 	for (const bool nBody : {false, true}) {
 		for (const bool lightTime : {false, true}) {
-		  for (const double epoch : {59966.0, 61000.0}) {
-			auto request = buRequest(oc::EphemerisCenter::Station, "033");
-			request.solution.forces.enabled = nBody;
-			request.solution.forces.useSb441 = false;
-			request.lightTime = lightTime;
-			request.startMjd = request.endMjd = epoch;
-			request.uncertainty = true;
-			Eigen::Matrix<double, 6, 6> factor = Eigen::Matrix<double, 6, 6>::Zero();
-			factor.diagonal() << 1e-8, 2e-8, 3e-8, 2e-10, 3e-10, 4e-10;
-			factor(0, 4) = 3e-9;
-			factor(2, 3) = -2e-9;
-			request.solution.covariance = factor * factor.transpose();
-			const auto nominal = oc::computeEphemeris(request).rows.at(0);
-			ASSERT_TRUE(nominal.uncertainty);
-			Eigen::Matrix<double, 4, 6> jacobian;
-			request.uncertainty = false;
-			for (int i = 0; i < 6; ++i) {
-				auto plus = request, minus = request;
-				const double step = i < 3 ? 1e-6 : 1e-8;
-				Vec3D& p = i < 3 ? plus.solution.position : plus.solution.velocity;
-				Vec3D& m = i < 3 ? minus.solution.position : minus.solution.velocity;
-				double* pc[] = {&p.x, &p.y, &p.z};
-				double* mc[] = {&m.x, &m.y, &m.z};
-				*pc[i % 3] += step;
-				*mc[i % 3] -= step;
-				const auto a = oc::computeEphemeris(plus).rows.at(0);
-				const auto b = oc::computeEphemeris(minus).rows.at(0);
-				jacobian(0, i) = std::remainder(a.longitude - b.longitude, 2.0 * Constants::PI) *
-				                 std::cos(nominal.latitude) / (2.0 * step);
-				jacobian(1, i) = (a.latitude - b.latitude) / (2.0 * step);
-				jacobian(2, i) = (a.distanceAu - b.distanceAu) / (2.0 * step);
-				jacobian(3, i) = (a.distanceRateAuPerDay - b.distanceRateAuPerDay) / (2.0 * step);
+			for (const double epoch : {59966.0, 61000.0}) {
+				auto request = buRequest(oc::EphemerisCenter::Station, "033");
+				request.solution.forces.enabled = nBody;
+				request.solution.forces.useSb441 = false;
+				request.lightTime = lightTime;
+				request.startMjd = request.endMjd = epoch;
+				request.uncertainty = true;
+				Eigen::Matrix<double, 6, 6> factor = Eigen::Matrix<double, 6, 6>::Zero();
+				factor.diagonal() << 1e-8, 2e-8, 3e-8, 2e-10, 3e-10, 4e-10;
+				factor(0, 4) = 3e-9;
+				factor(2, 3) = -2e-9;
+				request.solution.covariance = factor * factor.transpose();
+				const auto nominal = oc::computeEphemeris(request).rows.at(0);
+				ASSERT_TRUE(nominal.uncertainty);
+				Eigen::Matrix<double, 4, 6> jacobian;
+				request.uncertainty = false;
+				for (int i = 0; i < 6; ++i) {
+					auto plus = request, minus = request;
+					const double step = i < 3 ? 1e-6 : 1e-8;
+					Vec3D& p = i < 3 ? plus.solution.position : plus.solution.velocity;
+					Vec3D& m = i < 3 ? minus.solution.position : minus.solution.velocity;
+					double* pc[] = {&p.x, &p.y, &p.z};
+					double* mc[] = {&m.x, &m.y, &m.z};
+					*pc[i % 3] += step;
+					*mc[i % 3] -= step;
+					const auto a = oc::computeEphemeris(plus).rows.at(0);
+					const auto b = oc::computeEphemeris(minus).rows.at(0);
+					jacobian(0, i) = std::remainder(a.longitude - b.longitude, 2.0 * Constants::PI) *
+					                 std::cos(nominal.latitude) / (2.0 * step);
+					jacobian(1, i) = (a.latitude - b.latitude) / (2.0 * step);
+					jacobian(2, i) = (a.distanceAu - b.distanceAu) / (2.0 * step);
+					jacobian(3, i) = (a.distanceRateAuPerDay - b.distanceRateAuPerDay) / (2.0 * step);
+				}
+				const Eigen::Matrix4d expected = jacobian * request.solution.covariance * jacobian.transpose();
+				constexpr double arcsec = 206264.80624709636;
+				const auto& actual = *nominal.uncertainty;
+				const double east = 3.0 * std::sqrt(expected(0, 0)) * arcsec;
+				const double north = 3.0 * std::sqrt(expected(1, 1)) * arcsec;
+				const double range = 3.0 * std::sqrt(expected(2, 2)) * (Constants::AU_IN_METERS / 1000.0);
+				EXPECT_NEAR(actual.longitude3SigmaArcsec, east, east * 2e-4);
+				EXPECT_NEAR(actual.latitude3SigmaArcsec, north, north * 2e-4);
+				EXPECT_NEAR(actual.range3SigmaKm, range, range * 2e-4);
+				const double rangeRate = 3.0 * std::sqrt(expected(3, 3)) * (Constants::AU_IN_METERS / 1000.0) / 86400.0;
+				EXPECT_NEAR(actual.rangeRate3SigmaKmPerSecond, rangeRate, rangeRate * 3e-4);
+				EXPECT_NEAR(actual.major3SigmaArcsec * actual.major3SigmaArcsec +
+				                actual.minor3SigmaArcsec * actual.minor3SigmaArcsec,
+				            east * east + north * north, (east * east + north * north) * 2e-4);
 			}
-			const Eigen::Matrix4d expected = jacobian * request.solution.covariance * jacobian.transpose();
-			constexpr double arcsec = 206264.80624709636;
-			const auto& actual = *nominal.uncertainty;
-			const double east = 3.0 * std::sqrt(expected(0, 0)) * arcsec;
-			const double north = 3.0 * std::sqrt(expected(1, 1)) * arcsec;
-			const double range = 3.0 * std::sqrt(expected(2, 2)) * (Constants::AU_IN_METERS / 1000.0);
-			EXPECT_NEAR(actual.longitude3SigmaArcsec, east, east * 2e-4);
-			EXPECT_NEAR(actual.latitude3SigmaArcsec, north, north * 2e-4);
-			EXPECT_NEAR(actual.range3SigmaKm, range, range * 2e-4);
-			const double rangeRate = 3.0 * std::sqrt(expected(3, 3)) * (Constants::AU_IN_METERS / 1000.0) / 86400.0;
-			EXPECT_NEAR(actual.rangeRate3SigmaKmPerSecond, rangeRate, rangeRate * 3e-4);
-			EXPECT_NEAR(actual.major3SigmaArcsec * actual.major3SigmaArcsec +
-			                actual.minor3SigmaArcsec * actual.minor3SigmaArcsec,
-			            east * east + north * north, (east * east + north * north) * 2e-4);
-		  }
 		}
 	}
 }
@@ -486,15 +488,18 @@ TEST_F(EphemerisTest, ChesleySkyUncertaintyAgreesWithHorizons)
 	// SBDB JPL#60 covariance in [e, q, tp, node, peri, i], at JD 2458383.5 TDB.
 	using Vector6 = Eigen::Matrix<double, 6, 1>;
 	using Matrix6 = Eigen::Matrix<double, 6, 6>;
-	const Vector6 elements(0.02466299754368284, 2.936562809597262, 2458725.988367522770,
-	                       78.06106008819181, 182.5320169349131, 11.15274171364406);
+	const Vector6 elements(0.02466299754368284, 2.936562809597262, 2458725.988367522770, 78.06106008819181,
+	                       182.5320169349131, 11.15274171364406);
 	Matrix6 covariance;
-	covariance << 5.341658843758314e-19, -2.413560534201591e-18, 2.137674205518474e-15, -4.814053735820984e-18, 4.73977827543846e-16, -1.06909165126936e-18,
-	    -2.413560534201591e-18, 1.159221689362191e-17, -1.18727956270191e-14, 2.482937430756793e-17, -2.609689576634236e-15, 3.844903204503517e-18,
-	    2.137674205518474e-15, -1.18727956270191e-14, 4.529949217506534e-11, 4.619217982682939e-14, 8.900935638769985e-12, 1.58267220373105e-15,
-	    -4.814053735820984e-18, 2.482937430756793e-17, 4.619217982682939e-14, 1.575411787756052e-14, -7.885564600784617e-15, -4.784858482750135e-16,
-	    4.73977827543846e-16, -2.609689576634236e-15, 8.900935638769985e-12, -7.885564600784617e-15, 1.776271207268168e-12, 7.212448314149736e-16,
-	    -1.06909165126936e-18, 3.844903204503517e-18, 1.58267220373105e-15, -4.784858482750135e-16, 7.212448314149736e-16, 8.893618693010124e-16;
+	covariance << 5.341658843758314e-19, -2.413560534201591e-18, 2.137674205518474e-15, -4.814053735820984e-18,
+	    4.73977827543846e-16, -1.06909165126936e-18, -2.413560534201591e-18, 1.159221689362191e-17,
+	    -1.18727956270191e-14, 2.482937430756793e-17, -2.609689576634236e-15, 3.844903204503517e-18,
+	    2.137674205518474e-15, -1.18727956270191e-14, 4.529949217506534e-11, 4.619217982682939e-14,
+	    8.900935638769985e-12, 1.58267220373105e-15, -4.814053735820984e-18, 2.482937430756793e-17,
+	    4.619217982682939e-14, 1.575411787756052e-14, -7.885564600784617e-15, -4.784858482750135e-16,
+	    4.73977827543846e-16, -2.609689576634236e-15, 8.900935638769985e-12, -7.885564600784617e-15,
+	    1.776271207268168e-12, 7.212448314149736e-16, -1.06909165126936e-18, 3.844903204503517e-18,
+	    1.58267220373105e-15, -4.784858482750135e-16, 7.212448314149736e-16, 8.893618693010124e-16;
 	const auto state = [](const Vector6& p) -> Vector6 {
 		const double e = p[0], a = p[1] / (1.0 - e);
 		const double mean = Constants::GAUSS_K * (2458383.5 - p[2]) / std::pow(a, 1.5);
@@ -503,7 +508,7 @@ TEST_F(EphemerisTest, ChesleySkyUncertaintyAgreesWithHorizons)
 			eccentric -= (eccentric - e * std::sin(eccentric) - mean) / (1.0 - e * std::cos(eccentric));
 		const double anomaly = std::atan2(std::sqrt(1.0 - e * e) * std::sin(eccentric), std::cos(eccentric) - e);
 		const oc::cometary::Vector6 cot(p[1], e, p[5] * Constants::DEG_TO_RAD, p[3] * Constants::DEG_TO_RAD,
-		                               p[4] * Constants::DEG_TO_RAD, anomaly);
+		                                p[4] * Constants::DEG_TO_RAD, anomaly);
 		return oc::cometary::toCartesian(cot).value();
 	};
 	const Vector6 nominal = state(elements);
@@ -549,11 +554,12 @@ TEST_F(EphemerisTest, ChesleySkyUncertaintyAgreesWithHorizons)
 		*pc[i % 3] += step;
 		*mc[i % 3] -= step;
 		rangeRateJacobian[i] = (oc::computeEphemeris(plus).rows.at(0).distanceRateAuPerDay -
-		                        oc::computeEphemeris(minus).rows.at(0).distanceRateAuPerDay) / (2.0 * step);
+		                        oc::computeEphemeris(minus).rows.at(0).distanceRateAuPerDay) /
+		                       (2.0 * step);
 	}
-	const double numericSigma = 3.0 * std::sqrt((rangeRateJacobian * request.solution.covariance *
-	                                             rangeRateJacobian.transpose())(0, 0)) *
-	                            (Constants::AU_IN_METERS / 1000.0) / 86400.0;
+	const double numericSigma =
+	    3.0 * std::sqrt((rangeRateJacobian * request.solution.covariance * rangeRateJacobian.transpose())(0, 0)) *
+	    (Constants::AU_IN_METERS / 1000.0) / 86400.0;
 	EXPECT_NEAR(propagated.uncertainty->rangeRate3SigmaKmPerSecond, numericSigma, numericSigma * 2e-3);
 }
 
@@ -595,8 +601,8 @@ TEST_F(EphemerisTest, SkyUncertaintyIncludesNonGravitationalCrossCovariance)
 		}
 		const auto a = oc::computeEphemeris(plus).rows.at(0);
 		const auto b = oc::computeEphemeris(minus).rows.at(0);
-		jacobian(0, i) = std::remainder(a.longitude - b.longitude, 2.0 * Constants::PI) *
-		                 std::cos(nominal.latitude) / (2.0 * step);
+		jacobian(0, i) =
+		    std::remainder(a.longitude - b.longitude, 2.0 * Constants::PI) * std::cos(nominal.latitude) / (2.0 * step);
 		jacobian(1, i) = (a.latitude - b.latitude) / (2.0 * step);
 		rangeRateJacobian[i] = (a.distanceRateAuPerDay - b.distanceRateAuPerDay) / (2.0 * step);
 	}
@@ -606,9 +612,9 @@ TEST_F(EphemerisTest, SkyUncertaintyIncludesNonGravitationalCrossCovariance)
 	const double north = 3.0 * std::sqrt(expected(1, 1)) * arcsec;
 	EXPECT_NEAR(nominal.uncertainty->longitude3SigmaArcsec, east, east * 0.002);
 	EXPECT_NEAR(nominal.uncertainty->latitude3SigmaArcsec, north, north * 0.002);
-	const double rangeRate = 3.0 * std::sqrt((rangeRateJacobian * request.solution.covariance *
-	                                          rangeRateJacobian.transpose())(0, 0)) *
-	                         (Constants::AU_IN_METERS / 1000.0) / 86400.0;
+	const double rangeRate =
+	    3.0 * std::sqrt((rangeRateJacobian * request.solution.covariance * rangeRateJacobian.transpose())(0, 0)) *
+	    (Constants::AU_IN_METERS / 1000.0) / 86400.0;
 	EXPECT_NEAR(nominal.uncertainty->rangeRate3SigmaKmPerSecond, rangeRate, rangeRate * 0.002);
 }
 

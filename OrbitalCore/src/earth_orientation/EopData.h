@@ -30,6 +30,12 @@ namespace orbital_core::earth_orientation_detail {
 	   public:
 		explicit C04Data(const std::filesystem::path& directory, EarthOrientationProfile profile);
 		[[nodiscard]] EarthOrientationSample lookupMjdTt(double mjdTt) const noexcept;
+		[[nodiscard]] bool observedTtMinusUt1(double mjdTt, double& seconds) const noexcept;
+
+		[[nodiscard]] bool coversObserved(double mjdTt) const noexcept
+		{
+			return isAvailable() && mjdTt >= m_observedBegin && mjdTt <= m_observedEnd;
+		}
 
 		[[nodiscard]] bool isAvailable() const noexcept { return !m_segments.empty(); }
 
@@ -55,46 +61,14 @@ namespace orbital_core::earth_orientation_detail {
 		double m_correctionEpoch{0.0};
 		double m_begin{0.0};
 		double m_end{0.0};
+		double m_observedBegin{0.0};
+		double m_observedEnd{0.0};
 		double m_ut1Begin{0.0};
 		double m_ut1End{0.0};
 		double m_ut1Slope{0.0};
 
 		void load(const std::filesystem::path& directory, EarthOrientationProfile profile);
 		[[nodiscard]] Values interpolate(double mjdTt) const noexcept;
-	};
-
-	class FinalsData {
-	   public:
-		explicit FinalsData(const std::filesystem::path& file);
-		[[nodiscard]] EarthOrientationSample lookupMjdTt(double mjdTt) const noexcept;
-		[[nodiscard]] bool ttToUt1Mjd(double mjdTt, double& mjdUt1) const noexcept;
-
-		[[nodiscard]] bool ut1ToTtSeconds(double mjdUt1, double& seconds) const noexcept
-		{
-			return clockOffsetAtDailyEpoch(mjdUt1, seconds);
-		}
-
-		[[nodiscard]] bool isAvailable() const noexcept { return !m_records.empty(); }
-
-		[[nodiscard]] std::size_t size() const noexcept { return m_records.size(); }
-
-		[[nodiscard]] double firstMjdUtc() const noexcept { return m_records.empty() ? 0 : m_records.front().mjdUtc; }
-
-		[[nodiscard]] double lastMjdUtc() const noexcept { return m_records.empty() ? 0 : m_records.back().mjdUtc; }
-
-	   private:
-		struct Record {
-			bool haveOffsets;
-			double mjdUtc;
-			double mjdTt;
-			double xpRad;
-			double ypRad;
-			double ttMinusUt1Seconds;
-			Iau2000PoleOffsets offsets;
-		};
-
-		std::vector<Record> m_records;
-		[[nodiscard]] bool clockOffsetAtDailyEpoch(double mjd, double& ttMinusUt1) const noexcept;
 	};
 
 }  // namespace orbital_core::earth_orientation_detail

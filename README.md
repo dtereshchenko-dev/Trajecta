@@ -44,7 +44,8 @@ For a source build, see the [developer guide](DEVELOPMENT.md#build).
 4. Use Risk Monitor for a suitable solution and review the resulting reports.
 
 Calculation settings and runtime data availability are accessible under
-**Settings** and **Data sources**.
+**Settings** and **Data sources**. See [Data sources](https://dtereshchenko-dev.github.io/Trajecta/docs/data-sources/)
+for Earth-orientation files, their coverage and updates.
 
 ## Orbit determination
 
