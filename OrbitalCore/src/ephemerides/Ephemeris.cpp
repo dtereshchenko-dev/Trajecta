@@ -3,6 +3,7 @@
 #include "EphemeridesContainer.h"
 #include "TwoBodyPropagation.h"
 #include "NBodyPropagator.h"
+#include "uncertainty/LinearizedCovariance.h"
 #include "obs/LightDeflection.h"
 #include "obs/LightTime.h"
 #include "obs/LightTimeSeries.h"
@@ -114,25 +115,6 @@ namespace orbital_core {
 			const double gamma = 1.0 / std::sqrt(1.0 - beta2);
 			const double dot = n.dot(beta);
 			return (n / gamma + beta * (gamma * dot / (gamma + 1.0) - 1.0)) / (1.0 - dot);
-		}
-
-		std::optional<Eigen::MatrixXd> covarianceFactor(const EphemerisSolution& solution)
-		{
-			const auto& covariance = solution.covariance;
-			const int dimension = 6 + solution.nonGrav.fitParameterCount();
-			if (covariance.rows() != dimension || covariance.cols() != dimension || !covariance.allFinite() ||
-			    (covariance.diagonal().array() <= 0.0).any())
-				return std::nullopt;
-			const Eigen::VectorXd scale = covariance.diagonal().cwiseSqrt();
-			const Eigen::MatrixXd correlation =
-			    scale.cwiseInverse().asDiagonal() * covariance * scale.cwiseInverse().asDiagonal();
-			if (!correlation.allFinite() || !correlation.isApprox(correlation.transpose(), 1e-10))
-				return std::nullopt;
-			const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigen(correlation);
-			if (eigen.info() != Eigen::Success || eigen.eigenvalues().minCoeff() < -1e-10)
-				return std::nullopt;
-			return scale.asDiagonal() * eigen.eigenvectors() *
-			       eigen.eigenvalues().cwiseMax(0.0).cwiseSqrt().asDiagonal();
 		}
 
 		std::optional<EphemerisUncertainty> skyUncertainty(const Vec3D& position, const Eigen::MatrixXd& weighted,
@@ -248,7 +230,10 @@ namespace orbital_core {
 		if (control.progress)
 			control.progress("Propagating ephemeris");
 		const auto propagator = ephemerisPropagator(solution);
-		const auto factor = request.uncertainty ? covarianceFactor(solution) : std::nullopt;
+		const auto factor = request.uncertainty ? uncertainty::covarianceFactor(
+		                                              solution.covariance, 6 + solution.nonGrav.fitParameterCount(),
+		                                              uncertainty::CovariancePolicy::PositiveSemidefinite)
+		                                        : std::nullopt;
 		result.uncertaintyComputed = factor.has_value();
 		std::vector<NBodyPropagator::PropagationResultFull> variational;
 		std::vector<NBodyPropagator::StateVel> states;
@@ -398,10 +383,7 @@ namespace orbital_core {
 			if (factor) {
 				Eigen::MatrixXd transport(6, factor->rows());
 				if (nBody) {
-					transport.leftCols<6>() = variational[i].Phi;
-					for (int p = 0; p < solution.nonGrav.fitParameterCount(); ++p)
-						transport.col(6 + p) =
-						    variational[i].SensA.col(solution.nonGrav.sensitivityColumnForFitParameter(p));
+					transport = uncertainty::stateJacobian(variational[i], solution.nonGrav);
 				} else {
 					const StateVectors initial(solution.position, solution.velocity / Constants::GAUSS_K);
 					for (int p = 0; p < 6; ++p) {

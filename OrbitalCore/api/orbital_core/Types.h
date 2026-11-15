@@ -274,6 +274,8 @@ namespace Convertors {
 
 	inline std::string convertJDToGregorian(const double& jd)
 	{
+		if (!std::isfinite(jd))
+			return "Unavailable";
 		int year, month;
 		double dayFrac;
 		jdToYMD(jd, year, month, dayFrac);

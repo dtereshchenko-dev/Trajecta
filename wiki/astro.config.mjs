@@ -22,6 +22,7 @@ export default defineConfig({
         ] },
         { label: 'User guide', collapsed: true, items: [
           { label: 'Orbit determination', slug: 'orbit-determination' },
+          { label: 'Orbit 3D', slug: 'guide/orbit-3d' },
           { label: 'Observations', slug: 'guide/observations' },
           { label: 'Fit settings', slug: 'guide/fit-settings' },
           { label: 'Ephemerides and close approaches', slug: 'ephemerides-and-close-approaches' },

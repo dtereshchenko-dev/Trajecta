@@ -6,6 +6,7 @@
 #include "OpikTargetPlane.h"
 #include "TargetPlaneDistanceBounds.h"
 #include "NBodyPropagator.h"
+#include "uncertainty/LinearizedCovariance.h"
 #include <Eigen/Cholesky>
 #include <Eigen/Geometry>
 #include <Eigen/SVD>
@@ -29,17 +30,7 @@ namespace orbital_core::hazard {
 			Eigen::MatrixXd cov = fit.uncertainty.fitParameterCovariance;
 			if (n == 6 && cov.size() == 0)
 				cov = fit.uncertainty.cartesianStateCovariance;
-			if (cov.rows() != n || cov.cols() != n || !cov.allFinite() || (cov.diagonal().array() <= 0.0).any())
-				return std::nullopt;
-			const Eigen::VectorXd scale = cov.diagonal().cwiseSqrt();
-			const Eigen::MatrixXd correlation =
-			    scale.cwiseInverse().asDiagonal() * cov * scale.cwiseInverse().asDiagonal();
-			if (!correlation.isApprox(correlation.transpose(), 1e-10))
-				return std::nullopt;
-			const Eigen::LLT<Eigen::MatrixXd> llt(correlation);
-			if (llt.info() != Eigen::Success)
-				return std::nullopt;
-			return scale.asDiagonal() * Eigen::MatrixXd(llt.matrixL());
+			return uncertainty::covarianceFactor(cov, n);
 		}
 
 		void addUncertainty(NominalCloseApproach& row, const NBodyPropagator::PropagationResultFull& state,
@@ -67,11 +58,7 @@ namespace orbital_core::hazard {
 				row.uncertaintyNote = "Degenerate encounter minimum";
 				return;
 			}
-			Eigen::MatrixXd jacobian(6, factor.rows());
-			jacobian.leftCols<6>() = state.Phi;
-			for (int i = 0; i < ng.fitParameterCount(); ++i)
-				jacobian.col(6 + i) = state.SensA.col(ng.sensitivityColumnForFitParameter(i));
-			const Eigen::MatrixXd weighted = jacobian * factor;
+			const Eigen::MatrixXd weighted = uncertainty::stateJacobian(state, ng) * factor;
 			const Eigen::RowVector3d radial(r.x, r.y, r.z), velocity(v.x, v.y, v.z);
 			const Eigen::RowVectorXd timeGradient =
 			    -(velocity * weighted.topRows<3>() + radial * weighted.bottomRows<3>()) / denominator;

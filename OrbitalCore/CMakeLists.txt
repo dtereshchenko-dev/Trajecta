@@ -295,6 +295,9 @@ add_library(OrbitalCore SHARED
     src/Residuals.cpp
     src/EphemeridesContainer.h      src/EphemeridesContainer.cpp
     api/orbital_core/Ephemeris.h    src/ephemerides/Ephemeris.cpp
+    api/orbital_core/RelativeMotion.h src/propagator/RelativeMotion.cpp src/propagator/CaptureTimeUncertainty.cpp
+    src/propagator/RelativeMotionInternal.h
+    src/uncertainty/LinearizedCovariance.h
     src/obs/IObservationReader.h    src/obs/ObservationReaders.cpp
     src/obs/RwoReader.h             src/obs/RwoReader.cpp
     src/obs/Mpc80ColumnReader.h     src/obs/Mpc80ColumnReader.cpp

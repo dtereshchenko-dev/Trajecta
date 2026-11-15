@@ -70,6 +70,12 @@ and search for close approaches.
 
 ![3D visualization of an asteroid orbit and the planets](.github/assets/screenshots/orbit-3d.png)
 
+Explore motion relative to a planet, including temporary capture intervals.
+Here, comet 147P/Kushida–Muramatsu is shown during its historical capture by
+Jupiter:
+
+![147P's trajectory relative to Jupiter during its temporary capture](wiki/src/assets/orbit-3d/147p-jupiter.png)
+
 ## Impact analysis
 
 The Risk Monitor supports covariance Monte Carlo, observation Monte Carlo and

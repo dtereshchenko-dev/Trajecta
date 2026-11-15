@@ -66,9 +66,28 @@ if(NOT off MATCHES "relativity=off earthJ2=on")
     message(FATAL_ERROR "Off mode or last-option-wins handling failed")
 endif()
 
+run_cli(a1 ${common} --non-grav --non-grav-model inverse-square --ng-solve a1)
+if(NOT a1 MATCHES "nonGrav=on" OR NOT a1 MATCHES "Non-grav done\\. A1=")
+    message(FATAL_ERROR "Inverse-square A1 fit was not enabled")
+endif()
+execute_process(COMMAND "${CLI}" "${INPUT}" --non-grav --non-grav-model h2o --ng-solve a1
+    RESULT_VARIABLE a1_bad_status OUTPUT_VARIABLE a1_bad_stdout ERROR_VARIABLE a1_bad_stderr)
+if(a1_bad_status EQUAL 0 OR NOT a1_bad_stderr MATCHES "requires --non-grav-model inverse-square")
+    message(FATAL_ERROR "Unsupported A1-only model was not rejected: ${a1_bad_stdout}\n${a1_bad_stderr}")
+endif()
+
 foreach(args IN ITEMS "--relativity;bad" "--earth-pole;bad" "--relativity")
     execute_process(COMMAND "${CLI}" ${args} RESULT_VARIABLE status OUTPUT_VARIABLE stdout ERROR_VARIABLE stderr)
     if(status EQUAL 0 OR NOT stderr MATCHES "(--relativity|--earth-pole)")
         message(FATAL_ERROR "Invalid argument was not rejected: ${args}\n${stdout}\n${stderr}")
     endif()
 endforeach()
+
+run_cli(historical "${INPUT}" --weight-profile uniform --no-debias --no-sigma-clip --quiet
+    --ca-scan --survey-lookback 80 --survey-horizon 1 --survey-planet earth
+    --survey-threshold 0.5 --ca-encounter-radius 0.5 --survey-integrator ra15)
+if(NOT historical MATCHES "UTC=unavailable TDB=19[0-5][0-9]-[0-9][0-9]-[0-9][0-9]" OR
+   NOT historical MATCHES "UTC=20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]" OR
+   historical MATCHES "-2147483648")
+    message(FATAL_ERROR "Incorrect historical or modern encounter dates: ${historical}")
+endif()

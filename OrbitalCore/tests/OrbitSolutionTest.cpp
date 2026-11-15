@@ -254,6 +254,20 @@ namespace {
 		}
 	}
 
+	TEST_F(OrbitSolutionTest, InverseSquareA1OnlyRoundTripsWithFullCovariance)
+	{
+		nonGrav(NgModel::InverseSquare);
+		m_fit.finalNonGrav.setFitParameterMask(NgParameterMask::A1);
+		m_fit.uncertainty.fitParameterCovariance = m_fit.uncertainty.fitParameterCovariance.topLeftCorner(7, 7).eval();
+		m_fit.uncertainty.fitParameterCovarianceFormal =
+		    m_fit.uncertainty.fitParameterCovarianceFormal.topLeftCorner(7, 7).eval();
+		const auto restored = loadOrbitSolution(save());
+		EXPECT_EQ(restored.nonGrav.fitParameterMask(), NgParameterMask::A1);
+		EXPECT_EQ(restored.covariance.rows(), 7);
+		EXPECT_EQ(restored.covariance.cols(), 7);
+		EXPECT_TRUE(restored.covariance.isApprox(m_fit.uncertainty.fitParameterCovariance, 1e-15));
+	}
+
 	TEST_F(OrbitSolutionTest, PreservesDisabledModelCoefficientsAndConfiguredMask)
 	{
 		nonGrav(NgModel::InverseSquare, true);

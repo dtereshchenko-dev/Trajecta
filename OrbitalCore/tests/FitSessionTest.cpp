@@ -306,7 +306,7 @@ namespace {
 
 TEST_F(FitSessionTest, OpticalFitJacobianAndCovarianceMatchIndependentResidualPerturbations)
 {
-	for (int scenario = 0; scenario < 3; ++scenario) {
+	for (int scenario = 0; scenario < 4; ++scenario) {
 		SCOPED_TRACE(scenario);
 		OrbitOptimizerConfig config;
 		config.nbody.enabled = true;
@@ -345,15 +345,17 @@ TEST_F(FitSessionTest, OpticalFitJacobianAndCovarianceMatchIndependentResidualPe
 				o.rmsCorr = .3;
 				observations.push_back(o);
 			}
-			config.nonGrav.enabled = scenario == 2;
+			config.nonGrav.enabled = scenario >= 2;
 			config.nonGrav.model = oc::NonGravModelKind::InverseSquare;
-			config.nonGrav.solveMask = static_cast<std::uint8_t>(NgParameterMask::A1 | NgParameterMask::A2);
+			config.nonGrav.solveMask = static_cast<std::uint8_t>(
+			    scenario == 3 ? NgParameterMask::A1 : NgParameterMask::A1 | NgParameterMask::A2);
 		}
 		oc::fit::OrbitFitModel model(orbit, oc::fit::prepareFitObservations(observations, config), config);
 		auto params = oc::fit::OrbitFitModel::stateVectorFromOrbit(*orbit);
 		if (config.nonGrav.enabled) {
 			params.push_back(1e-10);
-			params.push_back(-3e-12);
+			if (scenario != 3)
+				params.push_back(-3e-12);
 		}
 		const auto analytic = model.computeResidualsAndStateJac(params);
 		ASSERT_EQ(analytic.stateJ.cols(), params.size());
@@ -2100,6 +2102,27 @@ TEST_F(FitSessionTest, RefinementCanEnableAndDisableNonGravWithManualExclusion)
 	EXPECT_EQ(changed.fit.finalNonGrav.fitParameterMask(), NgParameterMask::A1 | NgParameterMask::A2);
 	EXPECT_EQ(changed.fit.finalNonGrav.A3(), 3e-10);
 	EXPECT_EQ(changed.fit.uncertainty.fitParameterCovariance.rows(), 8);
+}
+
+TEST_F(FitSessionTest, InverseSquareA1OnlyHasOneNonGravCovarianceParameter)
+{
+	auto data = fitContractCase();
+	data.config.nonGrav.enabled = true;
+	data.config.nonGrav.model = oc::NonGravModelKind::InverseSquare;
+	data.config.nonGrav.solveMask = static_cast<std::uint8_t>(NgParameterMask::A1);
+	data.config.nonGrav.useInitialValues = true;
+	data.config.nonGrav.initialA1 = 1e-10;
+	oc::FitRequest request{
+	    .initialOrbit = data.initial, .observations = data.observations.all, .options = {.evaluateOnly = true}};
+	const auto result = oc::FitSession{data.config}.optimize(request);
+	ASSERT_TRUE(result.orbit);
+	EXPECT_EQ(result.finalNonGrav.fitParameterMask(), NgParameterMask::A1);
+	EXPECT_DOUBLE_EQ(result.finalNonGrav.A2(), 0.0);
+	EXPECT_DOUBLE_EQ(result.finalNonGrav.A3(), 0.0);
+	EXPECT_EQ(result.uncertainty.fitParameterCovariance.rows(), 7);
+	EXPECT_EQ(result.uncertainty.fitParameterCovariance.cols(), 7);
+	EXPECT_EQ(result.uncertainty.fitParameterCovarianceFormal.rows(), 7);
+	EXPECT_EQ(result.uncertainty.fitParameterCovarianceFormal.cols(), 7);
 }
 
 TEST_F(FitSessionTest, NonGravWarmStartCannotOverrideRequestedModelOrSolveMask)

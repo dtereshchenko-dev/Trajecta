@@ -79,7 +79,8 @@ namespace orbital_core {
 		// with R in AU, V in AU/day, non-grav in the model's physical units.
 		// Non-grav order follows finalNonGrav.fitParameterMask():
 		//   Yarkovsky: [A2]
-		//   comet/direct models: [A1,A2], [A1,A2,A3], or [A1,A2,A3,DT]
+		//   inverse square: [A1], [A1,A2], [A1,A2,A3], or [A1,A2,A3,DT]
+		//   Marsden models: [A1,A2], [A1,A2,A3], or [A1,A2,A3,DT]
 		FitParameterCovariance fitParameterCovariance;
 		FitParameterCovariance fitParameterCovarianceFormal;
 

@@ -107,7 +107,10 @@ the distance-dependent law under **Model g(r)** and the parameters under
 **Estimated coefficients**:
 
 - **Marsden H2O** and **Marsden CO** use cometary activity laws.
-- **Inverse square** uses a distance factor proportional to `1/r²`.
+- **Inverse square** uses a distance factor proportional to `1/r²`. Choose
+  **A1** to estimate only the radial coefficient, for example when fitting
+  solar radiation pressure. Other coefficients are fixed, not necessarily reset
+  to zero when re-solving a previous non-gravitational solution.
 - **Yarkovsky** uses an inverse-square factor with A2 as the estimated
   coefficient; A1 and A3 are fixed to zero in this model.
 

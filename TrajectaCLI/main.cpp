@@ -185,6 +185,8 @@ namespace {
 		NgParameterMask mask = NgParameterMask::None;
 		if (v == "default" || v == "model" || v == "none")
 			mask = NgParameterMask::None;
+		else if (v == "a1")
+			mask = NgParameterMask::A1;
 		else if (v == "a2" || v == "yarkovsky")
 			mask = NgParameterMask::A2;
 		else if (v == "a12" || v == "a1a2")
@@ -256,7 +258,7 @@ namespace {
 		   << "                                    Earth zonal gravity pole (default: time-varying)\n"
 		   << "  --non-grav                        Enable non-grav fit\n"
 		   << "  --non-grav-model <name>           h2o|co|inverse-square|yarkovsky\n"
-		   << "  --ng-solve <set>                  default|a12|a123|a123dt|a2\n"
+		   << "  --ng-solve <set>                  default|a1|a12|a123|a123dt|a2\n"
 		   << "  --init-a1 <AU/d^2> --init-a2 <AU/d^2> --init-a3 <AU/d^2>\n"
 		   << "  --residuals <file>                Save final residual table\n"
 		   << "  --dump-lov-input <file>           Full-precision nominal state and COV\n"
@@ -480,6 +482,9 @@ namespace {
 
 		if (opt.input.empty())
 			throw std::invalid_argument("missing input file");
+		if (opt.cfg.nonGrav.solveMask == static_cast<std::uint8_t>(NgParameterMask::A1) &&
+		    opt.cfg.nonGrav.model != orbital_core::NonGravModelKind::InverseSquare)
+			throw std::invalid_argument("--ng-solve a1 requires --non-grav-model inverse-square");
 		if (!std::isfinite(opt.obsMcAltitudeKm) || opt.obsMcAltitudeKm < 0.0)
 			throw std::invalid_argument("--mc-altitude-km must be finite and nonnegative");
 		if ((opt.obsMcAltitudeKm > 0.0 || !opt.obsMcOutput.empty()) && opt.obsMcClones <= 0)
@@ -600,11 +605,15 @@ namespace {
 			const auto& e = events[i];
 			const double distKm = e.distAu * kAuKm;
 			const double distLd = distKm / Constants::LUNAR_DISTANCE_KM;
+			const double utc =
+			    orbital_core::time::fromMjdTdb(orbital_core::time::mjdFromJd(e.jd), orbital_core::time::Scale::UTC);
 			std::cout << "  ca[" << i << "]"
-			          << " JD_TDB=" << std::fixed << std::setprecision(12) << e.jd << " UTC="
-			          << Convertors::convertJDToGregorian(orbital_core::time::jdFromMjd(orbital_core::time::fromMjdTdb(
-			                 orbital_core::time::mjdFromJd(e.jd), orbital_core::time::Scale::UTC)))
-			          << " distAu=" << std::scientific << std::setprecision(15) << e.distAu << " distKm=" << std::fixed
+			          << " JD_TDB=" << std::fixed << std::setprecision(12) << e.jd;
+			if (std::isfinite(utc))
+				std::cout << " UTC=" << Convertors::convertJDToGregorian(orbital_core::time::jdFromMjd(utc));
+			else
+				std::cout << " UTC=unavailable TDB=" << Convertors::convertJDToGregorian(e.jd);
+			std::cout << " distAu=" << std::scientific << std::setprecision(15) << e.distAu << " distKm=" << std::fixed
 			          << std::setprecision(6) << distKm << " distLD=" << std::setprecision(6) << distLd
 			          << " vInfKmS=" << std::setprecision(3) << e.vInfKmS << '\n';
 		}

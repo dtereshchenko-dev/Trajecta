@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "orbital_core/hazard/IntervalMonteCarlo.h"
+#include "orbital_core/hazard/ManifoldOfVariations.h"
 #include "hazard/McBoundaryScan.h"
 #include "hazard/BoundaryScan.h"
 #include "orbital_core/TimeScale.h"
@@ -423,11 +424,64 @@ namespace {
 		EXPECT_EQ(tdbPayload["time_scale"], "MJD TDB");
 		EXPECT_DOUBLE_EQ(tdbPayload["entries"][0]["epoch"], toTdb(tt));
 		EXPECT_DOUBLE_EQ(tdbPayload["entries"][0]["epoch_utc"], payload["entries"][1]["epoch_utc"]);
+		data["start"] = 34000.0;
+		data["end"] = 34001.0;
+		data["clones"][0]["entry"]["epoch"] = 34000.5;
+		{
+			std::ofstream output(dir / "result.json");
+			output << data;
+		}
+		ASSERT_NO_THROW(hz::renderIntervalMonteCarloReport(dir));
+		std::ifstream historicalFile(dir / "report.html");
+		const std::string historicalHtml{std::istreambuf_iterator<char>(historicalFile), {}};
+		const auto historicalStart = historicalHtml.find(marker) + marker.size();
+		const auto historicalEnd = historicalHtml.find("</script>", historicalStart);
+		const auto historical = Json::parse(historicalHtml.substr(historicalStart, historicalEnd - historicalStart));
+		EXPECT_TRUE(historical["start_utc"].is_null());
+		ASSERT_EQ(historical["entries"].size(), 1);
+		EXPECT_TRUE(historical["entries"][0]["epoch_utc"].is_null());
+		EXPECT_DOUBLE_EQ(historical["entries"][0]["epoch"], 34000.5);
+		EXPECT_NE(historicalHtml.find("UTC unavailable"), std::string::npos);
 		data["time_scale"] = "MJD TT";
 		{
 			std::ofstream output(dir / "result.json");
 			output << data;
 		}
 		EXPECT_THROW(hz::renderIntervalMonteCarloReport(dir), std::runtime_error);
+	}
+
+	TEST(MovReport, HistoricalEpochsKeepTdbAndReportUtcUnavailable)
+	{
+		using Json = nlohmann::json;
+		const auto dir = std::filesystem::temp_directory_path() /
+		                 ("mov-report-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+		std::filesystem::create_directory(dir);
+
+		struct Cleanup {
+			std::filesystem::path path;
+
+			~Cleanup() { std::filesystem::remove_all(path); }
+		} cleanup{dir};
+
+		const Json data = {
+		    {"schema", "orbital-mov-1"}, {"time_scale", "MJD TDB"}, {"epoch", 34000.0},
+		    {"start", 34000.0},          {"end", 34001.0},          {"nodes", {{{"entry", {{"epoch", 34000.5}}}}}}};
+		{
+			std::ofstream output(dir / "result.json");
+			output << data;
+		}
+		ASSERT_NO_THROW(hz::renderManifoldOfVariationsReport(dir));
+		std::ifstream file(dir / "report.html");
+		const std::string html{std::istreambuf_iterator<char>(file), {}};
+		const std::string marker = "<script id=\"mov-data\" type=\"application/json\">";
+		const auto begin = html.find(marker);
+		ASSERT_NE(begin, std::string::npos);
+		const auto end = html.find("</script>", begin + marker.size());
+		ASSERT_NE(end, std::string::npos);
+		const auto payload = Json::parse(html.substr(begin + marker.size(), end - begin - marker.size()));
+		EXPECT_DOUBLE_EQ(payload["start"], 34000.0);
+		EXPECT_TRUE(payload["start_utc"].is_null());
+		EXPECT_TRUE(payload["nodes"][0]["entry"]["epoch_utc"].is_null());
+		EXPECT_NE(html.find("UTC unavailable"), std::string::npos);
 	}
 }  // namespace

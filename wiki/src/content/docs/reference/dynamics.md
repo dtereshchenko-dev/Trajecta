@@ -70,7 +70,7 @@ transverse direction completes the orbital frame.
 
 | Model | Distance law and parameters |
 | --- | --- |
-| Inverse square | `g(r) = 1 / r²`, with `r` in AU; supports A1, A2, A3 and an optional time shift DT. |
+| Inverse square | `g(r) = 1 / r²`, with `r` in AU; supports A1, A2, A3 and an optional time shift DT. A1 can be fitted on its own. |
 | Yarkovsky | The same inverse-square law with a transverse A2 term. |
 | Marsden H2O | Water-sublimation law with A1, A2, A3 and an optional time shift DT. |
 | Marsden CO | Carbon-monoxide law with A1, A2, A3 and an optional time shift DT. |
@@ -163,6 +163,40 @@ tables; the PCK does not itself supply a separate UT1 time scale. The actual
 data coverage and frame model matter when comparing topocentric results or
 close Earth encounters.
 See [Data sources](../../data-sources/) for the files and their status.
+
+## Temporary capture in relative motion
+
+Relative motion accepts dates in UTC or TDB. Use TDB for dates before 1960,
+where the UTC conversion is unavailable. The timeline and capture dates use the
+scale selected when the trajectory was calculated.
+
+The relative-motion view finds intervals in the nominal trajectory where the
+two-body specific energy relative to the selected planet is negative and the
+planetocentric distance is less than three Hill radii. The energy uses the
+planet-relative inertial velocity; it can change during the encounter because
+the Sun and other bodies also perturb the trajectory. The trajectory uses
+three colours: non-negative energy, negative energy inside three Hill radii,
+and negative energy outside that distance. The latter remains visible but is
+not included in the reported capture intervals.
+
+The start and end times are interpolated between propagated samples. A bound
+shown at the edge of the requested interval means the event continues outside
+the calculation; its displayed duration is then a lower bound. Net turns are
+the signed accumulated change in longitude divided by 360 degrees; angular
+travel sums the absolute changes instead. Opposite motion cancels in net turns
+but adds to angular travel, which can exceed one turn without a complete orbit.
+The rotating count uses the Sun–planet rotating orbital plane; the inertial count
+uses the fixed J2000 ecliptic plane. Both counts are unavailable when the
+projection is singular or adjacent samples are too widely separated in angle.
+
+The displayed 3σ boundary-time uncertainties use the linearized fit covariance,
+including fitted non-gravitational parameters. They are unavailable for clipped
+or degenerate boundaries.
+
+These results describe the sampled nominal trajectory. Short episodes between
+samples can be missed; repeat the calculation with a smaller sampling step when
+checking an event. The Hill radius and the displayed L1/L2 markers are
+approximations.
 
 ## Related checks
 

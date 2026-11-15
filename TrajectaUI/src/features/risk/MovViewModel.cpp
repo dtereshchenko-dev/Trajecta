@@ -20,6 +20,8 @@ namespace {
 	QString utc(double tdb)
 	{
 		const double days = oc::time::fromMjdTdb(tdb, oc::time::Scale::UTC) - 40587;
+		if (!std::isfinite(days))
+			return {};
 		return QDateTime::fromSecsSinceEpoch(static_cast<qint64>(std::ceil(days * 86400)), QTimeZone::UTC)
 		    .toString("yyyy-MM-dd HH:mm:ss");
 	}
@@ -34,7 +36,10 @@ namespace {
 		if (!date.isValid())
 			throw std::invalid_argument("Invalid UTC date");
 		const double mjd = date.date().toJulianDay() - 2400001.0 + date.time().msecsSinceStartOfDay() / 86400000.0;
-		return oc::time::toMjdTdb(mjd, oc::time::Scale::UTC);
+		const double tdb = oc::time::toMjdTdb(mjd, oc::time::Scale::UTC);
+		if (!std::isfinite(tdb))
+			throw std::invalid_argument("UTC is unavailable before 1960");
+		return tdb;
 	}
 
 	int integer(const QVariantMap& options, const char* key, int min, int max)

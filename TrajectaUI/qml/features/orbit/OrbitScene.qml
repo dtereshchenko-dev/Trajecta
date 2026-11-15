@@ -202,15 +202,14 @@ Rectangle {
             font.pixelSize: 11
         }
     }
-    RowLayout {
+    OrbitViewControls {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.margins: 20
-        spacing: 4
-        CustomButton { objectName: "orbit-zoom-in"; iconName: "plus"; accessibleLabel: qsTr("Zoom in"); onClicked: scene.zoom(0.8) }
-        CustomButton { objectName: "orbit-zoom-out"; iconName: "minus"; accessibleLabel: qsTr("Zoom out"); onClicked: scene.zoom(1.25) }
-        CustomButton { objectName: "orbit-reset-view"; iconName: "rotate-ccw"; accessibleLabel: qsTr("Reset view"); onClicked: scene.resetView() }
-        CustomButton { objectName: "orbit-top-view"; iconName: "view"; accessibleLabel: qsTr("Ecliptic view"); onClicked: scene.topView() }
+        onZoomIn: scene.zoom(0.8)
+        onZoomOut: scene.zoom(1.25)
+        onResetView: scene.resetView()
+        onTopView: scene.topView()
     }
     Column {
         anchors.right: parent.right

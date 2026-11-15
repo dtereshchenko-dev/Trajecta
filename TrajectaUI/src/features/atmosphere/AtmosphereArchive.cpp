@@ -82,6 +82,8 @@ namespace atmosphere {
 	QString formatTdb(double tdb)
 	{
 		const double utc = orbital_core::time::fromMjdTdb(tdb, orbital_core::time::Scale::UTC);
+		if (!std::isfinite(utc))
+			return QStringLiteral("unavailable");
 		return QDateTime::fromMSecsSinceEpoch(qRound64((utc - 40587.0) * 86400000.0), QTimeZone::UTC)
 		    .toString(QStringLiteral("yyyy-MM-dd HH:mm:ss.zzz"));
 	}

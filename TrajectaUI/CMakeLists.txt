@@ -28,6 +28,16 @@ if(Qt6_VERSION VERSION_GREATER_EQUAL 6.8)
     qt_policy(SET QTP0004 NEW)
 endif()
 
+function(trajecta_prepare_qml_imports target)
+    get_target_property(qt_core_type Qt6::Core TYPE)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND qt_core_type STREQUAL "SHARED_LIBRARY"
+       AND QT_SKIP_AUTO_QML_PLUGIN_INCLUSION AND NOT TARGET Qt6::qtquick2plugin)
+        # Distro Qt may omit QML plugin targets for shared builds. Skip only Qt's
+        # configure-time static plugin importer; the deployment scan remains enabled.
+        set_property(TARGET ${target} PROPERTY _QT_QML_PLUGINS_IMPORTED TRUE)
+    endif()
+endfunction()
+
 list(APPEND QML_IMPORT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 list(REMOVE_DUPLICATES QML_IMPORT_PATH)
 set(QML_IMPORT_PATH "${QML_IMPORT_PATH}" CACHE STRING "QML module paths for Qt Creator" FORCE)
@@ -40,6 +50,7 @@ qt_add_executable(TrajectaUI
     main.cpp
     app.rc
 )
+trajecta_prepare_qml_imports(TrajectaUI)
 
 if(WIN32)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/app-version.rc.in
@@ -63,6 +74,7 @@ set(CLIENT_SOURCES
     src/controllers/OrbitWorker.h src/controllers/OrbitWorker.cpp
     src/geometry/OrbitGeometry.h src/geometry/OrbitGeometry.cpp
     src/geometry/GridGeometry.h src/geometry/GridGeometry.cpp
+    src/geometry/PolylineGeometry.h src/geometry/PolylineGeometry.cpp
     src/io/RecentFiles.h src/io/RecentFiles.cpp
     src/util/FormatUtils.h src/util/CalculationTime.h
     src/util/PlanetPositionsProvider.h src/util/PlanetPositionsProvider.cpp
@@ -82,7 +94,8 @@ set(CLIENT_SOURCES
     src/features/atmosphere/AtmosphereExecution.cpp
     src/features/risk/RiskEventTableModel.h src/features/risk/RiskEventTableModel.cpp
     src/features/solution/ResidualMarker.h src/features/solution/ResidualMarker.cpp
-    src/features/orbit/OrbitSceneModel.h src/features/orbit/OrbitSceneModel.cpp
+    src/features/orbit/OrbitSceneModel.h src/features/orbit/OrbitSceneModel.cpp src/features/orbit/RelativePathSegments.h
+    src/features/orbit/RelativeMotionModel.h src/features/orbit/RelativeMotionModel.cpp
     src/features/settings/CalculationSettingsModel.h src/features/settings/CalculationSettingsModel.cpp
     src/features/settings/DataSourcesModel.h src/features/settings/DataSourcesModel.cpp
     src/features/settings/Sb441Download.h src/features/settings/Sb441Download.cpp
@@ -123,6 +136,11 @@ set(CLIENT_QML_FILES
     qml/controls/CustomSlider.qml
     qml/features/orbit/OrbitPage.qml
     qml/features/orbit/OrbitScene.qml
+    qml/features/orbit/OrbitViewControls.qml
+    qml/features/orbit/RelativeOrbitScene.qml
+    qml/features/orbit/RelativeHillGuides.qml
+    qml/features/orbit/RelativeSunIndicator.qml
+    qml/features/orbit/RelativeMotionPanel.qml
     qml/features/orbit/OrbitGrid.qml
     qml/features/orbit/OrbitLegend.qml
     qml/features/orbit/OrbitPath.qml
@@ -359,6 +377,7 @@ qt_add_executable(Tests
     tests/cpp/tst_settingsstorage.h
     tests/cpp/tst_orbitengine.h
 )
+trajecta_prepare_qml_imports(Tests)
 
 target_include_directories(Tests PRIVATE
     src
