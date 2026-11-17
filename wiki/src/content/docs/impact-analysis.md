@@ -18,12 +18,12 @@ to run an analysis; it is not a current risk assessment.
    and let Trajecta fit the orbit. On **Solution**, check the fit and its
    covariance before continuing.
 2. Open **Risk Monitor**, choose **New calculation**, then **Covariance MC**.
-3. Under **Event date**, select **Date range**. Set a UTC interval containing
-   22 December 2032, for example from `2032-12-20 00:00:00` to
-   `2032-12-24 00:00:00`.
+3. Under **Event date**, select **Date range**. The illustrated run uses the
+   UTC interval `2030-03-04 02:21:57.959122779` to
+   `2035-03-04 08:21:57.959156097`, which includes 22 December 2032.
 4. Select **Moon** as the target and **Surface** as the boundary. Choose a
-   sample count, such as 10,000, and a seed. The same seed and settings make
-   a run easier to reproduce.
+   sample count of 20,000 and seed `42`. The same seed and settings make a
+   run easier to reproduce.
 5. Review **Source data** on the right and select **Run**. When it finishes,
    open **Runs** and select the calculation.
 
@@ -47,18 +47,18 @@ The nominal trajectory is shown separately and does not count as a trial.
 This is not a current lunar impact probability.
 :::
 
-![Results of the 10,000-sample lunar Monte Carlo calculation](../../assets/impact-analysis/2024-yr4-moon-results.png)
+![Results of the 20,000-sample lunar Monte Carlo calculation](../../assets/impact-analysis/2024-yr4-moon-results.png)
 
-In this run, all 10,000 trials completed and 116 crossed the lunar surface.
-The displayed probability is `0.0116`, or **1.16%**. The reported 95% interval
-is approximately **0.97% to 1.39%**.
+In this run, all 20,000 trials completed and 223 crossed the lunar surface.
+The displayed probability is `0.01115`, or **1.115%**. The reported 95%
+interval is approximately **0.98% to 1.27%**.
 
 The Wilson interval describes finite-sample uncertainty for the adopted orbit
 and uncertainty model. It does not include systematic errors or uncertainty
 in the model itself.
 
 A finite sample has statistical uncertainty. For example, no crossings in
-10,000 trials does not prove that the probability is zero. Increase the sample
+20,000 trials does not prove that the probability is zero. Increase the sample
 size when investigating a small probability and check the reported interval.
 Cancelled runs may contain partial results.
 
@@ -68,6 +68,11 @@ In **Runs**, select the calculation and use the report or folder button to open
 the HTML report or saved files. The report includes the ensemble, event table
 and map. Map points show crossings of the selected reference boundary; they
 are not meteorite recovery locations.
+
+![Simulated lunar surface crossings for the 2024 YR4 historical example](../../../../.github/assets/screenshots/moon-mc.png)
+
+The map shows the 223 crossing realizations, not all 20,000 trials. Lunar
+imagery: LRO WAC mosaic, NASA / GSFC / ASU / USGS.
 
 For event grouping and probabilities, see [Orbital Monte Carlo](../guide/monte-carlo/#read-the-results).
 The [file reference](../reference/formats/) describes the saved archives.

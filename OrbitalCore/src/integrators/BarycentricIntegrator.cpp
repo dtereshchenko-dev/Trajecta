@@ -108,7 +108,8 @@ namespace {
 					return observe(epoch, offset, heliocentric(state, epoch, offset));
 				};
 			if (value.denseStepObserver)
-				value.denseStepObserver = [source = &m_source, observe = value.denseStepObserver](DenseIntegratedStep step) {
+				value.denseStepObserver = [source = &m_source,
+				                           observe = value.denseStepObserver](DenseIntegratedStep step) {
 					auto evaluate = std::move(step.evaluate);
 					step.evaluate = [source, evaluate = std::move(evaluate)](double mjd) {
 						auto state = evaluate(mjd);

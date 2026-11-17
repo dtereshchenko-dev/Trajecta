@@ -31,20 +31,25 @@ force evaluation, the acceleration combines:
 | Planets, Moon and Pluto | Direct point-mass accelerations for the enabled bodies. Earth and Moon are separate perturbers. |
 | Solar System origin | Correction for the barycentric acceleration of the Sun supplied by DE440. |
 | Massive asteroids | Optional direct perturbations from the SB441-N16 kernel. |
-| Relativity | Einstein–Infeld–Hoffmann (EIH) correction for the Sun and enabled planetary bodies. |
+| Relativity | Configurable Einstein–Infeld–Hoffmann (EIH) correction. |
 | Solar oblateness | Solar J2, with a fixed tilted pole in the J2000 frame. |
-| Earth oblateness | Earth J2, J3 and J4 within 0.1 AU of Earth. |
+| Earth oblateness | Configurable Earth J2, J3 and J4 within 0.1 AU of Earth. |
 | Non-gravitational | An optional acceleration defined by the selected model and parameters. |
 
 DE440 supplies body states and gravitational parameters. If the selected
 calculation enables massive asteroids, SB441-N16 must also be available. Its
 asteroid point-mass terms are separate from the EIH correction. A body's
-selection in **Perturbations** controls its direct contribution; the Sun's
+selection in **Forces** controls its direct contribution; the Sun's
 DE440 origin acceleration is still used for the heliocentric transformation.
 
 The Earth zonal terms are applied only while Earth is enabled and the object
-is within 0.1 AU of its centre. Their axis follows the modelled Earth pole at
-the calculation epoch. Solar J2 uses the DE440 J2 and reference-radius pair.
+is within 0.1 AU of its centre. Their axis can follow the modelled Earth pole at
+the calculation epoch or remain fixed at the J2000 pole. Solar J2 uses the DE440
+J2 and reference-radius pair. Full EIH includes the Sun and enabled planetary
+bodies in the outer sum; the Sun-only option retains planetary terms in the
+inner sums. EIH can also be disabled. The Earth-pole choice applies to the
+zonal gravity model; it does not change Earth orientation for observers or
+coordinate transformations.
 
 For an object identified as one of the perturbers, the corresponding direct
 self-perturbation can be excluded through its target identifier. Compare force
@@ -65,7 +70,7 @@ transverse direction completes the orbital frame.
 
 | Model | Distance law and parameters |
 | --- | --- |
-| Inverse square | `g(r) = 1 / r²`, with `r` in AU; supports A1, A2, A3 and an optional time shift DT. |
+| Inverse square | `g(r) = 1 / r²`, with `r` in AU; supports A1, A2, A3 and an optional time shift DT. A1 can be fitted on its own. |
 | Yarkovsky | The same inverse-square law with a transverse A2 term. |
 | Marsden H2O | Water-sublimation law with A1, A2, A3 and an optional time shift DT. |
 | Marsden CO | Carbon-monoxide law with A1, A2, A3 and an optional time shift DT. |
@@ -135,16 +140,63 @@ leap seconds or future measured Earth orientation.
 
 ## Earth orientation
 
-The default Earth-orientation profile uses C04/IAU 1980 data for pole and
-nutation-related corrections. The Earth zonal model evaluates the pole at the
-current epoch. Outside the available C04 records, the implementation uses its
-extrapolation and correction model; those values are not measured EOP data.
+Earth binary PCK files supply ITRF93-to-J2000 orientation and the corresponding
+state transformation for optical and radar stations, topocentric ephemerides
+and Earth-fixed crossing coordinates. Historical, recent and long-term
+predictive files cover different epochs. When several files cover an epoch,
+the kernel-loading order determines which data SPICE uses.
+Outside their coverage, observed C04 or historical UT1 data support an
+IAU 1976/1980 fallback. The historical path uses a nominal pole, and the
+Earth-fixed fallback does not apply polar motion. Without suitable time data,
+Earth-fixed coordinates cannot be calculated. The files, their coverage and
+their update status appear under [Data sources](../../data-sources/).
 
-For TT–UT1 conversion, Trajecta first uses `finals2000A.all` where applicable,
-then the historical `ET-UT.dat` table. Other code paths can use a documented
-fallback when orientation data are unavailable. The actual data coverage and
-frame model matter when comparing topocentric results or close Earth encounters.
+For the time-varying Earth zonal model, Trajecta transforms the ITRF93 pole to
+J2000 using PCK at the calculation epoch. If PCK does not cover the epoch, the
+model falls back to C04, including its extrapolation outside the observed
+records. Without C04 it uses a nominal pole. The fixed-pole option instead
+uses the J2000 pole.
+
+For TT–UT1 conversion, Trajecta uses observed C04 data where available, then
+the historical `ET-UT.dat` table. These conversions are unavailable outside both
+tables; the PCK does not itself supply a separate UT1 time scale. The actual
+data coverage and frame model matter when comparing topocentric results or
+close Earth encounters.
 See [Data sources](../../data-sources/) for the files and their status.
+
+## Temporary capture in relative motion
+
+Relative motion accepts dates in UTC or TDB. Use TDB for dates before 1960,
+where the UTC conversion is unavailable. The timeline and capture dates use the
+scale selected when the trajectory was calculated.
+
+The relative-motion view finds intervals in the nominal trajectory where the
+two-body specific energy relative to the selected planet is negative and the
+planetocentric distance is less than three Hill radii. The energy uses the
+planet-relative inertial velocity; it can change during the encounter because
+the Sun and other bodies also perturb the trajectory. The trajectory uses
+three colours: non-negative energy, negative energy inside three Hill radii,
+and negative energy outside that distance. The latter remains visible but is
+not included in the reported capture intervals.
+
+The start and end times are interpolated between propagated samples. A bound
+shown at the edge of the requested interval means the event continues outside
+the calculation; its displayed duration is then a lower bound. Net turns are
+the signed accumulated change in longitude divided by 360 degrees; angular
+travel sums the absolute changes instead. Opposite motion cancels in net turns
+but adds to angular travel, which can exceed one turn without a complete orbit.
+The rotating count uses the Sun–planet rotating orbital plane; the inertial count
+uses the fixed J2000 ecliptic plane. Both counts are unavailable when the
+projection is singular or adjacent samples are too widely separated in angle.
+
+The displayed 3σ boundary-time uncertainties use the linearized fit covariance,
+including fitted non-gravitational parameters. They are unavailable for clipped
+or degenerate boundaries.
+
+These results describe the sampled nominal trajectory. Short episodes between
+samples can be missed; repeat the calculation with a smaller sampling step when
+checking an event. The Hill radius and the displayed L1/L2 markers are
+approximations.
 
 ## Related checks
 

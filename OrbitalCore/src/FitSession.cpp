@@ -137,7 +137,7 @@ namespace orbital_core {
 				    Calculations::applyHystereticReject(observations, mask, chi, reject, selection.locked);
 				if (decision.status == Calculations::RejectStatus::NoChange) {
 					status = FitSelectionStatus::Stable;
-					LOG_INFO << "[FitSession] selection status=NO_CHANGE";
+					LOG_DEBUG << "[FitSession] selection status=NO_CHANGE";
 					return false;
 				}
 				if (decision.status == Calculations::RejectStatus::SafeguardRollback) {
@@ -186,6 +186,9 @@ namespace orbital_core {
 			result.sigmaClipPassesRun = changes;
 			result.sigmaClipRejected = static_cast<int>(observations.size() - kept.observations.size());
 			result.keptObsIndices = std::move(kept.indices);
+			LOG_INFO << "[FitSession] sigma clipping: kept=" << result.keptObsIndices.size() << "/"
+			         << observations.size() << " updates=" << changes
+			         << " stable=" << (status == FitSelectionStatus::Stable);
 			return result;
 		}
 

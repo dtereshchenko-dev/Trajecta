@@ -23,20 +23,24 @@ const data = JSON.parse(payload),
 if (process.env.STREWN_BASEMAP_TEST === 'offline') data.options.offline = true;
 if (process.env.STREWN_BASEMAP_TEST === 'none') data.options.basemap = 'none';
 payload = JSON.stringify(data);
+const normalizeLines = (text) => text.replace(/\r\n/g, '\n');
+const embeds = (name) => normalizeLines(report).includes(
+  normalizeLines(fs.readFileSync(path.join(__dirname, '../output/web', name), 'utf8')),
+);
 assert.ok(
-  report.includes(fs.readFileSync(path.join(__dirname, '../output/web/viewer.js'), 'utf8')),
+  embeds('viewer.js'),
   'Report must embed the tested viewer source',
 );
 assert.ok(
-  report.includes(fs.readFileSync(path.join(__dirname, '../output/web/print.js'), 'utf8')),
+  embeds('print.js'),
   'Report must embed the tested print source',
 );
 assert.ok(
-  report.includes(fs.readFileSync(path.join(__dirname, '../output/web/graticule.js'), 'utf8')),
+  embeds('graticule.js'),
   'Report must embed the tested coordinate grid',
 );
 assert.ok(
-  report.includes(fs.readFileSync(path.join(__dirname, '../output/web/map-flight.js'), 'utf8')),
+  embeds('map-flight.js'),
   'Report must embed the tested animation controls',
 );
 class ClassList {
@@ -170,7 +174,7 @@ class Element {
 const template = fs.readFileSync(path.join(__dirname, '../output/web/viewer.html'), 'utf8');
 const rates = (html) =>
   [
-    ...html.match(/<select id="map-rate"[^>]*>([\s\S]*?)<\/select>/)[1].matchAll(/<option value="([^"]+)"/g),
+    ...html.match(/<select id="map-rate"[^>]*>([\s\S]*?)<\/select\s*>/)[1].matchAll(/<option value="([^"]+)"/g),
   ].map((m) => m[1]);
 assert.deepEqual(rates(template), ['1', '5', '20', '100']);
 assert.deepEqual(rates(report), rates(template));
@@ -324,7 +328,8 @@ const context = {
   window: {
     addEventListener: (name, handler) => (events[name] = handler),
     print: () => {
-      if (calls.failPrint) throw new Error('Test print failure');
+      if (calls.failPrint)
+        throw new Error('Test print failure');
       calls.print++;
     },
   },
@@ -495,7 +500,11 @@ const context = {
   await tabs.find((t) => t.dataset.view === 'wind').onclick();
   assert.ok(elements.get('wind-meta').textContent.includes('Run ' + run.run_id));
   assert.equal(graphs.get('wind-components').traces[0].x[0], flight.wind[0][1]);
+  assert.equal(graphs.get('wind-components').layout.paper_bgcolor, '#101415');
+  assert.equal(graphs.get('wind-components').layout.plot_bgcolor, '#101415');
   const polar = graphs.get('wind-direction');
+  assert.equal(polar.layout.paper_bgcolor, '#101415');
+  assert.equal(polar.layout.polar.bgcolor, '#101415');
   assert.equal(polar.layout.polar.angularaxis.rotation, 90);
   assert.equal(polar.layout.polar.angularaxis.direction, 'clockwise');
   assert.ok(polar.traces.every((t) => t.type === 'scatterpolar'));

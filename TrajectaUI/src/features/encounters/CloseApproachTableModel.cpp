@@ -66,10 +66,7 @@ namespace {
 	}
 }  // namespace
 
-QHash<int, QByteArray> CloseApproachTableModel::roleNames() const
-{
-	return {{Qt::DisplayRole, "display"}};
-}
+QHash<int, QByteArray> CloseApproachTableModel::roleNames() const { return {{Qt::DisplayRole, "display"}}; }
 
 QVariant CloseApproachTableModel::data(const QModelIndex& index, int role) const
 {

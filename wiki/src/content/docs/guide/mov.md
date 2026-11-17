@@ -93,6 +93,13 @@ Select a point for its node, crossing time, χ and normalized weight. These
 locations describe the sampled orbital crossings, not an atmospheric
 fragmentation or meteorite fall calculation.
 
+When a nominal impact and full fit covariance are available, the map also
+shows semilinear 1, 3 and 5 sigma contours, calculated by nonlinear propagation
+of the covariance regression directions. These are separate from the weighted
+MOV nodes and are not probability boundaries. Missing or failed impacts leave
+gaps; contours are unavailable if the nominal orbit misses, even if MOV nodes
+hit. Existing archives do not contain these calculations.
+
 The grid run displays fewer crossing points because its sampling differs from
 the cobweb run. The number of crossing nodes should not be compared directly
 between grid and cobweb runs as a measure of impact probability:

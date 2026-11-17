@@ -49,7 +49,9 @@ try {
         $essential = if ($version -eq '1.0.1') { 'true' } else { 'false' }
         Write-Text (Join-Path $meta 'package.xml') "<Package><DisplayName>Trajecta</DisplayName><Description>Smoke</Description><Version>$version</Version><ReleaseDate>2026-01-01</ReleaseDate><Default>true</Default><Essential>$essential</Essential><Script>installscript.qs</Script></Package>"
         Write-Text (Join-Path $data 'app.txt') $version
-        foreach ($item in @(@('OBSCODE.dat', 'obscode.7z'), @('RADCODE.dat', 'radcode.7z'), @('linux_p1550p2650.440', 'de440.7z'))) {
+        foreach ($item in @(@('OBSCODE.dat', 'obscode.7z'), @('RADCODE.dat', 'radcode.7z'), @('linux_p1550p2650.440', 'de440.7z'),
+                @('earth_historic.bpc', 'earth_historic.7z'), @('earth_latest.bpc', 'earth_latest.7z'), @('earth_predict.bpc', 'earth_predict.7z'),
+                @('eopc04.62-now', 'eopc04-data.7z'), @('eopc04.cnc', 'eopc04-corrections.7z'), @('ET-UT.dat', 'historical-time.7z'))) {
             $inputFile = Join-Path $root ('input/' + $item[0])
             Write-Text $inputFile $version
             Run-Checked $archivegen @((Join-Path $data $item[1]), $inputFile)
@@ -60,6 +62,17 @@ try {
             Assert-Text (Join-Path $target 'app.txt') '1.0.1'
             $userCatalog = Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/observatories/OBSCODE.dat'
             Assert-Text $userCatalog '1.0.1'
+            foreach ($name in @('earth_historic', 'earth_latest', 'earth_predict')) {
+                Assert-Text (Join-Path $env:LOCALAPPDATA "Trajecta/Trajecta/earth_orientation/$name.bpc") '1.0.1'
+                if (Test-Path -LiteralPath (Join-Path $target "earth_orientation/$name.bpc")) { throw "PCK installed next to application: $name" }
+            }
+            Write-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/earth_orientation/earth_latest.bpc') 'user-pck'
+            foreach ($name in @('eopc04.62-now', 'eopc04.cnc', 'ET-UT.dat')) {
+                Assert-Text (Join-Path $env:LOCALAPPDATA "Trajecta/Trajecta/earth_orientation/$name") '1.0.1'
+                if (Test-Path -LiteralPath (Join-Path $target "earth_orientation/$name")) { throw "Earth orientation data installed next to application: $name" }
+            }
+            Write-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/earth_orientation/eopc04.62-now') 'user-c04'
+            Write-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/earth_orientation/ET-UT.dat') 'user-historical-time'
             Write-Text $userCatalog 'user-updated'
             Write-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/work/keep.txt') 'user-work'
             $metadata = Join-Path $target 'components.xml'
@@ -90,6 +103,13 @@ try {
             Assert-Text (Join-Path $target 'app.txt') '1.0.2'
             Assert-Text $userCatalog 'user-updated'
             Assert-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/work/keep.txt') 'user-work'
+            Assert-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/earth_orientation/earth_latest.bpc') 'user-pck'
+            Assert-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/earth_orientation/eopc04.62-now') 'user-c04'
+            Assert-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/earth_orientation/ET-UT.dat') 'user-historical-time'
+            if (Test-Path -LiteralPath (Join-Path $target 'earth_orientation/ET-UT.dat')) { throw 'Historical time data installed next to application.' }
+            foreach ($name in @('earth_historic', 'earth_latest', 'earth_predict')) {
+                if (Test-Path -LiteralPath (Join-Path $target "earth_orientation/$name.bpc")) { throw "PCK installed next to application: $name" }
+            }
             Assert-Text (Join-Path $env:LOCALAPPDATA 'Trajecta/Trajecta/ephemerides/linux_p1550p2650.440') '1.0.1'
         }
     }

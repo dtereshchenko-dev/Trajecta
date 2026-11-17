@@ -11,6 +11,10 @@
 
 class ObsNode;
 
+namespace orbital_core {
+	class EarthOrientation;
+}
+
 namespace orbital_core::obs {
 
 	struct ObserverState {
@@ -30,9 +34,16 @@ namespace orbital_core::obs {
 
 	[[nodiscard]] ObserverState groundObserverStateEclAu(double jdTdb, double mjdUtc, const ObserverData& observer);
 
-	[[nodiscard]] ObserverState groundObserverStateEclAuMjd(double mjdTdb, double mjdUtc, const ObserverData& observer);
+	[[nodiscard]] ORBITAL_CORE_API ObserverState groundObserverStateEclAuMjd(double mjdTdb, double mjdUtc,
+	                                                                         const ObserverData& observer);
+	[[nodiscard]] ORBITAL_CORE_API ObserverState radarStationStateEclAuMjd(double mjdTdb, double mjdUtc,
+	                                                                       const ObserverData& observer);
+	[[nodiscard]] ORBITAL_CORE_API ObserverState groundObserverStateEclAuMjd(double mjdTdb, double mjdUtc,
+	                                                                         const ObserverData& observer,
+	                                                                         const EarthOrientation& orientation);
 
 	[[nodiscard]] Vec3D groundObserverOffsetEclAu(double jdTdb, double mjdUtc, const ObserverData& observer);
+	[[nodiscard]] Vec3D groundObserverOffsetEclAuMjd(double mjdTdb, double mjdUtc, const ObserverData& observer);
 
 	[[nodiscard]] Vec3D observerOffsetAt(double jdTdb, const PreparedObservation& observation);
 

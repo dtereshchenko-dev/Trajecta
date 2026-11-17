@@ -200,6 +200,58 @@ TEST(EihRelativity, SunOnlyMatchesSchwarzschildAccelerationAndVelocityDerivative
 	EXPECT_TRUE(dadv.isApprox(expectedV, 1e-14));
 }
 
+TEST(EihRelativity, SunOuterKeepsPlanetaryInnerTermsAndPartials)
+{
+	auto ctx = relativisticContext();
+	ctx.R = Vec3D(0.8, -0.3, 0.2);
+	ctx.V = Vec3D(0.004, 0.018, -0.003);
+	ctx.forceModel.relativity = orbital_core::RelativityMode::SunOuter;
+	checkForcePartials<ocf::EihRelativity>(ctx, 1e-5);
+	const auto evaluate = [](ocf::ForceContext input) {
+		Vec3D a;
+		Eigen::Matrix3d dr = Eigen::Matrix3d::Zero(), dv = Eigen::Matrix3d::Zero();
+		ocf::EihRelativity{}.evaluate(input, a, dr, dv);
+		return a;
+	};
+	const Vec3D solarOuter = evaluate(ctx);
+	ctx.forceModel.relativity = orbital_core::RelativityMode::Full;
+	EXPECT_GT((evaluate(ctx) - solarOuter).magnitude(), 0.0);
+	ctx.forceModel.relativity = orbital_core::RelativityMode::SunOuter;
+	ctx.bodyMask = 0;
+	EXPECT_GT((evaluate(ctx) - solarOuter).magnitude(), 0.0);
+	ctx.forceModel.relativity = orbital_core::RelativityMode::Disabled;
+	checkForcePartials<ocf::EihRelativity>(ctx, 1e-5);
+	EXPECT_DOUBLE_EQ(evaluate(ctx).magnitude(), 0.0);
+}
+
+TEST(EihRelativity, ConfiguredModesMatchStateDifferences)
+{
+	for (const auto mode : {orbital_core::RelativityMode::Full, orbital_core::RelativityMode::SunOuter,
+	                        orbital_core::RelativityMode::Disabled}) {
+		for (const std::uint16_t mask : {std::uint16_t{0}, std::uint16_t{1u << 2}, std::uint16_t{0x18ff}}) {
+			auto ctx = relativisticContext();
+			ctx.forceModel.relativity = mode;
+			ctx.bodyMask = mask;
+			ctx.R = ctx.planetPositions[2] + Vec3D(0.0003, -0.0002, 0.0001);
+			ctx.V = Vec3D(-0.004, 0.018, 0.003);
+			SCOPED_TRACE(::testing::Message() << "mode=" << static_cast<int>(mode) << " mask=" << mask);
+			checkForcePartials<ocf::EihRelativity>(ctx, 1e-8);
+		}
+	}
+}
+
+TEST(SunJ2, RemainsEnabledWhenRelativityIsDisabled)
+{
+	ocf::ForceContext ctx{};
+	ctx.R = Vec3D(0.8, -0.3, 0.2);
+	ctx.forceModel.relativity = orbital_core::RelativityMode::Disabled;
+	checkForcePartials<ocf::SunJ2>(ctx, 1e-5);
+	Vec3D acceleration;
+	Eigen::Matrix3d dadr = Eigen::Matrix3d::Zero(), dadv = Eigen::Matrix3d::Zero();
+	ocf::SunJ2{}.evaluate(ctx, acceleration, dadr, dadv);
+	EXPECT_GT(acceleration.magnitude(), 0.0);
+}
+
 TEST(SunJ2, StatePartialsMatchIndependentDifferences)
 {
 	for (const Vec3D position :

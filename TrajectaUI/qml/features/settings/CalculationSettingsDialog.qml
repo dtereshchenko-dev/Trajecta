@@ -31,7 +31,7 @@ BaseDialog {
                         { name: qsTr("Appearance"), icon: "moon" },
                         { name: qsTr("Fit"), icon: "scan-line" },
                         { name: qsTr("Integrator"), icon: "activity" },
-                        { name: qsTr("Perturbations"), icon: "orbit" },
+                        { name: qsTr("Forces"), icon: "orbit" },
                         { name: qsTr("Non-gravitational"), icon: "sigma" },
                         { name: qsTr("Photometry"), icon: "sun" },
                         { name: qsTr("About"), icon: "info" }

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "orbital_core/hazard/IntervalMonteCarlo.h"
+#include "orbital_core/hazard/ManifoldOfVariations.h"
 #include "hazard/McBoundaryScan.h"
 #include "hazard/BoundaryScan.h"
 #include "orbital_core/TimeScale.h"
@@ -79,6 +80,13 @@ namespace {
 		}
 	}
 
+	TEST_F(IntervalMonteCarloTest, RejectsIntervalWithoutEarthOrientation)
+	{
+		config.startMjdTdb = 234166.0;
+		config.endMjdTdb = 234166.002;
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(source, config), std::runtime_error);
+	}
+
 	TEST_F(IntervalMonteCarloTest, SharedBoundarySearchMatchesNominal)
 	{
 		const auto result = hz::runIntervalMonteCarlo(source, config);
@@ -94,6 +102,72 @@ namespace {
 		EXPECT_DOUBLE_EQ(crossing.entry->mjdTdb, result.nominal.entry->mjdTdb);
 		EXPECT_DOUBLE_EQ(crossing.entry->latitudeDeg, result.nominal.entry->latitudeDeg);
 		EXPECT_DOUBLE_EQ(crossing.entry->longitudeDeg, result.nominal.entry->longitudeDeg);
+	}
+
+	TEST_F(IntervalMonteCarloTest, SemilinearContoursUseNominalCovarianceAndBoundary)
+	{
+		config.samples = 2;
+		config.workers = 2;
+		config.semilinearContours = true;
+		source.fit.uncertainty.fitParameterCovariance = Eigen::MatrixXd::Identity(6, 6) * 1e-18;
+		const auto result = hz::runIntervalMonteCarlo(source, config);
+		ASSERT_TRUE(result.nominal.entry);
+		ASSERT_EQ(result.semilinear.status, "complete") << result.semilinear.reason;
+		ASSERT_EQ(result.semilinear.contours.size(), 3);
+		for (std::size_t i = 0; i < result.semilinear.contours.size(); ++i) {
+			const auto& contour = result.semilinear.contours[i];
+			EXPECT_EQ(contour.sigma, (std::array{1, 3, 5})[i]);
+			EXPECT_EQ(contour.points.size(), 72);
+			EXPECT_EQ(contour.missed, 0);
+			EXPECT_EQ(contour.failed, 0);
+			for (const auto& point : contour.points) {
+				ASSERT_TRUE(point);
+				EXPECT_NEAR(point->relativePositionKm.magnitude(), Constants::EARTH_EQ_RADIUS_KM + 100, 25);
+				EXPECT_GE(point->mjdTdb, config.startMjdTdb);
+				EXPECT_LE(point->mjdTdb, config.endMjdTdb);
+			}
+		}
+		const auto& nominal = *result.nominal.entry;
+		const auto separation = [&nominal](const auto& contour) {
+			return (contour.points.front()->relativePositionKm - nominal.relativePositionKm).magnitude();
+		};
+		const auto one = separation(result.semilinear.contours[0]);
+		ASSERT_GT(one, 1e-4);
+		EXPECT_NEAR(separation(result.semilinear.contours[1]) / one, 3.0, 0.1);
+		EXPECT_NEAR(separation(result.semilinear.contours[2]) / one, 5.0, 0.2);
+	}
+
+	TEST_F(IntervalMonteCarloTest, SemilinearContoursDoNotInventAnImpact)
+	{
+		config.semilinearContours = true;
+		config.startMjdTdb = 60000.001;
+		const auto result = hz::runIntervalMonteCarlo(source, config);
+		EXPECT_FALSE(result.nominal.entry);
+		EXPECT_EQ(result.semilinear.status, "unavailable");
+		EXPECT_TRUE(result.semilinear.contours.empty());
+	}
+
+	TEST_F(IntervalMonteCarloTest, SurfaceContoursConvergeForSmallUncertainty)
+	{
+		config.altitudeKm = 0;
+		config.samples = 1;
+		config.workers = 2;
+		config.semilinearContours = true;
+		source.fit.uncertainty.fitParameterCovariance = Eigen::MatrixXd::Identity(6, 6) * 1e-20;
+		const auto result = hz::runIntervalMonteCarlo(source, config);
+		ASSERT_TRUE(result.nominal.entry);
+		ASSERT_EQ(result.semilinear.status, "complete") << result.semilinear.reason;
+		ASSERT_EQ(result.semilinear.contours.size(), 3);
+		for (const auto& contour : result.semilinear.contours) {
+			EXPECT_EQ(contour.missed, 0);
+			EXPECT_EQ(contour.failed, 0);
+		}
+		const auto& hit = *result.nominal.entry;
+		const auto fixed = hz::icrfToBodyFixedMjd(hz::Planet::Earth, hit.relativePositionKm, hit.mjdTdb, &eph);
+		const auto geodetic = hz::geodeticOnReferenceEllipsoidKm(fixed, Constants::EARTH_EQ_RADIUS_KM,
+		                                                         Constants::EARTH_FLATTENING);
+		ASSERT_TRUE(geodetic.valid);
+		EXPECT_NEAR(geodetic.altitudeKm, 0.0, 0.0001);
 	}
 
 	TEST_F(IntervalMonteCarloTest, NearbyNominalEntryMatchesMonteCarloAtSameBoundary)
@@ -371,6 +445,12 @@ namespace {
 		EXPECT_DOUBLE_EQ(payload["entries"][1]["latitude_deg"], 21.09);
 		EXPECT_EQ(html.find("</script><script>alert(1)"), std::string::npos);
 		EXPECT_EQ(html.find("__LEAFLET"), std::string::npos);
+		EXPECT_EQ(html.find("__REPORT_CSS__"), std::string::npos);
+		EXPECT_EQ(html.find("__PAGE_CSS__"), std::string::npos);
+		EXPECT_NE(html.find(".semilinear-key"), std::string::npos);
+		EXPECT_NE(html.find("nominalLast(visible)"), std::string::npos);
+		EXPECT_NE(html.find("color-scheme: dark"), std::string::npos);
+		EXPECT_NE(html.find("color-scheme: light"), std::string::npos);
 		EXPECT_NE(html.find("Satellite imagery"), std::string::npos);
 		std::ifstream numerical(dir / "result.json");
 		EXPECT_EQ(std::string(std::istreambuf_iterator<char>(numerical), {}), original);
@@ -416,11 +496,69 @@ namespace {
 		EXPECT_EQ(tdbPayload["time_scale"], "MJD TDB");
 		EXPECT_DOUBLE_EQ(tdbPayload["entries"][0]["epoch"], toTdb(tt));
 		EXPECT_DOUBLE_EQ(tdbPayload["entries"][0]["epoch_utc"], payload["entries"][1]["epoch_utc"]);
+		data["start"] = 34000.0;
+		data["end"] = 34001.0;
+		data["clones"][0]["entry"]["epoch"] = 34000.5;
+		{
+			std::ofstream output(dir / "result.json");
+			output << data;
+		}
+		ASSERT_NO_THROW(hz::renderIntervalMonteCarloReport(dir));
+		std::ifstream historicalFile(dir / "report.html");
+		const std::string historicalHtml{std::istreambuf_iterator<char>(historicalFile), {}};
+		const auto historicalStart = historicalHtml.find(marker) + marker.size();
+		const auto historicalEnd = historicalHtml.find("</script>", historicalStart);
+		const auto historical = Json::parse(historicalHtml.substr(historicalStart, historicalEnd - historicalStart));
+		EXPECT_TRUE(historical["start_utc"].is_null());
+		ASSERT_EQ(historical["entries"].size(), 1);
+		EXPECT_TRUE(historical["entries"][0]["epoch_utc"].is_null());
+		EXPECT_DOUBLE_EQ(historical["entries"][0]["epoch"], 34000.5);
+		EXPECT_NE(historicalHtml.find("UTC unavailable"), std::string::npos);
 		data["time_scale"] = "MJD TT";
 		{
 			std::ofstream output(dir / "result.json");
 			output << data;
 		}
 		EXPECT_THROW(hz::renderIntervalMonteCarloReport(dir), std::runtime_error);
+	}
+
+	TEST(MovReport, HistoricalEpochsKeepTdbAndReportUtcUnavailable)
+	{
+		using Json = nlohmann::json;
+		const auto dir = std::filesystem::temp_directory_path() /
+		                 ("mov-report-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+		std::filesystem::create_directory(dir);
+
+		struct Cleanup {
+			std::filesystem::path path;
+
+			~Cleanup() { std::filesystem::remove_all(path); }
+		} cleanup{dir};
+
+		const Json data = {
+		    {"schema", "orbital-mov-1"}, {"time_scale", "MJD TDB"}, {"epoch", 34000.0},
+		    {"start", 34000.0},          {"end", 34001.0},          {"nodes", {{{"entry", {{"epoch", 34000.5}}}}}}};
+		{
+			std::ofstream output(dir / "result.json");
+			output << data;
+		}
+		ASSERT_NO_THROW(hz::renderManifoldOfVariationsReport(dir));
+		std::ifstream file(dir / "report.html");
+		const std::string html{std::istreambuf_iterator<char>(file), {}};
+		EXPECT_EQ(html.find("__REPORT_CSS__"), std::string::npos);
+		EXPECT_EQ(html.find("__PAGE_CSS__"), std::string::npos);
+		EXPECT_NE(html.find(".semilinear-key"), std::string::npos);
+		EXPECT_NE(html.find("color-scheme: dark"), std::string::npos);
+		EXPECT_NE(html.find("color-scheme: light"), std::string::npos);
+		const std::string marker = "<script id=\"mov-data\" type=\"application/json\">";
+		const auto begin = html.find(marker);
+		ASSERT_NE(begin, std::string::npos);
+		const auto end = html.find("</script>", begin + marker.size());
+		ASSERT_NE(end, std::string::npos);
+		const auto payload = Json::parse(html.substr(begin + marker.size(), end - begin - marker.size()));
+		EXPECT_DOUBLE_EQ(payload["start"], 34000.0);
+		EXPECT_TRUE(payload["start_utc"].is_null());
+		EXPECT_TRUE(payload["nodes"][0]["entry"]["epoch_utc"].is_null());
+		EXPECT_NE(html.find("UTC unavailable"), std::string::npos);
 	}
 }  // namespace

@@ -105,8 +105,8 @@ including its non-gravitational model when enabled.
 ![Apophis close-approach search settings](../../assets/close-approaches/apophis-search.png)
 
 1. Solve the orbit and open **Close Approaches**.
-2. In **New calculation**, enter the start and end of the search interval in
-   UTC, or set its duration in years.
+2. In **New calculation**, choose UTC or TDB and enter the start and end of
+   the search interval, or set its duration in years.
 3. Choose a **Reporting distance**. **Automatic by body** uses the limits
    listed on the page. **Custom maximum** uses one distance in AU for every
    body.
@@ -121,8 +121,8 @@ non-gravitational model and covariance availability.
 
 ![Apophis close-approach results including its 2029 Earth encounter](../../assets/close-approaches/apophis-events.png)
 
-Each row describes a nominal encounter. The input interval is in UTC, but
-the table displays encounter times in **TDB**. Where available, the value
+Each row describes a nominal encounter. The results table displays encounter
+times in **TDB** regardless of the input time scale. Where available, the value
 after `±` is the local linear 3σ estimate of the time uncertainty.
 
 | Column | Meaning |
@@ -149,7 +149,29 @@ from Earth's centre, not its surface.
 
 Completed searches are saved automatically in the `CloseApproaches` folder
 under the current solution's working folder. Use the folder button in
-**Events** to open the run. It contains `encounters.txt` and `result.json`.
+**Events** to open the run. It contains `encounters.txt`, `result.json` and
+an interactive `report.html`.
+
+### Interactive report
+
+The report plots the sampled nominal distance to the selected body and can
+overlay its approximate Hill radius. Use **Center** and **Distance units** to
+change the displayed body and units. Select an event in the plot or table to
+highlight it in both places.
+
+The logarithmic scale makes close encounters easier to distinguish across a
+wide range of distances. This example highlights Apophis's 2029 Earth encounter:
+
+![Close-approach report for Apophis using a logarithmic distance scale](../../assets/close-approaches/apophis-report-log.png)
+
+The linear scale shows the same distances without logarithmic compression:
+
+![Close-approach report for Apophis using a linear distance scale](../../assets/close-approaches/apophis-report-linear.png)
+
+The curve is sampled and may miss minima; the encounter markers and table use
+the separately calculated events. The report is self-contained and works
+offline. For the saved numerical fields, see the
+[Close-approach archive reference](../reference/close-approaches-archive/).
 
 This search does not calculate impact probability. For boundary crossings
 and sampling-based impact analysis, see [Impact Analysis](../impact-analysis/).

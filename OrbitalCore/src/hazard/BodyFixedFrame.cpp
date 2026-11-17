@@ -7,6 +7,7 @@
 #include "orbital_core/hazard/SurfaceGeometry.h"
 #include "earth_orientation/EarthRotation.h"
 #include "earth_orientation/EarthOrientation.h"
+#include "earth_orientation/EarthPck.h"
 #include "IauRotationData.h"
 #include <Eigen/Core>
 #include <cmath>
@@ -21,28 +22,28 @@ namespace orbital_core::hazard {
 			case EarthOrientationProfile::IAU1980:
 				profile = "IAU1980";
 				break;
-			case EarthOrientationProfile::IAU2000:
-				profile = "IAU2000";
-				break;
 			case EarthOrientationProfile::FullC04:
 				profile = "full-C04";
 				break;
 		}
-		return std::string(
-		           "IAU1976/1980; UT1/GAST (IAU1982, finals2000A with UTC fallback); "
-		           "polar motion: not applied; EOP profile: ") +
-		       profile;
+		return std::string("Earth PCK ITRF93; C04 or historical UT1/IAU1976/1980 fallback; EOP profile: ") + profile;
 	}
 
 	namespace {
 		Vec3D icrfToEcefEarth(const Vec3D& rGeoEclKm, double mjdTdb) noexcept
 		{
+			Vec3D terrestrial;
+			if (earthPckToTerrestrial(mjdTdb, Helpers::eclToEcv(rGeoEclKm), terrestrial))
+				return terrestrial;
 			const double mjdTt = time::fromMjdTdb(mjdTdb, time::Scale::TT);
 			const double jdTt = time::jdFromMjd(mjdTt);
 			Vec3D rEq = Helpers::eclToEcv(rGeoEclKm);
 			EarthRotation::Iau1976_1980::applyPrecessionNutation(jdTt, rEq, +1);
-			double mjdUt1 = time::fromMjdTdb(mjdTdb, time::Scale::UTC);
-			(void)orbital_core::earthOrientation().ttToUt1Mjd(mjdTt, mjdUt1);
+			double mjdUt1;
+			if (!orbital_core::earthOrientation().ttToUt1Mjd(mjdTt, mjdUt1)) {
+				const double nan = std::numeric_limits<double>::quiet_NaN();
+				return {nan, nan, nan};
+			}
 			const double GAST_rad = EarthRotation::Iau1976_1980::gmstRadiansMjd(mjdUt1) +
 			                        EarthRotation::Iau1976_1980::equationOfEquinoxes(jdTt);
 			const double c = std::cos(-GAST_rad);
@@ -97,7 +98,10 @@ namespace orbital_core::hazard {
 					const auto column = icrfToEcefEarth(Helpers::ecvToEcl(basis), mjdTdb);
 					matrix.col(i) << column.x, column.y, column.z;
 				}
-				return transform(matrix, "EARTH_OPTICAL_UT1", "IAU1976/1980; UT1/GAST; no polar motion");
+				Vec3D unused;
+				if (earthPckToTerrestrial(mjdTdb, Vec3D(1, 0, 0), unused))
+					return transform(matrix, "ITRF93", "Earth binary PCK");
+				return transform(matrix, "EARTH_OPTICAL_UT1", "IAU1976/1980; UT1; no polar motion");
 			}
 			if (planet == Planet::Moon) {
 				if (!source)
@@ -152,6 +156,10 @@ namespace orbital_core::hazard {
 	Vec3D bodyFixedVelocityMjd(Planet planet, const Vec3D& r, const Vec3D& v, double mjdTdb,
 	                           IEphemerisSource* source) noexcept
 	{
+		Vec3D position, velocity;
+		if (planet == Planet::Earth &&
+		    earthPckToTerrestrialState(mjdTdb, Helpers::eclToEcv(r), Helpers::eclToEcv(v), position, velocity))
+			return velocity;
 		constexpr double offset = 1.0 / 86400.0;
 		const double before = mjdTdb - offset, after = mjdTdb + offset;
 		const Vec3D rate =

@@ -1,0 +1,142 @@
+:root {
+  font:
+    13px Inter,
+    'Segoe UI',
+    sans-serif;
+  color: #e1e9e9;
+  background: #101415;
+  color-scheme: dark;
+  letter-spacing: 0;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  padding: 18px 28px 0;
+  background: #101415;
+  border-bottom: 1px solid #303b3b;
+}
+h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 14px;
+}
+h3 {
+  font-size: 14px;
+  margin: 0;
+}
+.topline,
+.toolbar,
+nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.topline {
+  justify-content: space-between;
+}
+.muted {
+  color: #8d9c9b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+nav {
+  gap: 0;
+  margin-top: 14px;
+}
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+button,
+select {
+  min-height: 34px;
+  border: 1px solid #485654;
+  border-radius: 4px;
+  background: #171d1e;
+  padding: 6px 10px;
+  cursor: pointer;
+  max-width: 100%;
+}
+button:hover {
+  border-color: #61b49e;
+}
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid #61b49e;
+  outline-offset: 2px;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+nav button {
+  border: 0;
+  border-radius: 0;
+  border-bottom: 3px solid transparent;
+  padding: 12px 20px;
+  background: transparent;
+  color: #9daead;
+}
+nav button[aria-selected='true'] {
+  border-bottom-color: #4eae96;
+  color: #e1e9e9;
+  background: #1b302b;
+}
+button svg {
+  width: 17px;
+  height: 17px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+input[type='checkbox'] {
+  accent-color: #4eae96;
+}
+input[type='range'] {
+  width: 100px;
+  accent-color: #4eae96;
+}
+main {
+  max-width: 2000px;
+  margin: auto;
+  padding: 24px 28px 32px;
+}
+main:has(> #field.active) {
+  max-width: none;
+}
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+}
+.toolbar {
+  padding-bottom: 14px;
+}
+.toolbar select {
+  max-width: 360px;
+}
+.semilinear-key {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}

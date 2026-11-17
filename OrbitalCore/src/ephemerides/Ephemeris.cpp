@@ -3,6 +3,7 @@
 #include "EphemeridesContainer.h"
 #include "TwoBodyPropagation.h"
 #include "NBodyPropagator.h"
+#include "uncertainty/LinearizedCovariance.h"
 #include "obs/LightDeflection.h"
 #include "obs/LightTime.h"
 #include "obs/LightTimeSeries.h"
@@ -52,6 +53,7 @@ namespace orbital_core {
 			propagator.setStepSize(solution.forces.stepSize);
 			propagator.setPlanetMask(solution.forces.enabled ? solution.forces.planetMask : 0);
 			propagator.setUseSb441(solution.forces.useSb441);
+			propagator.setForceModel(solution.forces.forceModel);
 			propagator.setTargetNaifId(solution.forces.targetNaifId);
 			propagator.setInactiveInteriorMassPolicy(solution.forces.inactiveInteriorMassPolicy);
 			if (auto* ephemeris = getDefaultEphemerisSource())
@@ -115,26 +117,8 @@ namespace orbital_core {
 			return (n / gamma + beta * (gamma * dot / (gamma + 1.0) - 1.0)) / (1.0 - dot);
 		}
 
-		std::optional<Eigen::MatrixXd> covarianceFactor(const EphemerisSolution& solution)
-		{
-			const auto& covariance = solution.covariance;
-			const int dimension = 6 + solution.nonGrav.fitParameterCount();
-			if (covariance.rows() != dimension || covariance.cols() != dimension || !covariance.allFinite() ||
-			    (covariance.diagonal().array() <= 0.0).any())
-				return std::nullopt;
-			const Eigen::VectorXd scale = covariance.diagonal().cwiseSqrt();
-			const Eigen::MatrixXd correlation =
-			    scale.cwiseInverse().asDiagonal() * covariance * scale.cwiseInverse().asDiagonal();
-			if (!correlation.allFinite() || !correlation.isApprox(correlation.transpose(), 1e-10))
-				return std::nullopt;
-			const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigen(correlation);
-			if (eigen.info() != Eigen::Success || eigen.eigenvalues().minCoeff() < -1e-10)
-				return std::nullopt;
-			return scale.asDiagonal() * eigen.eigenvectors() * eigen.eigenvalues().cwiseMax(0.0).cwiseSqrt().asDiagonal();
-		}
-
 		std::optional<EphemerisUncertainty> skyUncertainty(const Vec3D& position, const Eigen::MatrixXd& weighted,
-		                                                    EphemerisPlane plane, double c, double s)
+		                                                   EphemerisPlane plane, double c, double s)
 		{
 			const double radius = position.magnitude();
 			const double horizontal = std::hypot(position.x, position.y);
@@ -246,7 +230,10 @@ namespace orbital_core {
 		if (control.progress)
 			control.progress("Propagating ephemeris");
 		const auto propagator = ephemerisPropagator(solution);
-		const auto factor = request.uncertainty ? covarianceFactor(solution) : std::nullopt;
+		const auto factor = request.uncertainty ? uncertainty::covarianceFactor(
+		                                              solution.covariance, 6 + solution.nonGrav.fitParameterCount(),
+		                                              uncertainty::CovariancePolicy::PositiveSemidefinite)
+		                                        : std::nullopt;
 		result.uncertaintyComputed = factor.has_value();
 		std::vector<NBodyPropagator::PropagationResultFull> variational;
 		std::vector<NBodyPropagator::StateVel> states;
@@ -268,8 +255,8 @@ namespace orbital_core {
 				observers[i] = earthState.R + observer.offsetEclAu;
 			}
 			const auto light = obs::solveLightTimeSeries(solution.position, solution.velocity, solution.epochMjdTdb,
-			                                              mjdTdb, reception, observers, std::vector<bool>(count, true),
-			                                              nBody, propagator, solution.nonGrav, control.cancel);
+			                                             mjdTdb, reception, observers, std::vector<bool>(count, true),
+			                                             nBody, propagator, solution.nonGrav, control.cancel);
 			if (control.cancel.stop_requested())
 				return cancelled();
 			stateEpochs = light.emissionMjd;
@@ -277,8 +264,9 @@ namespace orbital_core {
 			states = light.states;
 		}
 		if (factor && nBody) {
-			variational = propagator.propagateAllWithStmAndSensMjd(solution.position, solution.velocity,
-			    solution.epochMjdTdb, stateEpochs, solution.nonGrav, nullptr, control.cancel);
+			variational =
+			    propagator.propagateAllWithStmAndSensMjd(solution.position, solution.velocity, solution.epochMjdTdb,
+			                                             stateEpochs, solution.nonGrav, nullptr, control.cancel);
 			states.clear();
 			states.reserve(variational.size());
 			for (std::size_t i = 0; i < variational.size(); ++i)
@@ -332,20 +320,22 @@ namespace orbital_core {
 					const Vec3D direction = ray / ray.magnitude();
 					const Vec3D targetBarycentricVelocity = emissionVelocity + emissionSunVelocity;
 					const Vec3D observerBarycentricVelocity = observerVelocity + receptionSunVelocity;
-					const double emissionRate =
-					    (Constants::AU_PER_DAY + direction.dot(observerBarycentricVelocity)) /
-					    (Constants::AU_PER_DAY + direction.dot(targetBarycentricVelocity));
+					const double emissionRate = (Constants::AU_PER_DAY + direction.dot(observerBarycentricVelocity)) /
+					                            (Constants::AU_PER_DAY + direction.dot(targetBarycentricVelocity));
 					rangeVelocity = targetBarycentricVelocity - observerBarycentricVelocity;
 					targetVelocity = targetBarycentricVelocity * emissionRate - receptionSunVelocity;
 					if (factor) {
 						lightTimeJacobian.leftCols<3>() = obs::emissionPositionFactor(ray, targetBarycentricVelocity);
 						const Vec3D acceleration =
-						    (nBody ? propagator.accelerationAtMjd(heliocentricTarget, emissionVelocity, stateEpochs[i], solution.nonGrav)
-						           : heliocentricTarget * (-Constants::GM_SUN / std::pow(heliocentricTarget.magnitude(), 3))) +
+						    (nBody ? propagator.accelerationAtMjd(heliocentricTarget, emissionVelocity, stateEpochs[i],
+						                                          solution.nonGrav)
+						           : heliocentricTarget *
+						                 (-Constants::GM_SUN / std::pow(heliocentricTarget.magnitude(), 3))) +
 						    obs::sunAccelerationMjd(stateEpochs[i]);
 						const Eigen::Vector3d a(acceleration.x, acceleration.y, acceleration.z);
 						const Eigen::RowVector3d n(direction.x, direction.y, direction.z);
-						velocityJacobian.leftCols<3>() = -a * n / (Constants::AU_PER_DAY + direction.dot(targetBarycentricVelocity));
+						velocityJacobian.leftCols<3>() =
+						    -a * n / (Constants::AU_PER_DAY + direction.dot(targetBarycentricVelocity));
 					}
 					// Trace sunlight to the target at its emission epoch, then account for
 					// aberration of that direction in the target's barycentric rest frame.
@@ -354,8 +344,8 @@ namespace orbital_core {
 						throw std::runtime_error("Solar distance is zero");
 					double sunDelay = heliocentricDistance / Constants::AU_PER_DAY;
 					for (int pass = 0; pass < 2; ++pass) {
-						sunToTarget =
-						    heliocentricTarget - obs::solarDisplacementDuringDelay(time::jdFromMjd(stateEpochs[i]), sunDelay);
+						sunToTarget = heliocentricTarget -
+						              obs::solarDisplacementDuringDelay(time::jdFromMjd(stateEpochs[i]), sunDelay);
 						sunDelay = sunToTarget.magnitude() / Constants::AU_PER_DAY;
 					}
 					row.heliocentricRateAuPerDay = heliocentricTarget.dot(emissionVelocity) / heliocentricDistance;
@@ -371,16 +361,18 @@ namespace orbital_core {
 				if (result.lightTimeApplied) {
 					Vec3D sunVelocity;
 					const double jd = time::jdFromMjd(row.mjdTdb);
-					const Vec3D solarRay = observerHelio * -1.0 +
-					                       obs::solarDisplacementDuringDelay(jd, observerHelio.magnitude() /
-					                                                                Constants::AU_PER_DAY);
+					const Vec3D solarRay =
+					    observerHelio * -1.0 +
+					    obs::solarDisplacementDuringDelay(jd, observerHelio.magnitude() / Constants::AU_PER_DAY);
 					if (auto* ephemeris = getDefaultEphemerisSource())
 						if (const auto sun = ephemeris->barycentricSunMjd(row.mjdTdb))
 							sunVelocity = sun->V;
 					const Vec3D observerBarycentricVelocity = observerVelocity + sunVelocity;
-					const Vec3D deflected = obs::absoluteDeflectedDirection(relative, heliocentricTarget, observerHelio);
-					row.elongation = angleBetween(directionInMovingFrame(solarRay, observerBarycentricVelocity * -1.0),
-					                              directionInMovingFrame(deflected, observerBarycentricVelocity * -1.0));
+					const Vec3D deflected =
+					    obs::absoluteDeflectedDirection(relative, heliocentricTarget, observerHelio);
+					row.elongation =
+					    angleBetween(directionInMovingFrame(solarRay, observerBarycentricVelocity * -1.0),
+					                 directionInMovingFrame(deflected, observerBarycentricVelocity * -1.0));
 				} else {
 					row.elongation = angleBetween(observerHelio * -1.0, relative);
 				}
@@ -391,14 +383,13 @@ namespace orbital_core {
 			if (factor) {
 				Eigen::MatrixXd transport(6, factor->rows());
 				if (nBody) {
-					transport.leftCols<6>() = variational[i].Phi;
-					for (int p = 0; p < solution.nonGrav.fitParameterCount(); ++p)
-						transport.col(6 + p) = variational[i].SensA.col(solution.nonGrav.sensitivityColumnForFitParameter(p));
+					transport = uncertainty::stateJacobian(variational[i], solution.nonGrav);
 				} else {
 					const StateVectors initial(solution.position, solution.velocity / Constants::GAUSS_K);
 					for (int p = 0; p < 6; ++p) {
 						const Vec3D unit(p % 3 == 0 ? 1.0 : 0.0, p % 3 == 1 ? 1.0 : 0.0, p % 3 == 2 ? 1.0 : 0.0);
-						const StateVectors tangent(p < 3 ? unit : Vec3D{}, p >= 3 ? unit / Constants::GAUSS_K : Vec3D{});
+						const StateVectors tangent(p < 3 ? unit : Vec3D{},
+						                           p >= 3 ? unit / Constants::GAUSS_K : Vec3D{});
 						const auto derivative = Calculations::propagateKeplerStateRate(
 						    initial, stateEpochs[i] - solution.epochMjdTdb, tangent, 0.0);
 						transport.col(p) << derivative.first.x, derivative.first.y, derivative.first.z,
@@ -406,17 +397,19 @@ namespace orbital_core {
 						    derivative.second.z * Constants::GAUSS_K;
 					}
 				}
-				row.uncertainty = skyUncertainty(row.position, lightTimeJacobian * transport * *factor,
-				                                 request.plane, cosObliquity, sinObliquity);
+				row.uncertainty = skyUncertainty(row.position, lightTimeJacobian * transport * *factor, request.plane,
+				                                 cosObliquity, sinObliquity);
 				if (row.uncertainty) {
 					const double distance = relative.magnitude();
-					const Eigen::Vector3d direction(relative.x / distance, relative.y / distance, relative.z / distance);
+					const Eigen::Vector3d direction(relative.x / distance, relative.y / distance,
+					                                relative.z / distance);
 					const Eigen::Vector3d velocity(rangeVelocity.x, rangeVelocity.y, rangeVelocity.z);
 					// Differentiate n dot v, including both the line of sight and emission velocity.
 					const Eigen::RowVector3d positionGradient =
 					    (velocity - direction * direction.dot(velocity)).transpose() / distance;
 					const Eigen::RowVectorXd gradient =
-					    (positionGradient * lightTimeJacobian + direction.transpose() * velocityJacobian) * transport * *factor;
+					    (positionGradient * lightTimeJacobian + direction.transpose() * velocityJacobian) * transport *
+					    *factor;
 					row.uncertainty->rangeRate3SigmaKmPerSecond =
 					    3.0 * gradient.norm() * (Constants::AU_IN_METERS / 1000.0) / 86400.0;
 				}

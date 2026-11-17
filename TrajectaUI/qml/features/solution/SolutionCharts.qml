@@ -24,7 +24,9 @@ Flickable {
         var limit = Math.ceil(Math.max(stats.draMax, stats.ddecMax) * 1.15 * 2) / 2
         ra.timeOriginMjd = dec.timeOriginMjd = stats.timeOriginMjd
         ra.timeOriginLabel = dec.timeOriginLabel = stats.timeOriginLabel
-        ra.bounds = dec.bounds = Qt.rect(0, -limit, span, 2 * limit)
+        const bounds = Qt.rect(0, -limit, span, 2 * limit)
+        ra.setDefaultBounds(bounds)
+        dec.setDefaultBounds(bounds)
         ra.refreshSelection()
         dec.refreshSelection()
     }
@@ -60,7 +62,20 @@ Flickable {
                 Layout.fillHeight: true
                 Layout.minimumWidth: 0
                 spacing: 10
-                CustomText { text: qsTr("Right ascension"); font.pixelSize: 14; font.weight: Font.DemiBold }
+                RowLayout {
+                    Layout.fillWidth: true
+                    CustomText { text: qsTr("Right ascension"); font.pixelSize: 14; font.weight: Font.DemiBold; Layout.fillWidth: true }
+                    CustomButton {
+                        objectName: "ra-reset-view"
+                        iconName: "rotate-ccw"
+                        flat: true
+                        enabled: ra.viewAdjusted
+                        accessibleLabel: qsTr("Reset plot view")
+                        onClicked: ra.resetView()
+                        ToolTip.visible: hovered
+                        ToolTip.text: accessibleLabel
+                    }
+                }
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -80,7 +95,20 @@ Flickable {
                 Layout.fillHeight: true
                 Layout.minimumWidth: 0
                 spacing: 10
-                CustomText { text: qsTr("Declination"); font.pixelSize: 14; font.weight: Font.DemiBold }
+                RowLayout {
+                    Layout.fillWidth: true
+                    CustomText { text: qsTr("Declination"); font.pixelSize: 14; font.weight: Font.DemiBold; Layout.fillWidth: true }
+                    CustomButton {
+                        objectName: "dec-reset-view"
+                        iconName: "rotate-ccw"
+                        flat: true
+                        enabled: dec.viewAdjusted
+                        accessibleLabel: qsTr("Reset plot view")
+                        onClicked: dec.resetView()
+                        ToolTip.visible: hovered
+                        ToolTip.text: accessibleLabel
+                    }
+                }
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true

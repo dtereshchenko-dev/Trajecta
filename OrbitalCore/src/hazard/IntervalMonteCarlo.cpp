@@ -3,6 +3,7 @@
 #include "McBoundaryScan.h"
 #include "McObservationSampler.h"
 #include "GaussianSampler.h"
+#include "SemilinearContours.h"
 #include "orbital_core/hazard/PlanetData.h"
 #include "orbital_core/hazard/BodyFixedFrame.h"
 #include <Eigen/Cholesky>
@@ -91,6 +92,7 @@ namespace orbital_core::hazard {
 		base.setStepSize(forces.stepSize);
 		base.setPlanetMask(forces.planetMask);
 		base.setUseSb441(forces.useSb441);
+		base.setForceModel(forces.forceModel);
 		base.setTargetNaifId(forces.targetNaifId);
 		base.setInactiveInteriorMassPolicy(forces.inactiveInteriorMassPolicy);
 		base = base.forEncounterMonitoring(*eph);
@@ -166,6 +168,15 @@ namespace orbital_core::hazard {
 			std::rethrow_exception(callbackError);
 		result.cancelled = cancel.stop_requested();
 		mc::summarize(result);
+		if (config.semilinearContours && !result.cancelled) {
+			if (progress)
+				progress(-1, config.samples);
+			result.semilinear =
+			    computeSemilinearContours(result.nominal.state, result.nominal.epochMjdTdb, result.nominal.nonGrav,
+			                              covariance, result.nominal.entry, config.target, config.startMjdTdb,
+			                              config.endMjdTdb, config.altitudeKm, config.workers, base, *eph, cancel);
+		}
+		result.cancelled = cancel.stop_requested();
 		return result;
 	}
 

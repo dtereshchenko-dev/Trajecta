@@ -298,15 +298,26 @@ namespace {
 	}
 
 	struct FitLogCallback {
-		explicit FitLogCallback(Logger::Callback callback) { Logger::setCallback(std::move(callback)); }
+		explicit FitLogCallback(Logger::Callback callback, LogLevel level = LogLevel::Debug)
+		    : previousLevel(Logger::threadMinLevel())
+		{
+			Logger::setThreadMinLevel(level);
+			Logger::setCallback(std::move(callback));
+		}
 
-		~FitLogCallback() { Logger::setCallback({}); }
+		~FitLogCallback()
+		{
+			Logger::setCallback({});
+			Logger::setThreadMinLevel(previousLevel);
+		}
+
+		LogLevel previousLevel;
 	};
 }  // namespace
 
 TEST_F(FitSessionTest, OpticalFitJacobianAndCovarianceMatchIndependentResidualPerturbations)
 {
-	for (int scenario = 0; scenario < 3; ++scenario) {
+	for (int scenario = 0; scenario < 4; ++scenario) {
 		SCOPED_TRACE(scenario);
 		OrbitOptimizerConfig config;
 		config.nbody.enabled = true;
@@ -345,15 +356,17 @@ TEST_F(FitSessionTest, OpticalFitJacobianAndCovarianceMatchIndependentResidualPe
 				o.rmsCorr = .3;
 				observations.push_back(o);
 			}
-			config.nonGrav.enabled = scenario == 2;
+			config.nonGrav.enabled = scenario >= 2;
 			config.nonGrav.model = oc::NonGravModelKind::InverseSquare;
-			config.nonGrav.solveMask = static_cast<std::uint8_t>(NgParameterMask::A1 | NgParameterMask::A2);
+			config.nonGrav.solveMask = static_cast<std::uint8_t>(
+			    scenario == 3 ? NgParameterMask::A1 : NgParameterMask::A1 | NgParameterMask::A2);
 		}
 		oc::fit::OrbitFitModel model(orbit, oc::fit::prepareFitObservations(observations, config), config);
 		auto params = oc::fit::OrbitFitModel::stateVectorFromOrbit(*orbit);
 		if (config.nonGrav.enabled) {
 			params.push_back(1e-10);
-			params.push_back(-3e-12);
+			if (scenario != 3)
+				params.push_back(-3e-12);
 		}
 		const auto analytic = model.computeResidualsAndStateJac(params);
 		ASSERT_EQ(analytic.stateJ.cols(), params.size());
@@ -934,6 +947,33 @@ TEST_F(FitSessionTest, ClippingReusesPreparedRowsAndPreservesOriginalIndices)
 	EXPECT_NEAR(result.normalizedRms, std::sqrt(chiSquare / (2.0 * result.keptObsIndices.size())), 1e-12);
 }
 
+TEST_F(FitSessionTest, InfoLogSummarizesSelectionWithoutIterationDetails)
+{
+	auto data = fitContractCase();
+	data.config.sigmaClip.enabled = true;
+	data.observations.all[data.observations.all.size() / 2].RA += 20.0 * Constants::ARCSEC_RAD;
+	std::vector<std::string> messages;
+	const auto run = [&](LogLevel level) {
+		const FitLogCallback log([&](LogLevel, const std::string& message) { messages.push_back(message); }, level);
+		return oc::FitSession{data.config}.optimize({data.initial, data.observations.all});
+	};
+	const auto result = run(LogLevel::Info);
+	ASSERT_TRUE(result.fitEpochOrbit);
+	EXPECT_TRUE(std::ranges::any_of(
+	    messages, [](const auto& message) { return message.starts_with("[FitSession] sigma clipping: kept="); }));
+	EXPECT_FALSE(std::ranges::any_of(messages, [](const auto& message) {
+		return message.starts_with("[HystereticRejector] rejectChi2=") || message.starts_with(solverStart) ||
+		       message.starts_with("ObservationPipeline: ready");
+	}));
+	messages.clear();
+	const auto debugResult = run(LogLevel::Debug);
+	ASSERT_TRUE(debugResult.fitEpochOrbit);
+	EXPECT_DOUBLE_EQ(result.cost, debugResult.cost);
+	EXPECT_EQ(result.keptObsIndices, debugResult.keptObsIndices);
+	EXPECT_TRUE(std::ranges::any_of(
+	    messages, [](const auto& message) { return message.starts_with("[HystereticRejector] rejectChi2="); }));
+}
+
 TEST_F(FitSessionTest, SelectionModeBelongsToRequest)
 {
 	auto data = fitContractCase();
@@ -1097,7 +1137,7 @@ TEST_F(FitSessionTest, ExecutionGraphMatchesOptionCombinations)
 							preparations += message.starts_with("ObservationPipeline: ready");
 							lmStarts += message.starts_with(solverStart);
 							bootstraps += message.starts_with("=== Non-grav bootstrap");
-							transports += message.starts_with("==== ORBIT AT TARGET EPOCH");
+							transports += message.starts_with("[FitOutput] propagated orbit to JD ");
 							selectionChecks += message.starts_with("[HystereticRejector] rejectChi2=");
 						});
 						const auto result = oc::FitSession{cfg}.optimize(
@@ -1241,7 +1281,7 @@ TEST_F(FitSessionTest, SunOnlyNonGravRetainsNumericalBootstrap)
 	int bootstraps = 0, transports = 0;
 	const FitLogCallback log([&](LogLevel, const std::string& message) {
 		bootstraps += message.starts_with("=== Non-grav bootstrap: Sun-only numerical");
-		transports += message.starts_with("==== ORBIT AT TARGET EPOCH");
+		transports += message.starts_with("[FitOutput] propagated orbit to JD ");
 	});
 	const auto result = oc::FitSession{data.config}.optimize({.initialOrbit = data.initial,
 	                                                          .observations = data.observations.all,
@@ -2100,6 +2140,27 @@ TEST_F(FitSessionTest, RefinementCanEnableAndDisableNonGravWithManualExclusion)
 	EXPECT_EQ(changed.fit.finalNonGrav.fitParameterMask(), NgParameterMask::A1 | NgParameterMask::A2);
 	EXPECT_EQ(changed.fit.finalNonGrav.A3(), 3e-10);
 	EXPECT_EQ(changed.fit.uncertainty.fitParameterCovariance.rows(), 8);
+}
+
+TEST_F(FitSessionTest, InverseSquareA1OnlyHasOneNonGravCovarianceParameter)
+{
+	auto data = fitContractCase();
+	data.config.nonGrav.enabled = true;
+	data.config.nonGrav.model = oc::NonGravModelKind::InverseSquare;
+	data.config.nonGrav.solveMask = static_cast<std::uint8_t>(NgParameterMask::A1);
+	data.config.nonGrav.useInitialValues = true;
+	data.config.nonGrav.initialA1 = 1e-10;
+	oc::FitRequest request{
+	    .initialOrbit = data.initial, .observations = data.observations.all, .options = {.evaluateOnly = true}};
+	const auto result = oc::FitSession{data.config}.optimize(request);
+	ASSERT_TRUE(result.orbit);
+	EXPECT_EQ(result.finalNonGrav.fitParameterMask(), NgParameterMask::A1);
+	EXPECT_DOUBLE_EQ(result.finalNonGrav.A2(), 0.0);
+	EXPECT_DOUBLE_EQ(result.finalNonGrav.A3(), 0.0);
+	EXPECT_EQ(result.uncertainty.fitParameterCovariance.rows(), 7);
+	EXPECT_EQ(result.uncertainty.fitParameterCovariance.cols(), 7);
+	EXPECT_EQ(result.uncertainty.fitParameterCovarianceFormal.rows(), 7);
+	EXPECT_EQ(result.uncertainty.fitParameterCovarianceFormal.cols(), 7);
 }
 
 TEST_F(FitSessionTest, NonGravWarmStartCannotOverrideRequestedModelOrSolveMask)

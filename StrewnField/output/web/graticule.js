@@ -14,7 +14,8 @@
   }
   function label(value, step, axis) {
     const decimals = Math.max(0, Math.min(9, Math.ceil(-Math.log10(step) - 1e-9)));
-    if (axis === 'longitude') value = ((((value + 180) % 360) + 360) % 360) - 180;
+    if (axis === 'longitude')
+      value = ((((value + 180) % 360) + 360) % 360) - 180;
     const rounded = Number(value.toFixed(decimals)),
       absolute = Math.abs(rounded);
     const direction =
@@ -98,14 +99,16 @@
     for (const t of grid.longitudes) {
       const w = ctx.measureText(t.label).width,
         x = t.position - w / 2;
-      if (x - padding < right || x + w + padding > width - 6) continue;
+      if (x - padding < right || x + w + padding > width - 6)
+        continue;
       text(t, x, fontSize * 0.9 + padding);
       right = x + w + padding + fontSize;
     }
     let bottom = corner;
     for (const t of [...grid.latitudes].sort((a, b) => a.position - b.position)) {
       const top = t.position - fontSize / 2 - padding;
-      if (top < bottom || t.position + fontSize / 2 + padding > height - 36) continue;
+      if (top < bottom || t.position + fontSize / 2 + padding > height - 36)
+        continue;
       text(t, 6 + padding, t.position);
       bottom = t.position + fontSize / 2 + padding + fontSize;
     }
@@ -113,6 +116,7 @@
     return grid;
   }
   const api = { ticks, label, layout, draw };
-  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (typeof module === 'object' && module.exports)
+    module.exports = api;
   else root.StrewnGraticule = api;
 })(globalThis);

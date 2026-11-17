@@ -55,6 +55,8 @@ TEST(Convertors, ConvertJDToGregorian)
 	EXPECT_EQ(atSeconds(59.999), "2024-01-01 00:01:00.00");
 	EXPECT_EQ(atSeconds(86399.999), "2024-01-02 00:00:00.00");
 	EXPECT_EQ(Convertors::convertJDToGregorian(Constants::J2000_JD), "2000-01-01 12:00:00.00");
+	EXPECT_EQ(Convertors::convertJDToGregorian(std::numeric_limits<double>::quiet_NaN()), "Unavailable");
+	EXPECT_EQ(Convertors::convertJDToGregorian(std::numeric_limits<double>::infinity()), "Unavailable");
 }
 
 TEST(Convertors, StringToInt)

@@ -41,7 +41,9 @@ namespace orbital_core::fit {
 		         << "  w=" << Convertors::radiansToDegrees(orb->getArgumentOfPericentre())
 		         << "  M=" << Convertors::radiansToDegrees(orb->getMeanAnomaly());
 		if (p.size() == 7) {
-			LOG_INFO << "[" << tag << "] A2=" << std::scientific << std::setprecision(6) << p[6] << " (Yarkovsky)";
+			const bool yarkovsky = model_.propagator().nonGrav().model() == NgModel::Yarkovsky;
+			LOG_INFO << "[" << tag << "] " << (yarkovsky ? "A2=" : "A1=") << std::scientific << std::setprecision(6)
+			         << p[6] << (yarkovsky ? " (Yarkovsky)" : "");
 		}
 
 		else if (p.size() >= 9) {
@@ -141,6 +143,12 @@ namespace orbital_core::fit {
 			LOG_INFO << "Non-grav done. A2=" << std::scientific << std::setprecision(6) << finalParams[6]
 			         << " (Yarkovsky, A1=A3=0 by construction)"
 			         << "  Δcost = " << std::scientific << std::setprecision(3) << gravCost << " → " << summary_.cost;
+		}
+
+		else if (n == 1) {
+			LOG_INFO << "Non-grav done. A1=" << std::scientific << std::setprecision(6) << finalParams[6]
+			         << "  deltaCost = " << std::scientific << std::setprecision(3) << gravCost << " -> "
+			         << summary_.cost;
 		}
 
 		else if (n == 2) {

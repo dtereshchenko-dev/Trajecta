@@ -57,6 +57,7 @@ data are available:
 | `orbit_keplerian_oef.txt` | Keplerian orbital elements and available derived quantities. |
 | `orbit_cometary_oef.txt` | Cometary elements for a solution using the cometary representation. |
 | `weighted_residuals_rwo.txt` | Observation records and weighted residual information in RWO format. |
+| `Trajecta.ini` | Snapshot of effective fit settings, excluding interface preferences and recent file paths. |
 
 The element files produced depend on the solution representation. A
 `fit_summary.txt` is also written when a nominal Earth entry or its calculation
@@ -83,8 +84,11 @@ the saved run.
 
 Completed close-approach searches are saved under `CloseApproaches/run-…`.
 `encounters.txt` is the readable encounter catalogue; `result.json` records
-the numerical result and configuration. The results table can use different
-display units, so check the file headers when using the exported values.
+the numerical result and configuration, and `report.html` provides the
+interactive distance plot and encounter table. The results table can use
+different display units, so check the file headers when using exported values.
+For the JSON fields and units, see the
+[Close-approach archive reference](../close-approaches-archive/).
 
 ## Risk calculations
 

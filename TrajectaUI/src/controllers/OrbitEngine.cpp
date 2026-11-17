@@ -175,6 +175,7 @@ void OrbitEngine::downloadGaiaFpr(orbital_core::ObservationSet observations,
 
 void OrbitEngine::submit(OrbitFitInput input)
 {
+	m_settings.save();
 	m_fitRunning = true;
 	m_fitCancel = std::stop_source{};
 	OrbitFitJob job{currentSettings(), std::move(input)};
@@ -198,6 +199,7 @@ OptimizationSettings OrbitEngine::currentSettings() const
 	s.integratorInitialStepDays = pert->integratorInitialStepDays();
 	s.pertPlanetMask = static_cast<uint16_t>(pert->planetMask());
 	s.useSb441 = pert->useSb441() && orbital_core::asteroidEphemerisAvailable();
+	s.forceModel = pert->forceModel();
 
 	s.nonGravEnabled = ng->enabled();
 	s.nonGravModel = static_cast<orbital_core::NonGravModelKind>(ng->model());

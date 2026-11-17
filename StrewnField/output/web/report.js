@@ -5,7 +5,8 @@
       .map((v, i) => [v, weights?.[i] ?? 1])
       .filter((r) => Number.isFinite(r[0]) && r[1] > 0)
       .sort((a, b) => a[0] - b[0]);
-    if (!rows.length) return null;
+    if (!rows.length)
+      return null;
     if (rows.every((r) => r[1] === rows[0][1])) {
       const index = (rows.length - 1) * p,
         i = Math.floor(index);
@@ -17,7 +18,8 @@
       lastP = 0;
     for (const [value, weight] of rows) {
       const at = (before + weight / 2) / total;
-      if (p <= at) return last + (value - last) * Math.max(0, (p - lastP) / (at - lastP));
+      if (p <= at)
+        return last + (value - last) * Math.max(0, (p - lastP) / (at - lastP));
       before += weight;
       last = value;
       lastP = at;
@@ -48,7 +50,8 @@
     const rows = values
       .map((v, i) => [v, weights?.[i] ?? 1])
       .filter((r) => Number.isFinite(r[0]) && r[1] > 0 && (!log || r[0] > 0));
-    if (!rows.length) return { x: [], y: [], width: [], ranges: [] };
+    if (!rows.length)
+      return { x: [], y: [], width: [], ranges: [] };
     let lo = Infinity,
       hi = -Infinity;
     for (const row of rows) {
@@ -83,7 +86,8 @@
   }
   function readFloats(bytes, shuffled = false) {
     const count = bytes.length / 4;
-    if (!Number.isInteger(count)) throw new Error('Invalid packed numeric array');
+    if (!Number.isInteger(count))
+      throw new Error('Invalid packed numeric array');
     if (shuffled) {
       const linear = new Uint8Array(bytes.length);
       for (let i = 0; i < count; i++) for (let b = 0; b < 4; b++) linear[i * 4 + b] = bytes[b * count + i];
@@ -108,8 +112,10 @@
   }
   async function readFlight(text) {
     const payload = JSON.parse(text);
-    if (!payload.encoding) return payload;
-    if (payload.encoding !== 'base64-deflate-json') throw new Error('Unknown trajectory payload encoding');
+    if (!payload.encoding)
+      return payload;
+    if (payload.encoding !== 'base64-deflate-json')
+      throw new Error('Unknown trajectory payload encoding');
     return JSON.parse(new TextDecoder().decode(await inflate(payload.payload)));
   }
   function windProfile(rows) {
@@ -143,5 +149,6 @@
     ['Unpropagated remainder', 'kg', (r) => r.mass_balance_kg.residual],
   ];
   root.StrewnReport = { quantile, describe, histogram, floats, unpack, readFlight, metrics, windProfile };
-  if (typeof module !== 'undefined') module.exports = root.StrewnReport;
+  if (typeof module !== 'undefined')
+    module.exports = root.StrewnReport;
 })(globalThis);

@@ -2,14 +2,16 @@
   'use strict';
   const numeric = (v) => typeof v === 'number' && Number.isFinite(v);
   function utc(mjd) {
-    if (!numeric(mjd)) return 'UTC unavailable';
+    if (!numeric(mjd))
+      return 'UTC unavailable';
     const day = Math.floor(mjd),
       ms = Math.round((mjd - day) * 86400000);
     return new Date((day - 40587) * 86400000 + ms).toISOString().replace('T', ' ').replace('Z', '');
   }
   function longitudeFrame(points) {
     const values = points.map((p) => ((p.longitude_deg % 360) + 360) % 360).sort((a, b) => a - b);
-    if (!values.length) return 0;
+    if (!values.length)
+      return 0;
     let gap = -1,
       start = values[0];
     values.forEach((value, i) => {
@@ -30,6 +32,74 @@
       .sort((a, b) =>
         order === 'clone' ? a.clone - b.clone || a.epoch - b.epoch : a.epoch - b.epoch || a.clone - b.clone,
       );
+  const nominalLast = (points) =>
+    points.filter((p) => p.clone >= 0).concat(points.filter((p) => p.clone < 0));
+  const mapPoints = (entries, event, showClones, showNominal) =>
+    ordered(entries, event, 'time').filter((p) => (p.clone < 0 ? showNominal : showClones));
+  const contourColors = { 1: '#62cbe8', 3: '#f6ca69', 5: '#d79aed' };
+  function renderContourLegend(element) {
+    element.replaceChildren(
+      ...Object.entries(contourColors).map(([sigma, color]) => {
+        const item = document.createElement('span');
+        item.style.color = color;
+        item.textContent = `━ ${sigma}σ`;
+        return item;
+      }),
+    );
+  }
+  function contourPoints(semilinear) {
+    if (semilinear?.status !== 'complete')
+      return [];
+    return (semilinear.contours || []).flatMap((contour) => contour.points.filter(Boolean));
+  }
+  function contourSegments(points, centre) {
+    if (!points.length)
+      return [];
+    const missing = points.findIndex((p) => !p);
+    const ordered =
+      missing < 0 ? [...points, points[0]] : [...points.slice(missing), ...points.slice(0, missing + 1)];
+    const segments = [];
+    let segment = [];
+    for (const point of ordered) {
+      const value = point && [point.latitude_deg, unwrap(point.longitude_deg, centre)];
+      if (!value || (segment.length && Math.abs(value[1] - segment[segment.length - 1][1]) > 180)) {
+        if (segment.length > 1)
+          segments.push(segment);
+        segment = [];
+      }
+      if (value)
+        segment.push(value);
+    }
+    if (segment.length > 1)
+      segments.push(segment);
+    return segments;
+  }
+  function drawContours(L, layer, semilinear, centre) {
+    if (semilinear?.status !== 'complete')
+      return;
+    for (const contour of semilinear.contours || [])
+      for (const segment of contourSegments(contour.points, centre))
+        L.polyline(segment, {
+          color: contourColors[contour.sigma],
+          weight: 2,
+          opacity: 0.95,
+          interactive: false,
+        }).addTo(layer);
+  }
+  function contourNote(semilinear) {
+    if (!semilinear || semilinear.status === 'not_computed')
+      return 'Semilinear contours were not calculated for this archive.';
+    if (semilinear.status !== 'complete')
+      return `Semilinear contours unavailable: ${semilinear.reason || semilinear.status}`;
+    const incomplete = (semilinear.contours || [])
+      .filter((c) => c.missed || c.failed)
+      .map((c) => `${c.sigma}σ: ${c.missed} missed, ${c.failed} failed`)
+      .join('; ');
+    return (
+      'Semilinear contours use the nominal fit covariance and nonlinear propagation, not probabilities. ' +
+      (incomplete ? `Gaps: ${incomplete}.` : '')
+    );
+  }
   function mapProfile(target, points) {
     if (target === 'Moon' || target === 'Mars') {
       const moon = target === 'Moon';
@@ -61,7 +131,8 @@
   }
   function imageryLayer(L, profile, overview = false) {
     const options = { maxZoom: 22, maxNativeZoom: profile.maxNativeZoom, attribution: profile.attribution };
-    if (profile.kind === 'xyz') return L.tileLayer(profile.url, options);
+    if (profile.kind === 'xyz')
+      return L.tileLayer(profile.url, options);
     if (profile.kind === 'wmts')
       return L.tileLayer(profile.url, {
         ...options,
@@ -79,7 +150,21 @@
       });
     return null;
   }
-  const api = { utc, longitudeFrame, unwrap, ordered, mapProfile, imageryLayer };
+  const api = {
+    utc,
+    longitudeFrame,
+    unwrap,
+    ordered,
+    nominalLast,
+    mapPoints,
+    mapProfile,
+    imageryLayer,
+    contourSegments,
+    contourPoints,
+    drawContours,
+    contourNote,
+    renderContourLegend,
+  };
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;
     return;
@@ -88,7 +173,8 @@
   root.addEventListener('beforeprint', () => {
     const frame = document.getElementById('map-print-frame'),
       map = document.getElementById('map');
-    if (!frame || !map || !map.offsetWidth || !map.offsetHeight) return;
+    if (!frame || !map || !map.offsetWidth || !map.offsetHeight)
+      return;
     const width = map.offsetWidth,
       height = map.offsetHeight;
     const scale = Math.min(1, (260 * 96) / 25.4 / width, (105 * 96) / 25.4 / height);
@@ -98,7 +184,8 @@
     frame.style.setProperty('--print-frame-width', `${width * scale}px`);
     frame.style.setProperty('--print-frame-height', `${height * scale}px`);
   });
-  if (!document.getElementById('mc-data')) return;
+  if (!document.getElementById('mc-data'))
+    return;
   const el = (id) => document.getElementById(id),
     data = JSON.parse(el('mc-data').textContent);
   const fmt = (v, digits = 7) =>
@@ -126,6 +213,7 @@
     selected = null,
     map = null,
     layer = null,
+    contourLayer = null,
     imagery = null,
     overview = null,
     centre = 0,
@@ -146,7 +234,8 @@
       values.forEach((value) => {
         row.insertCell().textContent = value;
       });
-      if (onRow) onRow(row, i);
+      if (onRow)
+        onRow(row, i);
     });
     el(id).replaceChildren(t);
   }
@@ -176,7 +265,8 @@
     warnings.push(
       `Incomplete sample: ${data.failed_fit} failed fits, ${data.failed_propagation} failed propagations, ${data.cancelled_clones} cancelled, ${data.unstarted} not started. Missing trials can bias probabilities.`,
     );
-  if (data.nominal.status !== 1) warnings.push(`Nominal propagation unavailable: ${data.nominal.error}`);
+  if (data.nominal.status !== 1)
+    warnings.push(`Nominal propagation unavailable: ${data.nominal.error}`);
   if (data.entries_before_interval)
     warnings.push(
       `${data.entries_before_interval} clones crossed the boundary before this interval; no later crossings are inferred.`,
@@ -248,7 +338,8 @@
       ]),
       (row, i) => {
         const p = slice[i];
-        if (p === selected) row.className = 'selected';
+        if (p === selected)
+          row.className = 'selected';
         const button = document.createElement('button');
         button.textContent = 'Map';
         button.title = 'Show crossing on map';
@@ -270,22 +361,31 @@
     return node;
   }
   function visiblePoints() {
-    return ordered(points, el('map-event').value, 'time').filter(
-      (p) => el('show-nominal').checked || p.clone >= 0,
-    );
+    return mapPoints(points, el('map-event').value, el('show-clones').checked, el('show-nominal').checked);
+  }
+  function contoursVisible() {
+    const nominal = points.find((p) => p.clone < 0);
+    const event = el('map-event').value;
+    return el('show-contours').checked && nominal && (event === 'all' || nominal.event === Number(event));
   }
   function fitMap() {
     const bounds = visiblePoints().map((p) => [p.latitude_deg, unwrap(p.longitude_deg, centre)]);
-    if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13, animate: false });
+    if (contoursVisible())
+      for (const point of contourPoints(data.semilinear))
+        bounds.push([point.latitude_deg, unwrap(point.longitude_deg, centre)]);
+    if (bounds.length)
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13, animate: false });
     else map.setView([0, 0], 2);
   }
   function renderMap(fit = true) {
-    if (!map) return;
+    if (!map)
+      return;
     layer.clearLayers();
+    contourLayer.clearLayers();
     markers.clear();
     const visible = visiblePoints();
-    centre = longitudeFrame(visiblePoints());
-    visible.forEach((p) => {
+    centre = longitudeFrame(ordered(points, el('map-event').value, 'time'));
+    const addMarker = (p) => {
       const marker = L.circleMarker([p.latitude_deg, unwrap(p.longitude_deg, centre)], {
         radius: p.clone < 0 ? 6 : 3.5,
         color: p.clone < 0 ? '#4f3515' : '#702925',
@@ -300,14 +400,23 @@
         renderTable();
       });
       markers.set(p, marker);
-    });
-    el('map-empty').textContent = visiblePoints().length
+    };
+    const orderedMarkers = nominalLast(visible);
+    orderedMarkers.filter((p) => p.clone >= 0).forEach(addMarker);
+    if (contoursVisible())
+      drawContours(L, contourLayer, data.semilinear, centre);
+    orderedMarkers.filter((p) => p.clone < 0).forEach(addMarker);
+    el('map-empty').textContent = visible.length
       ? ''
-      : 'No boundary crossings in the selected event.';
-    if (fit) fitMap();
+      : ordered(points, el('map-event').value, 'time').length
+        ? 'No crossing markers selected.'
+        : 'No boundary crossings in the selected event.';
+    if (fit)
+      fitMap();
   }
   function initMap() {
-    if (map) return;
+    if (map)
+      return;
     const crs = profile.geographic
       ? L.extend({}, L.CRS.EPSG4326, {
           distance: (a, b) => (L.CRS.Earth.distance(a, b) * (profile.radius || 6371000)) / 6371000,
@@ -324,12 +433,15 @@
     });
     map.on('resize', () => map.closePopup());
     map.setView([0, 0], 2);
+    contourLayer = L.layerGroup().addTo(map);
     layer = L.layerGroup().addTo(map);
-    if (profile.radius) L.control.scale({ imperial: false }).addTo(map);
+    if (profile.radius)
+      L.control.scale({ imperial: false }).addTo(map);
     imagery = imageryLayer(L, profile);
     overview = profile.kind === 'wmts' ? imageryLayer(L, profile, true) : null;
     el('imagery').disabled = !imagery;
-    if (!imagery) el('imagery').checked = false;
+    if (!imagery)
+      el('imagery').checked = false;
     el('imagery-label').textContent = earth ? 'Satellite imagery' : 'Surface imagery';
     el('imagery').title = profile.name;
     const note =
@@ -354,7 +466,8 @@
           note + 'Some imagery is unavailable; coordinates and markers remain visible.';
       });
       imagery.on('load', () => {
-        if (!tileErrors) el('map-meta').textContent = note;
+        if (!tileErrors)
+          el('map-meta').textContent = note;
       });
       el('imagery').onchange = () => {
         el('map-meta').textContent = note;
@@ -378,7 +491,8 @@
     pane.append(canvas);
     function grid() {
       canvas.style.display = el('coordinates').checked ? 'block' : 'none';
-      if (!el('coordinates').checked) return;
+      if (!el('coordinates').checked)
+        return;
       const size = map.getSize(),
         dpr = window.devicePixelRatio || 1;
       canvas.width = size.x * dpr;
@@ -417,7 +531,7 @@
   function focusPoint(p) {
     selected = p;
     el('map-event').value = p.event === null ? 'all' : String(p.event);
-    el('show-nominal').checked = true;
+    el(p.clone < 0 ? 'show-nominal' : 'show-clones').checked = true;
     view('field');
     renderMap(false);
     map.setView([p.latitude_deg, unwrap(p.longitude_deg, centre)], Math.max(map.getZoom(), 12), {
@@ -445,7 +559,11 @@
     renderTable();
   };
   el('map-event').onchange = () => renderMap();
+  el('show-clones').onchange = () => renderMap(false);
   el('show-nominal').onchange = () => renderMap();
+  el('show-contours').onchange = () => renderMap(false);
+  renderContourLegend(el('contour-legend'));
+  el('contour-note').textContent = contourNote(data.semilinear);
   el('fit').onclick = fitMap;
   el('print').onclick = () => window.print();
   renderTable();

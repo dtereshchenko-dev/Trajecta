@@ -113,11 +113,38 @@ BasePage {
                         CustomText { text: qsTr("All planets + Moon"); secondary: true; font.pixelSize: 11 }
                     }
                     FormSection { title: qsTr("Search interval") }
+                    FormField {
+                        label: qsTr("Time scale")
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 240
+                        CustomComboBox {
+                            objectName: "approaches-time-scale"
+                            Layout.fillWidth: true
+                            enabled: !page.approaches.busy
+                            model: ["UTC", "TDB"]
+                            currentIndex: page.approaches.timeScale === "TDB" ? 1 : 0
+                            Accessible.name: qsTr("Search interval time scale")
+                            onActivated: index => {
+                                const next = index === 1 ? "TDB" : "UTC"
+                                const previous = page.approaches.timeScale
+                                const start = page.approaches.convertTimeScale(interval.startUtc, previous, next)
+                                const end = page.approaches.convertTimeScale(interval.endUtc, previous, next)
+                                if (start.length)
+                                    interval.startUtc = start
+                                if (end.length)
+                                    interval.endUtc = end
+                                page.approaches.timeScale = next
+                            }
+                        }
+                    }
                     SearchIntervalForm {
                         id: interval
                         objectName: "approaches-interval"
                         fieldPrefix: "approaches"
-                        seedUtc: page.solution.calculationStartUtc
+                        seedUtc: page.approaches.timeScale === "TDB"
+                            ? (page.approaches.convertTimeScale(page.solution.calculationStartUtc, "UTC", "TDB") || page.solution.calculationStartUtc)
+                            : page.solution.calculationStartUtc
+                        timeScale: page.approaches.timeScale
                         sourceIdentity: page.solution.designation
                         Layout.fillWidth: true
                         enabled: !page.approaches.busy
@@ -243,6 +270,12 @@ BasePage {
                         secondary: true
                         font.pixelSize: 11
                         wrapMode: Text.Wrap
+                    }
+                    CustomButton {
+                        iconName: "activity"
+                        accessibleLabel: qsTr("Open distance report")
+                        enabled: page.approaches.archivePath.length > 0
+                        onClicked: page.approaches.openReport()
                     }
                     CustomButton {
                         iconName: "folder-open"

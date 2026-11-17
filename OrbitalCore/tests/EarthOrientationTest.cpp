@@ -1,331 +1,273 @@
 #include <gtest/gtest.h>
 
 #include "earth_orientation/EarthOrientation.h"
+#include "earth_orientation/EarthPck.h"
+#include "earth_orientation/EarthPckPoleCache.h"
 #include "earth_orientation/EarthRotation.h"
-#include "orbital_core/DE440Source.h"
-#include "orbital_core/ObsNode.h"
+#include "obs/ObserverGeometry.h"
+#include "orbital_core/Constants.h"
+#include "orbital_core/RuntimeData.h"
 #include "orbital_core/Types.h"
 #include "orbital_core/hazard/BodyFixedFrame.h"
 
-#include <chrono>
-#include <fstream>
-#include <iomanip>
+#include <cmath>
+#include <filesystem>
+#include <stdexcept>
+#include <future>
 #include <limits>
-#include <locale>
-#include <sstream>
+#include <vector>
+#include <SpiceUsr.h>
 
-namespace {
-	using namespace orbital_core;
+using namespace orbital_core;
 
-	double tt(double mjdUtc) { return mjdUtc + Convertors::utcToTdtSeconds(mjdUtc + 2400000.5) / 86400.0; }
-
-	std::string record(double mjd, double xp, double yp, double dut1, double dx = 1.0, double dy = -2.0,
-	                   char flag = 'I', bool offsets = true)
-	{
-		std::string line(185, ' ');
-		const auto field = [&](int start, int width, int precision, double value) {
-			std::ostringstream out;
-			out.imbue(std::locale::classic());
-			out << std::fixed << std::setprecision(precision) << std::setw(width) << value;
-			line.replace(start, width, out.str());
-		};
-		field(7, 8, 2, mjd);
-		field(18, 9, 6, xp);
-		field(37, 9, 6, yp);
-		field(58, 10, 7, dut1);
-		line[16] = line[57] = flag;
-		if (offsets) {
-			line[95] = flag;
-			field(97, 9, 3, dx);
-			field(116, 9, 3, dy);
-		}
-		return line;
+TEST(EarthOrientationTest, CachedPckPoleMatchesSpiceAcrossCoverageAndThreads)
+{
+	const Vec3D axis(0.0, 0.0, 1.0);
+	EarthPckPoleCache cache;
+	for (const auto* name : {"earth_predict.bpc", "earth_historic.bpc", "earth_latest.bpc"}) {
+		if (earthPckLoaded(name))
+			ASSERT_TRUE(cache.addFile(earthPckFilePath(name)));
 	}
-
-	class EarthOrientationTest : public ::testing::Test {
-	   protected:
-		void SetUp() override
-		{
-			directory = std::filesystem::temp_directory_path() /
-			            ("orbital-eop-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
-			ASSERT_TRUE(std::filesystem::create_directory(directory));
-			ASSERT_TRUE(std::filesystem::create_directory(directory / "earth_orientation"));
+	std::vector<double> epochs;
+	std::vector<Vec3D> reference;
+	for (double epoch = 39000.0; epoch < 88000.0; epoch += 7.25) {
+		Vec3D pole, velocity;
+		const bool expected = earthPckState(epoch, axis, pole, velocity);
+		Vec3D cached;
+		EXPECT_EQ(earthPckPole(epoch, cached), expected) << epoch;
+		if (expected) {
+			ASSERT_TRUE(cache.pole(epoch, cached)) << epoch;
+			EXPECT_LT((cached - pole).magnitude(), 1e-14) << epoch;
+			epochs.push_back(epoch);
+			reference.push_back(pole);
 		}
-
-		void TearDown() override
-		{
-			std::filesystem::remove(directory / "earth_orientation/finals2000A.all");
-			std::filesystem::remove(directory / "earth_orientation");
-			std::filesystem::remove(directory);
+	}
+	if (epochs.empty())
+		GTEST_SKIP() << "Earth PCK unavailable";
+	std::vector<double> edges;
+	for (const auto* name : {"earth_predict.bpc", "earth_historic.bpc", "earth_latest.bpc"}) {
+		if (!earthPckLoaded(name))
+			continue;
+		SpiceInt handle = 0;
+		dafopr_c(earthPckFilePath(name).string().c_str(), &handle);
+		ASSERT_FALSE(failed_c());
+		dafbfs_c(handle);
+		SpiceBoolean found = SPICEFALSE;
+		while (true) {
+			daffna_c(&found);
+			ASSERT_FALSE(failed_c());
+			if (!found)
+				break;
+			double descriptor[5]{}, bounds[2]{};
+			SpiceInt fields[5]{};
+			dafgs_c(descriptor);
+			dafus_c(descriptor, 2, 5, bounds, fields);
+			ASSERT_FALSE(failed_c());
+			if (fields[0] == 3000) {
+				edges.push_back(bounds[0]);
+				edges.push_back(bounds[1]);
+			}
 		}
-
-		void write(std::initializer_list<std::string> lines)
-		{
-			std::ofstream file(directory / "earth_orientation/finals2000A.all");
-			ASSERT_TRUE(file.is_open());
-			for (const auto& line : lines)
-				file << line << '\n';
+		dafcls_c(handle);
+		ASSERT_FALSE(failed_c());
+	}
+	for (const double edge : edges)
+		for (const double offset : {-1.0, -1e-6, 0.0, 1e-6, 1.0}) {
+			const double epoch = 51544.5 + (edge + offset) / Constants::SECONDS_PER_DAY;
+			Vec3D expected, velocity, actual;
+			const bool valid = earthPckState(epoch, axis, expected, velocity);
+			EXPECT_EQ(cache.pole(epoch, actual), valid) << epoch;
+			if (valid)
+				EXPECT_LT((actual - expected).magnitude(), 1e-14) << epoch;
 		}
+	std::vector<std::future<double>> workers;
+	for (int worker = 0; worker < 8; ++worker) {
+		workers.push_back(std::async(std::launch::async, [&cache, &epochs, &reference] {
+			double maxError = 0.0;
+			for (std::size_t i = 0; i < epochs.size(); ++i) {
+				Vec3D pole;
+				if (!cache.pole(epochs[i], pole))
+					return std::numeric_limits<double>::infinity();
+				maxError = std::max(maxError, (pole - reference[i]).magnitude());
+			}
+			return maxError;
+		}));
+	}
+	for (auto& worker : workers)
+		EXPECT_LT(worker.get(), 1e-14);
+}
 
-		std::filesystem::path directory;
+TEST(EarthOrientationTest, PckPoleCacheHandlesMissingAndInvalidInput)
+{
+	EarthPckPoleCache empty;
+	Vec3D pole;
+	EXPECT_FALSE(empty.pole(60000.0, pole));
+	EXPECT_FALSE(empty.pole(std::numeric_limits<double>::quiet_NaN(), pole));
+	(void)earthPckLoaded("earth_latest.bpc");
+	const auto missing = std::filesystem::temp_directory_path() / "trajecta-missing-pole-cache.bpc";
+	ASSERT_FALSE(std::filesystem::exists(missing));
+	EXPECT_FALSE(empty.addFile(missing));
+	EXPECT_FALSE(empty.pole(60000.0, pole));
+}
+
+TEST(EarthOrientationTest, PckPoleCacheRespectsUnsupportedSegmentPriority)
+{
+	(void)earthPckLoaded("earth_latest.bpc");
+	const auto directory = std::filesystem::temp_directory_path();
+	const auto supported = directory / "trajecta-test-pole-ecliptic.bpc";
+	const auto unsupported = directory / "trajecta-test-pole-equatorial.bpc";
+	ASSERT_FALSE(std::filesystem::exists(supported));
+	ASSERT_FALSE(std::filesystem::exists(unsupported));
+	const auto create = [](const std::filesystem::path& path, const char* frame) {
+		SpiceInt handle = 0;
+		pckopn_c(path.string().c_str(), "test", 0, &handle);
+		if (failed_c()) {
+			reset_c();
+			return false;
+		}
+		double coefficients[] = {0.3, 0.0, 0.4, 0.0, 0.5, 0.0};
+		pckw02_c(handle, 3000, frame, 0.0, 86400.0, "test", 86400.0, 1, 1, coefficients, 0.0);
+		const bool success = !failed_c();
+		if (!success)
+			reset_c();
+		pckcls_c(handle);
+		const bool closed = !failed_c();
+		if (!closed)
+			reset_c();
+		return success && closed;
 	};
+	ASSERT_TRUE(create(supported, "ECLIPJ2000"));
+	ASSERT_TRUE(create(unsupported, "J2000"));
+	EarthPckPoleCache cache;
+	EXPECT_TRUE(cache.addFile(supported));
+	Vec3D pole;
+	EXPECT_TRUE(cache.pole(51544.75, pole));
+	EXPECT_FALSE(cache.pole(51546.0, pole));
+	EXPECT_TRUE(cache.addFile(unsupported));
+	EXPECT_FALSE(cache.pole(51544.75, pole));
+	EXPECT_TRUE(std::filesystem::remove(supported));
+	EXPECT_TRUE(std::filesystem::remove(unsupported));
+}
 
-	TEST_F(EarthOrientationTest, FinalsUnitsAndExactEndpoints)
-	{
-		write({record(59169, .1, -.2, -.175), record(59170, .3, -.4, -.177, 3., -4., 'P')});
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
-		ASSERT_TRUE(table.isAvailable());
-		EXPECT_EQ(table.size(), 2u);
-		EXPECT_EQ(table.profile(), EarthOrientationProfile::IAU2000);
-		const auto first = table.lookupMjdTt(tt(59169));
-		const auto last = table.lookupMjdTt(tt(59170));
-		ASSERT_TRUE(first.valid && last.valid);
-		ASSERT_TRUE(first.poleOffsetsAvailable && last.poleOffsetsAvailable);
-		EXPECT_FALSE(last.extrapolated);
-		EXPECT_DOUBLE_EQ(first.xpRad, .1 * Constants::ARCSEC_RAD);
-		EXPECT_DOUBLE_EQ(first.ypRad, -.2 * Constants::ARCSEC_RAD);
-		EXPECT_DOUBLE_EQ(first.ttMinusUt1Seconds, 69.184 + .175);
-		EXPECT_DOUBLE_EQ(std::get<Iau2000PoleOffsets>(first.poleOffsets).dxRad, Constants::ARCSEC_RAD / 1000.);
-		EXPECT_DOUBLE_EQ(std::get<Iau2000PoleOffsets>(last.poleOffsets).dyRad, -4. * (Constants::ARCSEC_RAD / 1000.));
-	}
+TEST(EarthOrientationTest, PckForwardAndInverseAgree)
+{
+	constexpr double mjdTdb = 53398.0306038786;
+	const Vec3D fixed(0.4, -0.6, 0.2);
+	Vec3D inertial, velocity, recovered;
+	if (!earthPckState(mjdTdb, fixed, inertial, velocity))
+		GTEST_SKIP() << "Earth PCK unavailable at test epoch";
+	ASSERT_TRUE(earthPckToTerrestrial(mjdTdb, inertial, recovered));
+	EXPECT_LT((recovered - fixed).magnitude(), 1e-14);
+	Vec3D recoveredVelocity;
+	ASSERT_TRUE(earthPckToTerrestrialState(mjdTdb, inertial, velocity * (1.0 / 86400.0), recovered, recoveredVelocity));
+	EXPECT_LT((recovered - fixed).magnitude(), 1e-14);
+	EXPECT_LT(recoveredVelocity.magnitude(), 1e-18);
+	const auto fixedVelocity = hazard::bodyFixedVelocityMjd(hazard::Planet::Earth, Helpers::ecvToEcl(inertial),
+	                                                        Helpers::ecvToEcl(velocity) * (1.0 / 86400.0), mjdTdb);
+	EXPECT_LT(fixedVelocity.magnitude(), 1e-18);
+	const auto ecliptic = Helpers::ecvToEcl(inertial);
+	const auto body = hazard::icrfToBodyFixedMjd(hazard::Planet::Earth, ecliptic, mjdTdb);
+	EXPECT_LT((body - fixed).magnitude(), 1e-14);
+	const auto transform = hazard::bodyFixedTransformMjd(hazard::Planet::Earth, mjdTdb);
+	ASSERT_TRUE(transform.valid);
+	EXPECT_EQ(transform.frame, "ITRF93");
+}
 
-	TEST_F(EarthOrientationTest, InterpolatesInTtWithoutLeapSecondRamp)
-	{
-		write({record(57753, .1, .2, -.4), record(57754, .3, .4, .6)});
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
-		const auto sample = table.lookupMjdTt((tt(57753) + tt(57754)) / 2.);
-		ASSERT_TRUE(sample.valid);
-		EXPECT_NEAR(sample.ttMinusUt1Seconds, 68.584, 3e-14);
-		EXPECT_NEAR(sample.xpRad / Constants::ARCSEC_RAD, .2, 1e-11);
-		EXPECT_NEAR(sample.ypRad / Constants::ARCSEC_RAD, .3, 1e-11);
-	}
+TEST(EarthOrientationTest, PckValidationAndCoverageBoundaries)
+{
+	const auto directory = getExecutableDir() / "earth_orientation";
+	const auto historic = directory / "earth_historic.bpc";
+	if (!std::filesystem::exists(historic))
+		GTEST_SKIP() << "Earth PCK unavailable";
+	EXPECT_TRUE(validateEarthPck(historic));
+	EXPECT_FALSE(validateEarthPck(directory / "missing-test.bpc"));
+	Vec3D position, velocity;
+	const Vec3D fixed(0.5, 0.3, 0.4);
+	EXPECT_FALSE(earthPckState(37683.0, fixed, position, velocity));
+	EXPECT_TRUE(earthPckState(37685.0, fixed, position, velocity));
+	EXPECT_TRUE(earthPckState(61446.0, fixed, position, velocity));
+	EXPECT_FALSE(earthPckState(234166.0, fixed, position, velocity));
+	const obs::ObserverData station{10.0, 0.8, 0.6, "test"};
+	EXPECT_THROW((void)obs::groundObserverStateEclAuMjd(234166.0, 234166.0, station), std::runtime_error);
+	EXPECT_FALSE(hazard::bodyFixedTransformMjd(hazard::Planet::Earth, 234166.0).valid);
+}
 
-	TEST_F(EarthOrientationTest, OpticalClockIsIndependentOfTheSelectedPoleProfile)
-	{
-		write({record(59169, .1, .2, -.175), record(59170, .2, .3, -.177)});
-		const double mjdTt = tt(59169.5);
-		for (const auto profile :
-		     {EarthOrientationProfile::IAU1980, EarthOrientationProfile::IAU2000, EarthOrientationProfile::FullC04}) {
-			const EarthOrientation table(directory, profile);
-			double mjdUt1 = 59169.5;
-			ASSERT_TRUE(table.ttToUt1Mjd(mjdTt, mjdUt1));
-			EXPECT_NEAR((mjdUt1 - 59169.5) * 86400.0, -.176, 1e-6);
-			EXPECT_EQ(table.lookupMjdTt(mjdTt).valid, profile == EarthOrientationProfile::IAU2000);
-		}
-	}
+TEST(EarthOrientationTest, C04ClockDoesNotExtrapolateOutsideObservedCoverage)
+{
+	const auto data = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path() / "data";
+	const EarthOrientation table(data);
+	if (!table.isAvailable())
+		GTEST_SKIP() << "C04 data unavailable";
+	constexpr double mjdTt = 59169.5;
+	ASSERT_TRUE(table.coversObservedMjdTt(mjdTt));
+	double ut1 = 0.0, seconds = 0.0;
+	ASSERT_TRUE(table.ttToUt1Mjd(mjdTt, ut1));
+	ASSERT_TRUE(table.ut1ToTtSeconds(ut1, seconds));
+	EXPECT_NEAR(ut1 + seconds / 86400.0, mjdTt, 1e-11);
+	const double dailyTt = 59169.0 + 69.184 / 86400.0;
+	ASSERT_TRUE(table.ttToUt1Mjd(dailyTt, ut1));
+	EXPECT_NEAR((dailyTt - ut1) * 86400.0, 69.184 + 0.1790137, 1e-6);
+	double unchanged = 123.0;
+	EXPECT_FALSE(table.ttToUt1Mjd(100000.0, unchanged));
+	EXPECT_DOUBLE_EQ(unchanged, 123.0);
+}
 
-	TEST_F(EarthOrientationTest, OpticalClockIteratesAtTheUt1Estimate)
-	{
-		write({record(59169, .1, .2, -.1), record(59170, .1, .2, -.9)});
-		const EarthOrientation table(directory);
-		const double mjdTt = tt(59169.5);
-		double mjdUt1 = 59169.5;
-		ASSERT_TRUE(table.ttToUt1Mjd(mjdTt, mjdUt1));
-		const double offset = 69.284 + .8 * (mjdUt1 - 59169.);
-		EXPECT_DOUBLE_EQ(mjdUt1, mjdTt - offset / 86400.0);
-		const double singlePass = mjdTt - (69.284 + .8 * (mjdTt - 59169.)) / 86400.0;
-		EXPECT_GT(std::abs(mjdUt1 - singlePass) * 86400.0, .0006);
-	}
+TEST(EarthOrientationTest, OffsetTypeSelectsTheRotationWithoutImplicitConversion)
+{
+	constexpr double epoch = 59169.5;
+	EarthOrientationSample base;
+	base.poleOffsets = Iau2000PoleOffsets{};
+	const auto p0 = EarthRotation::WithEop::poleEquatorialMjd(epoch, base);
+	auto shifted = base;
+	constexpr double dx = 1e-8, dy = -2e-8;
+	shifted.poleOffsets = Iau2000PoleOffsets{dx, dy};
+	const auto p1 = EarthRotation::WithEop::poleEquatorialMjd(epoch, shifted);
+	EXPECT_NEAR(p1.x - p0.x, dx, 1e-15);
+	EXPECT_NEAR(p1.y - p0.y, dy, 1e-15);
+	EXPECT_NEAR(p1.magnitude(), 1., 1e-14);
+	shifted.poleOffsets = Iau1980PoleOffsets{dx, dy};
+	const auto other = EarthRotation::WithEop::poleEquatorialMjd(epoch, shifted);
+	EXPECT_GT((other - p1).magnitude(), 1e-9);
+}
 
-	TEST_F(EarthOrientationTest, OpticalClockPreservesContinuousOffsetAcrossLeapSecond)
-	{
-		write({record(57753, .1, .2, -.4), record(57754, .1, .2, .6), record(57755, .1, .2, .6)});
-		const EarthOrientation table(directory);
-		for (const double mjdUtc : {57753.5, 57754., 57754.5}) {
-			const double mjdTt = tt(mjdUtc);
-			double mjdUt1 = mjdUtc;
-			ASSERT_TRUE(table.ttToUt1Mjd(mjdTt, mjdUt1));
-			EXPECT_DOUBLE_EQ(mjdUt1, mjdTt - 68.584 / 86400.0);
-		}
-	}
+TEST(EarthOrientationTest, MissingFallbackDoesNotInventObserverOrientation)
+{
+	const auto missing = std::filesystem::temp_directory_path() / "trajecta-missing-orientation-test";
+	ASSERT_FALSE(std::filesystem::exists(missing));
+	const EarthOrientation orientation(missing);
+	const obs::ObserverData station{10.0, 0.8, 0.6, "test"};
+	EXPECT_THROW((void)obs::groundObserverStateEclAuMjd(59169.5, 59169.5, station, orientation), std::runtime_error);
+}
 
-	TEST_F(EarthOrientationTest, OpticalClockHandlesTtJustBeyondTheLastDailyEpoch)
-	{
-		write({record(59169, .1, .2, -.175), record(59170, .1, .2, -.175)});
-		const EarthOrientation table(directory);
-		double mjdUt1 = 59170.;
-		ASSERT_TRUE(table.ttToUt1Mjd(tt(59170.), mjdUt1));
-		EXPECT_DOUBLE_EQ(mjdUt1, tt(59170.) - (69.184 + .175) / 86400.0);
-	}
+TEST(EarthOrientationTest, MissingPckAndTimeDataReportsUnavailable)
+{
+	if (earthPckLoaded("earth_latest.bpc") || earthPckLoaded("earth_historic.bpc") ||
+	    earthPckLoaded("earth_predict.bpc"))
+		GTEST_SKIP() << "Run in a directory without Earth orientation data";
+	const obs::ObserverData station{10.0, 0.8, 0.6, "test"};
+	constexpr double epoch = 61446.0;
+	EXPECT_THROW((void)obs::groundObserverStateEclAuMjd(epoch, epoch, station), std::runtime_error);
+	EXPECT_THROW((void)obs::radarStationStateEclAuMjd(epoch, epoch, station), std::runtime_error);
+	EXPECT_FALSE(hazard::bodyFixedTransformMjd(hazard::Planet::Earth, epoch).valid);
+}
 
-	TEST_F(EarthOrientationTest, UnavailableOpticalClockLeavesCallerFallbackUnchanged)
-	{
-		double mjdUt1 = 59169.5;
-		const EarthOrientation missing(directory);
-		EXPECT_FALSE(missing.ttToUt1Mjd(tt(59169.5), mjdUt1));
-		EXPECT_DOUBLE_EQ(mjdUt1, 59169.5);
+TEST(EarthOrientationTest, MissingRecentPckUsesRemainingCoverage)
+{
+	if (earthPckLoaded("earth_latest.bpc") || !earthPckLoaded("earth_historic.bpc") ||
+	    !earthPckLoaded("earth_predict.bpc"))
+		GTEST_SKIP() << "Requires historic and predictive PCK without recent PCK";
+	Vec3D position, velocity;
+	const Vec3D fixed(0.5, 0.3, 0.4);
+	EXPECT_TRUE(earthPckState(61041.0, fixed, position, velocity));
+	EXPECT_TRUE(earthPckState(62502.0, fixed, position, velocity));
+}
 
-		write({record(59169, .1, .2, -.1), record(59171, .1, .2, -.1)});
-		const EarthOrientation table(directory);
-		for (const double epoch : {tt(59168.), tt(59170.), tt(59172.), std::numeric_limits<double>::quiet_NaN(),
-		                           std::numeric_limits<double>::infinity()}) {
-			EXPECT_FALSE(table.ttToUt1Mjd(epoch, mjdUt1));
-			EXPECT_DOUBLE_EQ(mjdUt1, 59169.5);
-		}
-	}
-
-	TEST_F(EarthOrientationTest, PublishedRecordUsesBulletinANotBulletinB)
-	{
-		write(
-		    {"201116 59169.00 I  0.132898 0.000018  0.288443 0.000042  I-0.1790143 0.0000066  0.2295 0.0042  I    "
-		     "-0.026   "
-		     " "
-		     "0.024    -0.006    0.057  0.132881  0.288419 -0.1790137     0.031     0.026  "});
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
-		const auto sample = table.lookupMjdTt(tt(59169));
-		ASSERT_TRUE(sample.valid && sample.poleOffsetsAvailable);
-		EXPECT_DOUBLE_EQ(sample.xpRad, .132898 * Constants::ARCSEC_RAD);
-		EXPECT_DOUBLE_EQ(sample.ypRad, .288443 * Constants::ARCSEC_RAD);
-		EXPECT_DOUBLE_EQ(sample.ttMinusUt1Seconds, 69.184 + .1790143);
-		const auto& offsets = std::get<Iau2000PoleOffsets>(sample.poleOffsets);
-		EXPECT_DOUBLE_EQ(offsets.dxRad, -.026 * (Constants::ARCSEC_RAD / 1000.));
-		EXPECT_DOUBLE_EQ(offsets.dyRad, -.006 * (Constants::ARCSEC_RAD / 1000.));
-	}
-
-	TEST_F(EarthOrientationTest, MissingOffsetsDoNotDiscardRotationData)
-	{
-		write({record(59169, .1, .2, -.1), record(59170, .2, .3, -.2, 0, 0, 'P', false)});
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
-		const auto sample = table.lookupMjdTt((tt(59169) + tt(59170)) / 2.);
-		ASSERT_TRUE(sample.valid);
-		EXPECT_FALSE(sample.poleOffsetsAvailable);
-		EXPECT_DOUBLE_EQ(std::get<Iau2000PoleOffsets>(sample.poleOffsets).dxRad, 0.);
-		EXPECT_DOUBLE_EQ(std::get<Iau2000PoleOffsets>(sample.poleOffsets).dyRad, 0.);
-		EXPECT_GT(sample.xpRad, 0.);
-		EXPECT_TRUE(table.lookupMjdTt(tt(59169)).poleOffsetsAvailable);
-	}
-
-	TEST_F(EarthOrientationTest, MissingMandatoryFieldsAndNonfiniteValuesAreSkipped)
-	{
-		auto missing = record(59169, .1, .2, -.1);
-		missing.replace(58, 10, 10, ' ');
-		auto invalid = record(59170, .1, .2, -.1);
-		invalid.replace(18, 9, "      nan");
-		write({"header", missing, invalid, record(59171, .1, .2, -.1)});
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
-		EXPECT_EQ(table.size(), 1u);
-		EXPECT_TRUE(table.lookupMjdTt(tt(59171)).valid);
-		EXPECT_FALSE(table.lookupMjdTt(tt(59170)).valid);
-	}
-
-	TEST_F(EarthOrientationTest, DuplicateOrUnsortedEpochsRejectTheTable)
-	{
-		for (double last : {59169., 59168.}) {
-			write({record(59169, .1, .2, -.1), record(last, .1, .2, -.1)});
-			const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
-			EXPECT_FALSE(table.isAvailable());
-			EXPECT_EQ(table.size(), 0u);
-		}
-	}
-
-	TEST_F(EarthOrientationTest, DoesNotInterpolateAcrossMissingDays)
-	{
-		write({record(59169, .1, .2, -.1), record(59171, .1, .2, -.1)});
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
-		EXPECT_FALSE(table.lookupMjdTt(tt(59170)).valid);
-		EXPECT_TRUE(table.lookupMjdTt(tt(59169)).valid);
-		EXPECT_TRUE(table.lookupMjdTt(tt(59171)).valid);
-	}
-
-	TEST_F(EarthOrientationTest, OutsideFinalsCoverageUsesExplicitZeroPoleFallback)
-	{
-		write({record(59169, .1, .2, -.1), record(59170, .1, .2, -.1)});
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
-		for (double epoch : {59168., 59171., 67898.}) {
-			const auto sample = table.lookupMjdTt(tt(epoch));
-			EXPECT_FALSE(sample.valid);
-			EXPECT_TRUE(sample.extrapolated);
-			EXPECT_FALSE(sample.poleOffsetsAvailable);
-			EXPECT_DOUBLE_EQ(sample.xpRad, 0.);
-			EXPECT_DOUBLE_EQ(sample.ypRad, 0.);
-			EXPECT_DOUBLE_EQ(sample.ttMinusUt1Seconds, Convertors::utcToTdtSeconds(epoch + 2400000.5));
-			EXPECT_DOUBLE_EQ(std::get<Iau2000PoleOffsets>(sample.poleOffsets).dxRad, 0.);
-		}
-	}
-
-	TEST_F(EarthOrientationTest, UnavailableAndInvalidEpochsKeepTheSelectedOffsetType)
-	{
-		for (const auto profile : {EarthOrientationProfile::IAU1980, EarthOrientationProfile::IAU2000}) {
-			const EarthOrientation table(directory, profile);
-			ASSERT_FALSE(table.isAvailable());
-			for (const double epoch :
-			     {59169., std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::infinity()}) {
-				const auto sample = table.lookupMjdTt(epoch);
-				EXPECT_FALSE(sample.valid);
-				EXPECT_FALSE(sample.extrapolated);
-				EXPECT_TRUE(std::isfinite(sample.ttMinusUt1Seconds));
-				EXPECT_EQ(std::holds_alternative<Iau1980PoleOffsets>(sample.poleOffsets),
-				          profile == EarthOrientationProfile::IAU1980);
-			}
-		}
-	}
-
-	TEST_F(EarthOrientationTest, ProfilesCannotSilentlyFallBackToAnotherSource)
-	{
-		write({record(59169, .1, .2, -.1)});
-		const EarthOrientation defaultProfile(directory);
-		EXPECT_EQ(defaultProfile.profile(), EarthOrientationProfile::IAU1980);
-		EXPECT_FALSE(defaultProfile.isAvailable());
-		EXPECT_THROW(EarthOrientation(directory, static_cast<EarthOrientationProfile>(-1)), std::invalid_argument);
-	}
-
-	TEST_F(EarthOrientationTest, OffsetTypeSelectsTheRotationWithoutImplicitConversion)
-	{
-		constexpr double epoch = 59169.5;
-		EarthOrientationSample base;
-		base.poleOffsets = Iau2000PoleOffsets{};
-		const auto p0 = EarthRotation::WithEop::poleEquatorialMjd(epoch, base);
-		auto shifted = base;
-		constexpr double dx = 1e-8, dy = -2e-8;
-		shifted.poleOffsets = Iau2000PoleOffsets{dx, dy};
-		const auto p1 = EarthRotation::WithEop::poleEquatorialMjd(epoch, shifted);
-		EXPECT_NEAR(p1.x - p0.x, dx, 1e-15);
-		EXPECT_NEAR(p1.y - p0.y, dy, 1e-15);
-		EXPECT_NEAR(p1.magnitude(), 1., 1e-14);
-		shifted.poleOffsets = Iau1980PoleOffsets{dx, dy};
-		const auto legacy = EarthRotation::WithEop::poleEquatorialMjd(epoch, shifted);
-		EXPECT_GT((legacy - p1).magnitude(), 1e-9);
-	}
-
-	TEST(EarthOrientationObserverTest, ProductionChainsRetainThe2020VvUt1Correction)
-	{
-		struct RestoreEnvironment {
-			std::filesystem::path directory = getExecutableDir();
-			IEphemerisSource* source = getDefaultEphemerisSource();
-
-			~RestoreEnvironment()
-			{
-				setDefaultEphemerisSource(source);
-				getExecutableDir() = directory;
-			}
-		} restore;
-
-		getExecutableDir() = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path() / "data";
-		DE440Source source;
-		ASSERT_TRUE(source.isAvailable());
-		setDefaultEphemerisSource(&source);
-
-		constexpr double mjdUtc = 59139.214515046297;
-		const double mjdTt = tt(mjdUtc);
-		double mjdUt1 = mjdUtc;
-		ASSERT_TRUE(earthOrientation().ttToUt1Mjd(mjdTt, mjdUt1));
-		EXPECT_DOUBLE_EQ(mjdUt1, 59139.214513060193);
-		obs::ParsedObservation parsed;
-		parsed.jd = mjdUtc + 2400000.5;
-		parsed.hasSplitUtc = true;
-		parsed.utcMjdDay = 59139;
-		parsed.utcSecondsOfDay = (mjdUtc - parsed.utcMjdDay) * 86400.0;
-		parsed.obsCode = "F52";
-		parsed.magnitudeText = "20.0";
-		const ObsNode node(parsed, ObservatoryRecord{"F52", 203.74409, .936239, .351545});
-		// Allow sub-millimetre compiler-dependent rounding in the rotation chain.
-		EXPECT_NEAR(node.LST, 5.3605187722485672, 1e-11);
-
-		const Vec3D offsetEclAu(2.3981680378233689e-5, -2.3353858328807347e-5, 2.6409633567564912e-5);
-		const Vec3D expectedBodyAu(-3.6537912322656392e-5, -1.6072567871481898e-5, 1.4988194117280977e-5);
-		const auto bodyKm = hazard::icrfToBodyFixedMjd(hazard::Planet::Earth, offsetEclAu * 149597870.7,
-		                                               time::toMjdTdb(mjdTt, time::Scale::TT));
-		EXPECT_LT((bodyKm - expectedBodyAu * 149597870.7).magnitude(), 5e-5);
-	}
-
-}  // namespace
+TEST(EarthOrientationTest, MissingPredictivePckReportsUncoveredFuture)
+{
+	if (earthPckLoaded("earth_predict.bpc") || !earthPckLoaded("earth_latest.bpc"))
+		GTEST_SKIP() << "Requires recent PCK without predictive PCK";
+	constexpr double epoch = 62502.0;
+	const obs::ObserverData station{10.0, 0.8, 0.6, "test"};
+	EXPECT_THROW((void)obs::groundObserverStateEclAuMjd(epoch, epoch, station), std::runtime_error);
+	EXPECT_FALSE(hazard::bodyFixedTransformMjd(hazard::Planet::Earth, epoch).valid);
+}

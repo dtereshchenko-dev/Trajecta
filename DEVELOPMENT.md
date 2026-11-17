@@ -215,6 +215,7 @@ of the asteroid's orbital impact probability. See the
   the numerical libraries do not depend on Qt.
 - [**vcpkg**](https://vcpkg.io/) for the libraries below:
   - Eigen 3.3+ within the 3.x series; the Linux preset points to Eigen 3.4.1
+  - CSPICE for Earth orientation PCKs (`vcpkg install cspice:x64-windows` on Windows)
   - nlohmann_json
   - libcurl >= 7.85 (StrewnField)
   - GoogleTest (tests only)
@@ -227,16 +228,24 @@ The ERFA subset and HTML viewer libraries are bundled with their license notices
 
 ## Runtime data files
 
-Large ephemeris and catalog-bias files are ignored by Git. The current CMake
-deployment copies the required files below, so they must exist under `data/`
-when building targets that deploy runtime data. At runtime, their necessity
-depends on the selected calculation and observation types.
+Large ephemeris, catalog-bias and binary PCK files are ignored by Git. Supply
+the data under `data/` when building targets that deploy runtime data. The
+release installer requires all three PCK files. Production builds use PCK, C04
+and `ET-UT.dat` from the user data directory: `%LOCALAPPDATA%/Trajecta/Trajecta/earth_orientation`
+on Windows and `${XDG_DATA_HOME:-$HOME/.local/share}/Trajecta/Trajecta/earth_orientation`
+on Linux. The installer places missing files there. For a development build
+without the installer, copy the three PCK files, both `eopc04` files and `ET-UT.dat` from
+`data/earth_orientation` to that directory.
+At runtime, the data needed depend on the selected calculation and observations.
 
 | File | Size | Source |
 |---|---|---|
 | `data/linux_p1550p2650.440` | 97.5 MiB | [JPL DE440 binary](https://ssd.jpl.nasa.gov/ftp/eph/planets/Linux/de440/linux_p1550p2650.440) |
 | `data/debias/efcc18.dat` | 35.4 MiB | [JPL 2018 debias archive](https://ssd.jpl.nasa.gov/ftp/ssd/debias/debias_2018.tgz); extract `bias.dat` as `efcc18.dat` |
 | `data/debias/fcct14.dat` | 25.9 MiB | [JPL 2014 debias archive](https://ssd.jpl.nasa.gov/ftp/ssd/debias/debias_2014.tgz); extract `bias.dat` as `fcct14.dat` |
+| `data/earth_orientation/earth_historic.bpc` | 11.7 MiB | [NAIF Earth PCKs](https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/), historical |
+| `data/earth_orientation/earth_latest.bpc` | 4.9 MiB | NAIF Earth PCKs, recent |
+| `data/earth_orientation/earth_predict.bpc` | 18.3 MiB | NAIF Earth PCKs, long-term prediction |
 
 SB441-N16 is optional and is not deployed by the build. The application can
 download [JPL SB441-N16](https://ssd.jpl.nasa.gov/ftp/eph/small_bodies/asteroids_de441/sb441-n16.bsp)
@@ -248,8 +257,8 @@ A previously installed file is not removed by a build.
 The repository includes `OBSCODE.dat`, `RADCODE.dat`, `weights/vfcc17.rules`,
 the test snapshot and the EOP series in `data/earth_orientation/`.
 See the [EOP source notes](data/earth_orientation/README.md) for the bundled
-series and their interpretation. Observation examples and EN/RU documentation
-are under `data/examples/` and `data/docs/`.
+series and their interpretation. Observation examples are under `data/examples/`;
+the documentation site source is under `wiki/`.
 
 `OBSCODE.dat` is required to load observations. `RADCODE.dat` is needed for
 radar observations, not optical-only fits; it is the project's converted radar
@@ -266,17 +275,21 @@ At runtime the new paths take precedence, with `debias_2018/bias.dat` and
 the current implementation falls back to 1 arcsecond; a missing debias table
 leaves observations uncorrected.
 
-`finals2000A.all` can be retrieved from [USNO Bulletin A](https://maia.usno.navy.mil/ser7/finals2000A.all).
-It provides the UT1 data used by the optical clock. C04 and its consistency
-file support the Earth-pole model; historical `ET-UT.dat` provides another
-time-data range. Missing files or dates outside their coverage can cause
-fallbacks; see the EOP notes for details. These files have different roles and
-must not be substituted by simply renaming another IERS product.
+Earth orientation PCK files are provided by [NAIF](https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/).
+The CI workflows download specific versions and verify their SHA-256 hashes;
+see the [source notes](data/earth_orientation/README.md) for the file names.
+PCK provides the terrestrial-frame transformation, not a separate UT1 time
+conversion. C04 and its consistency file provide the Earth-pole fallback when PCK is unavailable;
+observed C04 and historical `ET-UT.dat` provide TT–UT1 data for their
+respective ranges. Missing files or dates outside coverage can cause fallbacks
+or errors. These files have different roles and must not be substituted by
+simply renaming another IERS product.
 
-The application can download SB441-N16. At startup, it checks the optical and
-radar observatory catalogues in the background and offers available updates in
-Data sources; it does not replace them without confirmation. Files already
-loaded by a running process require a restart after replacement.
+The application can download SB441-N16. It checks the optical and radar
+observatory catalogues in the background, and checks the three PCK sources
+when Data sources opens or is refreshed. PCK files are downloaded individually
+on request, validated and installed in the user data directory on the next
+start. Both the application and CLI read Earth-orientation and historical time data from the user directory.
 
 For the debias tables currently used by the project, SHA-256 after
 extraction is `3ad243953731218565cbb25937e87803165ac28e4c948f06e52c6f8b9e1af887`

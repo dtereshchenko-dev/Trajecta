@@ -1,13 +1,15 @@
 # Body-Fixed Orientation Reference
 
-`BodyFixedFrameTest.cpp` checks the shared body-fixed transform against
-independent CSPICE matrices. The production code does not depend on SPICE,
-Python, network access, or the downloaded reference kernels.
+`BodyFixedFrameTest.cpp` checks planetary and lunar body-fixed transforms
+against independent CSPICE matrices. The test fixture does not require Python,
+network access or the downloaded reference kernels. Current Earth orientation
+uses CSPICE and separate Earth PCK files.
 
 ## Models
 
-- Earth retains the existing optical UT1/GAST transformation, without polar
-  motion. This change does not replace it with SPICE's `IAU_EARTH`.
+- Earth uses binary PCK ITRF93 when covered. The IAU 1976/1980 UT1/GAST
+  transformation without polar motion remains a fallback when time data cover
+  the epoch. Earth is not part of the 56-matrix fixture described below.
 - Mercury, Venus, Mars, Jupiter, Saturn, Uranus and Neptune use the complete
   pole and prime-meridian model from NAIF `pck00011.tpc`, including periodic
   terms. Coefficients are generated into `src/hazard/IauRotationData.h`.
@@ -17,9 +19,8 @@ Python, network access, or the downloaded reference kernels.
   Missing librations or an unsupported ephemeris version produce an invalid
   transform rather than silently selecting an approximate lunar orientation.
 
-The public MJD entry points take TT; the lunar ephemeris query explicitly takes
-TDB. Matrices map equatorial J2000 vectors to body-fixed vectors. The existing
-ecliptic-vector wrapper remains available. Latitudes/longitudes use the
+The public MJD entry points take TDB. Matrices map equatorial J2000 vectors to
+body-fixed vectors. The ecliptic-vector wrapper remains available. Latitudes/longitudes use the
 selected reference surface, with east-positive longitude.
 
 ## Reference Data
@@ -42,7 +43,8 @@ libration queries and preservation of the ephemeris position cache.
 
 ## Verification on 2026-10-20
 
-Evidence: `build/body-orientation-20261020/`.
+These results describe the configuration used on that date, before the Earth
+PCK transition. Evidence: `build/body-orientation-20261020/`.
 
 - 100 selected Core tests passed, including all five `BodyFixedFrame` tests.
 - Lunar MC control: changing libration angles changes longitude but leaves

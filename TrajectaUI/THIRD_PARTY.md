@@ -77,14 +77,18 @@ the exact modules and binaries shipped.
   later version" clause of the original).
 
 ## Astronomical Data and Services
+- **CSPICE:** NAIF library used to read Earth orientation PCKs. See the
+  accompanying `cspice.txt` notice where packaged and [NAIF's rules for
+  SPICE use and redistribution](https://naif.jpl.nasa.gov/naif/rules.html).
+  SPICE is subject to its own terms, separate from Trajecta's GPL license.
 - **SB441-N16:** Optional JPL small-body ephemeris used for massive-asteroid
   perturbations. Source: https://ssd.jpl.nasa.gov/planets/eph_export.html
-- **Earth orientation and time:** `finals2000A.all` from the IERS Rapid Service
-  / Prediction Center, C04 and its consistency data, and historical ET-UT data.
+- **Earth orientation and time:** NAIF Earth orientation binary PCKs, C04 and
+  its consistency data, and historical ET-UT data.
   See `data/earth_orientation/README.md` in the source tree for file sources,
-  conventions, coverage and fallbacks. Optical timing uses UT1 data; the radar
-  observation model also uses Earth-orientation data. The Earth zonal force
-  uses the C04-based pole orientation when Earth-orientation data are available.
+  conventions, coverage and fallbacks. Station geometry and the Earth zonal
+  force use PCK orientation when available; explicit UT1 conversion uses the
+  available time data. The zonal force falls back to C04 outside PCK coverage.
 - **Astrometric catalog debias tables:** JPL-hosted catalogue corrections used
   when debiasing is enabled. Source: https://ssd.jpl.nasa.gov/ftp/ssd/debias/
 - **Observatory data:** Optical station information from the MPC and a local

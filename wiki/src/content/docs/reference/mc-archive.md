@@ -60,7 +60,7 @@ recorded in `time_scale`, `frame` and `state_units`.
 | `start`, `end` | Inclusive search interval, in MJD TDB. |
 | `requested`, `seed`, `workers`, `integrator` | Sampling and propagation settings. |
 | `earth_frame`, `body_fixed_frame`, `body_fixed_model` | Identifiers for the saved Earth and target-body frame models. |
-| `forces` | `step_days`, `planet_mask`, `sb441`, `target_naif_id` and `interior_mass_policy` from the effective force settings. |
+| `forces` | Effective propagation settings: `step_days`, `planet_mask`, `sb441`, `relativity`, `sun_j2`, `earth_j2`, `earth_j3`, `earth_j4`, `earth_rotating_pole`, `target_naif_id` and `interior_mass_policy`. |
 | `weight_profile`, `use_weights`, `accepted_indices` | Fit weighting settings and the indices of observations accepted for the source fit. |
 | `fit_parameter_covariance` | The source fit's objective-scaled parameter covariance, serialized as rows. It includes correlations between the Cartesian state and fitted non-gravitational parameters, when present. |
 | `event_grouping`, `event_max_gap_days` | The convention and maximum consecutive-crossing gap used to group events for presentation. |
@@ -68,7 +68,13 @@ recorded in `time_scale`, `frame` and `state_units`.
 Enum values such as `target`, `weight_profile` and force-policy codes are
 integers, not descriptive names; their definitions are in the corresponding
 OrbitalCore headers. The force fields do not by themselves identify every
-external data file used in a run.
+external data file used in a run. The frame and model names do not record
+the hashes of the PCK files used for the calculation.
+
+The `relativity` field is `full_eih`, `sun_outer_eih` or `off`. The Earth-pole
+field selects the pole for the Earth zonal terms, not the coordinate frame for
+boundary crossings. Archives created before these settings were added may not
+contain the corresponding fields.
 
 ### Status and results
 
@@ -122,6 +128,9 @@ successful ensemble for Earth at the 100 km boundary, with at least one valid
 crossing and a compatible saved Earth-orientation model. Physical misses are
 allowed; incomplete or failed trials are not. The application groups valid
 crossings into events and uses the selected event for the atmospheric run.
+Compatibility is checked against the saved frame and model names, not the
+hashes of the underlying PCK files. Keep track of the files used if the orbital
+and atmospheric calculations need to be reproduced later.
 
 The selected crossing positions and velocities are transformed into ECEF; the
 velocity conversion includes the time derivative of the rotating frame. The
@@ -171,13 +180,6 @@ capture the prepared inputs and configuration; `manifest.json` and
 When available, `maps/field.html` displays the report, while the other map
 files contain the numerical density, contours and metadata. See
 [Atmospheric Monte Carlo](../../guide/atmospheric-mc/) for the report.
-
-## Historical handoff
-
-The former manifest/request/entries documentation describes a different,
-historical workflow, not the current Risk Monitor archive. StrewnField still
-contains a separate `prepareAtmosphericJob` function that reads such an
-archive with its own validation, separately from the desktop workflow.
 
 The implementation described here is in
 `OrbitalCore/src/export/IntervalMcArchive.cpp`,

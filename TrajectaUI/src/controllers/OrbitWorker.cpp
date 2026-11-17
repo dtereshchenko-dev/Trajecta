@@ -6,6 +6,7 @@
 
 #include <QCoreApplication>
 #include <QFileInfo>
+#include <QSettings>
 
 #include <cmath>
 #include <cstdint>
@@ -23,6 +24,39 @@ namespace {
 		if (!std::isfinite(stepDays) || stepDays < kMinSaneNBodyStepDays)
 			return kDefaultNBodyStepDays;
 		return stepDays;
+	}
+
+	void saveSettingsSnapshot(const QString& path, const orbital_core::FitConfig& config, bool debiasEnabled)
+	{
+		QSettings snapshot(path, QSettings::IniFormat);
+		snapshot.setFallbacksEnabled(false);
+		snapshot.clear();
+		snapshot.setValue("integrator/nBodyPropagation", config.nbody.enabled);
+		snapshot.setValue("integrator/initialStepDays", config.nbody.stepSize);
+		snapshot.setValue("perturbations/planetMask", static_cast<uint>(config.nbody.planetMask));
+		snapshot.setValue("perturbations/useSb441", config.nbody.useSb441);
+		snapshot.setValue("forces/relativityMode", static_cast<int>(config.nbody.forceModel.relativity));
+		snapshot.setValue("forces/earthJ2", config.nbody.forceModel.earthJ2);
+		snapshot.setValue("forces/earthJ3", config.nbody.forceModel.earthJ3);
+		snapshot.setValue("forces/earthJ4", config.nbody.forceModel.earthJ4);
+		snapshot.setValue("forces/rotatingEarthPole", config.nbody.forceModel.rotatingEarthPole);
+		snapshot.setValue("non-gravitational/enabled", config.nonGrav.enabled);
+		snapshot.setValue("non-gravitational/model", static_cast<int>(config.nonGrav.model));
+		snapshot.setValue("non-gravitational/solveMask", static_cast<int>(config.nonGrav.solveMask));
+		snapshot.setValue("fit/useWeights", config.useWeights);
+		snapshot.setValue("fit/observerSigmas", config.obsWeighting.useObserverSigmas);
+		snapshot.setValue("fit/timingEnabled", config.obsWeighting.timingEnabled());
+		snapshot.setValue("fit/debiasEnabled", debiasEnabled);
+		snapshot.setValue("fit/weightProfile", static_cast<int>(config.weightProfile));
+		snapshot.setValue("fit/sigmaClipEnabled", config.sigmaClip.enabled);
+		snapshot.setValue("fit/sigmaClipThreshold", config.sigmaClip.thresholdNSigma);
+		snapshot.setValue("photometry/asteroidG", config.photometry.asteroidG);
+		snapshot.setValue("photometry/cometK1", config.photometry.cometK1);
+		snapshot.setValue("photometry/cometK2", config.photometry.cometK2);
+		snapshot.setValue("photometry/nuclearPhaseCoefficient", config.photometry.cometNuclearPhaseCoefficient);
+		snapshot.sync();
+		if (snapshot.status() != QSettings::NoError)
+			throw std::runtime_error("Could not save the settings snapshot with the solution");
 	}
 
 }  // namespace
@@ -47,8 +81,9 @@ orbital_core::FitConfig OrbitWorker::makeFitConfig(const OptimizationSettings& s
 	cfg.nbody.stepSize = saneNBodyStepDays(settings.integratorInitialStepDays);
 	cfg.nbody.planetMask = settings.pertPlanetMask;
 	cfg.nbody.useSb441 = settings.useSb441;
+	cfg.nbody.forceModel = settings.forceModel;
 	if (cfg.nbody.stepSize != settings.integratorInitialStepDays) {
-		LOG_INFO << "[NBody] invalid initial step " << settings.integratorInitialStepDays << "d; using "
+		LOG_WARN << "[NBody] invalid initial step " << settings.integratorInitialStepDays << "d; using "
 		         << cfg.nbody.stepSize << "d";
 	}
 
@@ -114,6 +149,8 @@ void OrbitWorker::process(const OrbitFitJob& job, std::stop_token cancel)
 			exportContext.photometry = result.effectiveConfig.photometry;
 
 			const auto exportReport = orbital_core::Exporter::save(exportContext, {orbital_core::ExportProduct::All});
+			saveSettingsSnapshot(QString::fromStdWString((exportReport.directory / "Trajecta.ini").wstring()),
+			                     result.effectiveConfig, prepared.debiasRequested);
 			LOG_INFO << "Fit export written to " << exportReport.directory.string();
 			m_solutionDirectory = exportReport.directory;
 		}

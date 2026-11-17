@@ -1,0 +1,4565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ades version="2022">
+  
+  
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9n</obsID>
+    <trkID>00000aK-bP</trkID>
+    <mode>UNK</mode>
+    <stn>902</stn>
+    <obsTime>1993-12-08T15:04:01.920Z</obsTime>
+    <ra>83.9575</ra>
+    <dec>22.5525</dec>
+    <astCat>UNK</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>100</precTime>
+    <precRA>0.1</precRA>
+    <precDec>1.0</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9o</obsID>
+    <trkID>00000aJ-J8</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1993-12-08T15:41:30.048Z</obsTime>
+    <ra>83.95425</ra>
+    <dec>22.55142</dec>
+    <astCat>UNK</astCat>
+    <mag>16.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9p</obsID>
+    <trkID>00000aJ-J8</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1993-12-08T16:28:30.144Z</obsTime>
+    <ra>83.94767</ra>
+    <dec>22.55158</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9q</obsID>
+    <trkID>00000aJ-J9</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1993-12-09T13:01:15.456Z</obsTime>
+    <ra>83.77892</ra>
+    <dec>22.55714</dec>
+    <astCat>UNK</astCat>
+    <mag>16.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9r</obsID>
+    <trkID>00000aJ-J9</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1993-12-09T13:52:30.432Z</obsTime>
+    <ra>83.77192</ra>
+    <dec>22.55767</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9s</obsID>
+    <trkID>00000aJ-JA</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1993-12-11T19:28:59.520Z</obsTime>
+    <ra>83.32229</ra>
+    <dec>22.57211</dec>
+    <astCat>UNK</astCat>
+    <mag>16</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9t</obsID>
+    <trkID>00000aJ-wW</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1993-12-12T10:40:20.352Z</obsTime>
+    <ra>83.19567</ra>
+    <dec>22.57678</dec>
+    <astCat>UNK</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9u</obsID>
+    <trkID>00000aJ-wW</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1993-12-12T10:59:45.024Z</obsTime>
+    <ra>83.19275</ra>
+    <dec>22.57711</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9v</obsID>
+    <trkID>00000Xp-qM</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-12T11:13:50.880Z</obsTime>
+    <ra>83.19087</ra>
+    <dec>22.57686</dec>
+    <astCat>UNK</astCat>
+    <mag>16</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9w</obsID>
+    <trkID>00000Xp-qM</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-12T11:24:14.688Z</obsTime>
+    <ra>83.18942</ra>
+    <dec>22.57700</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9x</obsID>
+    <trkID>00000Xp-qM</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-12T11:28:58.080Z</obsTime>
+    <ra>83.18887</ra>
+    <dec>22.57697</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9y</obsID>
+    <trkID>00000Xj-zn</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1993-12-12T11:35:59.712Z</obsTime>
+    <ra>83.18808</ra>
+    <dec>22.57697</dec>
+    <astCat>UNK</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYo9z</obsID>
+    <trkID>00000Xj-zn</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1993-12-12T11:41:00.384Z</obsTime>
+    <ra>83.18738</ra>
+    <dec>22.57700</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA0</obsID>
+    <trkID>00000Xw-Q5</trkID>
+    <mode>CCD</mode>
+    <stn>411</stn>
+    <obsTime>1993-12-12T11:44:01.824Z</obsTime>
+    <ra>83.18704</ra>
+    <dec>22.57694</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA1</obsID>
+    <trkID>00000Xj-zn</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1993-12-12T12:19:45.408Z</obsTime>
+    <ra>83.18179</ra>
+    <dec>22.57725</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA2</obsID>
+    <trkID>00000Xv-E7</trkID>
+    <mode>UNK</mode>
+    <stn>402</stn>
+    <obsTime>1993-12-12T12:35:00.384Z</obsTime>
+    <ra>83.17933</ra>
+    <dec>22.57739</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA3</obsID>
+    <trkID>00000Xw-Q5</trkID>
+    <mode>CCD</mode>
+    <stn>411</stn>
+    <obsTime>1993-12-12T12:47:44.160Z</obsTime>
+    <ra>83.17750</ra>
+    <dec>22.57725</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA4</obsID>
+    <trkID>00000aJ-wW</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1993-12-12T12:55:20.352Z</obsTime>
+    <ra>83.17608</ra>
+    <dec>22.57703</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA5</obsID>
+    <trkID>00000Xw-Q5</trkID>
+    <mode>CCD</mode>
+    <stn>411</stn>
+    <obsTime>1993-12-12T12:58:41.664Z</obsTime>
+    <ra>83.17596</ra>
+    <dec>22.57728</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA6</obsID>
+    <trkID>00000Xv-E7</trkID>
+    <mode>UNK</mode>
+    <stn>402</stn>
+    <obsTime>1993-12-12T13:00:00.288Z</obsTime>
+    <ra>83.17479</ra>
+    <dec>22.57731</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA7</obsID>
+    <trkID>00000Xm-dO</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1993-12-12T16:34:00.192Z</obsTime>
+    <ra>83.14450</ra>
+    <dec>22.57872</dec>
+    <astCat>UNK</astCat>
+    <mag>16.3</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA8</obsID>
+    <trkID>00000YB-0H</trkID>
+    <mode>CCD</mode>
+    <stn>557</stn>
+    <obsTime>1993-12-12T19:21:55.296Z</obsTime>
+    <ra>83.12212</ra>
+    <dec>22.57872</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoA9</obsID>
+    <trkID>00000YB-0H</trkID>
+    <mode>CCD</mode>
+    <stn>557</stn>
+    <obsTime>1993-12-12T19:28:54.336Z</obsTime>
+    <ra>83.12108</ra>
+    <dec>22.57881</dec>
+    <astCat>UNK</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAA</obsID>
+    <trkID>00000YB-0H</trkID>
+    <mode>CCD</mode>
+    <stn>557</stn>
+    <obsTime>1993-12-12T19:35:43.008Z</obsTime>
+    <ra>83.12017</ra>
+    <dec>22.57883</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAB</obsID>
+    <trkID>00000YB-0H</trkID>
+    <mode>CCD</mode>
+    <stn>557</stn>
+    <obsTime>1993-12-12T19:38:30.624Z</obsTime>
+    <ra>83.11971</ra>
+    <dec>22.57886</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAC</obsID>
+    <trkID>00000YB-0H</trkID>
+    <mode>CCD</mode>
+    <stn>557</stn>
+    <obsTime>1993-12-12T19:41:18.240Z</obsTime>
+    <ra>83.11921</ra>
+    <dec>22.57894</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAD</obsID>
+    <trkID>00000Xo-sY</trkID>
+    <mode>UNK</mode>
+    <stn>381</stn>
+    <obsTime>1993-12-14T12:06:28.800Z</obsTime>
+    <ra>82.77654</ra>
+    <dec>22.58983</dec>
+    <astCat>UNK</astCat>
+    <mag>16.1</mag>
+    <band>B</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    23157</ref>
+    <subFrm>B1950.0</subFrm>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAE</obsID>
+    <trkID>00000Xo-sY</trkID>
+    <mode>UNK</mode>
+    <stn>381</stn>
+    <obsTime>1993-12-14T12:19:59.232Z</obsTime>
+    <ra>82.77504</ra>
+    <dec>22.58989</dec>
+    <astCat>UNK</astCat>
+    <mag>16.1</mag>
+    <band>B</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    23157</ref>
+    <subFrm>B1950.0</subFrm>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAF</obsID>
+    <trkID>00000aJ-wX</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1993-12-14T12:20:50.208Z</obsTime>
+    <ra>82.77471</ra>
+    <dec>22.59006</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAG</obsID>
+    <trkID>00000aJ-wX</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1993-12-14T12:43:14.592Z</obsTime>
+    <ra>82.77179</ra>
+    <dec>22.59036</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAH</obsID>
+    <trkID>00000Xm-dP</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1993-12-14T14:14:00.384Z</obsTime>
+    <ra>82.75846</ra>
+    <dec>22.59058</dec>
+    <astCat>UNK</astCat>
+    <mag>16.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAI</obsID>
+    <trkID>00000aG-mY</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1993-12-14T15:42:14.112Z</obsTime>
+    <ra>82.74596</ra>
+    <dec>22.59053</dec>
+    <astCat>UNK</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAJ</obsID>
+    <trkID>00000aG-mY</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1993-12-14T15:46:35.040Z</obsTime>
+    <ra>82.74475</ra>
+    <dec>22.59083</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAK</obsID>
+    <trkID>00000aG-mY</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1993-12-14T15:50:55.104Z</obsTime>
+    <ra>82.74412</ra>
+    <dec>22.59122</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAL</obsID>
+    <trkID>00000Xm-dP</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1993-12-14T17:28:59.808Z</obsTime>
+    <ra>82.72933</ra>
+    <dec>22.59142</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAM</obsID>
+    <trkID>00000Xw-Q6</trkID>
+    <mode>CCD</mode>
+    <stn>411</stn>
+    <obsTime>1993-12-15T12:54:19.008Z</obsTime>
+    <ra>82.56629</ra>
+    <dec>22.59608</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAN</obsID>
+    <trkID>00000Xw-Q6</trkID>
+    <mode>CCD</mode>
+    <stn>411</stn>
+    <obsTime>1993-12-15T13:01:36.192Z</obsTime>
+    <ra>82.56533</ra>
+    <dec>22.59603</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAO</obsID>
+    <trkID>00000Xw-Q6</trkID>
+    <mode>CCD</mode>
+    <stn>411</stn>
+    <obsTime>1993-12-15T13:05:13.920Z</obsTime>
+    <ra>82.56496</ra>
+    <dec>22.59608</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAP</obsID>
+    <trkID>00000Xj-zo</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1993-12-15T13:18:59.904Z</obsTime>
+    <ra>82.56321</ra>
+    <dec>22.59633</dec>
+    <astCat>UNK</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAQ</obsID>
+    <trkID>00000Xr-kX</trkID>
+    <mode>UNK</mode>
+    <stn>391</stn>
+    <obsTime>1993-12-15T13:22:29.856Z</obsTime>
+    <ra>82.56258</ra>
+    <dec>22.59600</dec>
+    <astCat>UNK</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAR</obsID>
+    <trkID>00000Xj-zo</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1993-12-15T13:23:59.712Z</obsTime>
+    <ra>82.56246</ra>
+    <dec>22.59636</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAS</obsID>
+    <trkID>00000Xo-sZ</trkID>
+    <mode>UNK</mode>
+    <stn>381</stn>
+    <obsTime>1993-12-15T13:26:38.688Z</obsTime>
+    <ra>82.56188</ra>
+    <dec>22.59639</dec>
+    <astCat>UNK</astCat>
+    <mag>15.8</mag>
+    <band>B</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    23157</ref>
+    <subFrm>B1950.0</subFrm>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAT</obsID>
+    <trkID>00000Xj-zo</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1993-12-15T13:30:00.000Z</obsTime>
+    <ra>82.56158</ra>
+    <dec>22.59642</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAU</obsID>
+    <trkID>00000Xo-sZ</trkID>
+    <mode>UNK</mode>
+    <stn>381</stn>
+    <obsTime>1993-12-15T13:34:12.288Z</obsTime>
+    <ra>82.56075</ra>
+    <dec>22.59636</dec>
+    <astCat>UNK</astCat>
+    <mag>16.0</mag>
+    <band>B</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    23157</ref>
+    <subFrm>B1950.0</subFrm>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAV</obsID>
+    <trkID>00000Xr-kX</trkID>
+    <mode>UNK</mode>
+    <stn>391</stn>
+    <obsTime>1993-12-15T13:42:29.952Z</obsTime>
+    <ra>82.55921</ra>
+    <dec>22.59633</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAW</obsID>
+    <trkID>00000YR-26</trkID>
+    <mode>CCD</mode>
+    <stn>657</stn>
+    <obsTime>1993-12-16T04:59:39.840Z</obsTime>
+    <ra>82.43054</ra>
+    <dec>22.59992</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAX</obsID>
+    <trkID>00000YR-26</trkID>
+    <mode>CCD</mode>
+    <stn>657</stn>
+    <obsTime>1993-12-16T05:02:24.000Z</obsTime>
+    <ra>82.43004</ra>
+    <dec>22.59989</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAY</obsID>
+    <trkID>00000YR-26</trkID>
+    <mode>CCD</mode>
+    <stn>657</stn>
+    <obsTime>1993-12-16T05:13:29.280Z</obsTime>
+    <ra>82.42833</ra>
+    <dec>22.59989</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAZ</obsID>
+    <trkID>00000aD-ZA</trkID>
+    <mode>CCD</mode>
+    <stn>816</stn>
+    <obsTime>1993-12-17T05:21:14.112Z</obsTime>
+    <ra>82.22354</ra>
+    <dec>22.60589</dec>
+    <astCat>UNK</astCat>
+    <mag>15.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAa</obsID>
+    <trkID>00000aD-ZA</trkID>
+    <mode>CCD</mode>
+    <stn>816</stn>
+    <obsTime>1993-12-17T06:19:54.048Z</obsTime>
+    <ra>82.21504</ra>
+    <dec>22.60603</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAb</obsID>
+    <trkID>00000aD-ZA</trkID>
+    <mode>CCD</mode>
+    <stn>816</stn>
+    <obsTime>1993-12-17T06:23:56.832Z</obsTime>
+    <ra>82.21442</ra>
+    <dec>22.60617</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAc</obsID>
+    <trkID>00000aD-ZA</trkID>
+    <mode>CCD</mode>
+    <stn>816</stn>
+    <obsTime>1993-12-17T06:55:08.256Z</obsTime>
+    <ra>82.20983</ra>
+    <dec>22.60611</dec>
+    <astCat>UNK</astCat>
+    <mag>15.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAd</obsID>
+    <trkID>00000Xp-qN</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-17T11:15:46.656Z</obsTime>
+    <ra>82.17433</ra>
+    <dec>22.60733</dec>
+    <astCat>UNK</astCat>
+    <mag>15</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAe</obsID>
+    <trkID>00000Xp-qN</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-17T11:29:00.672Z</obsTime>
+    <ra>82.17242</ra>
+    <dec>22.60750</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAf</obsID>
+    <trkID>00000Xp-qN</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-17T11:33:11.232Z</obsTime>
+    <ra>82.17179</ra>
+    <dec>22.60739</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAg</obsID>
+    <trkID>00000aK-PN</trkID>
+    <mode>CCD</mode>
+    <stn>900</stn>
+    <obsTime>1993-12-17T17:57:34.848Z</obsTime>
+    <ra>82.11588</ra>
+    <dec>22.60897</dec>
+    <astCat>UNK</astCat>
+    <mag>15</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAh</obsID>
+    <trkID>00000aK-PN</trkID>
+    <mode>CCD</mode>
+    <stn>900</stn>
+    <obsTime>1993-12-17T18:15:30.528Z</obsTime>
+    <ra>82.11367</ra>
+    <dec>22.60872</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAi</obsID>
+    <trkID>00000YM-do</trkID>
+    <mode>CCD</mode>
+    <stn>596</stn>
+    <obsTime>1993-12-17T19:03:30.240Z</obsTime>
+    <ra>82.10833</ra>
+    <dec>22.60883</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAj</obsID>
+    <trkID>00000YM-do</trkID>
+    <mode>CCD</mode>
+    <stn>596</stn>
+    <obsTime>1993-12-17T20:08:44.160Z</obsTime>
+    <ra>82.09896</ra>
+    <dec>22.60936</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAk</obsID>
+    <trkID>00000YM-do</trkID>
+    <mode>CCD</mode>
+    <stn>596</stn>
+    <obsTime>1993-12-17T20:31:49.152Z</obsTime>
+    <ra>82.09583</ra>
+    <dec>22.60936</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAl</obsID>
+    <trkID>00000aD-ZB</trkID>
+    <mode>CCD</mode>
+    <stn>816</stn>
+    <obsTime>1993-12-18T03:58:20.064Z</obsTime>
+    <ra>82.03304</ra>
+    <dec>22.61119</dec>
+    <astCat>UNK</astCat>
+    <mag>15.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAm</obsID>
+    <trkID>00000aD-ZB</trkID>
+    <mode>CCD</mode>
+    <stn>816</stn>
+    <obsTime>1993-12-18T04:24:55.872Z</obsTime>
+    <ra>82.02933</ra>
+    <dec>22.61133</dec>
+    <astCat>UNK</astCat>
+    <mag>15.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAn</obsID>
+    <trkID>00000aD-ZB</trkID>
+    <mode>CCD</mode>
+    <stn>816</stn>
+    <obsTime>1993-12-18T04:28:42.240Z</obsTime>
+    <ra>82.02863</ra>
+    <dec>22.61142</dec>
+    <astCat>UNK</astCat>
+    <mag>15.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAo</obsID>
+    <trkID>00000aD-ZB</trkID>
+    <mode>CCD</mode>
+    <stn>816</stn>
+    <obsTime>1993-12-18T04:39:59.616Z</obsTime>
+    <ra>82.02708</ra>
+    <dec>22.61133</dec>
+    <astCat>UNK</astCat>
+    <mag>15.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAp</obsID>
+    <trkID>00000Xr-kY</trkID>
+    <mode>UNK</mode>
+    <stn>391</stn>
+    <obsTime>1993-12-18T12:48:29.952Z</obsTime>
+    <ra>81.95900</ra>
+    <dec>22.61358</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAq</obsID>
+    <trkID>00000Xr-kY</trkID>
+    <mode>UNK</mode>
+    <stn>391</stn>
+    <obsTime>1993-12-18T13:07:30.432Z</obsTime>
+    <ra>81.95642</ra>
+    <dec>22.61378</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAr</obsID>
+    <trkID>00000Xj-zp</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1993-12-18T13:50:59.712Z</obsTime>
+    <ra>81.95012</ra>
+    <dec>22.61369</dec>
+    <astCat>UNK</astCat>
+    <mag>15.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAs</obsID>
+    <trkID>00000Xp-qO</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-18T14:03:20.160Z</obsTime>
+    <ra>81.94796</ra>
+    <dec>22.61375</dec>
+    <astCat>UNK</astCat>
+    <mag>15</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAt</obsID>
+    <trkID>00000Xj-zp</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1993-12-18T14:26:59.712Z</obsTime>
+    <ra>81.94483</ra>
+    <dec>22.61386</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAu</obsID>
+    <trkID>00000Xp-qO</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-18T15:11:59.712Z</obsTime>
+    <ra>81.93804</ra>
+    <dec>22.61400</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAv</obsID>
+    <trkID>00000Xp-qO</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-18T15:16:12.000Z</obsTime>
+    <ra>81.93746</ra>
+    <dec>22.61406</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAw</obsID>
+    <trkID>00000Xp-qO</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-18T15:20:30.336Z</obsTime>
+    <ra>81.93671</ra>
+    <dec>22.61406</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAx</obsID>
+    <trkID>00000Y9-Pj</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1993-12-18T21:47:36.384Z</obsTime>
+    <ra>81.88283</ra>
+    <dec>22.61511</dec>
+    <astCat>UNK</astCat>
+    <mag>15.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAy</obsID>
+    <trkID>00000Y9-Pj</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1993-12-18T21:58:39.072Z</obsTime>
+    <ra>81.88129</ra>
+    <dec>22.61511</dec>
+    <astCat>UNK</astCat>
+    <mag>15.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoAz</obsID>
+    <trkID>00000Y9-Pj</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1993-12-18T22:09:27.936Z</obsTime>
+    <ra>81.87987</ra>
+    <dec>22.61511</dec>
+    <astCat>UNK</astCat>
+    <mag>15.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB0</obsID>
+    <trkID>00000Y9-Pj</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1993-12-18T22:20:43.584Z</obsTime>
+    <ra>81.87813</ra>
+    <dec>22.61547</dec>
+    <astCat>UNK</astCat>
+    <mag>15.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB1</obsID>
+    <trkID>00000YR-QO</trkID>
+    <mode>CCD</mode>
+    <stn>658</stn>
+    <obsTime>1993-12-21T09:58:22.656Z</obsTime>
+    <ra>81.38213</ra>
+    <dec>22.62856</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB2</obsID>
+    <trkID>00000YR-QO</trkID>
+    <mode>CCD</mode>
+    <stn>658</stn>
+    <obsTime>1993-12-21T10:03:12.096Z</obsTime>
+    <ra>81.38146</ra>
+    <dec>22.62858</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB3</obsID>
+    <trkID>00000YR-QO</trkID>
+    <mode>CCD</mode>
+    <stn>658</stn>
+    <obsTime>1993-12-21T10:08:43.008Z</obsTime>
+    <ra>81.38063</ra>
+    <dec>22.62858</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB4</obsID>
+    <trkID>00000Xm-dQ</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1993-12-21T14:41:00.384Z</obsTime>
+    <ra>81.34387</ra>
+    <dec>22.62994</dec>
+    <astCat>UNK</astCat>
+    <mag>16</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB5</obsID>
+    <trkID>00000Xp-qP</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-21T14:48:04.608Z</obsTime>
+    <ra>81.34246</ra>
+    <dec>22.63008</dec>
+    <astCat>UNK</astCat>
+    <mag>15</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB6</obsID>
+    <trkID>00000Xp-qP</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-21T14:51:12.096Z</obsTime>
+    <ra>81.34200</ra>
+    <dec>22.63017</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB7</obsID>
+    <trkID>00000Xp-qP</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-21T14:54:28.224Z</obsTime>
+    <ra>81.34167</ra>
+    <dec>22.63025</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB8</obsID>
+    <trkID>00000Xp-qP</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-21T15:00:38.880Z</obsTime>
+    <ra>81.34083</ra>
+    <dec>22.63019</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22851</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoB9</obsID>
+    <trkID>00000Xm-dQ</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1993-12-21T16:09:59.904Z</obsTime>
+    <ra>81.33067</ra>
+    <dec>22.63033</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBA</obsID>
+    <trkID>00000aG-mZ</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1993-12-21T16:10:56.064Z</obsTime>
+    <ra>81.33092</ra>
+    <dec>22.63011</dec>
+    <astCat>UNK</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBB</obsID>
+    <trkID>00000aG-mZ</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1993-12-21T16:15:36.864Z</obsTime>
+    <ra>81.33025</ra>
+    <dec>22.63014</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBC</obsID>
+    <trkID>00000aG-mZ</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1993-12-21T16:19:31.872Z</obsTime>
+    <ra>81.32996</ra>
+    <dec>22.63019</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBD</obsID>
+    <trkID>00000Xm-dR</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1993-12-22T15:36:59.616Z</obsTime>
+    <ra>81.13967</ra>
+    <dec>22.63567</dec>
+    <astCat>UNK</astCat>
+    <mag>16.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBE</obsID>
+    <trkID>00000Xp-qQ</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-23T14:07:53.184Z</obsTime>
+    <ra>80.95783</ra>
+    <dec>22.64014</dec>
+    <astCat>UNK</astCat>
+    <mag>15</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBF</obsID>
+    <trkID>00000Xp-qQ</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-23T14:11:32.640Z</obsTime>
+    <ra>80.95729</ra>
+    <dec>22.64022</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBG</obsID>
+    <trkID>00000Xp-qQ</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1993-12-23T14:14:47.904Z</obsTime>
+    <ra>80.95683</ra>
+    <dec>22.64019</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBH</obsID>
+    <trkID>00000aJ-JB</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1993-12-23T17:37:00.192Z</obsTime>
+    <ra>80.92854</ra>
+    <dec>22.64097</dec>
+    <astCat>UNK</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBI</obsID>
+    <trkID>00000aJ-JB</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1993-12-23T18:06:29.664Z</obsTime>
+    <ra>80.92392</ra>
+    <dec>22.64072</dec>
+    <astCat>UNK</astCat>
+    <mag>16.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBJ</obsID>
+    <trkID>00000Xp-qR</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1994-01-01T10:30:00.000Z</obsTime>
+    <ra>79.37171</ra>
+    <dec>22.68503</dec>
+    <astCat>UNK</astCat>
+    <mag>15</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBK</obsID>
+    <trkID>00000Xp-qR</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1994-01-01T10:36:59.904Z</obsTime>
+    <ra>79.37067</ra>
+    <dec>22.68497</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBL</obsID>
+    <trkID>00000Xp-qR</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1994-01-01T10:39:59.616Z</obsTime>
+    <ra>79.37054</ra>
+    <dec>22.68500</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBM</obsID>
+    <trkID>00000Xm-dS</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-01-01T11:15:59.616Z</obsTime>
+    <ra>79.36617</ra>
+    <dec>22.68525</dec>
+    <astCat>UNK</astCat>
+    <mag>16</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBN</obsID>
+    <trkID>00000aH-ih</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-01T11:28:39.936Z</obsTime>
+    <ra>79.36483</ra>
+    <dec>22.68522</dec>
+    <astCat>UNK</astCat>
+    <mag>15</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBO</obsID>
+    <trkID>00000aH-ih</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-01T11:37:38.208Z</obsTime>
+    <ra>79.36375</ra>
+    <dec>22.68525</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBP</obsID>
+    <trkID>00000aH-ih</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-01T11:47:46.464Z</obsTime>
+    <ra>79.36254</ra>
+    <dec>22.68533</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBQ</obsID>
+    <trkID>00000aH-ih</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-01T11:57:19.296Z</obsTime>
+    <ra>79.36154</ra>
+    <dec>22.68544</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBR</obsID>
+    <trkID>00000aH-ih</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-01T12:09:12.096Z</obsTime>
+    <ra>79.35996</ra>
+    <dec>22.68542</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBS</obsID>
+    <trkID>00000aJ-JC</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1994-01-02T10:36:59.904Z</obsTime>
+    <ra>79.20971</ra>
+    <dec>22.69078</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBT</obsID>
+    <trkID>00000Xw-CQ</trkID>
+    <mode>CCD</mode>
+    <stn>410</stn>
+    <obsTime>1994-01-02T10:38:04.704Z</obsTime>
+    <ra>79.20975</ra>
+    <dec>22.69081</dec>
+    <astCat>UNK</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBU</obsID>
+    <trkID>00000Xw-CQ</trkID>
+    <mode>CCD</mode>
+    <stn>410</stn>
+    <obsTime>1994-01-02T10:53:44.736Z</obsTime>
+    <ra>79.20858</ra>
+    <dec>22.69086</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBV</obsID>
+    <trkID>00000Xm-dT</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-01-02T11:01:00.192Z</obsTime>
+    <ra>79.20737</ra>
+    <dec>22.69061</dec>
+    <astCat>UNK</astCat>
+    <mag>16.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBW</obsID>
+    <trkID>00000Xw-CQ</trkID>
+    <mode>CCD</mode>
+    <stn>410</stn>
+    <obsTime>1994-01-02T11:04:12.864Z</obsTime>
+    <ra>79.20800</ra>
+    <dec>22.69094</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBX</obsID>
+    <trkID>00000Xm-dT</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-01-02T11:30:29.664Z</obsTime>
+    <ra>79.20371</ra>
+    <dec>22.69042</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBY</obsID>
+    <trkID>00000aK-PO</trkID>
+    <mode>CCD</mode>
+    <stn>900</stn>
+    <obsTime>1994-01-02T12:32:14.496Z</obsTime>
+    <ra>79.19675</ra>
+    <dec>22.69067</dec>
+    <astCat>UNK</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBZ</obsID>
+    <trkID>00000aK-PO</trkID>
+    <mode>CCD</mode>
+    <stn>900</stn>
+    <obsTime>1994-01-02T12:48:25.632Z</obsTime>
+    <ra>79.19542</ra>
+    <dec>22.69078</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBa</obsID>
+    <trkID>00000Xr-zS</trkID>
+    <mode>UNK</mode>
+    <stn>399</stn>
+    <obsTime>1994-01-03T12:27:00.000Z</obsTime>
+    <ra>79.04171</ra>
+    <dec>22.69625</dec>
+    <astCat>UNK</astCat>
+    <mag>16.8</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBb</obsID>
+    <trkID>00000Xm-dU</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-01-04T12:14:30.048Z</obsTime>
+    <ra>78.89233</ra>
+    <dec>22.70203</dec>
+    <astCat>UNK</astCat>
+    <mag>16</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBc</obsID>
+    <trkID>00000aH-ii</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-04T12:50:20.544Z</obsTime>
+    <ra>78.88842</ra>
+    <dec>22.70211</dec>
+    <astCat>UNK</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBd</obsID>
+    <trkID>00000aH-ii</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-04T13:01:42.240Z</obsTime>
+    <ra>78.88717</ra>
+    <dec>22.70222</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBe</obsID>
+    <trkID>00000aK-PP</trkID>
+    <mode>CCD</mode>
+    <stn>900</stn>
+    <obsTime>1994-01-04T13:09:50.400Z</obsTime>
+    <ra>78.88625</ra>
+    <dec>22.70225</dec>
+    <astCat>UNK</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBf</obsID>
+    <trkID>00000aH-ii</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-04T13:20:09.888Z</obsTime>
+    <ra>78.88521</ra>
+    <dec>22.70219</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBg</obsID>
+    <trkID>00000Xj-zq</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-01-04T13:32:30.336Z</obsTime>
+    <ra>78.88404</ra>
+    <dec>22.70233</dec>
+    <astCat>UNK</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBh</obsID>
+    <trkID>00000aK-PP</trkID>
+    <mode>CCD</mode>
+    <stn>900</stn>
+    <obsTime>1994-01-04T13:33:30.816Z</obsTime>
+    <ra>78.88362</ra>
+    <dec>22.70214</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBi</obsID>
+    <trkID>00000Xj-zq</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-01-04T13:36:29.664Z</obsTime>
+    <ra>78.88362</ra>
+    <dec>22.70233</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBj</obsID>
+    <trkID>00000Xr-zT</trkID>
+    <mode>UNK</mode>
+    <stn>399</stn>
+    <obsTime>1994-01-05T11:38:10.176Z</obsTime>
+    <ra>78.75000</ra>
+    <dec>22.70747</dec>
+    <astCat>UNK</astCat>
+    <mag>16.8</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBk</obsID>
+    <trkID>00000Xr-zT</trkID>
+    <mode>UNK</mode>
+    <stn>399</stn>
+    <obsTime>1994-01-05T11:59:02.112Z</obsTime>
+    <ra>78.74767</ra>
+    <dec>22.70781</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBl</obsID>
+    <trkID>00000Xm-dV</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-01-05T12:24:59.904Z</obsTime>
+    <ra>78.74504</ra>
+    <dec>22.70817</dec>
+    <astCat>UNK</astCat>
+    <mag>16.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBm</obsID>
+    <trkID>00000aH-ij</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-01-06T13:24:39.456Z</obsTime>
+    <ra>78.59808</ra>
+    <dec>22.71436</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBn</obsID>
+    <trkID>00000aG-ma</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1994-01-07T15:15:46.080Z</obsTime>
+    <ra>78.45196</ra>
+    <dec>22.72053</dec>
+    <astCat>UNK</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBo</obsID>
+    <trkID>00000aG-ma</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1994-01-07T15:23:25.728Z</obsTime>
+    <ra>78.45129</ra>
+    <dec>22.72061</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBp</obsID>
+    <trkID>00000aG-ma</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1994-01-07T15:30:36.000Z</obsTime>
+    <ra>78.44996</ra>
+    <dec>22.72067</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBq</obsID>
+    <trkID>00000Xm-dW</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-01-07T15:37:17.760Z</obsTime>
+    <ra>78.44913</ra>
+    <dec>22.72150</dec>
+    <astCat>UNK</astCat>
+    <mag>17</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBr</obsID>
+    <trkID>00000aJ-wY</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-01-08T13:31:56.640Z</obsTime>
+    <ra>78.33192</ra>
+    <dec>22.72667</dec>
+    <astCat>UNK</astCat>
+    <mag>16.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBs</obsID>
+    <trkID>00000aJ-wY</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-01-08T14:12:12.384Z</obsTime>
+    <ra>78.32829</ra>
+    <dec>22.72675</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBt</obsID>
+    <trkID>00000aG-mb</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1994-01-08T15:00:14.688Z</obsTime>
+    <ra>78.32358</ra>
+    <dec>22.72719</dec>
+    <astCat>UNK</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBu</obsID>
+    <trkID>00000aG-mb</trkID>
+    <mode>CCD</mode>
+    <stn>871</stn>
+    <obsTime>1994-01-08T15:08:34.944Z</obsTime>
+    <ra>78.32317</ra>
+    <dec>22.72722</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>1993t</trkSub>
+    <obsID>ImB000000000EOzi010000001</obsID>
+    <trkID>00000XA-cx</trkID>
+    <mode>CCD</mode>
+    <stn>104</stn>
+    <obsTime>1994-01-09T00:30:48.960Z</obsTime>
+    <ra>78.27383</ra>
+    <dec>22.72939</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>1993t</trkSub>
+    <obsID>ImB000000000EOzi010000002</obsID>
+    <trkID>00000XA-cx</trkID>
+    <mode>CCD</mode>
+    <stn>104</stn>
+    <obsTime>1994-01-09T00:45:12.096Z</obsTime>
+    <ra>78.27237</ra>
+    <dec>22.72961</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>1993t</trkSub>
+    <obsID>ImB000000000EOzi010000003</obsID>
+    <trkID>00000XA-cx</trkID>
+    <mode>CCD</mode>
+    <stn>104</stn>
+    <obsTime>1994-01-09T00:50:54.240Z</obsTime>
+    <ra>78.27225</ra>
+    <dec>22.72967</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>1993t</trkSub>
+    <obsID>ImB000000000EOzi010000004</obsID>
+    <trkID>00000XA-cx</trkID>
+    <mode>CCD</mode>
+    <stn>104</stn>
+    <obsTime>1994-01-09T00:59:08.448Z</obsTime>
+    <ra>78.27129</ra>
+    <dec>22.72969</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoBz</obsID>
+    <trkID>00000Xj-zr</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-01-09T12:22:14.880Z</obsTime>
+    <ra>78.21404</ra>
+    <dec>22.73308</dec>
+    <astCat>UNK</astCat>
+    <mag>15.7</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC0</obsID>
+    <trkID>00000Xj-zr</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-01-09T12:26:00.384Z</obsTime>
+    <ra>78.21383</ra>
+    <dec>22.73314</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC1</obsID>
+    <trkID>00000Xm-dX</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-01-10T11:38:30.048Z</obsTime>
+    <ra>78.09871</ra>
+    <dec>22.73981</dec>
+    <astCat>UNK</astCat>
+    <mag>17</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23000</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC2</obsID>
+    <trkID>00000aJ-wZ</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-01-14T11:42:59.616Z</obsTime>
+    <ra>77.68238</ra>
+    <dec>22.77022</dec>
+    <astCat>UNK</astCat>
+    <mag>16.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC3</obsID>
+    <trkID>00000aJ-JD</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1994-01-14T12:27:30.240Z</obsTime>
+    <ra>77.68008</ra>
+    <dec>22.77056</dec>
+    <astCat>UNK</astCat>
+    <mag>17</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC4</obsID>
+    <trkID>00000aJ-JD</trkID>
+    <mode>UNK</mode>
+    <stn>896</stn>
+    <obsTime>1994-01-14T13:15:29.952Z</obsTime>
+    <ra>77.67538</ra>
+    <dec>22.77097</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC5</obsID>
+    <trkID>00000Xp-qS</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1994-01-14T13:43:57.216Z</obsTime>
+    <ra>77.67454</ra>
+    <dec>22.77078</dec>
+    <astCat>UNK</astCat>
+    <mag>15</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC6</obsID>
+    <trkID>00000Xp-qS</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1994-01-14T13:48:14.688Z</obsTime>
+    <ra>77.67421</ra>
+    <dec>22.77081</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC7</obsID>
+    <trkID>00000Xp-qS</trkID>
+    <mode>CCD</mode>
+    <stn>385</stn>
+    <obsTime>1994-01-14T13:52:30.432Z</obsTime>
+    <ra>77.67400</ra>
+    <dec>22.77097</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC8</obsID>
+    <trkID>00000Xm-dY</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-01-15T14:21:59.904Z</obsTime>
+    <ra>77.58408</ra>
+    <dec>22.78000</dec>
+    <astCat>UNK</astCat>
+    <mag>16.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23369</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoC9</obsID>
+    <trkID>00000Y9-Pk</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1994-01-15T20:46:14.880Z</obsTime>
+    <ra>77.56242</ra>
+    <dec>22.78194</dec>
+    <astCat>UNK</astCat>
+    <mag>15.4</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCA</obsID>
+    <trkID>00000Y9-Pk</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1994-01-15T21:03:27.360Z</obsTime>
+    <ra>77.56154</ra>
+    <dec>22.78197</dec>
+    <astCat>UNK</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCB</obsID>
+    <trkID>00000Y9-Pk</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1994-01-15T21:25:57.792Z</obsTime>
+    <ra>77.56004</ra>
+    <dec>22.78194</dec>
+    <astCat>UNK</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCC</obsID>
+    <trkID>00000Y9-Pk</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1994-01-15T21:36:50.976Z</obsTime>
+    <ra>77.55917</ra>
+    <dec>22.78208</dec>
+    <astCat>UNK</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCD</obsID>
+    <trkID>00000Y9-Pk</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1994-01-15T21:47:09.600Z</obsTime>
+    <ra>77.55896</ra>
+    <dec>22.78194</dec>
+    <astCat>UNK</astCat>
+    <mag>15.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCE</obsID>
+    <trkID>00000Y9-Pk</trkID>
+    <mode>CCD</mode>
+    <stn>540</stn>
+    <obsTime>1994-01-15T21:57:36.000Z</obsTime>
+    <ra>77.55833</ra>
+    <dec>22.78228</dec>
+    <astCat>UNK</astCat>
+    <mag>15.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    22852</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCF</obsID>
+    <trkID>00000aJ-wa</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-01-30T11:40:54.336Z</obsTime>
+    <ra>77.07108</ra>
+    <dec>22.95189</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCG</obsID>
+    <trkID>00000aJ-wa</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-01-30T11:57:46.080Z</obsTime>
+    <ra>77.07092</ra>
+    <dec>22.95225</dec>
+    <astCat>UNK</astCat>
+    <mag>15.9</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCH</obsID>
+    <trkID>00000Xj-zs</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-02-03T12:46:45.408Z</obsTime>
+    <ra>77.19042</ra>
+    <dec>23.01439</dec>
+    <astCat>UNK</astCat>
+    <mag>16.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23001</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCI</obsID>
+    <trkID>00000Xj-zs</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-02-03T12:51:00.288Z</obsTime>
+    <ra>77.19054</ra>
+    <dec>23.01444</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23001</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCJ</obsID>
+    <trkID>00000a5-aL</trkID>
+    <mode>CCD</mode>
+    <stn>801</stn>
+    <obsTime>1994-02-07T01:00:33.984Z</obsTime>
+    <ra>77.38308</ra>
+    <dec>23.07386</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23157</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCK</obsID>
+    <trkID>00000a5-aL</trkID>
+    <mode>CCD</mode>
+    <stn>801</stn>
+    <obsTime>1994-02-07T02:36:16.992Z</obsTime>
+    <ra>77.38692</ra>
+    <dec>23.07483</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23157</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCL</obsID>
+    <trkID>00000aJ-wb</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-02-07T12:22:35.616Z</obsTime>
+    <ra>77.41529</ra>
+    <dec>23.08219</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCM</obsID>
+    <trkID>00000aJ-wb</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-02-07T12:46:07.392Z</obsTime>
+    <ra>77.41613</ra>
+    <dec>23.08244</dec>
+    <astCat>UNK</astCat>
+    <mag>16.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCN</obsID>
+    <trkID>00000aH-ik</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-02-07T13:03:50.112Z</obsTime>
+    <ra>77.41667</ra>
+    <dec>23.08253</dec>
+    <astCat>UNK</astCat>
+    <mag>16</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23001</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCO</obsID>
+    <trkID>00000aJ-wb</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-02-07T13:04:43.680Z</obsTime>
+    <ra>77.41654</ra>
+    <dec>23.08289</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCP</obsID>
+    <trkID>00000aH-ik</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-02-07T13:14:12.192Z</obsTime>
+    <ra>77.41721</ra>
+    <dec>23.08256</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23001</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCQ</obsID>
+    <trkID>00000aH-ik</trkID>
+    <mode>CCD</mode>
+    <stn>887</stn>
+    <obsTime>1994-02-07T13:36:04.608Z</obsTime>
+    <ra>77.41788</ra>
+    <dec>23.08311</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23001</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCR</obsID>
+    <trkID>00000Xl-5V</trkID>
+    <mode>CCD</mode>
+    <stn>366</stn>
+    <obsTime>1994-02-10T14:42:06.912Z</obsTime>
+    <ra>77.66129</ra>
+    <dec>23.13836</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23157</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCS</obsID>
+    <trkID>00000Xl-5V</trkID>
+    <mode>CCD</mode>
+    <stn>366</stn>
+    <obsTime>1994-02-10T15:04:26.112Z</obsTime>
+    <ra>77.66242</ra>
+    <dec>23.13869</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23157</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCT</obsID>
+    <trkID>00000Xj-zt</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-03-02T12:08:15.072Z</obsTime>
+    <ra>80.62708</ra>
+    <dec>23.54872</dec>
+    <astCat>UNK</astCat>
+    <mag>17.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23157</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCU</obsID>
+    <trkID>00000Xm-dZ</trkID>
+    <mode>UNK</mode>
+    <stn>372</stn>
+    <obsTime>1994-03-02T12:09:00.000Z</obsTime>
+    <ra>80.62692</ra>
+    <dec>23.54883</dec>
+    <astCat>UNK</astCat>
+    <mag>17</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23369</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCV</obsID>
+    <trkID>00000Xj-zt</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-03-02T12:11:59.712Z</obsTime>
+    <ra>80.62746</ra>
+    <dec>23.54867</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23157</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCW</obsID>
+    <trkID>00000aJ-wc</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-03-06T11:49:03.360Z</obsTime>
+    <ra>81.47742</ra>
+    <dec>23.63269</dec>
+    <astCat>UNK</astCat>
+    <mag>17.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24934</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCX</obsID>
+    <trkID>00000aJ-wc</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-03-06T12:10:27.264Z</obsTime>
+    <ra>81.48046</ra>
+    <dec>23.63278</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24934</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCY</obsID>
+    <trkID>00000aJ-wc</trkID>
+    <mode>CCD</mode>
+    <stn>897</stn>
+    <obsTime>1994-03-06T12:27:52.704Z</obsTime>
+    <ra>81.48267</ra>
+    <dec>23.63292</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24934</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCZ</obsID>
+    <trkID>00000Xj-zu</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-03-17T11:38:30.048Z</obsTime>
+    <ra>84.19775</ra>
+    <dec>23.84464</dec>
+    <astCat>UNK</astCat>
+    <mag>16.9</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23262</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCa</obsID>
+    <trkID>00000Xj-zu</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-03-17T11:42:59.616Z</obsTime>
+    <ra>84.19842</ra>
+    <dec>23.84458</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23262</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCb</obsID>
+    <trkID>00000Xj-zv</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-04-03T11:02:19.680Z</obsTime>
+    <ra>89.30067</ra>
+    <dec>24.06611</dec>
+    <astCat>UNK</astCat>
+    <mag>17.3</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23369</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCc</obsID>
+    <trkID>00000Xj-zv</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-04-03T11:42:30.240Z</obsTime>
+    <ra>89.30950</ra>
+    <dec>24.06628</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23369</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>InZC3x000000DKN201000000G</obsID>
+    <trkID>000002Q-nE</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-04-05T03:44:08.160Z</obsTime>
+    <ra>89.85971</ra>
+    <dec>24.07819</dec>
+    <astCat>UNK</astCat>
+    <mag>21.4</mag>
+    <band>R</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    23369</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>InZC3x000000DKN201000000H</obsID>
+    <trkID>000002Q-nE</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-04-05T03:55:34.176Z</obsTime>
+    <ra>89.86213</ra>
+    <dec>24.07850</dec>
+    <astCat>UNK</astCat>
+    <mag>16.9</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23369</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>InZC3x000000DKN201000000I</obsID>
+    <trkID>000002Q-nE</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-04-05T04:07:14.016Z</obsTime>
+    <ra>89.86500</ra>
+    <dec>24.07825</dec>
+    <astCat>UNK</astCat>
+    <mag>16.9</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23369</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>Io2C3x000000DKNI01000001c</obsID>
+    <trkID>000002Q-nF</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-05-03T03:24:35.712Z</obsTime>
+    <ra>100.04092</ra>
+    <dec>23.91200</dec>
+    <astCat>UNK</astCat>
+    <mag>17.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23561</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>Io2C3x000000DKNI01000001d</obsID>
+    <trkID>000002Q-nF</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-05-03T03:52:02.496Z</obsTime>
+    <ra>100.04821</ra>
+    <dec>23.91172</dec>
+    <astCat>UNK</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    23561</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCi</obsID>
+    <trkID>00000Xj-zw</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-05-06T11:18:27.360Z</obsTime>
+    <ra>101.34225</ra>
+    <dec>23.84019</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    23561</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCj</obsID>
+    <trkID>00000Xj-zw</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1994-05-06T11:24:44.928Z</obsTime>
+    <ra>101.34396</ra>
+    <dec>23.84047</dec>
+    <astCat>UNK</astCat>
+    <mag>18.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    23561</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IrcC3x000000DKOq01000000S</obsID>
+    <trkID>000002Q-nG</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-12-08T12:54:37.152Z</obsTime>
+    <ra>177.87717</ra>
+    <dec>3.25308</dec>
+    <astCat>UNK</astCat>
+    <mag>21.4</mag>
+    <band>R</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    24423</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IrcC3x000000DKOq01000000T</obsID>
+    <trkID>000002Q-nG</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-12-08T13:05:04.416Z</obsTime>
+    <ra>177.87838</ra>
+    <dec>3.25258</dec>
+    <astCat>UNK</astCat>
+    <mag>19.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24423</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IrdC3x000000DKOr01000000z</obsID>
+    <trkID>000002Q-nH</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-12-09T12:11:45.888Z</obsTime>
+    <ra>178.05796</ra>
+    <dec>3.18781</dec>
+    <astCat>UNK</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    24423</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IrdC3x000000DKOr010000010</obsID>
+    <trkID>000002Q-nH</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-12-09T12:34:51.744Z</obsTime>
+    <ra>178.06050</ra>
+    <dec>3.18675</dec>
+    <astCat>UNK</astCat>
+    <mag>18.8</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24423</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IrdC3x000000DKOr010000011</obsID>
+    <trkID>000002Q-nH</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1994-12-09T12:57:41.184Z</obsTime>
+    <ra>178.06363</ra>
+    <dec>3.18544</dec>
+    <astCat>UNK</astCat>
+    <mag>19.1</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24423</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCp</obsID>
+    <trkID>0000008-Uw</trkID>
+    <mode>CCD</mode>
+    <stn>413</stn>
+    <obsTime>1995-01-13T17:10:20.928Z</obsTime>
+    <ra>182.18667</ra>
+    <dec>1.91961</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCq</obsID>
+    <trkID>0000008-Uw</trkID>
+    <mode>CCD</mode>
+    <stn>413</stn>
+    <obsTime>1995-01-13T17:36:15.264Z</obsTime>
+    <ra>182.18725</ra>
+    <dec>1.91964</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IsUC3x000000DKP801000001D</obsID>
+    <trkID>000002Q-nI</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1995-01-31T12:57:04.896Z</obsTime>
+    <ra>182.16154</ra>
+    <dec>2.20719</dec>
+    <astCat>UNK</astCat>
+    <mag>21.6</mag>
+    <band>R</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IsVC3x000000DKP9010000039</obsID>
+    <trkID>000002Q-nJ</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1995-02-01T12:54:33.696Z</obsTime>
+    <ra>182.11471</ra>
+    <dec>2.24242</dec>
+    <astCat>UNK</astCat>
+    <mag>19.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24599</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCt</obsID>
+    <trkID>00000Xj-zx</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-02-10T20:19:45.120Z</obsTime>
+    <ra>181.45625</ra>
+    <dec>2.65806</dec>
+    <astCat>UNK</astCat>
+    <mag>18.7</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24782</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCu</obsID>
+    <trkID>00000Xj-zx</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-02-10T20:27:29.952Z</obsTime>
+    <ra>181.45583</ra>
+    <dec>2.65833</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24782</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCv</obsID>
+    <trkID>00000Xj-zx</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-02-10T20:33:44.928Z</obsTime>
+    <ra>181.45538</ra>
+    <dec>2.65853</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24782</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCw</obsID>
+    <trkID>00000Xj-zy</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-02-27T17:52:29.856Z</obsTime>
+    <ra>179.37742</ra>
+    <dec>3.73925</dec>
+    <astCat>UNK</astCat>
+    <mag>18.6</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    24782</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCx</obsID>
+    <trkID>00000Xj-zy</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-02-27T18:06:29.664Z</obsTime>
+    <ra>179.37587</ra>
+    <dec>3.74006</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24782</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCy</obsID>
+    <trkID>00000Xj-zy</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-02-27T18:16:14.592Z</obsTime>
+    <ra>179.37475</ra>
+    <dec>3.74061</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24782</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoCz</obsID>
+    <trkID>00000YK-wC</trkID>
+    <mode>CCD</mode>
+    <stn>587</stn>
+    <obsTime>1995-03-07T21:45:30.240Z</obsTime>
+    <ra>178.08604</ra>
+    <dec>4.34814</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24934</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD0</obsID>
+    <trkID>00000YK-wC</trkID>
+    <mode>CCD</mode>
+    <stn>587</stn>
+    <obsTime>1995-03-07T22:34:20.064Z</obsTime>
+    <ra>178.08071</ra>
+    <dec>4.35058</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    24934</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD1</obsID>
+    <trkID>0000008-Ux</trkID>
+    <mode>CCD</mode>
+    <stn>413</stn>
+    <obsTime>1995-03-21T13:55:31.008Z</obsTime>
+    <ra>175.78996</ra>
+    <dec>5.35994</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    25096</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD2</obsID>
+    <trkID>0000008-Ux</trkID>
+    <mode>CCD</mode>
+    <stn>413</stn>
+    <obsTime>1995-03-21T14:01:35.616Z</obsTime>
+    <ra>175.78925</ra>
+    <dec>5.36028</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    25096</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD3</obsID>
+    <trkID>00000Zs-Wc</trkID>
+    <mode>CCD</mode>
+    <stn>693</stn>
+    <obsTime>1995-04-02T07:06:41.184Z</obsTime>
+    <ra>173.95071</ra>
+    <dec>6.10319</dec>
+    <astCat>UNK</astCat>
+    <mag>19.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    25096</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD4</obsID>
+    <trkID>00000Zs-Wc</trkID>
+    <mode>CCD</mode>
+    <stn>693</stn>
+    <obsTime>1995-04-02T07:16:05.376Z</obsTime>
+    <ra>173.94971</ra>
+    <dec>6.10353</dec>
+    <astCat>UNK</astCat>
+    <mag>18.9</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    25096</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD5</obsID>
+    <trkID>00000Zs-Wc</trkID>
+    <mode>CCD</mode>
+    <stn>693</stn>
+    <obsTime>1995-04-02T07:19:38.784Z</obsTime>
+    <ra>173.94938</ra>
+    <dec>6.10364</dec>
+    <astCat>UNK</astCat>
+    <mag>19.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    25096</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD6</obsID>
+    <trkID>00000Xj-zz</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-04-03T13:49:45.408Z</obsTime>
+    <ra>173.76829</ra>
+    <dec>6.17294</dec>
+    <astCat>UNK</astCat>
+    <mag>18.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    25096</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD7</obsID>
+    <trkID>00000Xj-zz</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-04-03T13:56:45.312Z</obsTime>
+    <ra>173.76729</ra>
+    <dec>6.17300</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    25096</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <obsID>00000000_00_00BYoD8</obsID>
+    <trkID>00000Xj-zz</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>1995-04-03T14:05:00.384Z</obsTime>
+    <ra>173.76654</ra>
+    <dec>6.17344</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    25096</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IuqC3x000000DKQP01000000P</obsID>
+    <trkID>000002Q-nK</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1995-06-22T04:27:22.752Z</obsTime>
+    <ra>174.54087</ra>
+    <dec>4.93572</dec>
+    <astCat>UNK</astCat>
+    <mag>21.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    25352</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IuqC3x000000DKQP01000000Q</obsID>
+    <trkID>000002Q-nK</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1995-06-22T04:53:12.768Z</obsTime>
+    <ra>174.54354</ra>
+    <dec>4.93447</dec>
+    <astCat>UNK</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    25352</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IurC3x000000DKQQ01000000V</obsID>
+    <trkID>000002Q-nL</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1995-06-23T04:04:28.128Z</obsTime>
+    <ra>174.68750</ra>
+    <dec>4.86261</dec>
+    <astCat>UNK</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    25352</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/1993 X1</provID>
+    <trkSub>0147PJ9</trkSub>
+    <obsID>IurC3x000000DKQQ01000000W</obsID>
+    <trkID>000002Q-nL</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>1995-06-23T04:33:17.856Z</obsTime>
+    <ra>174.69042</ra>
+    <dec>4.86092</dec>
+    <astCat>UNK</astCat>
+    <mag>22.6</mag>
+    <band>R</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    25352</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDD</obsID>
+    <trkID>000003n-xT</trkID>
+    <mode>CCD</mode>
+    <stn>695</stn>
+    <obsTime>1999-09-13T05:38:49.920Z</obsTime>
+    <ra>327.57217</ra>
+    <dec>-15.86078</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDE</obsID>
+    <trkID>000003n-xT</trkID>
+    <mode>CCD</mode>
+    <stn>695</stn>
+    <obsTime>1999-09-13T05:45:06.624Z</obsTime>
+    <ra>327.57162</ra>
+    <dec>-15.86097</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDF</obsID>
+    <trkID>000003n-xT</trkID>
+    <mode>CCD</mode>
+    <stn>695</stn>
+    <obsTime>1999-09-13T05:50:51.360Z</obsTime>
+    <ra>327.57088</ra>
+    <dec>-15.86119</dec>
+    <astCat>UNK</astCat>
+    <mag>21.7</mag>
+    <band>R</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDG</obsID>
+    <trkID>000003n-xU</trkID>
+    <mode>CCD</mode>
+    <stn>695</stn>
+    <obsTime>1999-11-13T04:20:03.840Z</obsTime>
+    <ra>326.30371</ra>
+    <dec>-15.91019</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDH</obsID>
+    <trkID>000003n-xU</trkID>
+    <mode>CCD</mode>
+    <stn>695</stn>
+    <obsTime>1999-11-13T04:25:45.984Z</obsTime>
+    <ra>326.30408</ra>
+    <dec>-15.90978</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDI</obsID>
+    <trkID>000003n-xU</trkID>
+    <mode>CCD</mode>
+    <stn>695</stn>
+    <obsTime>1999-11-13T04:35:49.920Z</obsTime>
+    <ra>326.30467</ra>
+    <dec>-15.90981</dec>
+    <astCat>UNK</astCat>
+    <mag>21.7</mag>
+    <band>R</band>
+    <nucMag>1</nucMag>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDJ</obsID>
+    <trkID>00000aG-eH</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-09-26T16:05:30.336Z</obsTime>
+    <ra>42.68521</ra>
+    <dec>13.34008</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDK</obsID>
+    <trkID>00000aG-eH</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-09-26T16:15:29.952Z</obsTime>
+    <ra>42.68454</ra>
+    <dec>13.33975</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDL</obsID>
+    <trkID>00000aG-eH</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-09-26T16:28:30.144Z</obsTime>
+    <ra>42.68417</ra>
+    <dec>13.33947</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDM</obsID>
+    <trkID>00000aG-eI</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-10-03T17:15:00.000Z</obsTime>
+    <ra>42.14392</ra>
+    <dec>13.13575</dec>
+    <astCat>UNK</astCat>
+    <mag>20.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDN</obsID>
+    <trkID>00000aG-eI</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-10-03T17:28:00.192Z</obsTime>
+    <ra>42.14333</ra>
+    <dec>13.13564</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDO</obsID>
+    <trkID>00000aG-eI</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-10-03T18:04:59.808Z</obsTime>
+    <ra>42.14046</ra>
+    <dec>13.13442</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDP</obsID>
+    <trkID>00000aG-eI</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-10-03T18:17:00.384Z</obsTime>
+    <ra>42.13917</ra>
+    <dec>13.13478</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDQ</obsID>
+    <trkID>00000aG-eJ</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-10-04T18:03:29.952Z</obsTime>
+    <ra>42.04287</ra>
+    <dec>13.09994</dec>
+    <astCat>UNK</astCat>
+    <mag>21.4</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDR</obsID>
+    <trkID>00000aG-eJ</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-10-04T18:20:59.712Z</obsTime>
+    <ra>42.04100</ra>
+    <dec>13.09972</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDS</obsID>
+    <trkID>00000aG-eJ</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-10-04T18:30:29.952Z</obsTime>
+    <ra>42.04079</ra>
+    <dec>13.09997</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDT</obsID>
+    <trkID>00000aG-eJ</trkID>
+    <mode>CCD</mode>
+    <stn>867</stn>
+    <obsTime>2000-10-04T18:51:00.288Z</obsTime>
+    <ra>42.03887</ra>
+    <dec>13.09889</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <obsID>00000000_00_00BYoDU</obsID>
+    <trkID>00000Ov-Yl</trkID>
+    <mode>CCD</mode>
+    <stn>809</stn>
+    <obsTime>2000-10-08T04:14:55.392Z</obsTime>
+    <ra>41.67179</ra>
+    <dec>12.97489</dec>
+    <astCat>UNK</astCat>
+    <mag>21.0</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <trkSub>PJ93X010</trkSub>
+    <obsID>JQfG7a000000DeD602000000E</obsID>
+    <trkID>00000Ov-Yl</trkID>
+    <mode>CCD</mode>
+    <stn>809</stn>
+    <obsTime>2000-10-08T04:26:38.688Z</obsTime>
+    <ra>41.67083</ra>
+    <dec>12.97456</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <provID>P/2000 T2</provID>
+    <trkSub>PJ93X010</trkSub>
+    <obsID>JQfG7a000000DeD602000000F</obsID>
+    <trkID>00000Ov-Yl</trkID>
+    <mode>CCD</mode>
+    <stn>809</stn>
+    <obsTime>2000-10-08T04:38:23.712Z</obsTime>
+    <ra>41.66979</ra>
+    <dec>12.97419</dec>
+    <astCat>UNK</astCat>
+    <ref>MPC    41448</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>0147P</trkSub>
+    <obsID>JXiCtM0100004mUG010000001</obsID>
+    <trkID>000000h8nM</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2001-12-14T12:38:49.344Z</obsTime>
+    <ra>154.22421</ra>
+    <dec>12.63072</dec>
+    <astCat>USNOSA2</astCat>
+    <mag>21.5</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    44181</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>H</notes>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>0147P</trkSub>
+    <obsID>JXiCtM0100004mUG010000002</obsID>
+    <trkID>000000h8nM</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2001-12-14T12:53:15.072Z</obsTime>
+    <ra>154.22513</ra>
+    <dec>12.63044</dec>
+    <astCat>USNOSA2</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    44181</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>H</notes>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>0147P</trkSub>
+    <obsID>JXiCtM0100004mUG010000003</obsID>
+    <trkID>000000h8nM</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2001-12-14T13:07:50.304Z</obsTime>
+    <ra>154.22563</ra>
+    <dec>12.63081</dec>
+    <astCat>USNOSA2</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    44181</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>H</notes>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>C2860W</trkSub>
+    <obsID>JYcCLG0000004wkx0100000OS</obsID>
+    <trkID>000000rlBu</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2002-02-08T09:34:42.240Z</obsTime>
+    <ra>150.31408</ra>
+    <dec>14.97358</dec>
+    <astCat>USNOSA2</astCat>
+    <mag>20.7</mag>
+    <band>V</band>
+    <ref>MPC    44713</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>C2860W</trkSub>
+    <obsID>JYcCLG0000004wkx0100000OT</obsID>
+    <trkID>000000rlBu</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2002-02-08T09:46:31.584Z</obsTime>
+    <ra>150.31246</ra>
+    <dec>14.97403</dec>
+    <astCat>USNOSA2</astCat>
+    <mag>20.8</mag>
+    <band>V</band>
+    <ref>MPC    44713</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>C2860W</trkSub>
+    <obsID>JYcCLG0000004wkx0100000OU</obsID>
+    <trkID>000000rlBu</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2002-02-08T09:58:21.792Z</obsTime>
+    <ra>150.31092</ra>
+    <dec>14.97469</dec>
+    <astCat>USNOSA2</astCat>
+    <mag>20.9</mag>
+    <band>V</band>
+    <ref>MPC    44713</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <obsID>00000000_00_00BYoDd</obsID>
+    <trkID>00000Xj-zm</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>2002-02-15T15:34:19.776Z</obsTime>
+    <ra>148.99183</ra>
+    <dec>15.49739</dec>
+    <astCat>USNOA2</astCat>
+    <mag>19.8</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    44714</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <obsID>00000000_00_00BYoDe</obsID>
+    <trkID>00000Xj-zm</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>2002-02-15T15:42:00.288Z</obsTime>
+    <ra>148.99071</ra>
+    <dec>15.49789</dec>
+    <astCat>USNOA2</astCat>
+    <ref>MPC    44714</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <obsID>00000000_00_00BYoDf</obsID>
+    <trkID>00000Xj-zm</trkID>
+    <mode>CCD</mode>
+    <stn>360</stn>
+    <obsTime>2002-02-15T15:54:59.616Z</obsTime>
+    <ra>148.98904</ra>
+    <dec>15.49853</dec>
+    <astCat>USNOA2</astCat>
+    <ref>MPC    44714</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>0147P</trkSub>
+    <obsID>JZJBxr01000056j4020000001</obsID>
+    <trkID>00000145mX</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2002-03-20T02:52:44.544Z</obsTime>
+    <ra>144.24162</ra>
+    <dec>17.09661</dec>
+    <astCat>USNOA2</astCat>
+    <mag>21.4</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    45045</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>H</notes>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>0147P</trkSub>
+    <obsID>JZJBxr01000056j4020000002</obsID>
+    <trkID>00000145mX</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2002-03-20T03:25:31.008Z</obsTime>
+    <ra>144.23925</ra>
+    <dec>17.09722</dec>
+    <astCat>USNOA2</astCat>
+    <mag>21.9</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    45045</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>H</notes>
+  </optical>
+  <optical>
+    <permID>147P</permID>
+    <trkSub>0147P</trkSub>
+    <obsID>JZJBxr01000056j4020000003</obsID>
+    <trkID>00000145mX</trkID>
+    <mode>CCD</mode>
+    <stn>691</stn>
+    <obsTime>2002-03-20T03:58:26.112Z</obsTime>
+    <ra>144.23758</ra>
+    <dec>17.09747</dec>
+    <astCat>USNOA2</astCat>
+    <mag>21.2</mag>
+    <band>R</band>
+    <nucMag>0</nucMag>
+    <ref>MPC    45045</ref>
+    <subFmt>M92</subFmt>
+    <precTime>10</precTime>
+    <precRA>0.01</precRA>
+    <precDec>0.1</precDec>
+    <notes>H</notes>
+  </optical>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</ades>

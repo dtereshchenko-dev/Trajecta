@@ -1,4 +1,5 @@
 #include "orbital_core/hazard/ManifoldOfVariations.h"
+#include "SemilinearContours.h"
 #include "mov/MovCoordinates.h"
 #include "fit/FitObservations.h"
 #include "fit/OrbitFitModel.h"
@@ -225,6 +226,7 @@ namespace orbital_core::hazard {
 		propagator.setStepSize(settings.nbody.stepSize);
 		propagator.setPlanetMask(settings.nbody.planetMask);
 		propagator.setUseSb441(settings.nbody.useSb441);
+		propagator.setForceModel(settings.nbody.forceModel);
 		propagator.setTargetNaifId(settings.nbody.targetNaifId);
 		propagator.setInactiveInteriorMassPolicy(settings.nbody.inactiveInteriorMassPolicy);
 		propagator = propagator.forEncounterMonitoring(*eph);
@@ -466,9 +468,9 @@ namespace orbital_core::hazard {
 				if (trajectory.epochMjdTdb > scan.startMjdTdb)
 					throw std::runtime_error("Nominal epoch is later than the MOV scan start");
 				auto p = propagator;
-				const auto crossing = boundary::search(trajectory.state, trajectory.epochMjdTdb, nominal->finalNonGrav,
-				                                       scan.target, scan.startMjdTdb, scan.endMjdTdb, scan.altitudeKm,
-				                                       p, *eph, cancel);
+				const auto crossing =
+				    boundary::search(trajectory.state, trajectory.epochMjdTdb, nominal->finalNonGrav, scan.target,
+				                     scan.startMjdTdb, scan.endMjdTdb, scan.altitudeKm, p, *eph, cancel);
 				trajectory.entryBeforeInterval = crossing.beforeInterval;
 				trajectory.entry = crossing.entry;
 			} catch (const std::exception& e) {
@@ -566,6 +568,20 @@ namespace orbital_core::hazard {
 			    "Propagation failures have nonzero weight; only a probability bracket is available.");
 		if (!totalWeight && !result.cancelled)
 			throw std::runtime_error("MOV has no eligible probability mass");
+		if (config.semilinearContours && !cancel.stop_requested()) {
+			if (progress)
+				progress(-1, total);
+			if (nominal && result.nominal)
+				result.semilinear = computeSemilinearContours(
+				    result.nominal->state, result.nominal->epochMjdTdb, nominal->finalNonGrav,
+				    nominal->uncertainty.fitParameterCovariance, result.nominal->entry, config.target,
+				    config.startMjdTdb, config.endMjdTdb, config.altitudeKm, config.workers, propagator, *eph, cancel);
+			else {
+				result.semilinear.status = "unavailable";
+				result.semilinear.reason = "A converged nominal orbit with covariance is required.";
+			}
+		}
+		result.cancelled = cancel.stop_requested();
 		return result;
 	}
 

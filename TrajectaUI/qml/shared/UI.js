@@ -159,6 +159,10 @@ function pageMargin(width) {
     return width <= 1200 ? 20 : width >= 1700 ? 40 : 30
 }
 
+function orthographicMagnification(viewportHeight, distance, fieldOfView) {
+    return Math.max(1, viewportHeight) / (2 * Math.max(1e-12, Math.abs(distance)) * Math.tan(fieldOfView * Math.PI / 360))
+}
+
 function mix(a, b, fraction) {
     return Qt.rgba(
         a.r * fraction + b.r * (1 - fraction),

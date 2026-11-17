@@ -21,6 +21,7 @@ struct OptimizationSettings {
 	bool timingEnabled{false};
 	bool sigmaClipEnabled{false};
 	orbital_core::PhotometryOptions photometry;
+	orbital_core::ForceModelSettings forceModel;
 
 	int nonGravSolveMask{0};
 

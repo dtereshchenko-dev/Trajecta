@@ -5,6 +5,7 @@
 #include <QStandardPaths>
 #include <QDir>
 #include "settings/FitSettingsAggregator.h"
+#include "settings/SettingsStorage.h"
 #include "orbital_core/Types.h"
 #include "orbital_core/DE440Source.h"
 #include "orbital_core/SpkReader.h"
@@ -24,6 +25,9 @@ int main(int argc, char* argv[])
 	app.setApplicationName("Trajecta");
 	app.setApplicationDisplayName("Trajecta");
 	app.setApplicationVersion(QStringLiteral(TRAJECTA_VERSION));
+	bool createdEmptySettings = false;
+	if (!SettingsStorage::initialize(&createdEmptySettings))
+		qWarning("Could not migrate settings to INI; using the existing settings store");
 
 	getExecutableDir() = QCoreApplication::applicationDirPath().toStdWString();
 
@@ -31,7 +35,9 @@ int main(int argc, char* argv[])
 	if (!logDir.isEmpty()) {
 		orbital_core::setObservatoryDataDirectory(QDir(logDir).filePath("observatories").toStdWString());
 		orbital_core::setEphemerisDataDirectory(QDir(logDir).filePath("ephemerides").toStdWString());
+		orbital_core::setEarthPckDataDirectory(QDir(logDir).filePath("earth_orientation").toStdWString());
 	}
+	EarthPckUpdate::applyPending();
 	QDir().mkpath(logDir + "/log");
 	Logger::setLogFile((logDir + "/log/process.log").toStdString());
 
@@ -46,10 +52,12 @@ int main(int argc, char* argv[])
 
 	FitSettingsAggregator settings;
 	settings.load();
+	if (createdEmptySettings)
+		settings.save();
 
 	ApplicationSession session(settings);
 	session.applicationUpdate()->check();
-	session.dataSources()->observatoryUpdate()->check();
+	session.dataSources()->checkUpdates();
 	QQmlApplicationEngine engine;
 	engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
 

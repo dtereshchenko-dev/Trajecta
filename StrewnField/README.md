@@ -297,8 +297,8 @@ work/2026-10-04/2023 VD3/
 
 The shared cache is created only when remote sources are requested. Each successful
 run archives the actual prepared environment, so replay does not depend on cache
-contents or network availability. No existing run is overwritten. Future generated
-maps/HTML belong in the same run directory; their generator is not implemented yet.
+contents or network availability. No existing run is overwritten. When map
+output is enabled, the generated maps and HTML report are stored with the run.
 
 `input.kind: "orbit_solution"` requires `orbit_cartesian_oef.txt`, including CAR
 state, covariance and dynamical MJD epoch in our ECLM J2000 format. Non-grav
@@ -526,9 +526,10 @@ The orbital CLI exposes `--mc 200 --mc-altitude-km 100 --mc-output entries.json`
 The Earth states in this file can be used directly as `state_samples` by
 StrewnCLI. The file includes run counts and crossing IDs; selection remains
 conditional on successful Earth entries in the selected interval.
-The frame uses OrbitalCore's IAU1976/1980 UT1/GAST convention without polar motion,
-not a new high-precision ITRF realization. The one-command `orbit_solution` adapter
-uses the same MC engine.
+The Earth-fixed transformation uses OrbitalCore's Earth PCK when available.
+Outside PCK coverage it can fall back to UT1 and IAU 1976/1980 without polar
+motion. An unavailable Earth orientation is reported as an error. The
+one-command `orbit_solution` adapter uses the same MC engine.
 
 Defaults are a strong-only preset, not a universal population prior:
 `weak_probability=0`, strong strength 0.9-5 MPa, density 2500-3500 kg/m3,

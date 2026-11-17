@@ -8,15 +8,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(_mc_web "${CMAKE_CURRENT_SOURCE_DIR}/src/export/web")
 get_filename_component(_atmos_web "${CMAKE_CURRENT_SOURCE_DIR}/../StrewnField/output/web" ABSOLUTE)
-file(READ "${_atmos_web}/viewer.html" _atmos_html)
-string(REGEX MATCH "<style>[ \t\r\n]*:root[^<]*</style>" _atmos_style "${_atmos_html}")
-string(REGEX REPLACE "^<style>|</style>$" "" _atmos_style "${_atmos_style}")
-if(NOT _atmos_style)
-    message(FATAL_ERROR "Atmospheric report stylesheet not found")
-endif()
+file(READ "${_atmos_web}/report-common.css" _report_common_style)
+file(READ "${_atmos_web}/viewer.css" _report_viewer_style)
+string(CONCAT _atmos_style "${_report_common_style}" "${_report_viewer_style}")
 string(HEX "${_atmos_style}" _style_hex)
 string(REGEX REPLACE "(..)" "0x\\1," MC_STYLE_BYTES "${_style_hex}")
 file(READ "${_mc_web}/interval-mc.html" _mc_html)
+file(READ "${_mc_web}/map-print.css" _map_print_style)
+file(READ "${_mc_web}/interval-mc.css" _mc_style)
+string(REPLACE "__PAGE_CSS__" "${_map_print_style}\n${_mc_style}" _mc_html "${_mc_html}")
 foreach(_icon PRINT FIT)
     if(_icon STREQUAL "PRINT")
         set(_icon_name printer)
@@ -45,19 +45,25 @@ file(READ "${_atmos_web}/vendor/leaflet/LICENSE" MC_LICENSE)
 file(READ "${_atmos_web}/vendor/lucide/LICENSE" _icon_license)
 string(APPEND MC_LICENSE "\nLucide\n${_icon_license}")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-    "${_mc_web}/interval-mc.html" "${_atmos_web}/viewer.html"
+    "${_mc_web}/interval-mc.html" "${_mc_web}/interval-mc.css" "${_mc_web}/map-print.css"
+    "${_atmos_web}/report-common.css" "${_atmos_web}/viewer.css"
     "${_atmos_web}/vendor/leaflet/leaflet.css")
 configure_file("${_mc_web}/IntervalMcAssets.h.in" generated/IntervalMcAssets.h @ONLY)
 foreach(_asset HTML SCRIPT)
     if(_asset STREQUAL "HTML")
         set(_path "${_mc_web}/mov.html")
+        file(READ "${_path}" _mov_html)
+        file(READ "${_mc_web}/mov.css" _mov_style)
+        string(REPLACE "__PAGE_CSS__" "${_map_print_style}\n${_mov_style}" _mov_html "${_mov_html}")
+        string(HEX "${_mov_html}" _hex)
     else()
         set(_path "${_mc_web}/mov.js")
+        file(READ "${_path}" _hex HEX)
     endif()
-    file(READ "${_path}" _hex HEX)
     string(REGEX REPLACE "(..)" "0x\\1," MOV_${_asset}_BYTES "${_hex}")
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_path}")
 endforeach()
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_mc_web}/mov.css")
 configure_file("${_mc_web}/MovAssets.h.in" generated/MovAssets.h @ONLY)
 
 set(CMAKE_PREFIX_PATH "C:/vcpkg/installed/x86-windows" ${CMAKE_PREFIX_PATH})
@@ -214,6 +220,16 @@ if(NOT Eigen3_FOUND)
         "      cmake --preset linux-Release -DCMAKE_PREFIX_PATH=/path/to/eigen-3.4.1")
 endif()
 find_package(OpenMP REQUIRED)
+find_path(CSPICE_INCLUDE_DIR SpiceUsr.h PATH_SUFFIXES cspice REQUIRED)
+find_library(CSPICE_LIBRARY NAMES cspice REQUIRED)
+if(WIN32 AND CSPICE_LIBRARY MATCHES "\\.lib$")
+    add_library(CSPICE::CSPICE SHARED IMPORTED)
+    find_file(CSPICE_DLL NAMES cspice.dll HINTS "${CMAKE_PREFIX_PATH}/bin" "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin" REQUIRED)
+    set_target_properties(CSPICE::CSPICE PROPERTIES IMPORTED_IMPLIB "${CSPICE_LIBRARY}" IMPORTED_LOCATION "${CSPICE_DLL}")
+else()
+    add_library(CSPICE::CSPICE UNKNOWN IMPORTED)
+    set_target_properties(CSPICE::CSPICE PROPERTIES IMPORTED_LOCATION "${CSPICE_LIBRARY}")
+endif()
 
 # Pinned, unmodified ERFA subset for the modern IAU2006/2000A dynamical pole.
 set(_erfa_root "${CMAKE_CURRENT_SOURCE_DIR}/third_party/erfa")
@@ -242,6 +258,7 @@ add_library(OrbitalCore SHARED
     api/orbital_core/Residuals.h
     api/orbital_core/AstrometricWeights.h
     api/orbital_core/ForceModelPolicy.h
+    api/orbital_core/ForceModelSettings.h
     api/orbital_core/Types.h
     api/orbital_core/IEphemerisSource.h
     api/orbital_core/PlanetaryBodyMask.h
@@ -284,6 +301,9 @@ add_library(OrbitalCore SHARED
     src/Residuals.cpp
     src/EphemeridesContainer.h      src/EphemeridesContainer.cpp
     api/orbital_core/Ephemeris.h    src/ephemerides/Ephemeris.cpp
+    api/orbital_core/RelativeMotion.h src/propagator/RelativeMotion.cpp src/propagator/CaptureTimeUncertainty.cpp
+    src/propagator/RelativeMotionInternal.h
+    src/uncertainty/LinearizedCovariance.h
     src/obs/IObservationReader.h    src/obs/ObservationReaders.cpp
     src/obs/RwoReader.h             src/obs/RwoReader.cpp
     src/obs/Mpc80ColumnReader.h     src/obs/Mpc80ColumnReader.cpp
@@ -319,7 +339,6 @@ add_library(OrbitalCore SHARED
     src/EnvironmentVariable.h      src/RuntimeData.cpp
     src/earth_orientation/EarthOrientation.h src/earth_orientation/EarthOrientation.cpp
     src/earth_orientation/EopData.h src/earth_orientation/C04Data.cpp
-    src/earth_orientation/FinalsData.cpp
     src/earth_orientation/DeltaTData.cpp
     src/hazard/BodyFixedFrame.cpp
     src/hazard/PlanetData.cpp
@@ -349,6 +368,8 @@ add_library(OrbitalCore SHARED
 
     src/AstrometryBias.h            src/AstrometryBias.cpp
     src/earth_orientation/EarthRotation.h src/earth_orientation/EarthRotation.cpp
+    src/earth_orientation/EarthPck.h src/earth_orientation/EarthPck.cpp
+    src/earth_orientation/EarthPckPoleCache.h src/earth_orientation/EarthPckPoleCache.cpp
     src/PhysicalParams.h            src/PhysicalParams.cpp
     api/orbital_core/Photometry.h    src/Photometry.cpp
     src/Gauss.h                     src/Gauss.cpp
@@ -456,6 +477,7 @@ if(ORBITAL_CORE_BUILD_HAZARD)
         src/hazard/VirtualImpactorRefinement.cpp
         src/hazard/BPlane.cpp
         src/hazard/IntervalMonteCarlo.cpp
+        src/hazard/SemilinearContours.cpp
         src/hazard/ManifoldOfVariations.cpp
     src/export/MovReport.cpp
         src/hazard/mov/MovCoordinates.cpp
@@ -478,7 +500,8 @@ target_include_directories(OrbitalCore
         ${CMAKE_CURRENT_SOURCE_DIR}/src/io
 )
 
-target_link_libraries(OrbitalCore PRIVATE OrbitalErfa PUBLIC Eigen3::Eigen)
+target_include_directories(OrbitalCore PRIVATE "${CSPICE_INCLUDE_DIR}")
+target_link_libraries(OrbitalCore PRIVATE OrbitalErfa CSPICE::CSPICE PUBLIC Eigen3::Eigen)
 
 # Pin Eigen's ABI for every consumer of this library.
 #
@@ -563,7 +586,6 @@ function(orbital_core_deploy_data target)
     set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/linux_p1550p2650.440")
     set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/OBSCODE.dat")
     set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/RADCODE.dat")
-    set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/earth_orientation/ET-UT.dat")
     set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS "${_d}/weights/vfcc17.rules")
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${_dest}/debias"
@@ -572,10 +594,6 @@ function(orbital_core_deploy_data target)
         COMMAND ${CMAKE_COMMAND} -E make_directory "${_dest}/licenses"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/third_party/erfa/LICENSE" "${_dest}/licenses/ERFA.txt"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${_d}/earth_orientation/eopc04.62-now" "${_dest}/earth_orientation/eopc04.62-now"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${_d}/earth_orientation/eopc04.cnc" "${_dest}/earth_orientation/eopc04.cnc"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${_d}/linux_p1550p2650.440"   "${_dest}/linux_p1550p2650.440"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -590,13 +608,21 @@ function(orbital_core_deploy_data target)
             "${_d}/weights/vfcc17.rules"    "${_dest}/weights/vfcc17.rules"
         COMMAND ${CMAKE_COMMAND} -E rm -f
             "${_dest}/weights/veres_2017.dat"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${_d}/earth_orientation/finals2000A.all" "${_dest}/earth_orientation/finals2000A.all"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${_d}/earth_orientation/ET-UT.dat" "${_dest}/earth_orientation/ET-UT.dat"
-        COMMAND ${CMAKE_COMMAND} -E rm -f
-            "${_dest}/finals2000A.all"
     )
+    if(target STREQUAL "OrbitalCoreTests")
+        foreach(_c04 eopc04.62-now eopc04.cnc ET-UT.dat)
+            add_custom_command(TARGET ${target} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${_d}/earth_orientation/${_c04}" "${_dest}/earth_orientation/${_c04}")
+        endforeach()
+        foreach(_pck earth_predict.bpc earth_historic.bpc earth_latest.bpc)
+            if(EXISTS "${_d}/earth_orientation/${_pck}")
+                add_custom_command(TARGET ${target} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "${_d}/earth_orientation/${_pck}" "${_dest}/earth_orientation/${_pck}")
+            endif()
+        endforeach()
+    endif()
 endfunction()
 
 # ---------------------------------------------------------------------------
@@ -713,13 +739,13 @@ if(ORBITAL_CORE_BUILD_HAZARD)
     )
 endif()
 
-target_link_libraries(OrbitalCoreTests PRIVATE OrbitalCore GTest::gtest)
+target_link_libraries(OrbitalCoreTests PRIVATE OrbitalCore GTest::gtest CSPICE::CSPICE)
 target_compile_definitions(OrbitalCoreTests PRIVATE ORBITAL_TEST_OBSERVATORY_DIR="${ORBITAL_CORE_DATA_DIR}")
 orbital_core_deploy_data(OrbitalCoreTests)
 if(ORBITAL_CORE_BUILD_HAZARD)
     target_link_libraries(OrbitalCoreTests PRIVATE nlohmann_json::nlohmann_json)
 endif()
-target_include_directories(OrbitalCoreTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(OrbitalCoreTests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CSPICE_INCLUDE_DIR}")
 
 if(WIN32)
     add_custom_command(TARGET OrbitalCoreTests POST_BUILD

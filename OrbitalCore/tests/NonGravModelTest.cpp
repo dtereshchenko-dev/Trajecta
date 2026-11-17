@@ -7,6 +7,22 @@
 namespace {
 }
 
+TEST(NonGravModelTest, InverseSquareAllowsA1OnlyWithoutChangingOtherModelMasks)
+{
+	NonGravModel model;
+	model.setEnabled(true);
+	model.setModel(NgModel::InverseSquare);
+	model.setFitParameterMask(NgParameterMask::A1);
+	EXPECT_EQ(model.fitParameterMask(), NgParameterMask::A1);
+	EXPECT_EQ(model.fitParameterCount(), 1);
+	EXPECT_EQ(model.fitParameterAt(0), NgParameter::A1);
+	EXPECT_EQ(model.sensitivityColumnForFitParameter(0), 0);
+	EXPECT_EQ(NonGravModel::sanitizeFitParameterMaskFor(NgModel::MarsdenH2O, NgParameterMask::A1),
+	          NgParameterMask::A1 | NgParameterMask::A2);
+	EXPECT_EQ(NonGravModel::sanitizeFitParameterMaskFor(NgModel::Yarkovsky, NgParameterMask::A1),
+	          NgParameterMask::None);
+}
+
 TEST(NonGravModelTest, MarsdenCOUsesNormalizedR0FiveLaw)
 {
 	NonGravModel model;

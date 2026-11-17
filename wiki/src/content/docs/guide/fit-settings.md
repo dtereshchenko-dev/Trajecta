@@ -1,16 +1,25 @@
 ---
 title: Fit settings
-description: Configure observations, integration, perturbations and photometry.
+description: Configure observations, integration, forces and photometry.
 ---
 
 Open **Settings** in the sidebar to configure the next calculation. The dialog
-groups options for observations, integration, perturbing bodies,
+groups options for observations, integration, forces,
 non-gravitational forces and photometry.
 
 - **Apply** saves the calculation settings for the next calculation.
 - **Apply and re-solve** saves them and starts another fit when an observation
   file is available.
 - **Cancel** discards unapplied calculation-setting changes.
+
+On Windows, settings are stored in
+`%LOCALAPPDATA%/Trajecta/Trajecta/Trajecta.ini`. On Linux, they are stored in
+`Trajecta/Trajecta.ini` under the configuration directory (`~/.config` by
+default). If the file does not exist, Trajecta copies existing settings from
+the previous storage or creates it with defaults. On Windows, the old registry
+settings are removed after they are copied successfully.
+The INI groups calculation settings by the sections in the dialog, including
+`fit`, `integrator`, `perturbations`, `forces`, `non-gravitational`, and `photometry`.
 
 The screenshots show example settings; they may differ from your current
 selection or available data.
@@ -56,9 +65,9 @@ two-body calculation otherwise.
 adjust subsequent steps. Accuracy is controlled by the numerical core. The
 dialog also shows that light-time correction is enabled for the orbit fit.
 
-## Perturbations
+## Forces
 
-![Perturbing-body settings](../../../assets/fit-settings/perturbations.png)
+![Force model settings](../../../assets/fit-settings/perturbations.png)
 
 With N-body propagation enabled, select the planetary and other perturbing
 bodies to include. **Small bodies SB441** enables the 16 massive asteroids
@@ -70,6 +79,29 @@ SB441-N16 must be available before it can be enabled. See
 [Data Sources](../../data-sources/) for the download. The Sun's central
 gravity is part of the propagation and is not a checkbox in this list.
 
+The same page controls additional accelerations:
+
+- **Relativity** selects full EIH, the Sun-only outer sum, or no relativistic
+  correction. The Sun-only option retains enabled planetary terms in the inner
+  sums.
+- **Earth gravity** enables J2, J3 and J4 independently. These terms are used
+  when Earth is enabled and the object is within 0.1 AU of its centre.
+- **Earth pole** selects a time-varying pole or a fixed J2000 pole for those
+  Earth-gravity terms. It does not change the orientation used for observatory
+  positions or other coordinate transformations.
+
+Solar J2 is included in N-body propagation and has no separate switch. By
+default, full EIH, Earth J2/J3/J4 and the time-varying pole are enabled.
+
+These choices are used in the orbit fit and subsequent calculations based on
+that solution. After a converged fit, the solution folder includes a
+`Trajecta.ini` snapshot of the fit's effective calculation settings. It excludes
+interface preferences and recent file paths. Re-solving into the same folder
+replaces that snapshot. Reproducing a solution also requires the observations
+and the external data used for the calculation. Snapshots made by earlier
+versions may contain interface preferences or local paths; review them before
+sharing an existing solution folder.
+
 ## Non-gravitational forces
 
 ![Non-gravitational force settings](../../../assets/fit-settings/non-gravitational.png)
@@ -79,7 +111,10 @@ the distance-dependent law under **Model g(r)** and the parameters under
 **Estimated coefficients**:
 
 - **Marsden H2O** and **Marsden CO** use cometary activity laws.
-- **Inverse square** uses a distance factor proportional to `1/r²`.
+- **Inverse square** uses a distance factor proportional to `1/r²`. Choose
+  **A1** to estimate only the radial coefficient, for example when fitting
+  solar radiation pressure. Other coefficients are fixed, not necessarily reset
+  to zero when re-solving a previous non-gravitational solution.
 - **Yarkovsky** uses an inverse-square factor with A2 as the estimated
   coefficient; A1 and A3 are fixed to zero in this model.
 

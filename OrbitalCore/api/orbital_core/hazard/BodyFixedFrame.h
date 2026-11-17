@@ -10,7 +10,7 @@
 class IEphemerisSource;
 
 // J2000 ecliptic -> body-fixed for impact-corridor lat/lon.
-// Earth: optical IAU 1976/1980 precession-nutation + UT1/GAST, no polar motion.
+// Earth: binary PCK ITRF93; C04 or historical UT1 with IAU 1976/1980 as fallback.
 // Moon: DE440 principal axes -> ME440 aligned to ME421.
 // Other planets: full IAU rotation series in NAIF pck00011, including periodic
 // terms. These reference frames do not imply a terrain model or equal accuracy.
@@ -28,7 +28,7 @@ namespace orbital_core::hazard {
 		}
 	};
 
-	// MJD TDB at the public boundary; Earth orientation converts locally to TT/UT1.
+	// MJD TDB at the public boundary.
 	// A supplied source takes precedence over the default. Missing lunar data,
 	// unsupported DE frames and non-finite epochs return valid=false, never an
 	// unlabeled approximate lunar orientation.

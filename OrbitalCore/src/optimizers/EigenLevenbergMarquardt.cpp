@@ -237,9 +237,9 @@ namespace orbital_core::optimizers {
 			solver.setFactor(initialStepFactor);
 			solver.setMaxfev(maxEvaluations);
 			Status status = solver.minimizeInit(x);
-			LOG_INFO << "[EigenLM] start n=" << x.size() << " m=" << functor.values() << " ftol=" << functionTolerance
-			         << " xtol=" << parameterTolerance << " gtol=" << gradientTolerance
-			         << " factor=" << initialStepFactor;
+			LOG_DEBUG << "[EigenLM] start n=" << x.size() << " m=" << functor.values() << " ftol=" << functionTolerance
+			          << " xtol=" << parameterTolerance << " gtol=" << gradientTolerance
+			          << " factor=" << initialStepFactor;
 			for (int iteration = 0;
 			     iteration < maxIterations && (status == Eigen::LevenbergMarquardtSpace::NotStarted ||
 			                                   status == Eigen::LevenbergMarquardtSpace::Running);

@@ -11,7 +11,7 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true
         CustomComboBox { objectName: "mov-runs"; Layout.fillWidth: true; model: view.mov.runs; textRole: "label"; currentIndex: view.mov.selectedRun; onActivated: view.mov.selectedRun = currentIndex; Accessible.name: qsTr("MOV runs") }
-        CustomButton { iconName: "file-text"; accessibleLabel: qsTr("Open MOV HTML report"); enabled: !!view.result.report; onClicked: view.mov.openReport() }
+        CustomButton { iconName: "activity"; accessibleLabel: qsTr("Open MOV HTML report"); enabled: !!view.result.report; onClicked: view.mov.openReport() }
         CustomButton { iconName: "folder"; accessibleLabel: qsTr("Open MOV archive"); enabled: !!view.result.archive; onClicked: view.mov.openArchive() }
     }
     CustomText { visible: !view.mov.runs.length && !view.mov.busy; text: qsTr("No MOV runs"); secondary: true; font.pixelSize: 12 }

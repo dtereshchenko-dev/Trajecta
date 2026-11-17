@@ -22,6 +22,7 @@ ChartView {
     property rect bounds: Qt.rect(-1, -1, 2, 2)
     property rect dataBounds: Qt.rect(-1, -1, 2, 2)
     property var hoveredSeries: null
+    property bool viewAdjusted: false
     antialiasing: true
     backgroundColor: AppTheme.surface
     plotAreaColor: AppTheme.surface
@@ -31,15 +32,85 @@ ChartView {
     margins { left: 0; right: 0; top: 0; bottom: 0 }
     clip: true
     MouseArea {
+        id: interaction
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton
-        cursorShape: chart.hoveredSeries ? Qt.PointingHandCursor : Qt.ArrowCursor
-        onPositionChanged: mouse => chart.pointAt(mouse.x, mouse.y, false)
-        onClicked: mouse => chart.pointAt(mouse.x, mouse.y, true)
+        preventStealing: true
+        property point pressPosition
+        property rect pressBounds
+        property bool moved: false
+        cursorShape: pressed && moved ? Qt.ClosedHandCursor : chart.hoveredSeries ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onPressed: mouse => {
+            moved = false
+            if (!chart.containsPlotPoint(mouse.x, mouse.y)) {
+                mouse.accepted = false
+                return
+            }
+            pressPosition = Qt.point(mouse.x, mouse.y)
+            pressBounds = chart.bounds
+        }
+        onPositionChanged: mouse => {
+            if (pressed) {
+                const dx = mouse.x - pressPosition.x
+                const dy = mouse.y - pressPosition.y
+                if (!moved && dx * dx + dy * dy < 16) return
+                moved = true
+                chart.panFrom(pressBounds, dx, dy)
+            } else {
+                chart.pointAt(mouse.x, mouse.y, false)
+            }
+        }
+        onClicked: mouse => { if (!moved) chart.pointAt(mouse.x, mouse.y, true) }
         onExited: chart.clearHover()
         onCanceled: chart.clearHover()
-        onWheel: wheel => wheel.accepted = false
+        onWheel: wheel => {
+            if (!chart.containsPlotPoint(wheel.x, wheel.y)) {
+                wheel.accepted = false
+                return
+            }
+            const delta = wheel.angleDelta.y || wheel.pixelDelta.y
+            if (delta) chart.zoomAt(wheel.x, wheel.y, Math.pow(1.2, -delta / 120))
+            wheel.accepted = true
+        }
+    }
+    function containsPlotPoint(x, y) {
+        return x >= plotArea.x && x <= plotArea.x + plotArea.width
+            && y >= plotArea.y && y <= plotArea.y + plotArea.height
+    }
+    function zoomAt(x, y, factor) {
+        const area = plotArea
+        if (area.width <= 0 || area.height <= 0 || !Number.isFinite(factor) || factor <= 0) return
+        const nextWidth = bounds.width * factor
+        const nextHeight = bounds.height * factor
+        if (nextWidth < 1e-10 || nextHeight < 1e-10 || nextWidth > 1e12 || nextHeight > 1e12) return
+        const fx = (x - area.x) / area.width
+        const fy = 1 - (y - area.y) / area.height
+        viewAdjusted = true
+        clearHover()
+        bounds = Qt.rect(bounds.x + fx * (bounds.width - nextWidth),
+                         bounds.y + fy * (bounds.height - nextHeight), nextWidth, nextHeight)
+    }
+    function panFrom(original, dx, dy) {
+        if (plotArea.width <= 0 || plotArea.height <= 0) return
+        viewAdjusted = true
+        clearHover()
+        bounds = Qt.rect(original.x - dx * original.width / plotArea.width,
+                         original.y + dy * original.height / plotArea.height, original.width, original.height)
+    }
+    function resetView() {
+        viewAdjusted = false
+        if (externalData) bounds = dataBounds
+        else updateBounds()
+        clearHover()
+    }
+    function setDefaultBounds(value) {
+        dataBounds = value
+        resetView()
+    }
+    function labelFormat(span, minimumDigits) {
+        const digits = Math.min(8, Math.max(minimumDigits, Math.ceil(-Math.log10(span / 4)) + 1))
+        return "%." + digits + "f"
     }
     function pointAt(x, y, select) {
         clearHover()
@@ -91,7 +162,7 @@ ChartView {
     }
     ResidualPointHint { id: pointHint; objectName: "residual-point-hint" }
     function updateBounds() {
-        if (externalData) return
+        if (externalData || viewAdjusted) return
         var raw = dataBounds
         if (timeMode || plotArea.width <= 0 || plotArea.height <= 0) {
             bounds = raw
@@ -102,20 +173,14 @@ ChartView {
                                      Math.max(raw.height / 2, reference) / plotArea.height)
         var x = unitsPerPixel * plotArea.width
         var y = unitsPerPixel * plotArea.height
-        if (Math.abs(bounds.width - 2 * x) < 1e-9 && Math.abs(bounds.height - 2 * y) < 1e-9) return
+        if (Math.abs(bounds.x + x) < 1e-9 && Math.abs(bounds.y + y) < 1e-9
+                && Math.abs(bounds.width - 2 * x) < 1e-9 && Math.abs(bounds.height - 2 * y) < 1e-9) return
         bounds = Qt.rect(-x, -y, 2 * x, 2 * y)
-        if (zeroHorizontal && zeroHorizontal.count === 2) {
-            zeroHorizontal.replace(0, -x, 0)
-            zeroHorizontal.replace(1, x, 0)
-        }
-        if (zeroVertical && zeroVertical.count === 2) {
-            zeroVertical.replace(0, 0, -y)
-            zeroVertical.replace(1, 0, y)
-        }
     }
     function refresh() {
         clearHover()
         if (externalData || !observations) { refreshSelection(); return }
+        viewAdjusted = false
         dataBounds = observations.plotBounds(timeMode)
         updateBounds()
         zeroHorizontal.clear()
@@ -135,6 +200,9 @@ ChartView {
         zeroHorizontal.clear()
         zeroHorizontal.append(bounds.x, 0)
         zeroHorizontal.append(bounds.x + bounds.width, 0)
+        zeroVertical.clear()
+        zeroVertical.append(0, bounds.y)
+        zeroVertical.append(0, bounds.y + bounds.height)
     }
     ValueAxis {
         id: horizontal
@@ -150,7 +218,7 @@ ChartView {
         labelsFont.pixelSize: 10
         titleFont.family: Qt.platform.os === "windows" ? "Segoe UI" : UI.font
         titleFont.pixelSize: 10
-        labelFormat: chart.timeMode ? "%.1f" : "%.2f"
+        labelFormat: chart.timeMode ? chart.labelFormat(chart.bounds.width, 1) : chart.labelFormat(chart.bounds.width, 2)
     }
     ValueAxis {
         id: vertical
@@ -166,7 +234,7 @@ ChartView {
         labelsFont.pixelSize: 10
         titleFont.family: Qt.platform.os === "windows" ? "Segoe UI" : UI.font
         titleFont.pixelSize: 10
-        labelFormat: chart.yLabelFormat
+        labelFormat: chart.viewAdjusted ? chart.labelFormat(chart.bounds.height, 2) : chart.yLabelFormat
     }
     LineSeries {
         id: zeroHorizontal
