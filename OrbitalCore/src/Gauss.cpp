@@ -200,8 +200,6 @@ namespace Calculations {
 			st.r2 = initialR2;
 			st.rval = 0.0;
 
-			LOG_DEBUG << "Initial rho: " << st.r2;
-
 			double tau1 = tau1_init;
 			double tau3 = tau3_init;
 			bool keepIterating = true;
@@ -262,9 +260,6 @@ namespace Calculations {
 				const double d1 = -st.f3 / denom;
 				const double d3 = st.f1 / denom;
 
-				LOG_DEBUG << "Iteration " << iter << ", r2: " << st.r2 << ", p1: " << p1 << ", p2: " << p2
-				          << ", p3: " << p3;
-
 				p1 = std::fabs(p1);
 				p2 = std::fabs(p2);
 				p3 = std::fabs(p3);
@@ -316,13 +311,8 @@ namespace Calculations {
 		const DMatrix m = buildDMatrix(obs1, obs2, obs3);
 		const CharacteristicPoly poly = buildCharacteristicPoly(m, obs2, tau1, tau3);
 
-		LOG_DEBUG << "Gauss poly coefficients: A=" << poly.Ra << " B=" << poly.Rb << " C=" << poly.Rc;
-
 		std::vector<double> roots =
 		    detail::findInitialGuesses(poly.Ra, poly.Rb, poly.Rc, kRootSearchStart, kRootSearchEnd, kRootSearchStep);
-
-		LOG_DEBUG << "Gauss bracket scan: " << roots.size() << " sign-change root(s) in [" << kRootSearchStart << ", "
-		          << kRootSearchEnd << "] AU";
 
 		const std::size_t nRoots = filterPositiveRoots(roots);
 

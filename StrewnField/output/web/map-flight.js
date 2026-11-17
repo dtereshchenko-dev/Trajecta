@@ -25,7 +25,8 @@
       pending = false;
     function pause() {
       playing = false;
-      if (frameId !== null) cancelAnimationFrame(frameId);
+      if (frameId !== null)
+        cancelAnimationFrame(frameId);
       frameId = null;
       last = null;
       el('map-play').setAttribute('aria-pressed', 'false');
@@ -34,7 +35,8 @@
       el('map-play').classList.remove('playing');
     }
     function status() {
-      if (!model) return;
+      if (!model)
+        return;
       el('map-time').value = String(time);
       el('map-clock').textContent = `${time.toFixed(2)} / ${model.end.toFixed(2)} s`;
       const airborne = drawn.filter((s) => !s.landed).length,
@@ -48,7 +50,8 @@
         profile.width = profile.width;
         profileView = null;
       }
-      if (!visible || !model || !el('map').clientWidth || !el('map').clientHeight) return;
+      if (!visible || !model || !el('map').clientWidth || !el('map').clientHeight)
+        return;
       const size = map.getSize(),
         ratio = Math.min(2, window.devicePixelRatio || 1);
       canvas.width = Math.round(size.x * ratio);
@@ -89,13 +92,15 @@
       }
     }
     function tick(now) {
-      if (!playing) return;
+      if (!playing)
+        return;
       const dt = last === null ? 0 : Math.min(0.25, Math.max(0, (now - last) / 1000));
       last = now;
       const rate = Number(el('map-rate').value);
       time = Math.min(model.end, time + dt * rate);
       draw();
-      if (time >= model.end) pause();
+      if (time >= model.end)
+        pause();
       else frameId = requestAnimationFrame(tick);
     }
     function fit() {
@@ -110,16 +115,19 @@
       title.textContent = marker.label;
       details.style.whiteSpace = 'pre-line';
       details.textContent = `t = ${r[0].toFixed(3)} s\nWGS84: ${r[1].toFixed(2)} km\n${r[5].toFixed(5)}, ${r[6].toFixed(5)}\n${(r[2] * 1000).toPrecision(5)} g | ECEF ${r[3].toFixed(3)} km/s`;
-      if (r[7] !== undefined) details.textContent += `\nAir-relative ${r[7].toFixed(3)} km/s`;
+      if (r[7] !== undefined)
+        details.textContent += `\nAir-relative ${r[7].toFixed(3)} km/s`;
       if (Number.isFinite(marker.pressure))
         details.textContent += `\nModel pressure q = ${(marker.pressure / 1e6).toFixed(3)} MPa`;
-      if (marker.kind === 'dark') details.textContent += '\nSpeed threshold, not an observed end of light.';
+      if (marker.kind === 'dark')
+        details.textContent += '\nSpeed threshold, not an observed end of light.';
       node.append(title, details);
       return node;
     }
     function annotate() {
       markers.clearLayers();
-      if (!visible || !model) return;
+      if (!visible || !model)
+        return;
       for (const m of model.markers) {
         const marker = L.circleMarker([m.row[5], m.row[6]], {
           radius: m.kind === 'height' ? 3 : 6,
@@ -147,11 +155,13 @@
       markers.clearLayers();
       draw();
       controls.forEach((id) => (el(id).disabled = true));
-      if (!visible) return;
+      if (!visible)
+        return;
       el('map-flight-status').textContent = 'Loading saved trajectory...';
       try {
         const result = await load();
-        if (token !== revision) return;
+        if (token !== revision)
+          return;
         run = result.run;
         model = StrewnTrajectory.prepare(
           result.flight,
@@ -166,10 +176,12 @@
         el('map-time').max = String(model.end);
         controls.forEach((id) => (el(id).disabled = false));
         annotate();
-        if (fitAfter) fit();
+        if (fitAfter)
+          fit();
         draw();
       } catch (error) {
-        if (token === revision) el('map-flight-status').textContent = error.message;
+        if (token === revision)
+          el('map-flight-status').textContent = error.message;
       }
     }
     el('trajectory').onchange = () => {
@@ -186,8 +198,10 @@
         pause();
         return;
       }
-      if (!model || !visible) return;
-      if (time >= model.end) time = model.start;
+      if (!model || !visible)
+        return;
+      if (time >= model.end)
+        time = model.start;
       clearDetails();
       playing = true;
       el('map-play').setAttribute('aria-pressed', 'true');
@@ -210,7 +224,8 @@
       }
     });
     map.on('click', (event) => {
-      if (!visible || !model || !event.containerPoint) return;
+      if (!visible || !model || !event.containerPoint)
+        return;
       let nearest = null,
         distance = 13;
       for (const s of drawn) {
@@ -235,7 +250,8 @@
       }
     });
     profile.onclick = (event) => {
-      if (!visible || !model || !profileView) return;
+      if (!visible || !model || !profileView)
+        return;
       let nearest = null,
         distance = 13;
       const candidates = [
@@ -254,14 +270,16 @@
         }
       }
       if (nearest) {
-        if (nearest.kind) seek(nearest.row[0]);
+        if (nearest.kind)
+          seek(nearest.row[0]);
         else pause();
         el('profile-details').replaceChildren(popup(nearest));
         el('profile-details').hidden = false;
       }
     };
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) pause();
+      if (document.hidden)
+        pause();
     });
     window.addEventListener('beforeprint', pause);
     return { pause, refresh, draw };

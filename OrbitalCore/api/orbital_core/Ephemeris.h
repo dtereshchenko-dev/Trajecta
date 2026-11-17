@@ -101,7 +101,7 @@ namespace orbital_core {
 		// Apparent Sun-observer-target angle with light time, deflection and
 		// stellar aberration; geometric when light time is disabled. Heliocentric: NaN.
 		double elongation{std::numeric_limits<double>::quiet_NaN()};
-		double phase{std::numeric_limits<double>::quiet_NaN()};       // heliocentric: NaN
+		double phase{std::numeric_limits<double>::quiet_NaN()};  // heliocentric: NaN
 		std::optional<double> visualMagnitude;
 		std::optional<EphemerisUncertainty> uncertainty;
 		Vec3D position;

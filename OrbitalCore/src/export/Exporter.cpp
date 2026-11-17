@@ -1231,8 +1231,8 @@ namespace orbital_core {
 			if (context.nominalEarthEntry) {
 				const auto& nominal = *context.nominalEarthEntry;
 				const auto precision = os.precision();
-				os << "[nominal_earth_entry]\n" << std::setprecision(15)
-				   << "altitude_km " << nominal.altitudeKm << '\n'
+				os << "[nominal_earth_entry]\n"
+				   << std::setprecision(15) << "altitude_km " << nominal.altitudeKm << '\n'
 				   << "epoch_mjd_tdb " << nominal.crossing.mjdTdb << '\n'
 				   << "latitude_deg " << nominal.crossing.latitudeDeg << '\n'
 				   << "longitude_deg " << nominal.crossing.longitudeDeg << "\n\n";

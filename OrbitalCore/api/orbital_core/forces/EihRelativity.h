@@ -13,6 +13,8 @@ namespace orbital_core::forces {
 	   public:
 		void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& dadv) const noexcept
 		{
+			if (ctx.forceModel.relativity == RelativityMode::Disabled)
+				return;
 			constexpr std::size_t kMaxBodies = 10;
 			constexpr double kMinDistance = 1.0e-12;
 
@@ -75,7 +77,7 @@ namespace orbital_core::forces {
 			}
 
 			// Planet terms: rows 1-3 of DESCANSO equation 4-26.
-			for (std::size_t body = 0; body < bodyCount; ++body) {
+			for (std::size_t body = 0; body < bodyCount && ctx.forceModel.relativity == RelativityMode::Full; ++body) {
 				double term = -4.0 * sunGm / asteroidRadius - sunGm / heliocentricDistances[body];
 				for (std::size_t other = 0; other < bodyCount; ++other)
 					term -= 4.0 * gms[other] / asteroidDistances[other];
@@ -111,7 +113,7 @@ namespace orbital_core::forces {
 			}
 
 			// Planet terms: rows 4 and 5.
-			for (std::size_t body = 0; body < bodyCount; ++body) {
+			for (std::size_t body = 0; body < bodyCount && ctx.forceModel.relativity == RelativityMode::Full; ++body) {
 				const Vec3D asteroidToBody = ctx.R - positions[body];
 				const Vec3D& bodyVelocity = barycentricVelocities[body];
 				const double velocityProjection = asteroidToBody.dot(asteroidVelocity * 4.0 - bodyVelocity * 3.0);

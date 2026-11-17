@@ -2,6 +2,7 @@
 
 #include "hazard/LovImpactProbability.h"
 #include "hazard/TargetPlaneTrace.h"
+#include "orbital_core/Constants.h"
 
 #include <algorithm>
 #include <array>
@@ -230,8 +231,7 @@ TEST(LovImpactProbabilityTest, ResolvesSmallProbabilitiesInBothGaussianTails)
 	constexpr double radius = 4.5;
 	constexpr double stretch = 1e6;
 	constexpr double sigma = 5.0;
-	const double narrowTubeMass =
-	    2 * radius / stretch * std::exp(-sigma * sigma / 2) / std::sqrt(2 * 3.14159265358979323846);
+	const double narrowTubeMass = 2 * radius / stretch * std::exp(-sigma * sigma / 2) / std::sqrt(2 * Constants::PI);
 	for (double sign : {-1.0, 1.0}) {
 		const auto result = run(makeTube(0, 0, 1e-4, stretch, 0, sign * sigma), radius);
 		ASSERT_TRUE(result.valid);

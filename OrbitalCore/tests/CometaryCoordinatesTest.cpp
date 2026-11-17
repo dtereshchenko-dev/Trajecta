@@ -5,13 +5,12 @@
 #include <array>
 #include <cmath>
 #include <limits>
-#include <numbers>
 
 using namespace orbital_core;
 using namespace orbital_core::cometary;
 
 namespace {
-	constexpr double radiansPerDegree = std::numbers::pi / 180.0;
+	constexpr double radiansPerDegree = Constants::PI / 180.0;
 
 	Vector6 cotSeedK14UR1N()
 	{
@@ -69,7 +68,7 @@ namespace {
 	{
 		a -= b;
 		for (int index = 3; index < 6; ++index)
-			a(index) = std::remainder(a(index), 2.0 * std::numbers::pi);
+			a(index) = std::remainder(a(index), 2.0 * Constants::PI);
 		return a;
 	}
 
@@ -94,9 +93,9 @@ TEST(CometaryCoordinatesTest, CartesianAndCovarianceRoundTripsAcrossParabolicBou
 {
 	for (const double e : {0.2, 1.0 - 1.0e-10, 1.0, 1.0 + 1.0e-10, 1.8}) {
 		for (const double inclination : {0.3, 1.67, 2.6}) {
-			for (const double anomaly : {-1.4, 0.0, 1.2, 2.0 * std::numbers::pi - 1.0e-12}) {
+			for (const double anomaly : {-1.4, 0.0, 1.2, 2.0 * Constants::PI - 1.0e-12}) {
 				Vector6 elements;
-				elements << 10.9, e, inclination, -0.2, 2.0 * std::numbers::pi + 0.4, anomaly;
+				elements << 10.9, e, inclination, -0.2, 2.0 * Constants::PI + 0.4, anomaly;
 				SCOPED_TRACE(elements.transpose());
 				Matrix6 forward;
 				const auto state = toCartesian(elements, &forward);
@@ -106,7 +105,7 @@ TEST(CometaryCoordinatesTest, CartesianAndCovarianceRoundTripsAcrossParabolicBou
 				EXPECT_LT(elementDifference(*restored, elements).norm(), 2.0e-12);
 				for (int angle = 3; angle < 6; ++angle) {
 					EXPECT_GE((*restored)(angle), 0.0);
-					EXPECT_LT((*restored)(angle), 2.0 * std::numbers::pi);
+					EXPECT_LT((*restored)(angle), 2.0 * Constants::PI);
 				}
 				if (e < 1.0)
 					EXPECT_LT((*restored)(1), 1.0);
@@ -287,7 +286,7 @@ TEST(CometaryCoordinatesTest, InvalidGeometryFailsWithoutWritingJacobian)
 	expectInvalid(elements);
 	for (const double e : {1.0, 1.8}) {
 		elements(1) = e;
-		elements(5) = std::numbers::pi;
+		elements(5) = Constants::PI;
 		expectInvalid(elements);
 	}
 	EXPECT_FALSE(fromCartesian(Vector6::Zero()));
@@ -300,7 +299,7 @@ TEST(CometaryCoordinatesTest, InvalidGeometryFailsWithoutWritingJacobian)
 TEST(CometaryCoordinatesTest, CircularAndEquatorialAnglesFailExplicitlyForJacobians)
 {
 	for (const double e : {0.0, 1.0e-16, 0.5}) {
-		for (const double inclination : {0.0, 1.0e-16, 1.2, std::numbers::pi}) {
+		for (const double inclination : {0.0, 1.0e-16, 1.2, Constants::PI}) {
 			if (e == 0.5 && inclination == 1.2)
 				continue;
 			Vector6 elements = cotSeedK14UR1N();
@@ -330,7 +329,7 @@ TEST(CometaryCoordinatesTest, CircularAndEquatorialAnglesFailExplicitlyForJacobi
 TEST(CometaryCoordinatesTest, EquatorialNoncircularConicsUseZeroNodeConvention)
 {
 	for (const double e : {0.2, 1.0 - 1.0e-10, 1.0, 1.0 + 1.0e-10, 1.8}) {
-		for (const double inclination : {0.0, std::numbers::pi}) {
+		for (const double inclination : {0.0, Constants::PI}) {
 			Vector6 elements = cotSeedK14UR1N();
 			elements(1) = e;
 			elements(2) = inclination;
@@ -342,7 +341,7 @@ TEST(CometaryCoordinatesTest, EquatorialNoncircularConicsUseZeroNodeConvention)
 			EXPECT_DOUBLE_EQ((*restored)(3), 0.0);
 			EXPECT_NEAR((*restored)(2), inclination, 2.0e-15);
 			const double expectedPeri = elements(4) + (inclination == 0.0 ? elements(3) : -elements(3));
-			EXPECT_NEAR(std::remainder((*restored)(4) - expectedPeri, 2.0 * std::numbers::pi), 0.0, 2.0e-14);
+			EXPECT_NEAR(std::remainder((*restored)(4) - expectedPeri, 2.0 * Constants::PI), 0.0, 2.0e-14);
 			const auto again = toCartesian(*restored);
 			ASSERT_TRUE(again);
 			expectStateNear(*again, *state, 2.0e-13);
@@ -414,13 +413,13 @@ TEST(CometaryCoordinatesTest, PerihelionTimeUsesNearestPassageAndNativeSeedEpoch
 		EXPECT_LT(expected, 0.0);
 		EXPECT_DOUBLE_EQ(timeSincePerihelion(1.7, e, 0.0), 0.0);
 		for (const int turn : {-3, -1, 1, 3})
-			EXPECT_NEAR(timeSincePerihelion(1.7, e, -1.4 + turn * 2.0 * std::numbers::pi), expected,
+			EXPECT_NEAR(timeSincePerihelion(1.7, e, -1.4 + turn * 2.0 * Constants::PI), expected,
 			            2.0e-13 * std::abs(expected));
 	}
 	const double a = 1.7 / (1.0 - 0.7);
-	const double halfPeriod = std::numbers::pi * std::sqrt(a * a * a) / Constants::GAUSS_K;
-	EXPECT_NEAR(timeSincePerihelion(1.7, 0.7, std::numbers::pi), halfPeriod, 2.0e-12 * halfPeriod);
-	EXPECT_NEAR(timeSincePerihelion(1.7, 0.7, -std::numbers::pi), -halfPeriod, 2.0e-12 * halfPeriod);
+	const double halfPeriod = Constants::PI * std::sqrt(a * a * a) / Constants::GAUSS_K;
+	EXPECT_NEAR(timeSincePerihelion(1.7, 0.7, Constants::PI), halfPeriod, 2.0e-12 * halfPeriod);
+	EXPECT_NEAR(timeSincePerihelion(1.7, 0.7, -Constants::PI), -halfPeriod, 2.0e-12 * halfPeriod);
 }
 
 TEST(CometaryCoordinatesTest, PerihelionTimeRejectsInvalidGeometry)
@@ -434,7 +433,7 @@ TEST(CometaryCoordinatesTest, PerihelionTimeRejectsInvalidGeometry)
 	EXPECT_TRUE(std::isnan(timeSincePerihelion(0.0, 1.0, 0.4)));
 	EXPECT_TRUE(std::isnan(timeSincePerihelion(-1.0, 1.0, 0.4)));
 	EXPECT_TRUE(std::isnan(timeSincePerihelion(1.0, -1.0, 0.4)));
-	EXPECT_TRUE(std::isnan(timeSincePerihelion(1.0, 1.0, std::numbers::pi)));
-	EXPECT_TRUE(std::isnan(timeSincePerihelion(1.0, 1.7, std::numbers::pi)));
+	EXPECT_TRUE(std::isnan(timeSincePerihelion(1.0, 1.0, Constants::PI)));
+	EXPECT_TRUE(std::isnan(timeSincePerihelion(1.0, 1.7, Constants::PI)));
 	EXPECT_TRUE(std::isnan(timeSincePerihelion(std::numeric_limits<double>::max(), 1.0, 0.4)));
 }

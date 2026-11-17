@@ -62,8 +62,9 @@ namespace {
 			if (!hazardPlanet)
 				return rPlanetCentricEclKm.magnitude() - sphericalRadiusKm - altitudeKm;
 			using namespace orbital_core::hazard;
-			const Vec3D bodyFixedKm =
-			    icrfToBodyFixed(*hazardPlanet, rPlanetCentricEclKm, orbital_core::time::jdFromMjd(mjd));
+			const Vec3D bodyFixedKm = icrfToBodyFixedMjd(*hazardPlanet, rPlanetCentricEclKm, mjd);
+			if (!std::isfinite(bodyFixedKm.dot(bodyFixedKm)))
+				throw std::runtime_error("Body orientation unavailable at surface-crossing epoch");
 			return referenceSurfaceSignedAltitudeKm(bodyFixedKm, planetRadiusKm(*hazardPlanet),
 			                                        planetFlattening(*hazardPlanet)) -
 			       altitudeKm;
@@ -196,7 +197,7 @@ NBodyPropagator::PropagationWithSurfaceStop NBodyPropagator::propagateUntilSurfa
 {
 	if (!std::isfinite(altitudeKm) || altitudeKm < 0.0)
 		throw std::invalid_argument("Surface altitude must be finite and nonnegative");
-	const double toleranceDays = altitudeKm > 0.0 ? 1e-11 : kCrossingToleranceDays;
+	const double toleranceDays = 1e-11;
 	samples.clear();
 	PropagationWithSurfaceStop out;
 	out.R = R0;

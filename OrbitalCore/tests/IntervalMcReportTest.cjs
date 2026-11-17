@@ -1,6 +1,16 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const R = require('../src/export/web/interval-mc.js');
+test('print styles keep the heading legible and omit map action cells', () => {
+  const web = path.join(__dirname, '../src/export/web');
+  const shared = fs.readFileSync(path.join(web, 'map-print.css'), 'utf8');
+  const mc = fs.readFileSync(path.join(web, 'interval-mc.css'), 'utf8');
+  assert.match(shared, /body\s*>\s*header\s*\{[^}]*background:\s*white\s*;/);
+  assert.match(shared, /body\s+\.table-wrap\s*\{[^}]*max-height:\s*none\s*;/);
+  assert.match(mc, /#entry-table th:last-child,\s*#entry-table td:last-child\s*\{\s*display:\s*none\s*;/);
+});
 test('UTC display preserves milliseconds and day rollover', () => {
   assert.equal(R.utc(54746 + (2 * 3600 + 45 * 60 + 29.23) / 86400), '2008-10-07 02:45:29.230');
   assert.equal(R.utc(54746 + 0.999999999), '2008-10-08 00:00:00.000');
@@ -30,6 +40,50 @@ test('event filter includes nominal separately and sorting does not mutate archi
   );
   assert.equal(points[0].clone, 7);
   assert.deepEqual(R.ordered(points, '2', 'time'), []);
+});
+test('nominal markers are drawn last without changing the source order', () => {
+  const points = [{ clone: -1, epoch: 1 }, { clone: 5, epoch: 2 }, { clone: -1, epoch: 3 }, { clone: 2, epoch: 4 }];
+  const drawn = R.nominalLast(points);
+  assert.deepEqual(drawn.map((p) => p.clone), [5, 2, -1, -1]);
+  assert.deepEqual(points.map((p) => p.clone), [-1, 5, -1, 2]);
+  assert.equal(drawn[2], points[0]);
+  assert.deepEqual(R.nominalLast(points.filter((p) => p.clone >= 0)).map((p) => p.clone), [5, 2]);
+});
+test('clone and nominal visibility are independent and respect event selection', () => {
+  const points = [
+    { clone: -1, event: 0, epoch: 2 },
+    { clone: 0, event: 0, epoch: 1 },
+    { clone: 1, event: 1, epoch: 3 },
+  ];
+  assert.deepEqual(R.mapPoints(points, 'all', false, true).map((p) => p.clone), [-1]);
+  assert.deepEqual(R.mapPoints(points, 'all', true, false).map((p) => p.clone), [0, 1]);
+  assert.deepEqual(R.mapPoints(points, '0', true, true).map((p) => p.clone), [0, -1]);
+  assert.deepEqual(R.mapPoints(points, 'all', false, false), []);
+});
+test('semilinear curves close only when all boundary crossings exist', () => {
+  const p = (latitude_deg, longitude_deg) => ({ latitude_deg, longitude_deg });
+  const closed = R.contourSegments([p(0, 179.9), p(1, -179.9), p(2, -179.8)], 180);
+  assert.equal(closed.length, 1);
+  assert.equal(closed[0].length, 4);
+  assert.deepEqual(closed[0][0], closed[0][3]);
+  assert.ok(Math.abs(closed[0][1][1] - closed[0][0][1]) < 1);
+  const open = R.contourSegments([p(0, 0), p(1, 1), null, p(2, 2), p(3, 3)], 0);
+  assert.equal(open.length, 1);
+  assert.deepEqual(open[0], [[2, 2], [3, 3], [0, 0], [1, 1]]);
+  assert.deepEqual(R.contourSegments([null, p(0, 0), null], 0), []);
+});
+test('contour bounds use available crossings from complete contours only', () => {
+  const a = { latitude_deg: 1, longitude_deg: 2 };
+  const b = { latitude_deg: 3, longitude_deg: 4 };
+  const contours = [{ points: [a, null, b] }];
+  assert.deepEqual(R.contourPoints({ status: 'complete', contours }), [a, b]);
+  assert.deepEqual(R.contourPoints({ status: 'unavailable', contours }), []);
+  assert.deepEqual(R.contourPoints(null), []);
+});
+test('semilinear status does not claim old or partial results are probabilities', () => {
+  assert.match(R.contourNote(null), /not calculated/);
+  assert.match(R.contourNote({ status: 'unavailable', reason: 'no covariance' }), /no covariance/);
+  assert.match(R.contourNote({ status: 'complete', contours: [{ sigma: 5, missed: 2, failed: 1 }] }), /5σ: 2 missed, 1 failed/);
 });
 test('target selects a matching basemap including polar and empty planetary reports', () => {
   assert.equal(R.mapProfile('Earth', []).kind, 'xyz');

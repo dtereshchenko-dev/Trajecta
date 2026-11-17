@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "obs/LightDeflection.h"
 #include "obs/AstrometricResidual.h"
+#include "orbital_core/Constants.h"
 
 #include <cmath>
 
@@ -8,7 +9,7 @@ namespace {
 	using orbital_core::obs::catalogReferencedDirection;
 	using orbital_core::obs::deflectLight;
 
-	constexpr double kMasPerRadian = 180.0 / 3.14159265358979323846 * 3600.0e3;
+	constexpr double kMasPerRadian = Constants::RAD_TO_DEG * 3600.0e3;
 
 	struct SkyShift {
 		double east{};

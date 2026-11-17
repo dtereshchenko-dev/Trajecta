@@ -58,7 +58,7 @@ namespace {
 	TEST_F(HistoricalTimeTest, InterpolatesUt1AndInvertsAcrossNegativeDeltaT)
 	{
 		write("1 1 1900 -2.0\n1 1 1901 3.0\n");
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
+		const EarthOrientation table(directory);
 		const double start = mjd(1900, 1, 1), end = mjd(1901, 1, 1);
 		for (const double fraction : {0.0, 0.25, 0.5, 0.75, 1.0}) {
 			const double ut1 = start + fraction * (end - start);
@@ -73,11 +73,11 @@ namespace {
 	TEST_F(HistoricalTimeTest, MissingAndOutOfRangeTablesNeverInventAnOffset)
 	{
 		double value = 123.0;
-		const EarthOrientation missing(directory, EarthOrientationProfile::IAU2000);
+		const EarthOrientation missing(directory);
 		EXPECT_FALSE(missing.ut1ToTtSeconds(mjd(1930, 1, 1), value));
 		EXPECT_DOUBLE_EQ(value, 123.0);
 		write("1 1 1930 24.02\n1 1 1931 24.00\n");
-		const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
+		const EarthOrientation table(directory);
 		for (double t : {mjd(1929, 12, 31), mjd(1931, 1, 2), std::numeric_limits<double>::quiet_NaN()}) {
 			EXPECT_FALSE(table.ut1ToTtSeconds(t, value));
 			EXPECT_FALSE(table.ttToUt1Mjd(t, value));
@@ -91,16 +91,16 @@ namespace {
 		                               "1 1 1930 24.02\n31 2 1931 24.00\n", "1 1 1930 24.02\n1 1 1931 24.00 extra\n",
 		                               "1 1 1930 24.02\ninvalid\n"}) {
 			write(rows);
-			const EarthOrientation table(directory, EarthOrientationProfile::IAU2000);
+			const EarthOrientation table(directory);
 			double seconds = 123.0;
 			EXPECT_FALSE(table.ut1ToTtSeconds(mjd(1930, 1, 1), seconds)) << rows;
 			EXPECT_DOUBLE_EQ(seconds, 123.0);
 		}
 	}
 
-	TEST_F(HistoricalTimeTest, PackagedTableCoversApolloAndBridgesToDailyFinals)
+	TEST_F(HistoricalTimeTest, PackagedTablesCoverApolloAndModernUt1)
 	{
-		const EarthOrientation table(dataDirectory(), EarthOrientationProfile::IAU2000);
+		const EarthOrientation table(dataDirectory());
 		const double epoch = 2426323.692360 - time::kJdAtMjdZero;
 		const double fraction = (epoch - mjd(1930, 1, 1)) / 365.;
 		double seconds = 0, recovered = 0;
@@ -115,6 +115,26 @@ namespace {
 		}
 		EXPECT_FALSE(table.ut1ToTtSeconds(mjd(1799, 12, 31), seconds));
 		EXPECT_FALSE(table.ut1ToTtSeconds(mjd(2200, 1, 1), seconds));
+	}
+
+	TEST_F(HistoricalTimeTest, SharedOrientationDirectorySuppliesC04AndHistoricalTime)
+	{
+		write("1 1 1900 -2.0\n1 1 1901 3.0\n");
+		const EarthOrientation table(directory, EarthOrientationProfile::IAU1980,
+		                             dataDirectory() / "earth_orientation");
+		const EarthOrientation reference(dataDirectory());
+		ASSERT_TRUE(table.isAvailable());
+		double actual = 0, expected = 0;
+		ASSERT_TRUE(table.ut1ToTtSeconds(mjd(2020, 11, 16), actual));
+		ASSERT_TRUE(reference.ut1ToTtSeconds(mjd(2020, 11, 16), expected));
+		EXPECT_DOUBLE_EQ(actual, expected);
+		ASSERT_TRUE(table.ut1ToTtSeconds(mjd(1900, 1, 1), actual));
+		ASSERT_TRUE(reference.ut1ToTtSeconds(mjd(1900, 1, 1), expected));
+		EXPECT_DOUBLE_EQ(actual, expected);
+		const EarthOrientation missing(directory, EarthOrientationProfile::IAU1980, directory / "missing-c04");
+		EXPECT_FALSE(missing.isAvailable());
+		EXPECT_FALSE(missing.ut1ToTtSeconds(mjd(2020, 11, 16), actual));
+		EXPECT_FALSE(missing.ut1ToTtSeconds(mjd(1900, 1, 1), actual));
 	}
 
 	TEST_F(HistoricalTimeTest, UtcDriftIsDistinctFromHistoricalUt1)

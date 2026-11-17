@@ -149,6 +149,26 @@ TEST(NonGravProfileTest, ParameterMaskPreservesFixedCoefficients)
 	EXPECT_DOUBLE_EQ(model.DT(), 45.0);
 }
 
+TEST(NonGravProfileTest, InverseSquareA1OnlyPreservesFixedCoefficients)
+{
+	NonGravModel model;
+	model.setEnabled(true);
+	model.setModel(NgModel::InverseSquare);
+	model.setFitParameterMask(NgParameterMask::A1);
+	model.setParams(1e-8, 2e-8, 3e-8);
+	NonGravProfile profile(model);
+	std::vector<double> params(6, 0.0), steps(6, 1.0);
+	profile.extendParams(params, steps);
+	ASSERT_EQ(params.size(), 7u);
+	ASSERT_EQ(steps.size(), 7u);
+	EXPECT_DOUBLE_EQ(params[6], 1e-8);
+	params[6] = 5e-8;
+	profile.updateFromParams(params, 6);
+	EXPECT_DOUBLE_EQ(model.A1(), 5e-8);
+	EXPECT_DOUBLE_EQ(model.A2(), 2e-8);
+	EXPECT_DOUBLE_EQ(model.A3(), 3e-8);
+}
+
 TEST(NonGravProfileTest, DisabledModelDoesNotExtendTheFit)
 {
 	NonGravModel model;

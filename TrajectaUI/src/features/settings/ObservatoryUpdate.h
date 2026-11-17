@@ -23,6 +23,9 @@ class ObservatoryUpdate : public QObject {
 	explicit ObservatoryUpdate(Fetch fetch, QObject* parent = nullptr);
 	~ObservatoryUpdate() override;
 	int availableCount() const;
+
+	bool checking() const { return m_optical.checking || m_radar.checking; }
+
 	QVariantMap states() const;
 	Q_INVOKABLE void check();
 	Q_INVOKABLE void install(const QString& id);

@@ -43,6 +43,7 @@ namespace orbital_core {
 			result.nbody.useSb441 = config.nbody.useSb441;
 			result.nbody.targetNaifId = config.nbody.targetNaifId;
 			result.nbody.stepSize = config.nbody.stepSize;
+			result.nbody.forceModel = config.nbody.forceModel;
 			result.nonGrav.enabled = false;
 			result.weightProfile = config.weightProfile;
 			return result;

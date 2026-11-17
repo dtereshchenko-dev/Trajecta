@@ -5,6 +5,8 @@
 #include "orbital_core/obs/SbdbPhysical.h"
 
 #include <QUrl>
+#include <QFile>
+#include <QSettings>
 #include <QStandardPaths>
 #include <cstdint>
 #include <filesystem>
@@ -175,9 +177,24 @@ void OrbitEngine::downloadGaiaFpr(orbital_core::ObservationSet observations,
 
 void OrbitEngine::submit(OrbitFitInput input)
 {
+	m_settings.save();
+	QSettings saved;
+	saved.sync();
+	QFile file(saved.fileName());
+	if (saved.status() != QSettings::NoError || !file.open(QIODevice::ReadOnly)) {
+		m_errorMessage = QStringLiteral("Could not read the settings file for this calculation.");
+		emit errorMessageChanged();
+		return;
+	}
+	const QByteArray snapshot = file.readAll();
+	if (file.error() != QFileDevice::NoError) {
+		m_errorMessage = QStringLiteral("Could not read the settings file for this calculation.");
+		emit errorMessageChanged();
+		return;
+	}
 	m_fitRunning = true;
 	m_fitCancel = std::stop_source{};
-	OrbitFitJob job{currentSettings(), std::move(input)};
+	OrbitFitJob job{currentSettings(), std::move(input), snapshot};
 	QMetaObject::invokeMethod(
 	    m_worker,
 	    [worker = m_worker, job = std::move(job), cancel = m_fitCancel.get_token()] { worker->process(job, cancel); },
@@ -198,6 +215,7 @@ OptimizationSettings OrbitEngine::currentSettings() const
 	s.integratorInitialStepDays = pert->integratorInitialStepDays();
 	s.pertPlanetMask = static_cast<uint16_t>(pert->planetMask());
 	s.useSb441 = pert->useSb441() && orbital_core::asteroidEphemerisAvailable();
+	s.forceModel = pert->forceModel();
 
 	s.nonGravEnabled = ng->enabled();
 	s.nonGravModel = static_cast<orbital_core::NonGravModelKind>(ng->model());

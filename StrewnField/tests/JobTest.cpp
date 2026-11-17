@@ -858,6 +858,9 @@ namespace {
 		const std::string html(std::istreambuf_iterator<char>(in), {});
 		EXPECT_EQ(html.find("</script><script>alert(1)</script>"), std::string::npos);
 		EXPECT_EQ(html.find("__PRINT_ICON__"), std::string::npos);
+		EXPECT_EQ(html.find("__REPORT_COMMON_CSS__"), std::string::npos);
+		EXPECT_EQ(html.find("__REPORT_VIEWER_CSS__"), std::string::npos);
+		EXPECT_NE(html.find(".semilinear-key"), std::string::npos);
 		EXPECT_EQ(html.find("__PRINT_JS__"), std::string::npos);
 		EXPECT_EQ(html.find("__TRAJECTORY_JS__"), std::string::npos);
 		EXPECT_EQ(html.find("__MAP_FLIGHT_JS__"), std::string::npos);

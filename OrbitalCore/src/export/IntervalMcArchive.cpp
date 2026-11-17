@@ -2,6 +2,7 @@
 #include "orbital_core/hazard/BodyFixedFrame.h"
 #include "orbital_core/Exporter.h"
 #include "hazard/McBoundaryScan.h"
+#include "SemilinearJson.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <array>
@@ -102,6 +103,12 @@ namespace orbital_core::hazard {
 		                  {{"step_days", forces.stepSize},
 		                   {"planet_mask", forces.planetMask},
 		                   {"sb441", forces.useSb441},
+		                   {"relativity", relativityModeName(forces.forceModel.relativity)},
+		                   {"sun_j2", true},
+		                   {"earth_j2", forces.forceModel.earthJ2},
+		                   {"earth_j3", forces.forceModel.earthJ3},
+		                   {"earth_j4", forces.forceModel.earthJ4},
+		                   {"earth_rotating_pole", forces.forceModel.rotatingEarthPole},
 		                   {"target_naif_id", forces.targetNaifId},
 		                   {"interior_mass_policy", static_cast<int>(forces.inactiveInteriorMassPolicy)}}},
 		                 {"weight_profile", static_cast<int>(source.effectiveConfig.weightProfile)},
@@ -122,6 +129,7 @@ namespace orbital_core::hazard {
 		                 {"events", Json::array()},
 		                 {"fit_parameter_covariance", Json::array()}};
 		const auto& covariance = source.fit.uncertainty.fitParameterCovariance;
+		document["semilinear"] = semilinearJson(result.semilinear);
 		for (Eigen::Index i = 0; i < covariance.rows(); ++i) {
 			Json row = Json::array();
 			for (Eigen::Index j = 0; j < covariance.cols(); ++j)

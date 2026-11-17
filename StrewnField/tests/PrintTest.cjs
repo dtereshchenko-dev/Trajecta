@@ -1,6 +1,10 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const P = require('../output/web/print.js');
 const G = require('../output/web/graticule.js');
+const style = fs.readFileSync(path.join(__dirname, '../output/web/viewer.css'), 'utf8');
+assert.match(style, /@media print\s*\{\s*:root\s*\{[^}]*background:\s*white\s*;/);
 let grids = 0;
 global.StrewnGraticule = {
   draw(...args) {
@@ -64,17 +68,34 @@ for (const height of [260, 390, 500]) {
 const rowHeightMm = (260 / 520) * ((273 - 2) / 2);
 assert.ok(2 * rowHeightMm + 3 + 35 < 186, 'Two chart rows plus headers must fit A4 landscape');
 assert.ok((273 * 892) / 1600 + 30 < 186, 'Map with legend and metadata must fit A4 landscape');
-const polar = P.plotSpec(
-  {
-    data: [{ type: 'scatterpolar', r: [0, 50], theta: [359, 1] }],
-    layout: {
-      title: { text: 'Wind' },
-      showlegend: true,
-      polar: { angularaxis: { rotation: 90, direction: 'clockwise' } },
+const polarModel = {
+  data: [
+    { type: 'scatterpolar', r: [0, 50], theta: [359, 1], line: { color: '#9daead' }, opacity: 0.6 },
+    { type: 'scatterpolar', name: 'Surface', marker: { color: '#e1e9e9', symbol: 'square' } },
+    { type: 'scatterpolar', marker: { color: [1, 2], showscale: true } },
+  ],
+  layout: {
+    title: { text: 'Wind' },
+    showlegend: true,
+    polar: {
+      bgcolor: '#101415',
+      radialaxis: { range: [0, 54], gridcolor: '#283333' },
+      angularaxis: { rotation: 90, direction: 'clockwise', gridcolor: '#283333' },
     },
   },
-  500,
-);
+};
+const polarBefore = JSON.stringify(polarModel),
+  polar = P.plotSpec(polarModel, 500);
+assert.equal(JSON.stringify(polarModel), polarBefore, 'Print styling must not mutate the on-screen wind plot');
+assert.equal(polar.layout.polar.bgcolor, '#fff');
+assert.equal(polar.layout.polar.radialaxis.gridcolor, '#b8c6c5');
+assert.equal(polar.layout.polar.angularaxis.gridcolor, '#b8c6c5');
+assert.equal(polar.layout.polar.radialaxis.tickfont.color, '#26343a');
+assert.equal(polar.layout.polar.angularaxis.tickfont.color, '#26343a');
+assert.deepEqual(polar.layout.polar.radialaxis.range, [0, 54]);
+assert.equal(polar.data[0].line.color, '#50615e');
+assert.equal(polar.data[1].marker.color, '#50615e');
+assert.deepEqual(polar.data[2].marker.color, [1, 2]);
 assert.equal(polar.layout.polar.angularaxis.direction, 'clockwise');
 assert.ok(polar.layout.margin.r >= 80);
 assert.ok((500 / 520) * ((273 - 2) / 2) + 30 < 186, 'Tall wind plots must fit the print page');

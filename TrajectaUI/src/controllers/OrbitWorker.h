@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QByteArray>
 #include <cstdint>
 #include <filesystem>
 #include <variant>
@@ -21,6 +22,7 @@ struct OptimizationSettings {
 	bool timingEnabled{false};
 	bool sigmaClipEnabled{false};
 	orbital_core::PhotometryOptions photometry;
+	orbital_core::ForceModelSettings forceModel;
 
 	int nonGravSolveMask{0};
 
@@ -42,6 +44,7 @@ using OrbitFitInput = std::variant<QString, OrbitObservationInput>;
 struct OrbitFitJob {
 	OptimizationSettings settings;
 	OrbitFitInput input;
+	QByteArray settingsSnapshot;
 };
 
 class OrbitWorker : public QObject {

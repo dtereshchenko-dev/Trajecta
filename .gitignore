@@ -39,6 +39,7 @@ Makefile
 !CMakeLists.txt
 !cmake/*.cmake
 !/StrewnField/cmake/DeployRaster.cmake
+!/TrajectaCLI/tests/force_settings.cmake
 
 # ============================================================================
 # Qt / Qt Creator
@@ -115,6 +116,7 @@ cmake-build-*/
 # sb441-n16 ~616MB, bias.dat ~50MB.
 # ============================================================================
 *.bsp
+*.bpc
 *.440
 *.430
 *.421

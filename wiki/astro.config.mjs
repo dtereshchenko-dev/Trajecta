@@ -22,6 +22,7 @@ export default defineConfig({
         ] },
         { label: 'User guide', collapsed: true, items: [
           { label: 'Orbit determination', slug: 'orbit-determination' },
+          { label: 'Orbit 3D', slug: 'guide/orbit-3d' },
           { label: 'Observations', slug: 'guide/observations' },
           { label: 'Fit settings', slug: 'guide/fit-settings' },
           { label: 'Ephemerides and close approaches', slug: 'ephemerides-and-close-approaches' },
@@ -54,6 +55,7 @@ export default defineConfig({
           { label: 'Atmospheric model', slug: 'reference/atmospheric-model' },
           { label: 'Photometry', slug: 'reference/photometry' },
           { label: 'Files and outputs', slug: 'reference/formats' },
+          { label: 'Close-approach archive reference', slug: 'reference/close-approaches-archive' },
           { label: 'MC archive reference', slug: 'reference/mc-archive' },
           { label: 'CLI', slug: 'reference/cli' },
           { label: 'For developers', slug: 'reference/developers' },

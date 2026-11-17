@@ -65,20 +65,20 @@ TEST(LightTime, BatchedEmissionSatisfiesLightTimeAndLeavesRadarAtReception)
 	const std::vector<Vec3D> observers{kObserver, kObserver};
 	const NBodyPropagator propagator;
 	const NonGravModel nonGrav;
-	const auto result = obs::solveLightTimeSeries(position, velocity, epoch, times, reception, observers,
-	                                              {true, false}, false, propagator, nonGrav);
+	const auto result = obs::solveLightTimeSeries(position, velocity, epoch, times, reception, observers, {true, false},
+	                                              false, propagator, nonGrav);
 	ASSERT_EQ(result.states.size(), 2u);
-	const Vec3D apparent = obs::apparentEmissionPosition(result.states[0], result.emissionMjd[0], epoch,
-	                                                    result.emissionOffsetDays[0]);
+	const Vec3D apparent =
+	    obs::apparentEmissionPosition(result.states[0], result.emissionMjd[0], epoch, result.emissionOffsetDays[0]);
 	const double delay = (epoch - result.emissionMjd[0]) - result.emissionOffsetDays[0];
 	EXPECT_NEAR(delay, (apparent - kObserver).magnitude() / Constants::AU_PER_DAY, 1e-11);
 	EXPECT_DOUBLE_EQ(result.emissionMjd[1], epoch);
 	EXPECT_DOUBLE_EQ(result.emissionOffsetDays[1], 0.0);
 	expectNear(result.states[1].R, position, 1e-14);
-	const auto dense = propagator.propagateDenseMjd(position, velocity, epoch, epoch - 10.0, epoch + 1.0,
-	                                                 nonGrav, true, true);
-	const auto interpolated = obs::solveDenseLightTimeSeries([&](double t) { return dense.at(t); }, times, observers,
-	                                                         {true, false});
+	const auto dense =
+	    propagator.propagateDenseMjd(position, velocity, epoch, epoch - 10.0, epoch + 1.0, nonGrav, true, true);
+	const auto interpolated =
+	    obs::solveDenseLightTimeSeries([&](double t) { return dense.at(t); }, times, observers, {true, false});
 	expectNear(interpolated.light.states[0].R, result.states[0].R, 1e-10);
 	expectNear(interpolated.light.states[1].R, position, 1e-14);
 	EXPECT_DOUBLE_EQ(interpolated.light.emissionMjd[1], epoch);
@@ -98,8 +98,8 @@ TEST(LightTime, DenseStateAndVariationsMatchIndependentPropagations)
 	for (const auto kind : {IntegratorKind::RA15, IntegratorKind::IAS15}) {
 		NBodyPropagator propagator(kind);
 		propagator.setPlanetMask(0);
-		auto dense = propagator.propagateDenseMjd(position, velocity, epoch, epoch - 10.0, times.back(), ng,
-		                                          true, true);
+		auto dense =
+		    propagator.propagateDenseMjd(position, velocity, epoch, epoch - 10.0, times.back(), ng, true, true);
 		EXPECT_FALSE(dense.at(times.front()));
 		propagator.extendDenseBackwardMjd(dense, times.front(), ng, true, true);
 		const auto reference = propagator.propagateAllWithStmAndSensMjd(position, velocity, epoch, times, ng);
@@ -134,10 +134,10 @@ TEST(LightTime, DenseSeriesMatchesConvergedFullPropagation)
 		NBodyPropagator p(kind);
 		p.setPlanetMask(0);
 		const auto reception = p.propagateAllWithVelocityMjd(position, velocity, epoch, times, ng);
-		const auto reference = obs::solveLightTimeSeries(position, velocity, epoch, times, reception, observers,
-		                                                  optical, true, p, ng);
-		const auto dense = obs::propagateDenseLightTimeSeries(position, velocity, epoch, times, observers, optical,
-		                                                      p, ng, false, false);
+		const auto reference =
+		    obs::solveLightTimeSeries(position, velocity, epoch, times, reception, observers, optical, true, p, ng);
+		const auto dense = obs::propagateDenseLightTimeSeries(position, velocity, epoch, times, observers, optical, p,
+		                                                      ng, false, false);
 		ASSERT_EQ(dense.light.states.size(), reference.states.size());
 		for (std::size_t i = 0; i < times.size(); ++i) {
 			expectNear(dense.light.states[i].R, reference.states[i].R, 1e-10);

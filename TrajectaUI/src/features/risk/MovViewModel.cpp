@@ -20,6 +20,8 @@ namespace {
 	QString utc(double tdb)
 	{
 		const double days = oc::time::fromMjdTdb(tdb, oc::time::Scale::UTC) - 40587;
+		if (!std::isfinite(days))
+			return {};
 		return QDateTime::fromSecsSinceEpoch(static_cast<qint64>(std::ceil(days * 86400)), QTimeZone::UTC)
 		    .toString("yyyy-MM-dd HH:mm:ss");
 	}
@@ -34,7 +36,10 @@ namespace {
 		if (!date.isValid())
 			throw std::invalid_argument("Invalid UTC date");
 		const double mjd = date.date().toJulianDay() - 2400001.0 + date.time().msecsSinceStartOfDay() / 86400000.0;
-		return oc::time::toMjdTdb(mjd, oc::time::Scale::UTC);
+		const double tdb = oc::time::toMjdTdb(mjd, oc::time::Scale::UTC);
+		if (!std::isfinite(tdb))
+			throw std::invalid_argument("UTC is unavailable before 1960");
+		return tdb;
 	}
 
 	int integer(const QVariantMap& options, const char* key, int min, int max)
@@ -178,6 +183,7 @@ void MovViewModel::run(const QVariantMap& options)
 	if (!canRun())
 		return;
 	hz::MovConfig config;
+	config.semilinearContours = true;
 	auto source = std::make_shared<oc::ObservationSet>();
 	oc::FitConfig settings;
 	std::optional<oc::FitResult> nominal;
@@ -264,14 +270,15 @@ void MovViewModel::run(const QVariantMap& options)
 			    source->all, settings, config, nominal ? &*nominal : nullptr, stop,
 			    [this, revision, &lastUpdate](int done, int total) {
 				    const auto now = std::chrono::steady_clock::now();
-				    if (done < total && now - lastUpdate < std::chrono::milliseconds(150))
+				    if (done >= 0 && done < total && now - lastUpdate < std::chrono::milliseconds(150))
 					    return;
 				    lastUpdate = now;
 				    QMetaObject::invokeMethod(
 				        this,
 				        [this, revision, done, total] {
 					        if (m_revision == revision && m_busy && !m_cancelling) {
-						        m_progress = tr("MOV nodes: %1 / %2").arg(done).arg(total);
+						        m_progress = done < 0 ? tr("Calculating semilinear contours...")
+						                              : tr("MOV nodes: %1 / %2").arg(done).arg(total);
 						        emit changed();
 					        }
 				        },

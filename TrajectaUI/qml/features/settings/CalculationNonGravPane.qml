@@ -7,7 +7,7 @@ SettingsPane {
     id: pane
     required property CalculationSettingsModel settings
     readonly property int defaultMask: settings.nonGravDefaultMask
-    readonly property var masks: settings.nonGrav.model === 4 ? [0, 2] : [0, 3, 7, 15]
+    readonly property var masks: settings.nonGrav.model === 4 ? [0, 2] : settings.nonGrav.model === 3 ? [0, 1, 3, 7, 15] : [0, 3, 7, 15]
     title: qsTr("Non-gravitational forces")
     SettingRow {
         label: qsTr("Include in fit")
@@ -34,7 +34,7 @@ SettingsPane {
             label: qsTr("Estimated coefficients")
             CustomComboBox {
                 objectName: "settings-nongrav-coefficients"
-                model: pane.settings.nonGrav.model === 4 ? [qsTr("Model default"), "A2"] : [qsTr("Model default"), "A1 + A2", "A1 + A2 + A3", "A1 + A2 + A3 + DT"]
+                model: pane.settings.nonGrav.model === 4 ? [qsTr("Model default"), "A2"] : pane.settings.nonGrav.model === 3 ? [qsTr("Model default"), "A1", "A1 + A2", "A1 + A2 + A3", "A1 + A2 + A3 + DT"] : [qsTr("Model default"), "A1 + A2", "A1 + A2 + A3", "A1 + A2 + A3 + DT"]
                 currentIndex: pane.masks.indexOf(pane.settings.nonGrav.solveMask)
                 Accessible.name: qsTr("Estimated coefficients")
                 onActivated: pane.settings.nonGrav.solveMask = pane.masks[currentIndex]

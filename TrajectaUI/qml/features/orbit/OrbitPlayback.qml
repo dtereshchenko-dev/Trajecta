@@ -45,7 +45,7 @@ Rectangle {
             }
         }
         CustomButton { objectName: "orbit-reset-time"; iconName: "rotate-ccw"; accessibleLabel: qsTr("Solution epoch"); enabled: bar.scene.canAnimate; onClicked: { bar.playing = false; bar.scene.position = 0 } }
-        InlineValue { objectName: "orbit-utc"; label: "UTC"; value: bar.scene.epochUtc || qsTr("Unavailable"); Layout.preferredWidth: 235 }
+        InlineValue { objectName: "orbit-utc"; label: bar.scene.epochDisplayScale; value: bar.scene.epochDisplay || qsTr("Unavailable"); Layout.preferredWidth: 235 }
         CustomSlider {
             objectName: "orbit-time"
             Layout.fillWidth: true

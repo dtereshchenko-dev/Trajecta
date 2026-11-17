@@ -71,6 +71,7 @@ class EphemerisTableModel : public QAbstractTableModel {
 	[[nodiscard]] Layout layout() const { return m_layout; }
 
 	[[nodiscard]] const std::vector<orbital_core::EphemerisRow>& rows() const { return m_rows; }
+
 	std::vector<orbital_core::EphemerisRow> takeRows();
 
 	[[nodiscard]] QString cell(int row, int column) const;

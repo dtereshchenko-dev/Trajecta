@@ -44,7 +44,7 @@ QString ApplicationUpdate::availableVersion(const QByteArray& output, const QStr
 		if (xml.isStartElement() && xml.name() == u"update" && xml.attributes().value(u"id") == u"com.trajecta.app")
 			version = xml.attributes().value(u"version").toString();
 	}
-	int suffix = 0;
+	qsizetype suffix = 0;
 	const auto candidate = QVersionNumber::fromString(version, &suffix);
 	const auto current = QVersionNumber::fromString(currentVersion);
 	if (xml.hasError() || suffix != version.size() || candidate.isNull() || current.isNull() ||

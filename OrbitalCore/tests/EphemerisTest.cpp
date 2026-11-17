@@ -4,6 +4,7 @@
 #include "orbital_core/CometaryCoordinates.h"
 #include "orbital_core/DE440Source.h"
 #include "orbital_core/Ephemeris.h"
+#include "orbital_core/RelativeMotion.h"
 #include "orbital_core/FitSession.h"
 #include "orbital_core/ObsNode.h"
 #include "orbital_core/Orbit.h"
@@ -16,9 +17,11 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdlib>
 #include <filesystem>
 #include <memory>
 #include <limits>
+#include <sstream>
 #include <stop_token>
 #include <string>
 #include <vector>
@@ -58,6 +61,144 @@ namespace {
 	}
 
 }  // namespace
+
+TEST(RelativeCaptureTest, FindsInterpolatedIntervalsAndCountsRotatingFrameTurns)
+{
+	std::vector<oc::RelativeMotionSample> samples;
+	for (int i = 0; i <= 10; ++i) {
+		oc::RelativeMotionSample s;
+		s.mjdTdb = 60000 + i;
+		const double angle = (i - 1) * Constants::PI / 4;
+		s.rotatingPositionAu = Vec3D(std::cos(angle), std::sin(angle), 0);
+		const double inertialAngle = (i - 1) * Constants::PI / 3;
+		s.positionAu = Vec3D(std::cos(inertialAngle), std::sin(inertialAngle), 0);
+		s.distanceAu = 1;
+		s.hillRadiusAu = 1;
+		s.specificEnergyAu2PerDay2 = (i == 0 || i == 10) ? 1 : -1;
+		samples.push_back(s);
+	}
+	const auto events = oc::findTemporaryCaptures(samples);
+	ASSERT_EQ(events.size(), 1);
+	EXPECT_DOUBLE_EQ(events[0].startMjdTdb, 60000.5);
+	EXPECT_DOUBLE_EQ(events[0].endMjdTdb, 60009.5);
+	EXPECT_FALSE(events[0].startClipped);
+	EXPECT_FALSE(events[0].endClipped);
+	EXPECT_TRUE(events[0].revolutionsValid);
+	EXPECT_NEAR(events[0].signedRevolutions, 1.125, 1e-12);
+	EXPECT_NEAR(events[0].angularTravelRevolutions, 1.125, 1e-12);
+	EXPECT_TRUE(events[0].inertialRevolutionsValid);
+	EXPECT_NEAR(events[0].inertialSignedRevolutions, 1.5, 1e-12);
+	EXPECT_NEAR(events[0].inertialAngularTravelRevolutions, 1.5, 1e-12);
+}
+
+TEST(RelativeCaptureTest, FindsHillSpherePassagesAndClippedBoundaries)
+{
+	std::vector<oc::RelativeMotionSample> samples(9);
+	const std::array distances{0.5, 1.5, 1.5, 0.5, 1.0, 0.5, 1.5, 1.5, 0.5};
+	for (std::size_t i = 0; i < samples.size(); ++i) {
+		samples[i].mjdTdb = 60000 + i;
+		samples[i].distanceAu = distances[i];
+		samples[i].hillRadiusAu = 1;
+	}
+	const auto passages = oc::findHillSpherePassages(samples);
+	ASSERT_EQ(passages.size(), 3);
+	EXPECT_TRUE(passages[0].entryClipped);
+	EXPECT_FALSE(passages[0].exitClipped);
+	EXPECT_DOUBLE_EQ(passages[0].exitMjdTdb, 60000.5);
+	EXPECT_FALSE(passages[1].entryClipped);
+	EXPECT_FALSE(passages[1].exitClipped);
+	EXPECT_DOUBLE_EQ(passages[1].entryMjdTdb, 60002.5);
+	EXPECT_DOUBLE_EQ(passages[1].exitMjdTdb, 60005.5);
+	EXPECT_DOUBLE_EQ(passages[2].entryMjdTdb, 60007.5);
+	EXPECT_TRUE(passages[2].exitClipped);
+	samples[1].mjdTdb = samples[0].mjdTdb;
+	EXPECT_THROW((void)oc::findHillSpherePassages(samples), std::invalid_argument);
+}
+
+TEST(RelativeCaptureTest, HillSphereOutsideTouchDoesNotCreatePassage)
+{
+	std::vector<oc::RelativeMotionSample> samples(3);
+	for (std::size_t i = 0; i < samples.size(); ++i) {
+		samples[i].mjdTdb = 60000 + i;
+		samples[i].distanceAu = i == 1 ? 1 : 2;
+		samples[i].hillRadiusAu = 1;
+	}
+	EXPECT_TRUE(oc::findHillSpherePassages(samples).empty());
+}
+
+TEST(RelativeCaptureTest, AngularTravelCountsReversalsWithoutChangingNetTurns)
+{
+	std::vector<oc::RelativeMotionSample> samples;
+	for (const int i : {0, 1, 2, 1, 0}) {
+		oc::RelativeMotionSample s;
+		s.mjdTdb = 60000 + samples.size();
+		const double angle = i * Constants::PI / 4;
+		s.rotatingPositionAu = Vec3D(std::cos(angle), std::sin(angle), 0);
+		s.positionAu = Vec3D(std::cos(angle / 2), -std::sin(angle / 2), 0);
+		s.distanceAu = 1;
+		s.hillRadiusAu = 1;
+		s.specificEnergyAu2PerDay2 = -1;
+		samples.push_back(s);
+	}
+	const auto events = oc::findTemporaryCaptures(samples);
+	ASSERT_EQ(events.size(), 1);
+	EXPECT_TRUE(events[0].startClipped);
+	EXPECT_TRUE(events[0].endClipped);
+	EXPECT_TRUE(events[0].revolutionsValid);
+	EXPECT_TRUE(events[0].inertialRevolutionsValid);
+	EXPECT_NEAR(events[0].signedRevolutions, 0, 1e-12);
+	EXPECT_NEAR(events[0].angularTravelRevolutions, 0.5, 1e-12);
+	EXPECT_NEAR(events[0].inertialSignedRevolutions, 0, 1e-12);
+	EXPECT_NEAR(events[0].inertialAngularTravelRevolutions, 0.25, 1e-12);
+}
+
+TEST(RelativeCaptureTest, HandlesHillBoundaryClippingAndIncompleteSampling)
+{
+	std::vector<oc::RelativeMotionSample> samples(4);
+	for (std::size_t i = 0; i < samples.size(); ++i) {
+		samples[i].mjdTdb = 60000 + i;
+		samples[i].rotatingPositionAu = Vec3D(1, 0, 0);
+		samples[i].distanceAu = i == 2 ? 4 : 2;
+		samples[i].hillRadiusAu = 1;
+		samples[i].specificEnergyAu2PerDay2 = -1;
+	}
+	const auto events = oc::findTemporaryCaptures(samples);
+	ASSERT_EQ(events.size(), 2);
+	EXPECT_TRUE(events[0].startClipped);
+	EXPECT_FALSE(events[0].endClipped);
+	EXPECT_DOUBLE_EQ(events[0].endMjdTdb, 60001.5);
+	EXPECT_FALSE(events[1].startClipped);
+	EXPECT_TRUE(events[1].endClipped);
+	EXPECT_DOUBLE_EQ(events[1].startMjdTdb, 60002.5);
+	samples[1].rotatingPositionAu = Vec3D(0, 0, 1);
+	EXPECT_FALSE(oc::findTemporaryCaptures(samples)[0].revolutionsValid);
+	samples[1].mjdTdb = samples[0].mjdTdb;
+	EXPECT_THROW((void)oc::findTemporaryCaptures(samples), std::invalid_argument);
+}
+
+TEST(RelativeCaptureTest, IntersectsBothConditionsAndPreservesTurnDirection)
+{
+	std::vector<oc::RelativeMotionSample> samples(2);
+	for (std::size_t i = 0; i < samples.size(); ++i) {
+		samples[i].mjdTdb = 60000 + i;
+		samples[i].hillRadiusAu = 1;
+	}
+	samples[0].distanceAu = 4;
+	samples[1].distanceAu = 2;
+	samples[0].specificEnergyAu2PerDay2 = -1;
+	samples[1].specificEnergyAu2PerDay2 = 0.5;
+	samples[0].rotatingPositionAu = Vec3D(1, 0, 0);
+	samples[1].rotatingPositionAu = Vec3D(0, -1, 0);
+	const auto events = oc::findTemporaryCaptures(samples);
+	ASSERT_EQ(events.size(), 1);
+	EXPECT_DOUBLE_EQ(events[0].startMjdTdb, 60000.5);
+	EXPECT_NEAR(events[0].endMjdTdb, 60000 + 2.0 / 3.0, 1e-10);
+	EXPECT_LT(events[0].signedRevolutions, 0);
+	EXPECT_NEAR(events[0].angularTravelRevolutions, -events[0].signedRevolutions, 1e-12);
+	EXPECT_TRUE(events[0].revolutionsValid);
+	samples[1].specificEnergyAu2PerDay2 = 1;
+	EXPECT_TRUE(oc::findTemporaryCaptures(samples).empty());
+}
 
 TEST(TimeScaleTest, UtcTtAndTdbConversionsRoundTrip)
 {
@@ -147,6 +288,292 @@ class EphemerisTest : public ::testing::Test {
 	std::unique_ptr<DE440Source> m_de440;
 	std::unique_ptr<SpkReader> m_sb441;
 };
+
+TEST_F(EphemerisTest, RelativeMotion2026Qq8MatchesSavedGeocentricEphemeris)
+{
+	if ((!m_sb441 || !m_sb441->isAvailable()) && std::getenv("TRAJECTA_SB441")) {
+		m_sb441 = std::make_unique<SpkReader>(std::getenv("TRAJECTA_SB441"));
+		if (m_sb441->isAvailable())
+			setDefaultAsteroidSource(m_sb441.get());
+	}
+	if (!m_sb441 || !m_sb441->isAvailable())
+		GTEST_SKIP() << "SB441 is required for the saved 2026 QQ8 solution";
+
+	oc::RelativeMotionRequest request;
+	request.solution.position = {0.98741385067650922, 0.15217493982004349, 0.0019146541729151243};
+	request.solution.velocity = {-0.0029121797011722964, 0.017021368481953784, -0.00010162196336587890};
+	request.solution.epochMjdTdb = 61314.632655842230;
+	request.solution.forces.enabled = true;
+	request.solution.forces.planetMask = 2303;
+	request.solution.forces.useSb441 = true;
+	request.solution.forces.forceModel.relativity = oc::RelativityMode::SunOuter;
+	request.solution.forces.forceModel.earthJ2 = true;
+	request.solution.forces.forceModel.earthJ3 = false;
+	request.solution.forces.forceModel.earthJ4 = false;
+	request.solution.forces.forceModel.rotatingEarthPole = false;
+	request.solution.nonGrav.setModel(NgModel::InverseSquare);
+	request.solution.nonGrav.setEnabled(true);
+	request.solution.nonGrav.setParams(1.5265451206724172e-10, -1.82184925375723e-11, 0);
+	request.epochsMjdTdb = {61143.000800759466, 61270.00080072791, 61398.000800737216};
+	// Saved Trajecta geocentric geometric ephemeris, equatorial J2000, AU.
+	const std::array<Vec3D, 3> reference = {{{0.00842382255591467, 0.00146992349758758, 0.00565038921517887},
+	                                         {0.00241217662180016, -0.00264502292757305, -0.000514653021303446},
+	                                         {-0.00346165031826153, -0.00690620030449284, -0.00615761272906081}}};
+	const auto samples = oc::computeRelativeMotion(request);
+	ASSERT_EQ(samples.size(), reference.size());
+	const double c = std::cos(Constants::EARTH_INCL), s = std::sin(Constants::EARTH_INCL);
+	for (std::size_t i = 0; i < samples.size(); ++i) {
+		const auto& r = samples[i].positionAu;
+		const Vec3D equatorial(r.x, c * r.y - s * r.z, s * r.y + c * r.z);
+		const double differenceKm = (equatorial - reference[i]).magnitude() * Constants::AU_IN_METERS / 1000;
+		RecordProperty("qq8_delta_km_" + std::to_string(i), differenceKm);
+		SCOPED_TRACE(::testing::Message()
+		             << "epoch " << request.epochsMjdTdb[i] << ", delta " << differenceKm << " km");
+		EXPECT_LT(differenceKm, 0.01);
+		EXPECT_TRUE(samples[i].hasMoon);
+	}
+	request.epochsMjdTdb.clear();
+	for (int day = 0; day <= 305; ++day)
+		request.epochsMjdTdb.push_back(oc::time::toMjdTdb(61131.0 + day, oc::time::Scale::UTC));
+	const auto trajectory = oc::computeRelativeMotion(request);
+	ASSERT_EQ(trajectory.size(), 306u);
+	const auto closest = std::min_element(trajectory.begin(), trajectory.end(),
+	                                      [](const auto& a, const auto& b) { return a.distanceAu < b.distanceAu; });
+	const double closestKm = closest->distanceAu * Constants::AU_IN_METERS / 1000;
+	RecordProperty("qq8_sampled_closest_km", closestKm);
+	RecordProperty("qq8_sampled_closest_mjd_tdb", closest->mjdTdb);
+	EXPECT_GT(closestKm, 400000);
+	EXPECT_LT(closestKm, 800000);
+	EXPECT_LT(closest->distanceAu, closest->hillRadiusAu);
+	EXPECT_LT(closest->specificEnergyAu2PerDay2, 0);
+	for (const auto& point : trajectory)
+		EXPECT_NEAR(point.positionAu.magnitude(), point.rotatingPositionAu.magnitude(), 1e-12);
+	const auto refined = oc::computeRefinedRelativeMotion(request);
+	ASSERT_GT(refined.size(), trajectory.size());
+	EXPECT_DOUBLE_EQ(refined.front().mjdTdb, trajectory.front().mjdTdb);
+	EXPECT_DOUBLE_EQ(refined.back().mjdTdb, trajectory.back().mjdTdb);
+	const auto captures = oc::findTemporaryCaptures(refined);
+	const auto containingClosest = std::find_if(captures.begin(), captures.end(), [&](const auto& event) {
+		return event.startMjdTdb <= closest->mjdTdb && event.endMjdTdb >= closest->mjdTdb;
+	});
+	ASSERT_NE(containingClosest, captures.end());
+	EXPECT_TRUE(containingClosest->revolutionsValid);
+	EXPECT_GT(containingClosest->endMjdTdb - containingClosest->startMjdTdb, 30);
+	const auto dailyCaptures = oc::findTemporaryCaptures(trajectory);
+	const auto dailyClosest = std::find_if(dailyCaptures.begin(), dailyCaptures.end(), [&](const auto& event) {
+		return event.startMjdTdb <= closest->mjdTdb && event.endMjdTdb >= closest->mjdTdb;
+	});
+	ASSERT_NE(dailyClosest, dailyCaptures.end());
+	EXPECT_NEAR(dailyClosest->startMjdTdb, containingClosest->startMjdTdb, 0.1);
+	EXPECT_NEAR(dailyClosest->endMjdTdb, containingClosest->endMjdTdb, 0.1);
+	EXPECT_NEAR(dailyClosest->signedRevolutions, containingClosest->signedRevolutions, 0.01);
+	request.solution.nonGrav.setFitParameterMask(NgParameterMask::A1);
+	request.solution.covariance = oc::FitParameterCovariance::Identity(7, 7) * 1e-50;
+	request.solution.covariance(0, 0) = 1e-18;
+	request.solution.covariance(6, 6) = 1e-28;
+	request.solution.covariance(0, 6) = request.solution.covariance(6, 0) = 0.25e-23;
+	const auto uncertainty = oc::captureTimeUncertainty(request, trajectory, dailyCaptures);
+	const auto hillPassages = oc::findHillSpherePassages(trajectory);
+	const auto combined = oc::relativeMotionTimeUncertainty(request, trajectory, dailyCaptures, hillPassages);
+	ASSERT_EQ(combined.captures.size(), uncertainty.size());
+	ASSERT_EQ(combined.hillPassages.size(), hillPassages.size());
+	const auto eventIndex = static_cast<std::size_t>(dailyClosest - dailyCaptures.begin());
+	ASSERT_EQ(uncertainty.size(), dailyCaptures.size());
+	ASSERT_TRUE(uncertainty[eventIndex].start3SigmaDays);
+	ASSERT_TRUE(uncertainty[eventIndex].end3SigmaDays);
+	const auto perturbedEvent = [&](int parameter, double offset) {
+		auto perturbed = request;
+		if (parameter == 0)
+			perturbed.solution.position.x += offset;
+		else
+			perturbed.solution.nonGrav.setFitParameterValue(0,
+			                                                perturbed.solution.nonGrav.fitParameterValue(0) + offset);
+		const auto events = oc::findTemporaryCaptures(oc::computeRelativeMotion(perturbed));
+		const auto match = std::find_if(events.begin(), events.end(), [&](const auto& event) {
+			return event.startMjdTdb < closest->mjdTdb && event.endMjdTdb > closest->mjdTdb;
+		});
+		if (match == events.end())
+			throw std::runtime_error("Perturbed capture not found");
+		return *match;
+	};
+	const auto xp = perturbedEvent(0, 1e-8), xm = perturbedEvent(0, -1e-8);
+	const auto ap = perturbedEvent(1, 1e-13), am = perturbedEvent(1, -1e-13);
+	const auto expectedSigma = [&](bool start) {
+		const auto epoch = [=](const auto& event) { return start ? event.startMjdTdb : event.endMjdTdb; };
+		const double dx = (epoch(xp) - epoch(xm)) / 2e-8;
+		const double da = (epoch(ap) - epoch(am)) / 2e-13;
+		return 3 * std::sqrt(dx * dx * 1e-18 + da * da * 1e-28 + 2 * dx * da * 0.25e-23);
+	};
+	EXPECT_NEAR(*uncertainty[eventIndex].start3SigmaDays, expectedSigma(true), expectedSigma(true) * 0.02);
+	EXPECT_NEAR(*uncertainty[eventIndex].end3SigmaDays, expectedSigma(false), expectedSigma(false) * 0.02);
+	ASSERT_TRUE(combined.captures[eventIndex].start3SigmaDays);
+	EXPECT_DOUBLE_EQ(*combined.captures[eventIndex].start3SigmaDays, *uncertainty[eventIndex].start3SigmaDays);
+	const auto hill = std::find_if(hillPassages.begin(), hillPassages.end(), [&](const auto& passage) {
+		return passage.entryMjdTdb < closest->mjdTdb && passage.exitMjdTdb > closest->mjdTdb;
+	});
+	ASSERT_NE(hill, hillPassages.end());
+	const auto hillIndex = static_cast<std::size_t>(hill - hillPassages.begin());
+	ASSERT_TRUE(combined.hillPassages[hillIndex].start3SigmaDays);
+	ASSERT_TRUE(combined.hillPassages[hillIndex].end3SigmaDays);
+	const auto perturbedHill = [&](int parameter, double offset) {
+		auto perturbed = request;
+		if (parameter == 0)
+			perturbed.solution.position.x += offset;
+		else
+			perturbed.solution.nonGrav.setFitParameterValue(0,
+			                                                perturbed.solution.nonGrav.fitParameterValue(0) + offset);
+		const auto passages = oc::findHillSpherePassages(oc::computeRelativeMotion(perturbed));
+		const auto match = std::find_if(passages.begin(), passages.end(), [&](const auto& passage) {
+			return passage.entryMjdTdb < closest->mjdTdb && passage.exitMjdTdb > closest->mjdTdb;
+		});
+		if (match == passages.end())
+			throw std::runtime_error("Perturbed Hill passage not found");
+		return *match;
+	};
+	const auto hxp = perturbedHill(0, 1e-8), hxm = perturbedHill(0, -1e-8);
+	const auto hap = perturbedHill(1, 1e-13), ham = perturbedHill(1, -1e-13);
+	const auto expectedHillSigma = [&](bool entry) {
+		const auto epoch = [=](const auto& passage) { return entry ? passage.entryMjdTdb : passage.exitMjdTdb; };
+		const double dx = (epoch(hxp) - epoch(hxm)) / 2e-8;
+		const double da = (epoch(hap) - epoch(ham)) / 2e-13;
+		return 3 * std::sqrt(dx * dx * 1e-18 + da * da * 1e-28 + 2 * dx * da * 0.25e-23);
+	};
+	EXPECT_NEAR(*combined.hillPassages[hillIndex].start3SigmaDays, expectedHillSigma(true),
+	            expectedHillSigma(true) * 0.02);
+	EXPECT_NEAR(*combined.hillPassages[hillIndex].end3SigmaDays, expectedHillSigma(false),
+	            expectedHillSigma(false) * 0.02);
+	auto exactSamples = trajectory;
+	const auto right = std::lower_bound(exactSamples.begin(), exactSamples.end(), hill->entryMjdTdb,
+	                                    [](const auto& sample, double epoch) { return sample.mjdTdb < epoch; });
+	ASSERT_NE(right, exactSamples.begin());
+	ASSERT_NE(right, exactSamples.end());
+	auto& boundarySample = *std::prev(right);
+	boundarySample.hillRadiusAu = boundarySample.distanceAu;
+	const auto exactPassages = oc::findHillSpherePassages(exactSamples);
+	const auto exact = std::find_if(exactPassages.begin(), exactPassages.end(),
+	                                [&](const auto& passage) { return passage.entryMjdTdb == boundarySample.mjdTdb; });
+	ASSERT_NE(exact, exactPassages.end());
+	const auto exactIndex = static_cast<std::size_t>(exact - exactPassages.begin());
+	const auto exactUncertainty = oc::relativeMotionTimeUncertainty(request, exactSamples, {}, exactPassages);
+	EXPECT_TRUE(exactUncertainty.hillPassages[exactIndex].start3SigmaDays);
+	auto clippedHill = hillPassages;
+	clippedHill[hillIndex].entryClipped = true;
+	clippedHill[hillIndex].exitClipped = true;
+	const auto clippedHillUncertainty = oc::relativeMotionTimeUncertainty(request, trajectory, {}, clippedHill);
+	EXPECT_FALSE(clippedHillUncertainty.hillPassages[hillIndex].start3SigmaDays);
+	EXPECT_FALSE(clippedHillUncertainty.hillPassages[hillIndex].end3SigmaDays);
+	auto clipped = dailyCaptures;
+	clipped[eventIndex].startClipped = true;
+	EXPECT_FALSE(oc::captureTimeUncertainty(request, trajectory, clipped)[eventIndex].start3SigmaDays);
+	request.solution.covariance.resize(0, 0);
+	EXPECT_FALSE(oc::captureTimeUncertainty(request, trajectory, dailyCaptures)[eventIndex].start3SigmaDays);
+	const auto noCovariance = oc::relativeMotionTimeUncertainty(request, trajectory, {}, hillPassages);
+	EXPECT_FALSE(noCovariance.hillPassages[hillIndex].start3SigmaDays);
+	EXPECT_FALSE(noCovariance.hillPassages[hillIndex].end3SigmaDays);
+	RecordProperty("qq8_capture_start_mjd_tdb", containingClosest->startMjdTdb);
+	RecordProperty("qq8_capture_end_mjd_tdb", containingClosest->endMjdTdb);
+	RecordProperty("qq8_capture_signed_turns", containingClosest->signedRevolutions);
+	double inertialTurns = 0, rotatingTurns = 0, inertialDistance = 0, rotatingDistance = 0;
+	for (std::size_t i = 1; i < refined.size(); ++i) {
+		const auto& a = refined[i - 1];
+		const auto& b = refined[i];
+		if (b.mjdTdb <= containingClosest->startMjdTdb || a.mjdTdb >= containingClosest->endMjdTdb)
+			continue;
+		const double dt = b.mjdTdb - a.mjdTdb;
+		const double lo = std::max(0.0, (containingClosest->startMjdTdb - a.mjdTdb) / dt);
+		const double hi = std::min(1.0, (containingClosest->endMjdTdb - a.mjdTdb) / dt);
+		const auto accumulate = [&](const Vec3D& x, const Vec3D& y, double& turns, double& distance) {
+			const Vec3D p = x * (1 - lo) + y * lo;
+			const Vec3D q = x * (1 - hi) + y * hi;
+			const double angle = std::atan2(p.x * q.y - p.y * q.x, p.x * q.x + p.y * q.y) / (2 * Constants::PI);
+			turns += angle;
+			distance += std::abs(angle);
+		};
+		accumulate(a.positionAu, b.positionAu, inertialTurns, inertialDistance);
+		accumulate(a.rotatingPositionAu, b.rotatingPositionAu, rotatingTurns, rotatingDistance);
+	}
+	EXPECT_NEAR(rotatingTurns, containingClosest->signedRevolutions, 1e-9);
+	EXPECT_NEAR(rotatingDistance, containingClosest->angularTravelRevolutions, 1e-9);
+	EXPECT_TRUE(containingClosest->inertialRevolutionsValid);
+	EXPECT_NEAR(inertialTurns, containingClosest->inertialSignedRevolutions, 1e-9);
+	EXPECT_NEAR(inertialDistance, containingClosest->inertialAngularTravelRevolutions, 1e-9);
+	EXPECT_NEAR(inertialTurns, 1.37256, 0.001);
+	EXPECT_NEAR(rotatingTurns, 0.76406, 0.001);
+	RecordProperty("qq8_capture_inertial_signed_turns", inertialTurns);
+	RecordProperty("qq8_capture_inertial_total_turns", inertialDistance);
+	RecordProperty("qq8_capture_rotating_total_turns", rotatingDistance);
+}
+
+TEST_F(EphemerisTest, RelativeMotionMatchesGeometricEphemerisAndRotatingFrame)
+{
+	const auto ephemerisRequest = buRequest(oc::EphemerisCenter::Geocentric);
+	oc::RelativeMotionRequest relative;
+	relative.solution = ephemerisRequest.solution;
+	relative.epochsMjdTdb = {kBuEpochMjdTdb, kBuEpochMjdTdb + 1, kBuEpochMjdTdb + 2};
+	auto request = ephemerisRequest;
+	request.plane = oc::EphemerisPlane::Ecliptic;
+	request.scale = oc::time::Scale::TDB;
+	request.startMjd = relative.epochsMjdTdb.front();
+	request.endMjd = relative.epochsMjdTdb.back();
+	request.stepDays = 1;
+	request.lightTime = false;
+	const auto expected = oc::computeEphemeris(request);
+	const auto samples = oc::computeRelativeMotion(relative);
+	ASSERT_EQ(samples.size(), expected.rows.size());
+	for (std::size_t i = 0; i < samples.size(); ++i) {
+		EXPECT_LT((samples[i].positionAu - expected.rows[i].position).magnitude(), 1e-13);
+		EXPECT_LT((samples[i].velocityAuPerDay - expected.rows[i].velocity).magnitude(), 1e-13);
+		EXPECT_NEAR(samples[i].rotatingPositionAu.magnitude(), samples[i].distanceAu, 1e-14);
+		EXPECT_NEAR(samples[i].sunDirection.magnitude(), 1, 1e-14);
+		EXPECT_NEAR(samples[i].hillRadiusAu, 0.01, 0.001);
+		EXPECT_TRUE(samples[i].hasMoon);
+		EXPECT_NEAR(samples[i].moonPositionAu.magnitude(), samples[i].rotatingMoonPositionAu.magnitude(), 1e-14);
+	}
+	relative.planet = EphemerisPlanet::Mars;
+	const auto mars = oc::computeRelativeMotion(relative);
+	ASSERT_EQ(mars.size(), relative.epochsMjdTdb.size());
+	EXPECT_FALSE(mars.front().hasMoon);
+	EXPECT_LT((mars.front().positionAu - (kBuPosition - m_de440->queryMjd(EphemerisPlanet::Mars, kBuEpochMjdTdb).R))
+	              .magnitude(),
+	          1e-13);
+}
+
+TEST_F(EphemerisTest, RelativeMotionRejectsInvalidRequestsAndSupportsCancellation)
+{
+	oc::RelativeMotionRequest request;
+	request.solution = buRequest(oc::EphemerisCenter::Geocentric).solution;
+	request.epochsMjdTdb = {kBuEpochMjdTdb, kBuEpochMjdTdb};
+	EXPECT_THROW((void)oc::computeRelativeMotion(request), std::invalid_argument);
+	request.epochsMjdTdb[1] += 1;
+	request.planet = EphemerisPlanet::Sun;
+	EXPECT_THROW((void)oc::computeRelativeMotion(request), std::invalid_argument);
+	request.planet = EphemerisPlanet::Earth;
+	std::stop_source stop;
+	stop.request_stop();
+	EXPECT_TRUE(oc::computeRelativeMotion(request, {.cancel = stop.get_token()}).empty());
+	EXPECT_TRUE(oc::computeRefinedRelativeMotion(request, {.cancel = stop.get_token()}).empty());
+}
+
+TEST_F(EphemerisTest, RelativeMotionRefines2023BuCloseApproachUsingPropagatedStates)
+{
+	oc::RelativeMotionRequest request;
+	request.solution = buRequest(oc::EphemerisCenter::Geocentric).solution;
+	request.epochsMjdTdb = {59969.0, 59969.5, 59970.0, 59970.5, 59971.0, 59971.5, 59972.0};
+	const auto refined = oc::computeRefinedRelativeMotion(request);
+	ASSERT_GT(refined.size(), request.epochsMjdTdb.size());
+	for (const auto epoch : request.epochsMjdTdb) {
+		EXPECT_TRUE(std::any_of(refined.begin(), refined.end(), [epoch](const auto& s) { return s.mjdTdb == epoch; }));
+	}
+	request.epochsMjdTdb.clear();
+	for (std::size_t i = 1; i < refined.size(); ++i)
+		request.epochsMjdTdb.push_back((refined[i - 1].mjdTdb + refined[i].mjdTdb) / 2);
+	const auto midpoint = oc::computeRelativeMotion(request);
+	ASSERT_EQ(midpoint.size() + 1, refined.size());
+	for (std::size_t i = 0; i < midpoint.size(); ++i) {
+		const Vec3D chordMidpoint = (refined[i].positionAu + refined[i + 1].positionAu) * 0.5;
+		EXPECT_LT((midpoint[i].positionAu - chordMidpoint).magnitude(), 0.01 * midpoint[i].distanceAu + 1e-9);
+	}
+}
 
 TEST_F(EphemerisTest, ReproducesTheFitObservationModelExactly)
 {
@@ -328,13 +755,14 @@ TEST_F(EphemerisTest, ChesleyObserverFieldsAgainstHorizonsAtSharedEpoch)
 		double ra, dec, magnitude, solarDistance, solarRate, distance, distanceRate, lightMinutes, elongation, phase;
 		double raBefore, raAfter, decBefore, decAfter;
 	};
+
 	constexpr std::array<Reference, 3> reference{{
-	    {318.751209037, -26.800558241, 18.497, 2.999534849596, 0.4179589, 3.10468362788899, 23.4204475,
-	     25.82086638, 74.7121, 18.5221, 318.751021552, 318.751396524, -26.800637075, -26.800479406},
-	    {319.022563162, -26.686605948, 18.505, 2.999776279114, 0.4181551, 3.11818760404841, 23.3412047,
-	     25.93317552, 73.9829, 18.4483, 319.022373775, 319.022752550, -26.686685379, -26.686526516},
-	    {319.296625170, -26.571798263, 18.512, 3.000017820656, 0.4183466, 3.13164466940263, 23.2580206,
-	     26.04509452, 73.2562, 18.3718, 319.296433923, 319.296816417, -26.571878286, -26.571718240},
+	    {318.751209037, -26.800558241, 18.497, 2.999534849596, 0.4179589, 3.10468362788899, 23.4204475, 25.82086638,
+	     74.7121, 18.5221, 318.751021552, 318.751396524, -26.800637075, -26.800479406},
+	    {319.022563162, -26.686605948, 18.505, 2.999776279114, 0.4181551, 3.11818760404841, 23.3412047, 25.93317552,
+	     73.9829, 18.4483, 319.022373775, 319.022752550, -26.686685379, -26.686526516},
+	    {319.296625170, -26.571798263, 18.512, 3.000017820656, 0.4183466, 3.13164466940263, 23.2580206, 26.04509452,
+	     73.2562, 18.3718, 319.296433923, 319.296816417, -26.571878286, -26.571718240},
 	}};
 	auto request = buRequest(oc::EphemerisCenter::Geocentric);
 	request.solution.position = Vec3D(2.598867861350580, -1.390029528986849, -0.5576174308536911);
@@ -378,11 +806,11 @@ TEST_F(EphemerisTest, ChesleyObserverFieldsAgainstHorizonsAtSharedEpoch)
 		RecordProperty("dec_rate_arcsec_h_" + std::to_string(i),
 		               std::to_string(row.latitudeRate * arcsecondsPerHour - referenceDecRate));
 		RecordProperty("sky_motion_arcsec_h_" + std::to_string(i), std::to_string(motion - referenceMotion));
-		RecordProperty("sky_motion_pa_deg_" + std::to_string(i), std::to_string(positionAngle - referencePositionAngle));
+		RecordProperty("sky_motion_pa_deg_" + std::to_string(i),
+		               std::to_string(positionAngle - referencePositionAngle));
 		RecordProperty("elongation_deg_" + std::to_string(i),
 		               std::to_string(row.elongation * Constants::RAD_TO_DEG - ref.elongation));
-		RecordProperty("phase_deg_" + std::to_string(i),
-		               std::to_string(row.phase * Constants::RAD_TO_DEG - ref.phase));
+		RecordProperty("phase_deg_" + std::to_string(i), std::to_string(row.phase * Constants::RAD_TO_DEG - ref.phase));
 		EXPECT_LT(skyError, 0.02);
 		EXPECT_NEAR(*row.visualMagnitude, ref.magnitude, 0.01);
 		EXPECT_NEAR(row.heliocentricAu, ref.solarDistance, 3e-9);
@@ -421,62 +849,111 @@ TEST_F(EphemerisTest, ChesleyObserverFieldsAgainstHorizonsAtSharedEpoch)
 	const double c = std::cos(Constants::EARTH_INCL), s = std::sin(Constants::EARTH_INCL);
 	const Vec3D earthEq(earth.R.x, earth.R.y * c - earth.R.z * s, earth.R.y * s + earth.R.z * c);
 	const double geometricElongation = std::acos(std::clamp(
-	    (earthEq * -1.0).dot(geometric[0].position) / (earthEq.magnitude() * geometric[0].position.magnitude()), -1.0, 1.0));
+	    (earthEq * -1.0).dot(geometric[0].position) / (earthEq.magnitude() * geometric[0].position.magnitude()), -1.0,
+	    1.0));
 	EXPECT_NEAR(geometric[0].elongation, geometricElongation, 1e-12);
+}
+
+TEST_F(EphemerisTest, UncertaintyBeforeAfterSharedTransport)
+{
+	for (const bool nBody : {false, true}) {
+		for (const bool lightTime : {false, true}) {
+			for (int kind = 0; kind < (nBody ? 4 : 3); ++kind) {
+				auto request = buRequest(oc::EphemerisCenter::Station, "033");
+				request.solution.forces.enabled = nBody;
+				request.solution.forces.useSb441 = false;
+				request.startMjd = request.endMjd = 61000.0;
+				request.lightTime = lightTime;
+				request.uncertainty = true;
+				if (kind == 3) {
+					request.solution.nonGrav.setModel(NgModel::Yarkovsky);
+					request.solution.nonGrav.setEnabled(true);
+					request.solution.nonGrav.setFitParameterMask(NgParameterMask::A2);
+					request.solution.nonGrav.setParams(0, -2e-12, 0);
+				}
+				const int dimension = kind == 3 ? 7 : 6;
+				Eigen::MatrixXd factor = Eigen::MatrixXd::Identity(dimension, dimension) * 1e-8;
+				factor.bottomRightCorner(dimension - 3, dimension - 3) *= 0.01;
+				factor(0, 1) = 2e-9;
+				if (kind == 1)
+					factor.row(1) = factor.row(0);
+				request.solution.covariance = factor * factor.transpose();
+				if (kind == 2)
+					request.solution.covariance(0, 0) = -1;
+				const auto result = oc::computeEphemeris(request);
+				ASSERT_EQ(result.rows.size(), 1u);
+				const auto& row = result.rows.front();
+				EXPECT_EQ(row.uncertainty.has_value(), kind != 2);
+				std::ostringstream snapshot;
+				snapshot << std::hexfloat << result.uncertaintyComputed << ' ' << row.position.x << ' '
+				         << row.position.y << ' ' << row.position.z << ' ' << row.velocity.x << ' ' << row.velocity.y
+				         << ' ' << row.velocity.z;
+				if (row.uncertainty) {
+					const auto& u = *row.uncertainty;
+					snapshot << ' ' << u.longitude3SigmaArcsec << ' ' << u.latitude3SigmaArcsec << ' '
+					         << u.major3SigmaArcsec << ' ' << u.minor3SigmaArcsec << ' ' << u.positionAngleDeg << ' '
+					         << u.range3SigmaKm << ' ' << u.rangeRate3SigmaKmPerSecond;
+				}
+				RecordProperty(
+				    "case_" + std::to_string(nBody) + "_" + std::to_string(lightTime) + "_" + std::to_string(kind),
+				    snapshot.str());
+			}
+		}
+	}
 }
 
 TEST_F(EphemerisTest, SkyUncertaintyMatchesPerturbedEphemerides)
 {
 	for (const bool nBody : {false, true}) {
 		for (const bool lightTime : {false, true}) {
-		  for (const double epoch : {59966.0, 61000.0}) {
-			auto request = buRequest(oc::EphemerisCenter::Station, "033");
-			request.solution.forces.enabled = nBody;
-			request.solution.forces.useSb441 = false;
-			request.lightTime = lightTime;
-			request.startMjd = request.endMjd = epoch;
-			request.uncertainty = true;
-			Eigen::Matrix<double, 6, 6> factor = Eigen::Matrix<double, 6, 6>::Zero();
-			factor.diagonal() << 1e-8, 2e-8, 3e-8, 2e-10, 3e-10, 4e-10;
-			factor(0, 4) = 3e-9;
-			factor(2, 3) = -2e-9;
-			request.solution.covariance = factor * factor.transpose();
-			const auto nominal = oc::computeEphemeris(request).rows.at(0);
-			ASSERT_TRUE(nominal.uncertainty);
-			Eigen::Matrix<double, 4, 6> jacobian;
-			request.uncertainty = false;
-			for (int i = 0; i < 6; ++i) {
-				auto plus = request, minus = request;
-				const double step = i < 3 ? 1e-6 : 1e-8;
-				Vec3D& p = i < 3 ? plus.solution.position : plus.solution.velocity;
-				Vec3D& m = i < 3 ? minus.solution.position : minus.solution.velocity;
-				double* pc[] = {&p.x, &p.y, &p.z};
-				double* mc[] = {&m.x, &m.y, &m.z};
-				*pc[i % 3] += step;
-				*mc[i % 3] -= step;
-				const auto a = oc::computeEphemeris(plus).rows.at(0);
-				const auto b = oc::computeEphemeris(minus).rows.at(0);
-				jacobian(0, i) = std::remainder(a.longitude - b.longitude, 2.0 * Constants::PI) *
-				                 std::cos(nominal.latitude) / (2.0 * step);
-				jacobian(1, i) = (a.latitude - b.latitude) / (2.0 * step);
-				jacobian(2, i) = (a.distanceAu - b.distanceAu) / (2.0 * step);
-				jacobian(3, i) = (a.distanceRateAuPerDay - b.distanceRateAuPerDay) / (2.0 * step);
+			for (const double epoch : {59966.0, 61000.0}) {
+				auto request = buRequest(oc::EphemerisCenter::Station, "033");
+				request.solution.forces.enabled = nBody;
+				request.solution.forces.useSb441 = false;
+				request.lightTime = lightTime;
+				request.startMjd = request.endMjd = epoch;
+				request.uncertainty = true;
+				Eigen::Matrix<double, 6, 6> factor = Eigen::Matrix<double, 6, 6>::Zero();
+				factor.diagonal() << 1e-8, 2e-8, 3e-8, 2e-10, 3e-10, 4e-10;
+				factor(0, 4) = 3e-9;
+				factor(2, 3) = -2e-9;
+				request.solution.covariance = factor * factor.transpose();
+				const auto nominal = oc::computeEphemeris(request).rows.at(0);
+				ASSERT_TRUE(nominal.uncertainty);
+				Eigen::Matrix<double, 4, 6> jacobian;
+				request.uncertainty = false;
+				for (int i = 0; i < 6; ++i) {
+					auto plus = request, minus = request;
+					const double step = i < 3 ? 1e-6 : 1e-8;
+					Vec3D& p = i < 3 ? plus.solution.position : plus.solution.velocity;
+					Vec3D& m = i < 3 ? minus.solution.position : minus.solution.velocity;
+					double* pc[] = {&p.x, &p.y, &p.z};
+					double* mc[] = {&m.x, &m.y, &m.z};
+					*pc[i % 3] += step;
+					*mc[i % 3] -= step;
+					const auto a = oc::computeEphemeris(plus).rows.at(0);
+					const auto b = oc::computeEphemeris(minus).rows.at(0);
+					jacobian(0, i) = std::remainder(a.longitude - b.longitude, 2.0 * Constants::PI) *
+					                 std::cos(nominal.latitude) / (2.0 * step);
+					jacobian(1, i) = (a.latitude - b.latitude) / (2.0 * step);
+					jacobian(2, i) = (a.distanceAu - b.distanceAu) / (2.0 * step);
+					jacobian(3, i) = (a.distanceRateAuPerDay - b.distanceRateAuPerDay) / (2.0 * step);
+				}
+				const Eigen::Matrix4d expected = jacobian * request.solution.covariance * jacobian.transpose();
+				constexpr double arcsec = 206264.80624709636;
+				const auto& actual = *nominal.uncertainty;
+				const double east = 3.0 * std::sqrt(expected(0, 0)) * arcsec;
+				const double north = 3.0 * std::sqrt(expected(1, 1)) * arcsec;
+				const double range = 3.0 * std::sqrt(expected(2, 2)) * (Constants::AU_IN_METERS / 1000.0);
+				EXPECT_NEAR(actual.longitude3SigmaArcsec, east, east * 2e-4);
+				EXPECT_NEAR(actual.latitude3SigmaArcsec, north, north * 2e-4);
+				EXPECT_NEAR(actual.range3SigmaKm, range, range * 2e-4);
+				const double rangeRate = 3.0 * std::sqrt(expected(3, 3)) * (Constants::AU_IN_METERS / 1000.0) / 86400.0;
+				EXPECT_NEAR(actual.rangeRate3SigmaKmPerSecond, rangeRate, rangeRate * 3e-4);
+				EXPECT_NEAR(actual.major3SigmaArcsec * actual.major3SigmaArcsec +
+				                actual.minor3SigmaArcsec * actual.minor3SigmaArcsec,
+				            east * east + north * north, (east * east + north * north) * 2e-4);
 			}
-			const Eigen::Matrix4d expected = jacobian * request.solution.covariance * jacobian.transpose();
-			constexpr double arcsec = 206264.80624709636;
-			const auto& actual = *nominal.uncertainty;
-			const double east = 3.0 * std::sqrt(expected(0, 0)) * arcsec;
-			const double north = 3.0 * std::sqrt(expected(1, 1)) * arcsec;
-			const double range = 3.0 * std::sqrt(expected(2, 2)) * (Constants::AU_IN_METERS / 1000.0);
-			EXPECT_NEAR(actual.longitude3SigmaArcsec, east, east * 2e-4);
-			EXPECT_NEAR(actual.latitude3SigmaArcsec, north, north * 2e-4);
-			EXPECT_NEAR(actual.range3SigmaKm, range, range * 2e-4);
-			const double rangeRate = 3.0 * std::sqrt(expected(3, 3)) * (Constants::AU_IN_METERS / 1000.0) / 86400.0;
-			EXPECT_NEAR(actual.rangeRate3SigmaKmPerSecond, rangeRate, rangeRate * 3e-4);
-			EXPECT_NEAR(actual.major3SigmaArcsec * actual.major3SigmaArcsec +
-			                actual.minor3SigmaArcsec * actual.minor3SigmaArcsec,
-			            east * east + north * north, (east * east + north * north) * 2e-4);
-		  }
 		}
 	}
 }
@@ -486,15 +963,18 @@ TEST_F(EphemerisTest, ChesleySkyUncertaintyAgreesWithHorizons)
 	// SBDB JPL#60 covariance in [e, q, tp, node, peri, i], at JD 2458383.5 TDB.
 	using Vector6 = Eigen::Matrix<double, 6, 1>;
 	using Matrix6 = Eigen::Matrix<double, 6, 6>;
-	const Vector6 elements(0.02466299754368284, 2.936562809597262, 2458725.988367522770,
-	                       78.06106008819181, 182.5320169349131, 11.15274171364406);
+	const Vector6 elements(0.02466299754368284, 2.936562809597262, 2458725.988367522770, 78.06106008819181,
+	                       182.5320169349131, 11.15274171364406);
 	Matrix6 covariance;
-	covariance << 5.341658843758314e-19, -2.413560534201591e-18, 2.137674205518474e-15, -4.814053735820984e-18, 4.73977827543846e-16, -1.06909165126936e-18,
-	    -2.413560534201591e-18, 1.159221689362191e-17, -1.18727956270191e-14, 2.482937430756793e-17, -2.609689576634236e-15, 3.844903204503517e-18,
-	    2.137674205518474e-15, -1.18727956270191e-14, 4.529949217506534e-11, 4.619217982682939e-14, 8.900935638769985e-12, 1.58267220373105e-15,
-	    -4.814053735820984e-18, 2.482937430756793e-17, 4.619217982682939e-14, 1.575411787756052e-14, -7.885564600784617e-15, -4.784858482750135e-16,
-	    4.73977827543846e-16, -2.609689576634236e-15, 8.900935638769985e-12, -7.885564600784617e-15, 1.776271207268168e-12, 7.212448314149736e-16,
-	    -1.06909165126936e-18, 3.844903204503517e-18, 1.58267220373105e-15, -4.784858482750135e-16, 7.212448314149736e-16, 8.893618693010124e-16;
+	covariance << 5.341658843758314e-19, -2.413560534201591e-18, 2.137674205518474e-15, -4.814053735820984e-18,
+	    4.73977827543846e-16, -1.06909165126936e-18, -2.413560534201591e-18, 1.159221689362191e-17,
+	    -1.18727956270191e-14, 2.482937430756793e-17, -2.609689576634236e-15, 3.844903204503517e-18,
+	    2.137674205518474e-15, -1.18727956270191e-14, 4.529949217506534e-11, 4.619217982682939e-14,
+	    8.900935638769985e-12, 1.58267220373105e-15, -4.814053735820984e-18, 2.482937430756793e-17,
+	    4.619217982682939e-14, 1.575411787756052e-14, -7.885564600784617e-15, -4.784858482750135e-16,
+	    4.73977827543846e-16, -2.609689576634236e-15, 8.900935638769985e-12, -7.885564600784617e-15,
+	    1.776271207268168e-12, 7.212448314149736e-16, -1.06909165126936e-18, 3.844903204503517e-18,
+	    1.58267220373105e-15, -4.784858482750135e-16, 7.212448314149736e-16, 8.893618693010124e-16;
 	const auto state = [](const Vector6& p) -> Vector6 {
 		const double e = p[0], a = p[1] / (1.0 - e);
 		const double mean = Constants::GAUSS_K * (2458383.5 - p[2]) / std::pow(a, 1.5);
@@ -503,7 +983,7 @@ TEST_F(EphemerisTest, ChesleySkyUncertaintyAgreesWithHorizons)
 			eccentric -= (eccentric - e * std::sin(eccentric) - mean) / (1.0 - e * std::cos(eccentric));
 		const double anomaly = std::atan2(std::sqrt(1.0 - e * e) * std::sin(eccentric), std::cos(eccentric) - e);
 		const oc::cometary::Vector6 cot(p[1], e, p[5] * Constants::DEG_TO_RAD, p[3] * Constants::DEG_TO_RAD,
-		                               p[4] * Constants::DEG_TO_RAD, anomaly);
+		                                p[4] * Constants::DEG_TO_RAD, anomaly);
 		return oc::cometary::toCartesian(cot).value();
 	};
 	const Vector6 nominal = state(elements);
@@ -549,11 +1029,12 @@ TEST_F(EphemerisTest, ChesleySkyUncertaintyAgreesWithHorizons)
 		*pc[i % 3] += step;
 		*mc[i % 3] -= step;
 		rangeRateJacobian[i] = (oc::computeEphemeris(plus).rows.at(0).distanceRateAuPerDay -
-		                        oc::computeEphemeris(minus).rows.at(0).distanceRateAuPerDay) / (2.0 * step);
+		                        oc::computeEphemeris(minus).rows.at(0).distanceRateAuPerDay) /
+		                       (2.0 * step);
 	}
-	const double numericSigma = 3.0 * std::sqrt((rangeRateJacobian * request.solution.covariance *
-	                                             rangeRateJacobian.transpose())(0, 0)) *
-	                            (Constants::AU_IN_METERS / 1000.0) / 86400.0;
+	const double numericSigma =
+	    3.0 * std::sqrt((rangeRateJacobian * request.solution.covariance * rangeRateJacobian.transpose())(0, 0)) *
+	    (Constants::AU_IN_METERS / 1000.0) / 86400.0;
 	EXPECT_NEAR(propagated.uncertainty->rangeRate3SigmaKmPerSecond, numericSigma, numericSigma * 2e-3);
 }
 
@@ -595,8 +1076,8 @@ TEST_F(EphemerisTest, SkyUncertaintyIncludesNonGravitationalCrossCovariance)
 		}
 		const auto a = oc::computeEphemeris(plus).rows.at(0);
 		const auto b = oc::computeEphemeris(minus).rows.at(0);
-		jacobian(0, i) = std::remainder(a.longitude - b.longitude, 2.0 * Constants::PI) *
-		                 std::cos(nominal.latitude) / (2.0 * step);
+		jacobian(0, i) =
+		    std::remainder(a.longitude - b.longitude, 2.0 * Constants::PI) * std::cos(nominal.latitude) / (2.0 * step);
 		jacobian(1, i) = (a.latitude - b.latitude) / (2.0 * step);
 		rangeRateJacobian[i] = (a.distanceRateAuPerDay - b.distanceRateAuPerDay) / (2.0 * step);
 	}
@@ -606,9 +1087,9 @@ TEST_F(EphemerisTest, SkyUncertaintyIncludesNonGravitationalCrossCovariance)
 	const double north = 3.0 * std::sqrt(expected(1, 1)) * arcsec;
 	EXPECT_NEAR(nominal.uncertainty->longitude3SigmaArcsec, east, east * 0.002);
 	EXPECT_NEAR(nominal.uncertainty->latitude3SigmaArcsec, north, north * 0.002);
-	const double rangeRate = 3.0 * std::sqrt((rangeRateJacobian * request.solution.covariance *
-	                                          rangeRateJacobian.transpose())(0, 0)) *
-	                         (Constants::AU_IN_METERS / 1000.0) / 86400.0;
+	const double rangeRate =
+	    3.0 * std::sqrt((rangeRateJacobian * request.solution.covariance * rangeRateJacobian.transpose())(0, 0)) *
+	    (Constants::AU_IN_METERS / 1000.0) / 86400.0;
 	EXPECT_NEAR(nominal.uncertainty->rangeRate3SigmaKmPerSecond, rangeRate, rangeRate * 0.002);
 }
 

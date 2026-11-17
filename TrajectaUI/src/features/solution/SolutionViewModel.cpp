@@ -143,6 +143,7 @@ bool SolutionViewModel::publish(const orbital_core::FitPipelineResult& result, c
 	m_observations.setResult(result);
 	m_covariance.setResult(result.fit);
 	m_scene.setOrbit(result.fit.orbit);
+	m_scene.setRelativeSolution(result);
 	const auto observations = result.fittedObservations();
 	m_arcDays = 0;
 	if (observations.size() > 1) {

@@ -3,8 +3,10 @@
   const el = (id) => document.getElementById(id);
   const create = (tag, text, cls) => {
     const n = document.createElement(tag);
-    if (text) n.textContent = text;
-    if (cls) n.className = cls;
+    if (text)
+      n.textContent = text;
+    if (cls)
+      n.className = cls;
     return n;
   };
   const canvas = (w, h) => {
@@ -53,9 +55,12 @@
     });
   }
   function contourLines(geometry) {
-    if (geometry.type === 'LineString') return [geometry.coordinates];
-    if (geometry.type === 'MultiLineString' || geometry.type === 'Polygon') return geometry.coordinates;
-    if (geometry.type === 'MultiPolygon') return geometry.coordinates.flat();
+    if (geometry.type === 'LineString')
+      return [geometry.coordinates];
+    if (geometry.type === 'MultiLineString' || geometry.type === 'Polygon')
+      return geometry.coordinates;
+    if (geometry.type === 'MultiPolygon')
+      return geometry.coordinates.flat();
     return [];
   }
   async function mapImage({ data, densityImage, palette, peaks, runId }, settings) {
@@ -96,7 +101,8 @@
     }
     if (settings.hpd)
       for (const f of data.contours.features) {
-        if (f.properties.quantity !== settings.quantity) continue;
+        if (f.properties.quantity !== settings.quantity)
+          continue;
         ctx.strokeStyle =
           f.properties.hpd > 0.98
             ? '#f75464'
@@ -110,7 +116,8 @@
           ctx.beginPath();
           line.forEach(([lon, lat], i) => {
             const [x, y] = p.point(lat, lon);
-            if (i) ctx.lineTo(x, y);
+            if (i)
+              ctx.lineTo(x, y);
             else ctx.moveTo(x, y);
           });
           ctx.stroke();
@@ -118,7 +125,8 @@
       }
     if (settings.points)
       for (const point of data.impacts) {
-        if (settings.pointScope === 'selected' && point[5] !== runId) continue;
+        if (settings.pointScope === 'selected' && point[5] !== runId)
+          continue;
         const [x, y] = p.point(point[0], point[1]);
         ctx.beginPath();
         ctx.arc(x, y, Math.min(7, 2 + Math.log10(1 + point[2] * 1000)), 0, 2 * Math.PI);
@@ -194,12 +202,28 @@
       paper_bgcolor: '#fff',
       plot_bgcolor: '#fff',
     });
-    if (layout.polar) delete layout.plot_bgcolor;
+    if (layout.polar) {
+      delete layout.plot_bgcolor;
+      layout.polar.bgcolor = '#fff';
+      for (const key of ['radialaxis', 'angularaxis']) {
+        const axis = (layout.polar[key] ||= {});
+        axis.gridcolor = '#b8c6c5';
+        axis.linecolor = '#829391';
+        axis.tickfont = { ...axis.tickfont, color: '#26343a' };
+      }
+      for (const trace of spec.data) {
+        if (trace.marker?.color === '#e1e9e9')
+          trace.marker.color = '#50615e';
+        if (trace.line?.color === '#9daead' && trace.opacity === 0.6)
+          trace.line.color = '#50615e';
+      }
+    }
     layout.title = { ...layout.title, x: 0.13, font: { size: 13 } };
     for (const key of ['xaxis', 'yaxis'])
       if (layout[key]) {
         layout[key].automargin = true;
-        if (layout[key].type === 'log') Object.assign(layout[key], { dtick: 1, tickformat: '.3~g' });
+        if (layout[key].type === 'log')
+          Object.assign(layout[key], { dtick: 1, tickformat: '.3~g' });
       }
     if (layout.showlegend)
       layout.legend = {
@@ -223,7 +247,8 @@
     function page(title, meta = '') {
       const node = create('section', null, 'print-page');
       node.append(create('h2', `${data.title} | ${title}`));
-      if (meta) node.append(create('p', meta, 'print-meta'));
+      if (meta)
+        node.append(create('p', meta, 'print-meta'));
       pages.append(node);
       return node;
     }
@@ -232,7 +257,8 @@
       target.append(row);
       for (const id of ids) {
         const model = plots.get(id);
-        if (!model) continue;
+        if (!model)
+          continue;
         const url = await Plotly.toImage(plotSpec(model, height), { format: 'svg', width: 520, height });
         const img = await image(url, model.layout.title.text);
         img.width = 520;
@@ -247,7 +273,8 @@
           create('p', el('entry-note').textContent, 'print-meta'),
         );
       const stats = page('Ensemble statistics', el('subtitle').textContent);
-      if (el('warnings').textContent) stats.append(create('p', el('warnings').textContent, 'print-meta'));
+      if (el('warnings').textContent)
+        stats.append(create('p', el('warnings').textContent, 'print-meta'));
       stats.append(
         copy('metrics'),
         create('p', el('statistics-note').textContent, 'print-meta'),
@@ -298,7 +325,8 @@
         'Selected realization',
         el('run-meta').textContent + ' | ' + el('run-print').textContent,
       );
-      if (el('run-error').textContent) target.append(create('p', el('run-error').textContent, 'print-meta'));
+      if (el('run-error').textContent)
+        target.append(create('p', el('run-error').textContent, 'print-meta'));
       await charts(target, ['altitude', 'mass', 'speed', 'range']);
       const key = create('div', null, 'print-mass-key'),
         c = canvas(256, 12),
@@ -329,6 +357,7 @@
     el('print-pages').replaceChildren(...pages.children);
   }
   const api = { prepare, projection, plotSpec, mapImage };
-  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (typeof module === 'object' && module.exports)
+    module.exports = api;
   else root.StrewnPrint = api;
 })(globalThis);

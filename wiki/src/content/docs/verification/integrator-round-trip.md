@@ -116,7 +116,8 @@ The SHA-256 hashes of the DE440 and SB441-N16 files used for this run are
 respectively. For a comparable rerun, the library and Earth-orientation
 inputs also need to match.
 
-The VM loaded 19,756 Earth-orientation records using the default IAU1980
+This historical run predates the transition to Earth PCK. The VM loaded
+19,756 Earth-orientation records using the default IAU1980
 profile. Its C04 file ends on 2026-01-05, before the Apophis interval, so
 that run depends on extrapolation. The files present in `earth_orientation`
 had these SHA-256 hashes:

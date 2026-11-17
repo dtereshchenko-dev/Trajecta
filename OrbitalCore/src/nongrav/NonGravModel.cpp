@@ -70,6 +70,9 @@ NgParameterMask NonGravModel::sanitizeFitParameterMaskFor(NgModel model, NgParam
 		case NgModel::Yarkovsky:
 			return hasNgParameter(mask, NgParameterMask::A2) ? NgParameterMask::A2 : NgParameterMask::None;
 		case NgModel::InverseSquare:
+			if (mask == NgParameterMask::A1)
+				return NgParameterMask::A1;
+			[[fallthrough]];
 		case NgModel::MarsdenH2O:
 		case NgModel::MarsdenCO:
 			if (hasNgParameter(mask, NgParameterMask::DT))

@@ -3,6 +3,7 @@
 
 #include "earth_orientation/EarthRotation.h"
 #include "earth_orientation/EarthOrientation.h"
+#include "earth_orientation/EarthPck.h"
 #include "orbital_core/Constants.h"
 #include "orbital_core/Types.h"
 #include "orbital_core/TimeScale.h"
@@ -13,9 +14,8 @@
 namespace orbital_core::obs {
 
 	namespace {
-		ObserverState groundObserverStateAtTimes(double mjdTt, double mjdUtc, const ObserverData& observer);
-
-		constexpr double kEarthRotationRadPerDay = Constants::TWOPI * 1.00273790934;
+		Vec3D groundObserverPositionAtTimes(double mjdTt, double mjdUtc, const ObserverData& observer,
+		                                    const EarthOrientation& orientation);
 
 		[[nodiscard]] Vec3D eqToEcl(const Vec3D& eq) noexcept
 		{
@@ -29,6 +29,14 @@ namespace orbital_core::obs {
 			const double cosE = std::cos(Constants::EARTH_INCL);
 			const double sinE = std::sin(Constants::EARTH_INCL);
 			return Vec3D(ecl.x, ecl.y * cosE - ecl.z * sinE, ecl.y * sinE + ecl.z * cosE);
+		}
+
+		[[nodiscard]] Vec3D terrestrialObserver(const ObserverData& observer)
+		{
+			const double lon = Convertors::degreesToRadians(observer.longitude);
+			return {Constants::EARTH_RADIUS_IN_AU * observer.cosPhi * std::cos(lon),
+			        Constants::EARTH_RADIUS_IN_AU * observer.cosPhi * std::sin(lon),
+			        Constants::EARTH_RADIUS_IN_AU * observer.sinPhi};
 		}
 	}  // namespace
 
@@ -52,44 +60,74 @@ namespace orbital_core::obs {
 
 	ObserverState groundObserverStateEclAuMjd(double mjdTdb, double mjdUtc, const ObserverData& observer)
 	{
-		return groundObserverStateAtTimes(time::fromMjdTdb(mjdTdb, time::Scale::TT), mjdUtc, observer);
+		if (observer.cosPhi == 0.0 && observer.sinPhi == 0.0)
+			return {};
+		Vec3D position, velocity;
+		if (earthPckState(mjdTdb, terrestrialObserver(observer), position, velocity))
+			return {eqToEcl(position), eqToEcl(velocity)};
+		double ut1;
+		if (earthOrientation().ttToUt1Mjd(time::fromMjdTdb(mjdTdb, time::Scale::TT), ut1))
+			return groundObserverStateEclAuMjd(mjdTdb, mjdUtc, observer, earthOrientation());
+		throw std::runtime_error(
+		    "Observer prediction requires Earth PCK or observed Earth orientation data at observation epoch");
+	}
+
+	ObserverState radarStationStateEclAuMjd(double mjdTdb, double mjdUtc, const ObserverData& observer)
+	{
+		Vec3D position, velocity;
+		if (earthPckState(mjdTdb, terrestrialObserver(observer), position, velocity))
+			return {eqToEcl(position), eqToEcl(velocity)};
+		constexpr double h = 1.0 / Constants::SECONDS_PER_DAY;
+		const auto covered = [&](const EarthOrientation& orientation) {
+			for (const double t : {mjdTdb - h, mjdTdb, mjdTdb + h})
+				if (double ut1; !orientation.ttToUt1Mjd(time::fromMjdTdb(t, time::Scale::TT), ut1))
+					return false;
+			return true;
+		};
+		if (covered(earthOrientation()))
+			return groundObserverStateEclAuMjd(mjdTdb, mjdUtc, observer, earthOrientation());
+		throw std::runtime_error("Radar prediction requires Earth PCK or Earth orientation data at observation epoch");
+	}
+
+	ObserverState groundObserverStateEclAuMjd(double mjdTdb, double mjdUtc, const ObserverData& observer,
+	                                          const EarthOrientation& orientation)
+	{
+		const double mjdTt = time::fromMjdTdb(mjdTdb, time::Scale::TT);
+		constexpr double h = 1.0 / Constants::SECONDS_PER_DAY;
+		const Vec3D position = groundObserverPositionAtTimes(mjdTt, mjdUtc, observer, orientation);
+		const double beforeTdb = mjdTdb - h, afterTdb = mjdTdb + h;
+		const Vec3D before = groundObserverPositionAtTimes(time::fromMjdTdb(beforeTdb, time::Scale::TT), mjdUtc - h,
+		                                                   observer, orientation);
+		const Vec3D after = groundObserverPositionAtTimes(time::fromMjdTdb(afterTdb, time::Scale::TT), mjdUtc + h,
+		                                                  observer, orientation);
+		return {position, (after - before) / (afterTdb - beforeTdb)};
 	}
 
 	namespace {
-		ObserverState groundObserverStateAtTimes(double mjdTt, double mjdUtc, const ObserverData& observer)
+		Vec3D groundObserverPositionAtTimes(double mjdTt, double mjdUtc, const ObserverData& observer,
+		                                    const EarthOrientation& orientation)
 		{
-			double mjdUt1 = mjdUtc;
-			(void)orbital_core::earthOrientation().ttToUt1Mjd(mjdTt, mjdUt1);
-			const double jdTt = time::jdFromMjd(mjdTt);
-			const double gast = EarthRotation::Iau1976_1980::gmstRadiansMjd(mjdUt1) +
-			                    EarthRotation::Iau1976_1980::equationOfEquinoxes(jdTt);
-			const double lon = Convertors::degreesToRadians(observer.longitude);
-
-			Vec3D obsEq(Constants::EARTH_RADIUS_IN_AU * observer.cosPhi * std::cos(lon),
-			            Constants::EARTH_RADIUS_IN_AU * observer.cosPhi * std::sin(lon),
-			            Constants::EARTH_RADIUS_IN_AU * observer.sinPhi);
-			Vec3D velEq(0.0, 0.0, 0.0);
-
-			{
-				const double c = std::cos(gast), sg = std::sin(gast);
-				const double x = obsEq.x, y = obsEq.y;
-				obsEq.x = c * x - sg * y;
-				obsEq.y = sg * x + c * y;
-				velEq.x = -kEarthRotationRadPerDay * obsEq.y;
-				velEq.y = kEarthRotationRadPerDay * obsEq.x;
-				velEq.z = 0.0;
+			auto eop = orientation.lookupMjdTt(mjdTt);
+			if (!orientation.coversObservedMjdTt(mjdTt)) {
+				double mjdUt1;
+				if (!orientation.ttToUt1Mjd(mjdTt, mjdUt1))
+					throw std::runtime_error("Earth orientation and UT1 data unavailable at observation epoch");
+				eop = {};
+				eop.ttMinusUt1Seconds = (mjdTt - mjdUt1) * Constants::SECONDS_PER_DAY;
 			}
-
-			EarthRotation::Iau1976_1980::applyPrecessionNutation(jdTt, obsEq, -1);
-			EarthRotation::Iau1976_1980::applyPrecessionNutation(jdTt, velEq, -1);
-
-			return ObserverState{eqToEcl(obsEq), eqToEcl(velEq)};
+			const Vec3D body = terrestrialObserver(observer);
+			return eqToEcl(EarthRotation::WithEop::terrestrialToEquatorialMjd(mjdTt, body, eop));
 		}
 	}  // namespace
 
 	Vec3D groundObserverOffsetEclAu(double jdTdb, double mjdUtc, const ObserverData& observer)
 	{
-		return groundObserverStateEclAu(jdTdb, mjdUtc, observer).offsetEclAu;
+		return groundObserverOffsetEclAuMjd(time::mjdFromJd(jdTdb), mjdUtc, observer);
+	}
+
+	Vec3D groundObserverOffsetEclAuMjd(double mjdTdb, double mjdUtc, const ObserverData& observer)
+	{
+		return groundObserverStateEclAuMjd(mjdTdb, mjdUtc, observer).offsetEclAu;
 	}
 
 	Vec3D observerOffsetAt(double jdTdb, const PreparedObservation& observation)

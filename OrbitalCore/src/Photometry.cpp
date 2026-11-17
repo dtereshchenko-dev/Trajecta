@@ -1,4 +1,5 @@
 #include "orbital_core/Photometry.h"
+#include "orbital_core/Constants.h"
 #include "orbital_core/FitResult.h"
 #include "orbital_core/Types.h"
 
@@ -275,8 +276,7 @@ namespace orbital_core::photometry {
 	                                      double observerAu, double phaseRad) noexcept
 	{
 		if (!std::isfinite(absoluteMagnitude) || !std::isfinite(slopeG) || !positiveFinite(heliocentricAu) ||
-		    !positiveFinite(observerAu) || !std::isfinite(phaseRad) || phaseRad < 0.0 ||
-		    phaseRad >= 3.14159265358979323846)
+		    !positiveFinite(observerAu) || !std::isfinite(phaseRad) || phaseRad < 0.0 || phaseRad >= Constants::PI)
 			return std::nullopt;
 
 		const double phaseFunction = Calculations::hgPhaseFunction(phaseRad, slopeG);

@@ -19,22 +19,21 @@ namespace {
 	};
 
 	constexpr OptionalColumn kOptionalColumns[] = {
-        { "distance", QT_TR_NOOP("Observer distance"), EphemerisTableModel::Distance, true },
-        { "solarDistance", QT_TR_NOOP("Solar distance"), EphemerisTableModel::SolarDistance, true },
-        { "magnitude", QT_TR_NOOP("Magnitude"), EphemerisTableModel::Magnitude, true },
-        { "elongation", QT_TR_NOOP("Solar elongation"), EphemerisTableModel::Elongation, true },
-        { "longitudeRate", QT_TR_NOOP("RA / longitude rate"), EphemerisTableModel::LongitudeRate, false },
-        { "latitudeRate", QT_TR_NOOP("Dec / latitude rate"), EphemerisTableModel::LatitudeRate, false },
-        { "distanceRate", QT_TR_NOOP("Observer range rate"), EphemerisTableModel::DistanceRate, false },
-        { "solarDistanceRate", QT_TR_NOOP("Solar range rate"), EphemerisTableModel::SolarDistanceRate, false },
-        { "lightTime", QT_TR_NOOP("Light time"), EphemerisTableModel::LightTime, false },
-        { "phase", QT_TR_NOOP("Phase angle"), EphemerisTableModel::Phase, false },
-        { "skyMotion", QT_TR_NOOP("Sky motion"), EphemerisTableModel::SkyMotion, false },
-        { "skyPositionAngle", QT_TR_NOOP("Sky motion position angle"), EphemerisTableModel::SkyPositionAngle, false },
-        { "ellipseMajor", QT_TR_NOOP("Error ellipse (3σ)"), EphemerisTableModel::EllipseMajor, false },
-        { "ellipseMinor", QT_TR_NOOP("Error ellipse minor axis (3σ)"), EphemerisTableModel::EllipseMinor, false },
-        { "ellipseAngle", QT_TR_NOOP("Error ellipse orientation"), EphemerisTableModel::EllipseAngle, false }
-	};
+	    {"distance", QT_TR_NOOP("Observer distance"), EphemerisTableModel::Distance, true},
+	    {"solarDistance", QT_TR_NOOP("Solar distance"), EphemerisTableModel::SolarDistance, true},
+	    {"magnitude", QT_TR_NOOP("Magnitude"), EphemerisTableModel::Magnitude, true},
+	    {"elongation", QT_TR_NOOP("Solar elongation"), EphemerisTableModel::Elongation, true},
+	    {"longitudeRate", QT_TR_NOOP("RA / longitude rate"), EphemerisTableModel::LongitudeRate, false},
+	    {"latitudeRate", QT_TR_NOOP("Dec / latitude rate"), EphemerisTableModel::LatitudeRate, false},
+	    {"distanceRate", QT_TR_NOOP("Observer range rate"), EphemerisTableModel::DistanceRate, false},
+	    {"solarDistanceRate", QT_TR_NOOP("Solar range rate"), EphemerisTableModel::SolarDistanceRate, false},
+	    {"lightTime", QT_TR_NOOP("Light time"), EphemerisTableModel::LightTime, false},
+	    {"phase", QT_TR_NOOP("Phase angle"), EphemerisTableModel::Phase, false},
+	    {"skyMotion", QT_TR_NOOP("Sky motion"), EphemerisTableModel::SkyMotion, false},
+	    {"skyPositionAngle", QT_TR_NOOP("Sky motion position angle"), EphemerisTableModel::SkyPositionAngle, false},
+	    {"ellipseMajor", QT_TR_NOOP("Error ellipse (3σ)"), EphemerisTableModel::EllipseMajor, false},
+	    {"ellipseMinor", QT_TR_NOOP("Error ellipse minor axis (3σ)"), EphemerisTableModel::EllipseMinor, false},
+	    {"ellipseAngle", QT_TR_NOOP("Error ellipse orientation"), EphemerisTableModel::EllipseAngle, false}};
 
 	QString scaleName(orbital_core::time::Scale scale)
 	{

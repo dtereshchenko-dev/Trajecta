@@ -1,8 +1,8 @@
 #include "ReportData.h"
 #include "../app/SourceCache.h"
+#include "../src/VectorMath.h"
 #include <algorithm>
 #include <cmath>
-#include <numbers>
 
 namespace strewn::output {
 
@@ -14,9 +14,7 @@ namespace strewn::output {
 			return result;
 		const double west = bounds[0][1], east = bounds[1][1], south = bounds[0][0], north = bounds[1][0];
 		const auto tileY = [](double latitude, double scale) {
-			return (1 -
-			        std::asinh(std::tan(std::clamp(latitude, -85., 85.) * std::numbers::pi / 180)) / std::numbers::pi) *
-			       scale / 2;
+			return (1 - std::asinh(std::tan(std::clamp(latitude, -85., 85.) * detail::deg)) / detail::pi) * scale / 2;
 		};
 		int zoom = std::clamp(static_cast<int>(std::ceil(std::log2(1600 * 360.0 / (256 * (east - west))))), 1, 15);
 		int x0 = 0, x1 = 0, y0 = 0, y1 = 0;

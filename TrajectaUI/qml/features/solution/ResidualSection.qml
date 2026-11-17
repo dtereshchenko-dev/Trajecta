@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import TrajectaUI
 import "../../shared/UI.js" as UI
@@ -29,6 +30,16 @@ ColumnLayout {
             CustomText { visible: !section.timeMode && section.solution.rms > 0; text: UI.number(section.solution.rms, 2) + "″ RMS"; color: AppTheme.blue; font.pixelSize: 10 }
             CustomText { visible: !section.timeMode && section.solution.rms > 0; text: UI.number(section.solution.rms * 3, 2) + "″ 3×RMS"; color: AppTheme.amber; font.pixelSize: 10 }
             CustomText { text: qsTr("arcsec"); secondary: true; font.pixelSize: 10 }
+            CustomButton {
+                objectName: "residual-reset-view"
+                iconName: "rotate-ccw"
+                flat: true
+                enabled: plot.viewAdjusted
+                accessibleLabel: qsTr("Reset plot view")
+                onClicked: plot.resetView()
+                ToolTip.visible: hovered
+                ToolTip.text: accessibleLabel
+            }
         }
         Rectangle { x: 1; y: 32; height: 1; width: parent.width - 2; color: AppTheme.lineSoft }
         ResidualPlot {

@@ -113,10 +113,10 @@ namespace Calculations {
 					*positionRate = dposition;
 				if (velocityRate) {
 					const double dr = Rout.dot(dposition) / r;
-					const double dgd = -(2.0 * chi * dchi * c2 + chi * chi * dc2 * dpsi) / r +
-					                   chi * chi * c2 * dr / (r * r);
-					const double dfd = (dchi * (psi * c3 - 1.0) + chi * dpsi * (c3 + psi * dc3)) / (r * r0) -
-					                   fd * (dr / r + dr0 / r0);
+					const double dgd =
+					    -(2.0 * chi * dchi * c2 + chi * chi * dc2 * dpsi) / r + chi * chi * c2 * dr / (r * r);
+					const double dfd =
+					    (dchi * (psi * c3 - 1.0) + chi * dpsi * (c3 + psi * dc3)) / (r * r0) - fd * (dr / r + dr0 / r0);
 					*velocityRate = initialRate->first * fd + R0 * dfd + initialRate->second * gd + V0 * dgd;
 				}
 			}

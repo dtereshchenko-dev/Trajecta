@@ -4,12 +4,11 @@
 #include <Eigen/LU>
 #include <cmath>
 #include <limits>
-#include <numbers>
 
 namespace orbital_core::hazard::equinoctial {
 	namespace {
 		using Basis = Eigen::Matrix<double, 3, 2>;
-		constexpr double twoPi = 2.0 * std::numbers::pi;
+		constexpr double twoPi = Constants::TWOPI;
 
 		double principal(double angle)
 		{

@@ -1,0 +1,47 @@
+@media print {
+  body > header,
+  body > main,
+  body > footer {
+    display: block !important;
+  }
+  header nav,
+  .toolbar,
+  .topline > button,
+  .leaflet-control-zoom {
+    display: none !important;
+  }
+  body .table-wrap {
+    max-height: none;
+    overflow: visible;
+  }
+  body > header {
+    padding: 0 0 3mm;
+    background: white;
+    border-color: #d7dfe3;
+  }
+  body > main {
+    padding: 0;
+  }
+  body > footer {
+    padding: 2mm 0 0;
+  }
+  h2 {
+    margin: 0 0 2mm;
+  }
+  #map-print-frame {
+    position: relative;
+    overflow: hidden;
+    width: var(--print-frame-width, 100%);
+    height: var(--print-frame-height, 105mm);
+  }
+  #map-print-frame > #map {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--print-map-width, 100%);
+    height: var(--print-map-height, 105mm);
+    min-height: 0;
+    transform: scale(var(--print-map-scale, 1));
+    transform-origin: top left;
+  }
+}

@@ -10,7 +10,8 @@ namespace Calculations {
 
 	// initialRate differentiates [R, V/k] and dtRate differentiates dtDays.
 	[[nodiscard]] ORBITAL_CORE_API StateVectors propagateKeplerStateRate(const StateVectors& initial, double dtDays,
-	                                                                    const StateVectors& initialRate, double dtRate);
+	                                                                     const StateVectors& initialRate,
+	                                                                     double dtRate);
 
 	namespace detail {
 		// tau and tauRate use canonical time (k times days).

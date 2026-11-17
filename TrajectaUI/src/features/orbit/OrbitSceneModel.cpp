@@ -1,15 +1,25 @@
 #include "OrbitSceneModel.h"
-
 #include <algorithm>
 #include <cmath>
 #include <exception>
+#include <orbital_core/FitPipeline.h>
 #include "util/FormatUtils.h"
 #include "util/CalculationTime.h"
 
-OrbitSceneModel::OrbitSceneModel(QObject* parent) : QObject(parent) {}
+OrbitSceneModel::OrbitSceneModel(QObject* parent) : QObject(parent), m_relative(this)
+{
+	connect(&m_relative, &RelativeMotionModel::positionChanged, this, &OrbitSceneModel::positionChanged);
+	connect(&m_relative, &RelativeMotionModel::resultReady, this, [this](bool accepted) {
+		if (accepted)
+			m_position = 0;
+		emit changed();
+	});
+}
 
 void OrbitSceneModel::setOrbit(const Orbit_p& orbit)
 {
+	m_relative.reset();
+	m_relativeMode = false;
 	m_orbit = orbit ? std::make_shared<Orbit>(*orbit) : nullptr;
 	m_position = 0;
 	m_spanDays = 0;
@@ -36,7 +46,32 @@ void OrbitSceneModel::setOrbit(const Orbit_p& orbit)
 	emit positionChanged();
 }
 
-double OrbitSceneModel::epochMjdTdb() const { return m_orbit ? m_orbit->epochMjd() + m_position * m_spanDays : 0; }
+void OrbitSceneModel::setRelativeSolution(const orbital_core::FitPipelineResult& result)
+{
+	m_relative.setSolution(result);
+}
+
+QVector3D OrbitSceneModel::objectPosition() const
+{
+	return m_relativeMode && m_relative.relativeAvailable() ? m_relative.objectPosition() : m_objectPosition;
+}
+
+double OrbitSceneModel::frameRadius() const
+{
+	return m_relativeMode && m_relative.relativeAvailable() ? m_relative.frameRadius() : m_frameRadius;
+}
+
+double OrbitSceneModel::spanDays() const
+{
+	return m_relativeMode && m_relative.relativeAvailable() ? m_relative.spanDays() : m_spanDays;
+}
+
+double OrbitSceneModel::epochMjdTdb() const
+{
+	if (m_relativeMode && m_relative.relativeAvailable())
+		return m_relative.firstMjdTdb() + m_position * spanDays();
+	return m_orbit ? m_orbit->epochMjd() + m_position * m_spanDays : 0;
+}
 
 QString OrbitSceneModel::epochUtc() const
 {
@@ -45,13 +80,33 @@ QString OrbitSceneModel::epochUtc() const
 	return CalculationTime::formatUtc(orbital_core::time::fromMjdTdb(epochMjdTdb(), orbital_core::time::Scale::UTC));
 }
 
+QString OrbitSceneModel::epochDisplayScale() const
+{
+	return m_relativeMode && m_relative.relativeAvailable() ? m_relative.relativeResultTimeScale()
+	                                                        : QStringLiteral("UTC");
+}
+
+QString OrbitSceneModel::epochDisplay() const
+{
+	if (!m_orbit)
+		return {};
+	const auto scale =
+	    epochDisplayScale() == QLatin1String("TDB") ? orbital_core::time::Scale::TDB : orbital_core::time::Scale::UTC;
+	return CalculationTime::formatUtc(orbital_core::time::fromMjdTdb(epochMjdTdb(), scale));
+}
+
 void OrbitSceneModel::setPosition(double position)
 {
-	if (!m_orbit || !m_canAnimate || !std::isfinite(position))
+	if (!m_orbit || !canAnimate() || !std::isfinite(position))
 		return;
 	position = std::clamp(position, 0.0, 1.0);
 	if (position == m_position)
 		return;
+	if (m_relativeMode) {
+		m_position = position;
+		m_relative.setPosition(position);
+		return;
+	}
 	const auto r = position == 0
 	                   ? m_orbit->getR()
 	                   : Calculations::positionAt(m_orbit->getSemiMajorAxis(), m_orbit->getExcentricity(),
@@ -67,6 +122,35 @@ void OrbitSceneModel::setPosition(double position)
 	m_position = position;
 	m_objectPosition = FormatUtils::eclToQt3D(r);
 	updatePlanets();
+	emit positionChanged();
+}
+
+bool OrbitSceneModel::seekCaptureStart(int index)
+{
+	if (!m_relativeMode || !m_relative.relativeAvailable())
+		return false;
+	const auto epoch = m_relative.captureStartEpoch(index);
+	const double start = m_relative.firstMjdTdb();
+	const double duration = spanDays();
+	if (!epoch || !std::isfinite(*epoch) || !std::isfinite(duration) || duration <= 0)
+		return false;
+	setPosition((*epoch - start) / duration);
+	return true;
+}
+
+void OrbitSceneModel::setRelativeMode(bool value)
+{
+	if (m_relativeMode == value)
+		return;
+	m_relativeMode = value;
+	m_position = 0;
+	if (value && m_relative.relativeAvailable())
+		m_relative.setPosition(0);
+	else if (!value && m_orbit) {
+		m_objectPosition = FormatUtils::eclToQt3D(m_orbit->getR());
+		updatePlanets();
+	}
+	emit changed();
 	emit positionChanged();
 }
 

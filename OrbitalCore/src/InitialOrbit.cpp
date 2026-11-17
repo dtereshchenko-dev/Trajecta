@@ -663,10 +663,10 @@ namespace Calculations {
 
 			const double costAllObs = keplerResidualCost(sv.first, sv.second, epoch, allObs);
 
-			if (verbose) {
+			if (verbose && Logger::threadMinLevel() == LogLevel::Debug) {
 				const double cost = keplerResidualCost(sv.first, sv.second, epoch, scoringObs);
 				const double rms = std::sqrt(cost / static_cast<double>(scoringObs.size())) / Constants::ARCSEC_RAD;
-				LOG_INFO << "[IOD] " << name << " RMS=" << rms << "\"  score=" << score;
+				LOG_DEBUG << "[IOD] " << name << " RMS=" << rms << "\"  score=" << score;
 			}
 
 			const double selectionScore = (std::isfinite(selectionScoreOverride) && selectionScoreOverride < kBadScore)
@@ -704,7 +704,6 @@ namespace Calculations {
 			lookForBestSubarc(groundObs, arclen, start, end);
 
 			if (end < start + 2) {
-				LOG_INFO << "[IOD] pass " << pass << " arclen=" << arclen << "d: no valid subarc, shrinking";
 				arclen *= kArclenShrink;
 				continue;
 			}
@@ -713,8 +712,6 @@ namespace Calculations {
 			const double subSpan = groundObs[end].epochJdTdb() - groundObs[start].epochJdTdb();
 
 			if (start == lastStart && end == lastEnd) {
-				LOG_INFO << "[IOD] pass " << pass << " arclen=" << arclen
-				         << "d: same subarc as previous pass, skipping";
 				arclen *= kArclenShrink;
 				continue;
 			}
@@ -728,14 +725,13 @@ namespace Calculations {
 
 			subarcRef = &subarc;
 
-			LOG_INFO << "[IOD] pass " << pass << " arclen-budget=" << arclen << "d  →  subarc [" << start << ".." << end
-			         << "] (" << n_sub << " obs over " << subSpan << "d)";
+			LOG_DEBUG << "[IOD] pass " << pass << " arclen-budget=" << arclen << "d  →  subarc [" << start << ".."
+			          << end << "] (" << n_sub << " obs over " << subSpan << "d)";
 
 			const std::size_t midIdx = pickGaussMiddleIdx(subarc);
 			const std::vector<ObsNode> triplet = {subarc.front(), subarc[midIdx], subarc.back()};
 
 			const auto gaussRoots = gaussAllRoots(triplet[0], triplet[1], triplet[2]);
-			LOG_INFO << "[IOD]   Gauss surviving roots: " << gaussRoots.size();
 
 			static const char* kGaussNames[6] = {
 			    "Gauss[0]", "Gauss[0]+Herget-refined", "Gauss[1]", "Gauss[1]+Herget-refined",
@@ -850,8 +846,8 @@ namespace Calculations {
 					}
 				}
 
-				LOG_INFO << "[IOD]   Vaisala-scan " << vaisalaCalls << " calls (best " << vaisalaBest
-				         << "), Herget-scan " << hergetCalls << " calls (best " << hergetBest << ")";
+				LOG_DEBUG << "[IOD]   Vaisala-scan " << vaisalaCalls << " calls (best " << vaisalaBest
+				          << "), Herget-scan " << hergetCalls << " calls (best " << hergetBest << ")";
 			}
 
 			if (best.score < kImprovementTriggerScore && groundObs.size() > 2) {
@@ -861,8 +857,8 @@ namespace Calculations {
 				if (improved.changed) {
 					const double rawScore = tryCandidateWithSelection(
 					    improved.state, improved.epoch, "attempt_improvements", true, improved.selectionScore);
-					LOG_INFO << "[IOD]   attempt_improvements: score " << preScore << " -> " << rawScore
-					         << " (selection " << improved.selectionScore << ")";
+					LOG_DEBUG << "[IOD]   attempt_improvements: score " << preScore << " -> " << rawScore
+					          << " (selection " << improved.selectionScore << ")";
 				}
 			}
 

@@ -177,34 +177,9 @@ namespace orbital_core::fit {
 		const Vec3D V_canonical = sv.V * (1.0 / Constants::GAUSS_K);
 		auto orbAt = make_orbit_from_states_vectors(StateVectors(sv.R, V_canonical), outputEpochTdb);
 
-		if (config_.logDiagnostics) {
-			LOG_INFO << "==== ORBIT AT TARGET EPOCH JD " << std::fixed << std::setprecision(6) << outputEpochTdb
-			         << " TDB ====";
-			LOG_INFO << std::scientific << std::setprecision(15) << "  R = [" << sv.R.x << ", " << sv.R.y << ", "
-			         << sv.R.z << "]";
-			LOG_INFO << std::scientific << std::setprecision(15) << "  V = [" << V_canonical.x << ", " << V_canonical.y
-			         << ", " << V_canonical.z << "]";
-
-			if (orbAt) {
-				LOG_INFO << std::fixed << std::setprecision(15) << "  a = " << orbAt->getSemiMajorAxis() << " AU";
-
-				LOG_INFO << std::fixed << std::setprecision(15) << "  e = " << orbAt->getExcentricity();
-
-				LOG_INFO << std::fixed << std::setprecision(15)
-				         << "  i = " << Convertors::radiansToDegrees(orbAt->getInclination()) << " deg";
-
-				LOG_INFO << std::fixed << std::setprecision(15)
-				         << "  Omega = " << Convertors::radiansToDegrees(orbAt->getLongitudeOfAscendingNode())
-				         << " deg";
-
-				LOG_INFO << std::fixed << std::setprecision(15)
-				         << "  omega = " << Convertors::radiansToDegrees(orbAt->getArgumentOfPericentre()) << " deg";
-
-				LOG_INFO << std::fixed << std::setprecision(15)
-				         << "  M = " << Convertors::radiansToDegrees(orbAt->getMeanAnomaly()) << " deg";
-			}
-			LOG_INFO << "==== END ORBIT AT TARGET EPOCH ====";
-		}
+		if (config_.logDiagnostics)
+			LOG_DEBUG << "[FitOutput] propagated orbit to JD " << std::fixed << std::setprecision(6) << outputEpochTdb
+			          << " TDB";
 
 		return orbAt;
 	}

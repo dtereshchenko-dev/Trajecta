@@ -3,6 +3,7 @@
 #include "fit/FitObservations.h"
 #include "IntervalMcAssets.h"
 #include "MovAssets.h"
+#include "SemilinearJson.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 
@@ -104,6 +105,12 @@ namespace orbital_core::hazard {
 		     {{"planet_mask", f.planetMask},
 		      {"step_days", f.stepSize},
 		      {"sb441", f.useSb441},
+		      {"relativity", relativityModeName(f.forceModel.relativity)},
+		      {"sun_j2", true},
+		      {"earth_j2", f.forceModel.earthJ2},
+		      {"earth_j3", f.forceModel.earthJ3},
+		      {"earth_j4", f.forceModel.earthJ4},
+		      {"earth_rotating_pole", f.forceModel.rotatingEarthPole},
 		      {"target_naif_id", f.targetNaifId},
 		      {"interior_mass_policy", static_cast<int>(f.inactiveInteriorMassPolicy)}}},
 		    {"weight_profile", static_cast<int>(settings.weightProfile)},
@@ -120,17 +127,19 @@ namespace orbital_core::hazard {
 		    {"preliminary", nodes(result.preliminary)},
 		    {"nodes", nodes(result.nodes)},
 		    {"observations", Json::array()}};
+		data["semilinear"] = semilinearJson(result.semilinear);
 		data["nominal"] = nullptr;
 		if (result.nominal) {
 			const auto& nominal = *result.nominal;
-			data["nominal"] = {{"status", nominal.status == NominalPropagationStatus::Complete ? "complete"
-			                             : nominal.status == NominalPropagationStatus::Cancelled ? "cancelled"
-			                                                                        : "propagation_failed"},
-			                   {"epoch", nominal.epochMjdTdb},
-			                   {"state", nominal.state},
-			                   {"entry_before_interval", nominal.entryBeforeInterval},
-			                   {"entry", crossing(nominal.entry)},
-			                   {"error", nominal.error}};
+			data["nominal"] = {
+			    {"status", nominal.status == NominalPropagationStatus::Complete    ? "complete"
+			               : nominal.status == NominalPropagationStatus::Cancelled ? "cancelled"
+			                                                                       : "propagation_failed"},
+			    {"epoch", nominal.epochMjdTdb},
+			    {"state", nominal.state},
+			    {"entry_before_interval", nominal.entryBeforeInterval},
+			    {"entry", crossing(nominal.entry)},
+			    {"error", nominal.error}};
 		}
 		OrbitOptimizerConfig cfg;
 		cfg.nbody = f;

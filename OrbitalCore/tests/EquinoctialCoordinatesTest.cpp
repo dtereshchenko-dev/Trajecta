@@ -7,7 +7,6 @@
 #include <filesystem>
 #include <fstream>
 #include <limits>
-#include <numbers>
 
 using namespace orbital_core;
 using namespace orbital_core::hazard;
@@ -25,7 +24,7 @@ namespace {
 	Vector6 elementDifference(Vector6 a, const Vector6& b)
 	{
 		a -= b;
-		a(5) = std::remainder(a(5), 2.0 * std::numbers::pi);
+		a(5) = std::remainder(a(5), 2.0 * Constants::PI);
 		return a;
 	}
 }  // namespace
@@ -34,7 +33,7 @@ TEST(EquinoctialCoordinatesTest, RoundTripsIncludingCircularEquatorialAndLongitu
 {
 	for (const double e : {0.0, 1.0e-10, 0.2, 0.95, 0.999}) {
 		for (const double p : {0.0, 1.0e-10, 0.2, 4.0}) {
-			for (const double longitude : {-1.0e-12, 0.0, 1.3, 2.0 * std::numbers::pi + 1.0e-12}) {
+			for (const double longitude : {-1.0e-12, 0.0, 1.3, 2.0 * Constants::PI + 1.0e-12}) {
 				Vector6 elements;
 				elements << 1.4, 0.6 * e, 0.8 * e, p, -0.7 * p, longitude;
 				SCOPED_TRACE(elements.transpose());

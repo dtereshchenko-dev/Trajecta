@@ -40,9 +40,8 @@ namespace orbital_core::obs {
 	                                         ObservationWeightingOptions options)
 	    : m_weightProfile(weightProfile), m_options(options)
 	{
-		LOG_INFO << "ObservationPipeline: ensure sigma table";
 		ensureSigmaTable(m_weightProfile);
-		LOG_INFO << "ObservationPipeline: ready";
+		LOG_DEBUG << "ObservationPipeline: ready";
 	}
 
 	std::vector<PreparedObservation> ObservationPipeline::prepare(std::span<const ObsNode> rawObs,

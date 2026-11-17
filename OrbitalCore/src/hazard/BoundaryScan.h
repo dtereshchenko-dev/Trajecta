@@ -21,5 +21,5 @@ namespace orbital_core::hazard::boundary {
 	                    NBodyPropagator& propagator, IEphemerisSource& ephemeris, std::stop_token cancel);
 
 	std::optional<NominalEarthEntry> nearbyNominalEarthEntry(const FitResult& fit, const NBodySettings& forces,
-	                                                        std::stop_token cancel);
+	                                                         std::stop_token cancel);
 }  // namespace orbital_core::hazard::boundary
