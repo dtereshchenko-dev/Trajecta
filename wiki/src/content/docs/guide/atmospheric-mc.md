@@ -148,6 +148,9 @@ fragments reached the ground.
 
 The following screenshots show one atmospheric run for 2024 BX1. The report
 contains an ensemble summary, a map, individual realizations and wind profiles.
+Use **Print / PDF** to print or save the report. The **Print** selector chooses
+either **Current view** or **Full report + selected realization**. Select the
+realization before printing when its flight history and wind profile are needed.
 
 ### Ensemble
 

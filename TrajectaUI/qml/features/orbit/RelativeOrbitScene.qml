@@ -16,17 +16,20 @@ Rectangle {
     readonly property color distantEnergyColor: AppTheme.name === "light" || AppTheme.name === "dim" ? "#715887" : "#b098c6"
     property bool showHill: true
     property bool showMoon: true
+    property bool orthographicView: false
+    readonly property real orthographicMagnification: UI.orthographicMagnification(view.height, camera.z, camera.fieldOfView)
     color: AppTheme.nav
     clip: true
 
     function resetView() {
         centerAnimation.stop()
         focusZoomAnimation.stop()
+        orthographicView = false
         origin.position = Qt.vector3d(0, 0, 0)
         origin.eulerRotation = Qt.vector3d(-52, 32, 0)
         camera.z = defaultDistance
     }
-    function topView() { centerAnimation.stop(); focusZoomAnimation.stop(); origin.position = Qt.vector3d(0, 0, 0); origin.eulerRotation = Qt.vector3d(-90, 0, 0) }
+    function topView() { centerAnimation.stop(); focusZoomAnimation.stop(); origin.position = Qt.vector3d(0, 0, 0); origin.eulerRotation = Qt.vector3d(-90, 0, 0); orthographicView = true }
     function focusOnObject() {
         centerAnimation.stop()
         focusZoomAnimation.stop()
@@ -47,11 +50,14 @@ Rectangle {
         sceneCamera: camera
         step: Math.pow(10, Math.floor(Math.log10(Math.max(1e-8, camera.z / 6))))
         center: origin.scenePosition
+        orthographic: scene.orthographicView
+        orthographicMagnification: scene.orthographicMagnification
     }
     View3D {
         id: view
+        objectName: "relative-viewport"
         anchors.fill: parent
-        camera: camera
+        camera: scene.orthographicView ? orthographicCamera : camera
         environment: SceneEnvironment {
             backgroundMode: SceneEnvironment.Transparent
             antialiasingMode: SceneEnvironment.MSAA
@@ -61,12 +67,25 @@ Rectangle {
         Node {
             id: origin
             objectName: "relative-camera-origin"
+            onEulerRotationChanged: {
+                if (scene.orthographicView && (Math.abs(eulerRotation.x + 90) > 0.01 || Math.abs(eulerRotation.y) > 0.01 || Math.abs(eulerRotation.z) > 0.01))
+                    scene.orthographicView = false
+            }
             PerspectiveCamera {
                 id: camera
                 objectName: "relative-camera"
                 fieldOfView: 38
                 clipNear: Math.max(1e-12, camera.z * 0.00001)
                 clipFar: Math.max(1, scene.model.frameRadius * 150)
+            }
+            OrthographicCamera {
+                id: orthographicCamera
+                objectName: "relative-orthographic-camera"
+                z: camera.z
+                clipNear: camera.clipNear
+                clipFar: camera.clipFar
+                horizontalMagnification: scene.orthographicMagnification
+                verticalMagnification: scene.orthographicMagnification
             }
         }
         Model {
@@ -136,7 +155,8 @@ Rectangle {
             readonly property vector3d projected: {
                 if (!scene.relative.relativeAvailable || !view.camera || view.width <= 0 || view.height <= 0)
                     return Qt.vector3d(0, 0, -1)
-                const cameraTransform = camera.sceneTransform
+                const cameraTransform = view.camera.sceneTransform
+                const magnification = scene.orthographicView ? orthographicCamera.verticalMagnification : camera.fieldOfView
                 const viewportWidth = view.width
                 const viewportHeight = view.height
                 const sign = modelData === "L1" ? 1 : -1
@@ -157,7 +177,8 @@ Rectangle {
             required property var modelData
             readonly property vector3d projected: {
                 if (!view.camera || view.width <= 0 || view.height <= 0) return Qt.vector3d(0, 0, -1)
-                const cameraTransform = camera.sceneTransform
+                const cameraTransform = view.camera.sceneTransform
+                const magnification = scene.orthographicView ? orthographicCamera.verticalMagnification : camera.fieldOfView
                 const viewportWidth = view.width
                 const viewportHeight = view.height
                 return view.mapFrom3DScene(modelData.position)

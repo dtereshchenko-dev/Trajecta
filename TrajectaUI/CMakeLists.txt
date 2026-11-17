@@ -272,6 +272,15 @@ set(CLIENT_ICON_FILES
     resources/icons/workspace/LICENSE
 )
 
+set(REPORT_COMMON_CSS "${CMAKE_CURRENT_SOURCE_DIR}/../StrewnField/output/web/report-common.css")
+set_source_files_properties("${REPORT_COMMON_CSS}" PROPERTIES QT_RESOURCE_ALIAS "resources/reports/report-common.css")
+set(CLIENT_REPORT_FILES
+    resources/reports/close-approaches.html
+    resources/reports/close-approaches.css
+    resources/reports/close-approaches.js
+    "${REPORT_COMMON_CSS}"
+)
+
 set_source_files_properties(main.cpp src/features/settings/CalculationSettingsModel.cpp PROPERTIES
     COMPILE_DEFINITIONS "TRAJECTA_VERSION=\"${TRAJECTA_VERSION}\"")
 
@@ -297,6 +306,7 @@ qt_add_qml_module(TrajectaUI
     RESOURCES
         ${CLIENT_ICON_FILES}
         ${CLIENT_FONT_FILES}
+        ${CLIENT_REPORT_FILES}
 )
 
 target_include_directories(TrajectaUI PRIVATE
@@ -397,4 +407,4 @@ add_test(NAME Tests COMMAND Tests -o -,txt)
 target_compile_definitions(Tests PRIVATE ORBITAL_UI_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 qt_add_resources(Tests "client_test_assets"
     PREFIX "/qt/qml/TrajectaUI"
-    FILES ${CLIENT_FONT_FILES} ${CLIENT_ICON_FILES})
+    FILES ${CLIENT_FONT_FILES} ${CLIENT_ICON_FILES} ${CLIENT_REPORT_FILES})

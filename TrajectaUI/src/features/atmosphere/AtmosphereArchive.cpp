@@ -9,6 +9,7 @@
 #include <QSaveFile>
 #include <QTimeZone>
 #include <orbital_core/OrbitSolution.h>
+#include <orbital_core/Constants.h>
 #include <orbital_core/TimeScale.h>
 #include <orbital_core/hazard/BodyFixedFrame.h>
 #include <algorithm>
@@ -181,7 +182,7 @@ namespace atmosphere {
 			                     static_cast<std::uint64_t>(id)};
 			validateEntry(e);
 			const auto geo = strewn::geodetic(e.positionEcefM);
-			constexpr double degrees = 180 / 3.14159265358979323846;
+			constexpr double degrees = Constants::RAD_TO_DEG;
 			require(
 			    std::abs(geo.latitudeRad * degrees - number(entry, "latitude_deg")) < 1e-6 &&
 			        std::abs(std::remainder(geo.longitudeRad * degrees - number(entry, "longitude_deg"), 360)) < 1e-6,

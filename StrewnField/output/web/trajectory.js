@@ -9,13 +9,16 @@
   function at(track, time) {
     const rows = track.rows,
       last = rows.at(-1);
-    if (time < rows[0][0]) return null;
-    if (time >= last[0]) return track.end_event === 'ground' ? { row: last, landed: true } : null;
+    if (time < rows[0][0])
+      return null;
+    if (time >= last[0])
+      return track.end_event === 'ground' ? { row: last, landed: true } : null;
     let low = 0,
       high = rows.length - 1;
     while (high - low > 1) {
       const mid = (low + high) >> 1;
-      if (rows[mid][0] <= time) low = mid;
+      if (rows[mid][0] <= time)
+        low = mid;
       else high = mid;
     }
     const a = rows[low],
@@ -51,7 +54,8 @@
           dl = deltaLongitude(first[6], row[6]) * rad;
         east = Math.cos(lat) * Math.sin(dl);
         north = cosLat * Math.sin(lat) - sinLat * Math.cos(lat) * Math.cos(dl);
-        if (Math.hypot(east, north) > 1e-10) break;
+        if (Math.hypot(east, north) > 1e-10)
+          break;
       }
     }
     const norm = Math.hypot(east, north),
@@ -130,7 +134,8 @@
     const children = new Map();
     for (const t of tracks)
       if (t.id !== t.parent_id) {
-        if (!children.has(t.parent_id)) children.set(t.parent_id, []);
+        if (!children.has(t.parent_id))
+          children.set(t.parent_id, []);
         children.get(t.parent_id).push(t);
       }
     const main = [],
@@ -147,7 +152,8 @@
     const markers = [];
     for (let height = 10; height <= Math.min(150, main[0]?.[1] ?? 0); height += 10) {
       const row = crossing(main, 1, height);
-      if (row) markers.push({ kind: 'height', row, label: height + ' km' });
+      if (row)
+        markers.push({ kind: 'height', row, label: height + ' km' });
     }
     for (const b of flight.breakups ?? [])
       if (chosen.has(b.fragment_id) && b.state.length >= 7)
@@ -159,7 +165,8 @@
           fragmentId: b.fragment_id,
         });
     const dark = stride >= 8 ? crossing(main, 7, threshold) : null;
-    if (dark) markers.push({ kind: 'dark', row: dark, label: 'Dark-flight threshold (displayed branch)' });
+    if (dark)
+      markers.push({ kind: 'dark', row: dark, label: 'Dark-flight threshold (displayed branch)' });
     let start = Infinity,
       end = 0,
       south = 90,
@@ -183,7 +190,8 @@
           hi = Math.max(hi, Math.log10(row[2]));
         }
       }
-    if (!tracks.length) throw new Error('No trajectory samples available.');
+    if (!tracks.length)
+      throw new Error('No trajectory samples available.');
     for (const marker of markers) marker.row[6] = origin + deltaLongitude(origin, marker.row[6]);
     for (const track of flight.traces) {
       start = Math.min(start, track.first[0]);
@@ -222,7 +230,8 @@
       ctx.beginPath();
       track.rows.forEach((r, i) => {
         const p = point(r);
-        if (i) ctx.lineTo(p.x, p.y);
+        if (i)
+          ctx.lineTo(p.x, p.y);
         else ctx.moveTo(p.x, p.y);
       });
       ctx.strokeStyle =
@@ -290,12 +299,12 @@
       };
     };
     ctx.save();
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#101415';
     ctx.fillRect(0, 0, width, height);
     ctx.font = '12px Arial';
     ctx.lineWidth = 1;
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#425d69';
+    ctx.fillStyle = '#9daead';
     ctx.fillText('WGS84 height / km', left, 20);
     const xs = profileTicks(g.xmin, g.xmax, width < 450 ? 4 : 6),
       ys = profileTicks(g.ymin, g.ymax, 6);
@@ -304,10 +313,10 @@
       ctx.beginPath();
       ctx.moveTo(x, top);
       ctx.lineTo(x, bottom);
-      ctx.strokeStyle = '#e0e7eb';
+      ctx.strokeStyle = '#283333';
       ctx.stroke();
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#425d69';
+      ctx.fillStyle = '#9daead';
       ctx.fillText(v.toFixed(xs.digits), x, bottom + 18);
     }
     for (const v of ys.values) {
@@ -315,20 +324,20 @@
       ctx.beginPath();
       ctx.moveTo(left, y);
       ctx.lineTo(right, y);
-      ctx.strokeStyle = '#e0e7eb';
+      ctx.strokeStyle = '#283333';
       ctx.stroke();
       ctx.textAlign = 'right';
-      ctx.fillStyle = '#425d69';
+      ctx.fillStyle = '#9daead';
       ctx.fillText(v.toFixed(ys.digits), left - 9, y + 4);
     }
-    ctx.strokeStyle = '#80959f';
+    ctx.strokeStyle = '#647472';
     ctx.beginPath();
     ctx.moveTo(left, top);
     ctx.lineTo(left, bottom);
     ctx.lineTo(right, bottom);
     ctx.stroke();
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#425d69';
+    ctx.fillStyle = '#9daead';
     ctx.fillText(
       g.hasHeading ? 'Along-entry distance / km' : 'Northward distance / km',
       (left + right) / 2,
@@ -338,12 +347,12 @@
     ctx.beginPath();
     ctx.rect(left, top, right - left, bottom - top);
     ctx.clip();
-    drawScene(ctx, model, time, point, palette, particles, true);
+    drawScene(ctx, model, time, point, palette, particles);
     for (const marker of model.markers)
       if (marker.kind !== 'height') {
         const p = point(marker.row);
         ctx.strokeStyle =
-          marker.row[0] <= time ? (marker.kind === 'breakup' ? '#c95e23' : '#00808b') : '#9bacb3';
+          marker.row[0] <= time ? (marker.kind === 'breakup' ? '#e5ac59' : '#56c5a8') : '#9bacb3';
         ctx.lineWidth = 1.8;
         ctx.beginPath();
         if (marker.kind === 'breakup') {
@@ -359,6 +368,7 @@
     return { point, particles };
   }
   const api = { prepare, at, frame, crossing, draw, profileGeometry, projectProfile, drawProfile };
-  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (typeof module === 'object' && module.exports)
+    module.exports = api;
   else root.StrewnTrajectory = api;
 })(globalThis);

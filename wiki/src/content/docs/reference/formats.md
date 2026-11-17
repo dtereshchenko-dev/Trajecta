@@ -84,8 +84,11 @@ the saved run.
 
 Completed close-approach searches are saved under `CloseApproaches/run-…`.
 `encounters.txt` is the readable encounter catalogue; `result.json` records
-the numerical result and configuration. The results table can use different
-display units, so check the file headers when using the exported values.
+the numerical result and configuration, and `report.html` provides the
+interactive distance plot and encounter table. The results table can use
+different display units, so check the file headers when using exported values.
+For the JSON fields and units, see the
+[Close-approach archive reference](../close-approaches-archive/).
 
 ## Risk calculations
 

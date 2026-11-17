@@ -8,15 +8,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(_mc_web "${CMAKE_CURRENT_SOURCE_DIR}/src/export/web")
 get_filename_component(_atmos_web "${CMAKE_CURRENT_SOURCE_DIR}/../StrewnField/output/web" ABSOLUTE)
-file(READ "${_atmos_web}/viewer.html" _atmos_html)
-string(REGEX MATCH "<style>[ \t\r\n]*:root[^<]*</style>" _atmos_style "${_atmos_html}")
-string(REGEX REPLACE "^<style>|</style>$" "" _atmos_style "${_atmos_style}")
-if(NOT _atmos_style)
-    message(FATAL_ERROR "Atmospheric report stylesheet not found")
-endif()
+file(READ "${_atmos_web}/report-common.css" _report_common_style)
+file(READ "${_atmos_web}/viewer.css" _report_viewer_style)
+string(CONCAT _atmos_style "${_report_common_style}" "${_report_viewer_style}")
 string(HEX "${_atmos_style}" _style_hex)
 string(REGEX REPLACE "(..)" "0x\\1," MC_STYLE_BYTES "${_style_hex}")
 file(READ "${_mc_web}/interval-mc.html" _mc_html)
+file(READ "${_mc_web}/map-print.css" _map_print_style)
+file(READ "${_mc_web}/interval-mc.css" _mc_style)
+string(REPLACE "__PAGE_CSS__" "${_map_print_style}\n${_mc_style}" _mc_html "${_mc_html}")
 foreach(_icon PRINT FIT)
     if(_icon STREQUAL "PRINT")
         set(_icon_name printer)
@@ -45,19 +45,25 @@ file(READ "${_atmos_web}/vendor/leaflet/LICENSE" MC_LICENSE)
 file(READ "${_atmos_web}/vendor/lucide/LICENSE" _icon_license)
 string(APPEND MC_LICENSE "\nLucide\n${_icon_license}")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-    "${_mc_web}/interval-mc.html" "${_atmos_web}/viewer.html"
+    "${_mc_web}/interval-mc.html" "${_mc_web}/interval-mc.css" "${_mc_web}/map-print.css"
+    "${_atmos_web}/report-common.css" "${_atmos_web}/viewer.css"
     "${_atmos_web}/vendor/leaflet/leaflet.css")
 configure_file("${_mc_web}/IntervalMcAssets.h.in" generated/IntervalMcAssets.h @ONLY)
 foreach(_asset HTML SCRIPT)
     if(_asset STREQUAL "HTML")
         set(_path "${_mc_web}/mov.html")
+        file(READ "${_path}" _mov_html)
+        file(READ "${_mc_web}/mov.css" _mov_style)
+        string(REPLACE "__PAGE_CSS__" "${_map_print_style}\n${_mov_style}" _mov_html "${_mov_html}")
+        string(HEX "${_mov_html}" _hex)
     else()
         set(_path "${_mc_web}/mov.js")
+        file(READ "${_path}" _hex HEX)
     endif()
-    file(READ "${_path}" _hex HEX)
     string(REGEX REPLACE "(..)" "0x\\1," MOV_${_asset}_BYTES "${_hex}")
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_path}")
 endforeach()
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_mc_web}/mov.css")
 configure_file("${_mc_web}/MovAssets.h.in" generated/MovAssets.h @ONLY)
 
 set(CMAKE_PREFIX_PATH "C:/vcpkg/installed/x86-windows" ${CMAKE_PREFIX_PATH})
@@ -471,6 +477,7 @@ if(ORBITAL_CORE_BUILD_HAZARD)
         src/hazard/VirtualImpactorRefinement.cpp
         src/hazard/BPlane.cpp
         src/hazard/IntervalMonteCarlo.cpp
+        src/hazard/SemilinearContours.cpp
         src/hazard/ManifoldOfVariations.cpp
     src/export/MovReport.cpp
         src/hazard/mov/MovCoordinates.cpp

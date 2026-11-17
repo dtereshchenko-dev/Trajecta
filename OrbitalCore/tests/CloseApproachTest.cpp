@@ -352,6 +352,90 @@ class CloseApproachTest : public ::testing::Test {
 	bool hasDE440{false};
 };
 
+TEST_F(CloseApproachTest, DistanceReportSamplesNominalTrajectoryForAllBodies)
+{
+	if (!hasDE440)
+		GTEST_SKIP() << "DE440 kernel not present";
+	orbital_core::FitPipelineResult solution;
+	solution.fit.fitEpochOrbit = makeCeres();
+	solution.fit.converged = true;
+	solution.effectiveConfig.nbody.enabled = true;
+	const double epoch = solution.fit.fitEpochOrbit->epochMjd();
+	orbital_core::hazard::CloseApproachSearchRequest request{epoch - 1.0, epoch + 1.0, 1e-5, true};
+	const auto result = orbital_core::hazard::searchCloseApproaches(solution, request);
+	ASSERT_FALSE(result.cancelled);
+	ASSERT_FALSE(result.stoppedAtSurface);
+	ASSERT_GE(result.distanceSamples.size(), 4097u);
+	EXPECT_DOUBLE_EQ(result.distanceSamples.front().mjdTdb, request.startMjdTdb);
+	EXPECT_DOUBLE_EQ(result.distanceSamples.back().mjdTdb, request.endMjdTdb);
+	const auto it = std::find_if(result.distanceSamples.begin(), result.distanceSamples.end(),
+	                             [epoch](const auto& sample) { return sample.mjdTdb == epoch; });
+	ASSERT_NE(it, result.distanceSamples.end());
+	for (const auto body : orbital_core::hazard::kAllPlanets) {
+		const auto index = static_cast<std::size_t>(body);
+		const auto planet = m_de440->queryMjd(orbital_core::hazard::toEphemerisPlanet(body), epoch);
+		EXPECT_NEAR(it->distanceAu[index], (solution.fit.fitEpochOrbit->getR() - planet.R).magnitude(), 1e-12);
+		EXPECT_GT(it->hillRadiusAu[index], 0.0);
+	}
+	for (const auto& event : result.events)
+		EXPECT_TRUE(std::any_of(result.distanceSamples.begin(), result.distanceSamples.end(),
+		                        [&](const auto& sample) { return sample.mjdTdb == event.mjdTdb; }));
+}
+
+TEST_F(CloseApproachTest, DistanceReportIncludesEncounterEpoch)
+{
+	if (!hasDE440)
+		GTEST_SKIP() << "DE440 kernel not present";
+	constexpr double epoch = 60000.0;
+	const auto earth = m_de440->queryMjd(EphemerisPlanet::Earth, epoch);
+	const Vec3D position = earth.R + Vec3D(-0.01, 0.00015, 0.0);
+	const Vec3D velocity = earth.V + Vec3D(0.01, 0.0, 0.0);
+	orbital_core::FitPipelineResult solution;
+	solution.fit.fitEpochOrbit =
+	    make_orbit_from_states_vectors({position, velocity / Constants::GAUSS_K}, epoch + 2400000.5);
+	ASSERT_TRUE(solution.fit.fitEpochOrbit);
+	solution.fit.converged = true;
+	solution.effectiveConfig.nbody.enabled = true;
+	orbital_core::hazard::CloseApproachSearchRequest request{epoch, epoch + 2.0, 0.01, true};
+	const auto result = orbital_core::hazard::searchCloseApproaches(solution, request);
+	ASSERT_FALSE(result.stoppedAtSurface);
+	request.includeDistanceSamples = false;
+	const auto withoutReport = orbital_core::hazard::searchCloseApproaches(solution, request);
+	ASSERT_EQ(withoutReport.events.size(), result.events.size());
+	for (std::size_t i = 0; i < result.events.size(); ++i) {
+		EXPECT_DOUBLE_EQ(withoutReport.events[i].mjdTdb, result.events[i].mjdTdb);
+		EXPECT_DOUBLE_EQ(withoutReport.events[i].encounter.distAu, result.events[i].encounter.distAu);
+	}
+	EXPECT_TRUE(withoutReport.distanceSamples.empty());
+	const auto event = std::find_if(result.events.begin(), result.events.end(),
+	                                [](const auto& e) { return e.encounter.planet == Planet::Earth; });
+	ASSERT_NE(event, result.events.end());
+	const auto sample = std::find_if(result.distanceSamples.begin(), result.distanceSamples.end(),
+	                                 [&](const auto& s) { return s.mjdTdb == event->mjdTdb; });
+	ASSERT_NE(sample, result.distanceSamples.end());
+	EXPECT_NEAR(sample->distanceAu[static_cast<std::size_t>(Planet::Earth)], event->encounter.distAu, 1e-10);
+}
+
+TEST_F(CloseApproachTest, DistanceReportDoesNotContinuePastSurfaceEntry)
+{
+	if (!hasDE440)
+		GTEST_SKIP() << "DE440 kernel not present";
+	constexpr double epoch = 60000.0;
+	const auto earth = m_de440->queryMjd(EphemerisPlanet::Earth, epoch);
+	const Vec3D position = earth.R + Vec3D(-0.01, 0.00001, 0.0);
+	const Vec3D velocity = earth.V + Vec3D(0.01, 0.0, 0.0);
+	orbital_core::FitPipelineResult solution;
+	solution.fit.fitEpochOrbit =
+	    make_orbit_from_states_vectors({position, velocity / Constants::GAUSS_K}, epoch + 2400000.5);
+	ASSERT_TRUE(solution.fit.fitEpochOrbit);
+	solution.fit.converged = true;
+	solution.effectiveConfig.nbody.enabled = true;
+	orbital_core::hazard::CloseApproachSearchRequest request{epoch, epoch + 2.0, 0.01, true};
+	const auto result = orbital_core::hazard::searchCloseApproaches(solution, request);
+	ASSERT_TRUE(result.stoppedAtSurface);
+	EXPECT_TRUE(result.distanceSamples.empty());
+}
+
 TEST_F(CloseApproachTest, Apophis2029_FlybyDetected)
 {
 	if (!hasDE440)

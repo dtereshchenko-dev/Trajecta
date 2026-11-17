@@ -9,6 +9,7 @@ ColumnLayout {
     property string fieldPrefix: "search"
     property string seedUtc: ""
     property string sourceIdentity: ""
+    property string timeScale: "UTC"
     property string lastSourceIdentity: ""
     property bool allowEventWindow: false
     property int intervalMode: allowEventWindow ? 0 : 1
@@ -92,7 +93,7 @@ ColumnLayout {
         }
         FormField {
             visible: form.intervalMode === 0
-            label: qsTr("Window centre, UTC")
+            label: qsTr("Window centre, %1").arg(form.timeScale)
             CustomTextField {
                 objectName: form.fieldPrefix + "-center"
                 Layout.fillWidth: true
@@ -100,7 +101,7 @@ ColumnLayout {
                 placeholderText: "YYYY-MM-DD HH:MM:SS"
                 font.family: UI.monoFont
                 font.pixelSize: 12
-                Accessible.name: qsTr("Window centre UTC")
+                Accessible.name: qsTr("Window centre %1").arg(form.timeScale)
                 onTextEdited: { form.initialized = true; form.centerUtc = text }
             }
         }
@@ -119,7 +120,7 @@ ColumnLayout {
         }
         FormField {
             visible: form.intervalMode === 1
-            label: qsTr("Start, UTC")
+            label: qsTr("Start, %1").arg(form.timeScale)
             CustomTextField {
                 objectName: form.fieldPrefix + "-start"
                 Layout.fillWidth: true
@@ -127,13 +128,13 @@ ColumnLayout {
                 placeholderText: "YYYY-MM-DD HH:MM:SS"
                 font.family: UI.monoFont
                 font.pixelSize: 12
-                Accessible.name: qsTr("Start UTC")
+                Accessible.name: qsTr("Start %1").arg(form.timeScale)
                 onTextEdited: { form.initialized = true; form.startUtc = text }
             }
         }
         FormField {
             visible: form.intervalMode === 1
-            label: qsTr("End, UTC")
+            label: qsTr("End, %1").arg(form.timeScale)
             CustomTextField {
                 objectName: form.fieldPrefix + "-end"
                 Layout.fillWidth: true
@@ -141,7 +142,7 @@ ColumnLayout {
                 placeholderText: "YYYY-MM-DD HH:MM:SS"
                 font.family: UI.monoFont
                 font.pixelSize: 12
-                Accessible.name: qsTr("End UTC")
+                Accessible.name: qsTr("End %1").arg(form.timeScale)
                 onTextEdited: { form.initialized = true; form.endUtc = text }
             }
         }

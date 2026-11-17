@@ -13,6 +13,7 @@
 #include <QTime>
 #include <QUuid>
 #include <orbital_core/Types.h>
+#include <orbital_core/Constants.h>
 
 #include <algorithm>
 #include <cmath>
@@ -22,7 +23,7 @@
 
 namespace {
 
-	constexpr double kRadToDeg = 180.0 / 3.14159265358979323846;
+	constexpr double kRadToDeg = Constants::RAD_TO_DEG;
 	constexpr double kRadPerDayToArcsecPerHour = 206264.80624709636 / 24.0;
 	constexpr double kAuPerDayToKmPerSecond = 149597870.7 / 86400.0;
 

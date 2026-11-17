@@ -197,7 +197,7 @@ NBodyPropagator::PropagationWithSurfaceStop NBodyPropagator::propagateUntilSurfa
 {
 	if (!std::isfinite(altitudeKm) || altitudeKm < 0.0)
 		throw std::invalid_argument("Surface altitude must be finite and nonnegative");
-	const double toleranceDays = altitudeKm > 0.0 ? 1e-11 : kCrossingToleranceDays;
+	const double toleranceDays = 1e-11;
 	samples.clear();
 	PropagationWithSurfaceStop out;
 	out.R = R0;

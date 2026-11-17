@@ -65,11 +65,12 @@ publication. For a step-by-step calculation, see
 [Impact Analysis](../../impact-analysis/#example-2024-yr4-and-the-moon).
 
 After the run, open the HTML report and inspect the ensemble, event table and
-lunar map together. The points show simulated crossings of the lunar reference
-surface; they are not observed impacts. This historical example is not a
-current assessment of lunar impact probability.
+lunar map together. The illustrated run has 20,000 completed samples, of
+which 223 cross the lunar reference surface. The points are simulated
+crossings, not observed impacts. This historical example is not a current
+assessment of lunar impact probability.
 
-![Example Monte Carlo lunar boundary crossings](https://raw.githubusercontent.com/dtereshchenko-dev/Trajecta/master/.github/assets/screenshots/moon-mc.png)
+![Example Monte Carlo lunar boundary crossings](../../../../../.github/assets/screenshots/moon-mc.png)
 
 Lunar imagery: LRO WAC mosaic, NASA / GSFC / ASU / USGS.
 
@@ -92,6 +93,18 @@ Use the report and folder buttons to inspect the HTML report and saved data.
 The map shows crossings of the selected reference surface, not meteorites on
 the ground. See [Files and outputs](../../reference/formats/) for the saved
 archives.
+
+The map controls independently show or hide clone crossings, the nominal
+crossing and semilinear contours.
+
+When the nominal orbit crosses the selected boundary and its full fit
+covariance is available, the map also shows semilinear 1, 3 and 5 sigma
+contours. They are calculated independently of the MC points: two directions
+are selected from the local surface map and covariance, and their contours are
+propagated through the full nonlinear dynamics. They are not empirical
+probability boundaries. Gaps indicate trajectories that missed the boundary
+or failed; old archives do not contain these contours. The nominal-impact
+requirement excludes cases where only a sampled virtual impactor hits.
 
 To model what happens after an Earth entry, continue with
 [Atmospheric Monte Carlo](../atmospheric-mc/). Its results describe the

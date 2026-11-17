@@ -29,7 +29,7 @@ For a source build, see the [developer guide](DEVELOPMENT.md#build).
   configurable non-gravitational models.
 - Inspect residuals and covariance, visualize orbits and generate ephemerides.
 - Search for close approaches to planets and the Moon, with configurable
-  reporting distances.
+  reporting distances and an interactive distance report.
 - Explore boundary crossings with covariance and observation Monte Carlo or
   the Manifold of Variations (MOV).
 - Model atmospheric entry, fragmentation and dark flight with atmospheric Monte Carlo.
@@ -93,7 +93,7 @@ samples the orbital state and fitted non-gravitational parameters together,
 including their correlations; observation MC refits the configured parameters
 for each perturbed observation set. MOV currently uses gravity-only dynamics.
 
-Covariance MC and MOV can map boundary crossings, as in these simulations of
+Orbital Monte Carlo and MOV can map boundary crossings, as in these simulations of
 the historical impactor 2019 MO:
 
 ![Covariance Monte Carlo atmospheric boundary crossings for 2019 MO](.github/assets/screenshots/earth-mc.png)

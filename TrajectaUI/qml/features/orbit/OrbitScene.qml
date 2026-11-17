@@ -14,6 +14,8 @@ Rectangle {
     property bool showGrid: true
     property bool showLabels: true
     property bool showPerihelion: true
+    property bool orthographicView: false
+    readonly property real orthographicMagnification: UI.orthographicMagnification(view.height, camera.z, camera.fieldOfView)
     readonly property OrbitSceneModel sceneModel: solution.scene
     readonly property real gridStep: {
         const desired = Math.max(1e-6, camera.z * 2 * Math.tan(camera.fieldOfView * Math.PI / 360) / 12)
@@ -57,8 +59,8 @@ Rectangle {
 
     function zoom(factor) { zoomAnimation.stop(); camera.z = Math.max(sceneModel.frameRadius * 0.15, Math.min(sceneModel.frameRadius * 80, camera.z * factor)) }
     function stopTransition() { centerAnimation.stop(); zoomAnimation.stop() }
-    function resetView() { stopTransition(); selectedTarget = "sun"; origin.position = Qt.vector3d(0, 0, 0); origin.eulerRotation = Qt.vector3d(-52, 32, 0); camera.z = defaultDistance }
-    function topView() { stopTransition(); origin.position = Qt.vector3d(0, 0, 0); origin.eulerRotation = Qt.vector3d(-90, 0, 0) }
+    function resetView() { stopTransition(); orthographicView = false; selectedTarget = "sun"; origin.position = Qt.vector3d(0, 0, 0); origin.eulerRotation = Qt.vector3d(-52, 32, 0); camera.z = defaultDistance }
+    function topView() { stopTransition(); origin.position = Qt.vector3d(0, 0, 0); origin.eulerRotation = Qt.vector3d(-90, 0, 0); orthographicView = true }
     function follow(key) {
         stopTransition()
         const previousCenter = origin.scenePosition
@@ -87,12 +89,14 @@ Rectangle {
         sceneCamera: camera
         step: scene.gridStep
         center: scene.cameraCenter
+        orthographic: scene.orthographicView
+        orthographicMagnification: scene.orthographicMagnification
     }
     View3D {
         id: view
         objectName: "orbit-viewport"
         anchors.fill: parent
-        camera: camera
+        camera: scene.orthographicView ? orthographicCamera : camera
         environment: SceneEnvironment {
             backgroundMode: SceneEnvironment.Transparent
             antialiasingMode: SceneEnvironment.MSAA
@@ -104,6 +108,10 @@ Rectangle {
             Node {
                 id: origin
                 objectName: "orbit-camera-origin"
+                onEulerRotationChanged: {
+                    if (scene.orthographicView && (Math.abs(eulerRotation.x + 90) > 0.01 || Math.abs(eulerRotation.y) > 0.01 || Math.abs(eulerRotation.z) > 0.01))
+                        scene.orthographicView = false
+                }
                 PerspectiveCamera {
                     id: camera
                     fieldOfView: 38
@@ -113,6 +121,15 @@ Rectangle {
                         const bounded = Math.max(scene.sceneModel.frameRadius * 0.15, Math.min(scene.sceneModel.frameRadius * 80, z))
                         if (bounded !== z) z = bounded
                     }
+                }
+                OrthographicCamera {
+                    id: orthographicCamera
+                    objectName: "orbit-orthographic-camera"
+                    z: camera.z
+                    clipNear: camera.clipNear
+                    clipFar: camera.clipFar
+                    horizontalMagnification: scene.orthographicMagnification
+                    verticalMagnification: scene.orthographicMagnification
                 }
             }
         }
@@ -177,13 +194,17 @@ Rectangle {
             required property int index
             objectName: "orbit-label-" + modelData.name
             readonly property vector3d projected: {
-                const cameraTransform = camera.sceneTransform
+                const activeCamera = view.camera
+                const cameraTransform = activeCamera.sceneTransform
+                const magnification = scene.orthographicView ? orthographicCamera.verticalMagnification : camera.fieldOfView
                 const viewportWidth = view.width
                 const viewportHeight = view.height
                 return view.mapFrom3DScene(modelData.position)
             }
             readonly property bool collides: {
-                const cameraTransform = camera.sceneTransform
+                const activeCamera = view.camera
+                const cameraTransform = activeCamera.sceneTransform
+                const magnification = scene.orthographicView ? orthographicCamera.verticalMagnification : camera.fieldOfView
                 for (let i = 0; i < index; ++i) {
                     const other = scene.bodyLabels[i]
                     if (!other.enabled) continue

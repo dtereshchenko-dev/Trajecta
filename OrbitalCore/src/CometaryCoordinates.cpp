@@ -4,12 +4,11 @@
 #include <Eigen/LU>
 #include <cmath>
 #include <limits>
-#include <numbers>
 
 namespace orbital_core::cometary {
 	namespace {
 		constexpr double mu = Constants::GAUSS_K * Constants::GAUSS_K;
-		constexpr double twoPi = 2.0 * std::numbers::pi;
+		constexpr double twoPi = Constants::TWOPI;
 		constexpr double angularTolerance = 64.0 * std::numeric_limits<double>::epsilon();
 
 		double principal(double angle)

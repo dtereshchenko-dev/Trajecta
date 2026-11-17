@@ -10,21 +10,23 @@
 #include <stdexcept>
 
 namespace orbital_core {
-	std::vector<CaptureTimeUncertainty> captureTimeUncertainty(const RelativeMotionRequest& request,
-	                                                           const std::vector<RelativeMotionSample>& samples,
-	                                                           const std::vector<TemporaryCaptureInterval>& captures,
-	                                                           const FitRunControl& control)
+	RelativeMotionTimeUncertainty relativeMotionTimeUncertainty(const RelativeMotionRequest& request,
+	                                                            const std::vector<RelativeMotionSample>& samples,
+	                                                            const std::vector<TemporaryCaptureInterval>& captures,
+	                                                            const std::vector<HillSpherePassage>& hillPassages,
+	                                                            const FitRunControl& control)
 	{
-		std::vector<CaptureTimeUncertainty> result(captures.size());
+		RelativeMotionTimeUncertainty result{std::vector<CaptureTimeUncertainty>(captures.size()),
+		                                     std::vector<CaptureTimeUncertainty>(hillPassages.size())};
 		const auto& solution = request.solution;
 		const auto factor =
 		    uncertainty::covarianceFactor(solution.covariance, 6 + solution.nonGrav.fitParameterCount());
-		if (!solution.forces.enabled || samples.size() < 2 || captures.empty() || !factor)
+		if (!solution.forces.enabled || samples.size() < 2 || (captures.empty() && hillPassages.empty()) || !factor)
 			return result;
 
 		struct Boundary {
 			std::size_t event, left;
-			bool start, energy;
+			bool start, energy, hill;
 			double fraction, slope;
 		};
 
@@ -62,7 +64,7 @@ namespace orbital_core {
 			}
 			if (selected < 0 || best > std::max(1e-9, dt * 1e-7) || !std::isfinite(slope) || slope == 0)
 				return;
-			boundaries.push_back({event, left, start, selected == 0, fraction, slope});
+			boundaries.push_back({event, left, start, selected == 0, false, fraction, slope});
 			indices.push_back(left);
 			indices.push_back(left + 1);
 		};
@@ -71,6 +73,37 @@ namespace orbital_core {
 				addBoundary(i, true, captures[i].startMjdTdb);
 			if (!captures[i].endClipped)
 				addBoundary(i, false, captures[i].endMjdTdb);
+		}
+		const auto addHillBoundary = [&](std::size_t event, bool entry, double epoch) {
+			const auto right = std::lower_bound(samples.begin(), samples.end(), epoch,
+			                                    [](const auto& sample, double value) { return sample.mjdTdb < value; });
+			const std::size_t index = static_cast<std::size_t>(right - samples.begin());
+			for (const std::size_t left : {index > 0 ? index - 1 : index, index}) {
+				if (left + 1 >= samples.size())
+					continue;
+				const auto& a = samples[left];
+				const auto& b = samples[left + 1];
+				const double dt = b.mjdTdb - a.mjdTdb;
+				const double x = a.distanceAu - a.hillRadiusAu;
+				const double y = b.distanceAu - b.hillRadiusAu;
+				if (!(dt > 0) || !std::isfinite(x) || !std::isfinite(y) || !(entry ? x >= 0 && y < 0 : x <= 0 && y > 0))
+					continue;
+				const double fraction = x / (x - y);
+				const double slope = (y - x) / dt;
+				if (!std::isfinite(slope) || slope == 0 ||
+				    std::abs(a.mjdTdb + fraction * dt - epoch) > std::max(1e-9, dt * 1e-7))
+					continue;
+				boundaries.push_back({event, left, entry, false, true, fraction, slope});
+				indices.push_back(left);
+				indices.push_back(left + 1);
+				return;
+			}
+		};
+		for (std::size_t i = 0; i < hillPassages.size(); ++i) {
+			if (!hillPassages[i].entryClipped)
+				addHillBoundary(i, true, hillPassages[i].entryMjdTdb);
+			if (!hillPassages[i].exitClipped)
+				addHillBoundary(i, false, hillPassages[i].exitMjdTdb);
 		}
 		if (boundaries.empty() || control.cancel.stop_requested())
 			return result;
@@ -122,10 +155,18 @@ namespace orbital_core {
 			                                      boundary.slope;
 			const double sigma = 3 * (derivative * *factor).norm();
 			if (std::isfinite(sigma)) {
-				auto& event = result[boundary.event];
+				auto& event = (boundary.hill ? result.hillPassages : result.captures)[boundary.event];
 				(boundary.start ? event.start3SigmaDays : event.end3SigmaDays) = sigma;
 			}
 		}
 		return result;
+	}
+
+	std::vector<CaptureTimeUncertainty> captureTimeUncertainty(const RelativeMotionRequest& request,
+	                                                           const std::vector<RelativeMotionSample>& samples,
+	                                                           const std::vector<TemporaryCaptureInterval>& captures,
+	                                                           const FitRunControl& control)
+	{
+		return relativeMotionTimeUncertainty(request, samples, captures, {}, control).captures;
 	}
 }  // namespace orbital_core

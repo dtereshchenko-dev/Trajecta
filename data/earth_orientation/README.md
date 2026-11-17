@@ -7,13 +7,20 @@ accuracy differ. Source: [NAIF generic PCK kernels](https://naif.jpl.nasa.gov/pu
 
 The current CI and installer inputs use the following NAIF files, renamed for
 use by Trajecta. The binary data are not modified. These large files are ignored
-by Git; the CI workflows download them and check the hashes below.
+by Git; CI downloads a fixed copy from the [CI Earth PCK data release](https://github.com/dtereshchenko-dev/Trajecta/releases/tag/ci-earth-pck-20261112)
+and checks the hashes below.
 
 | Local file | NAIF source file | SHA-256 |
 | --- | --- | --- |
 | `earth_historic.bpc` | `earth_620120_260806.bpc` | `652b02c0b3a5a283d393497f7f96e1fe4aa47ee6dcc035a089eb9e6b5df86643` |
 | `earth_latest.bpc` | `earth_000101_270208_261112.bpc` | `eb72aef57bcedb247e282510a881a608fe74e4d9e7869aaa130474f5efe8dc54` |
 | `earth_predict.bpc` | `earth_2026_260806_2126_predict.bpc` | `9f565ab5aaccd33afe54f3a1b20cb8b136636c31a0bd4c0986fac722b931c280` |
+
+The data release is a prerelease for CI inputs, not an application update.
+Retain the release and its assets so that older CI revisions remain
+reproducible. To update the files, publish a new data release and update the
+URLs and hashes in both workflows deliberately. NAIF's generic directory
+continues to supply updates to the desktop application independently.
 
 The desktop application checks for newer versions in Data sources and lets the
 user update each file separately. Updates are staged and applied on restart in

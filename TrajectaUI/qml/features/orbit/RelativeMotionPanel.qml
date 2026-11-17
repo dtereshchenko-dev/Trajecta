@@ -143,27 +143,85 @@ Rectangle {
                     ColumnLayout {
                         id: captureRows
                         Layout.fillWidth: true
-                        spacing: 8
-                        property var rows: [
-                            [qsTr("Start, %1").arg(panel.model.relativeResultTimeScale), (captureEvent.modelData.startClipped ? "\u2264 " : "") + captureEvent.modelData.start.slice(0, 19) + (captureEvent.modelData.startClipped ? "" : " " + panel.formatTimeUncertainty(captureEvent.modelData.start3SigmaSeconds))],
-                            [qsTr("End, %1").arg(panel.model.relativeResultTimeScale), (captureEvent.modelData.endClipped ? "\u2265 " : "") + captureEvent.modelData.end.slice(0, 19) + (captureEvent.modelData.endClipped ? "" : " " + panel.formatTimeUncertainty(captureEvent.modelData.end3SigmaSeconds))],
-                            [qsTr("Duration"), (captureEvent.modelData.startClipped || captureEvent.modelData.endClipped ? "\u2265 " : "") + captureEvent.modelData.durationDays.toFixed(2) + " d"],
-                            [qsTr("Inertial net"), captureEvent.modelData.inertialRevolutionsValid ? captureEvent.modelData.inertialRevolutions.toFixed(2) + " " + qsTr("turns") : qsTr("Unavailable")],
-                            [qsTr("Inertial travel"), captureEvent.modelData.inertialRevolutionsValid ? captureEvent.modelData.inertialAngularTravel.toFixed(2) + " " + qsTr("turns") : qsTr("Unavailable")],
-                            [qsTr("Rotating net"), captureEvent.modelData.revolutionsValid ? captureEvent.modelData.revolutions.toFixed(2) + " " + qsTr("turns") : qsTr("Unavailable")],
-                            [qsTr("Rotating travel"), captureEvent.modelData.revolutionsValid ? captureEvent.modelData.angularTravel.toFixed(2) + " " + qsTr("turns") : qsTr("Unavailable")],
-                            [qsTr("Coverage"), captureEvent.modelData.startClipped || captureEvent.modelData.endClipped ? qsTr("Partial interval") : qsTr("Complete interval")]
-                        ]
+                        spacing: 7
+                        property var rows: {
+                            const event = captureEvent.modelData
+                            const clipped = event.startClipped || event.endClipped
+                            const start = (event.startClipped ? "\u2264 " : "") + event.start.slice(0, 19)
+                                          + (event.startClipped ? "" : " " + panel.formatTimeUncertainty(event.start3SigmaSeconds))
+                            const end = (event.endClipped ? "\u2265 " : "") + event.end.slice(0, 19)
+                                        + (event.endClipped ? "" : " " + panel.formatTimeUncertainty(event.end3SigmaSeconds))
+                            const rows = [
+                                [qsTr("Start, %1").arg(panel.model.relativeResultTimeScale), start, qsTr("Capture")],
+                                [qsTr("End, %1").arg(panel.model.relativeResultTimeScale), end],
+                                [qsTr("Duration"), (clipped ? "\u2265 " : "") + event.durationDays.toFixed(2) + " d"],
+                                [qsTr("Coverage"), clipped ? qsTr("Partial interval") : qsTr("Complete interval")]
+                            ]
+                            const passages = event.hillPassages
+                            if (passages.length === 0)
+                                rows.push([qsTr("Passage"), qsTr("Not detected"), qsTr("Hill sphere")])
+                            for (let i = 0; i < passages.length; ++i) {
+                                const passage = passages[i]
+                                const suffix = passages.length > 1 ? " " + (i + 1) : ""
+                                const entry = passage.entryClipped ? qsTr("Before interval")
+                                            : passage.entry.slice(0, 19) + " " + panel.formatTimeUncertainty(passage.entry3SigmaSeconds)
+                                const exit = passage.exitClipped ? qsTr("After interval")
+                                           : passage.exit.slice(0, 19) + " " + panel.formatTimeUncertainty(passage.exit3SigmaSeconds)
+                                rows.push([qsTr("Entry") + suffix, entry, i === 0 ? qsTr("Hill sphere") : ""])
+                                rows.push([qsTr("Exit") + suffix, exit])
+                            }
+                            rows.push(
+                                [qsTr("Inertial net"), event.inertialRevolutionsValid ? event.inertialRevolutions.toFixed(2) + " " + qsTr("turns") : qsTr("Unavailable"), qsTr("Revolutions")],
+                                [qsTr("Inertial travel"), event.inertialRevolutionsValid ? event.inertialAngularTravel.toFixed(2) + " " + qsTr("turns") : qsTr("Unavailable")],
+                                [qsTr("Rotating net"), event.revolutionsValid ? event.revolutions.toFixed(2) + " " + qsTr("turns") : qsTr("Unavailable")],
+                                [qsTr("Rotating travel"), event.revolutionsValid ? event.angularTravel.toFixed(2) + " " + qsTr("turns") : qsTr("Unavailable")]
+                            )
+                            return rows
+                        }
                         Repeater {
                             model: captureRows.rows
-                            RowLayout {
+                            ColumnLayout {
                                 id: captureRow
                                 required property var modelData
                                 required property int index
                                 Layout.fillWidth: true
-                                spacing: 6
-                                CustomText { text: modelData[0]; secondary: true; font.pixelSize: 11; Layout.preferredWidth: 90 }
-                                CustomText { objectName: "relative-capture-value-" + captureRow.index; text: captureRow.modelData[1]; numeric: true; font.pixelSize: 10; font.weight: Font.DemiBold; fontSizeMode: Text.HorizontalFit; minimumPixelSize: 8; horizontalAlignment: Text.AlignLeft; Layout.fillWidth: true; Layout.minimumWidth: 0 }
+                                spacing: 7
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    Layout.topMargin: captureRow.index === 0 ? 0 : 7
+                                    visible: !!captureRow.modelData[2]
+                                    spacing: 8
+                                    CustomText {
+                                        objectName: "relative-capture-section-" + captureRow.index
+                                        text: captureRow.modelData[2] || ""
+                                        secondary: true
+                                        font.pixelSize: 10
+                                        font.weight: Font.DemiBold
+                                    }
+                                    Rectangle { Layout.fillWidth: true; height: 1; color: AppTheme.line }
+                                }
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 6
+                                    CustomText {
+                                        text: captureRow.modelData[0]
+                                        secondary: true
+                                        font.pixelSize: 11
+                                        Layout.preferredWidth: 90
+                                    }
+                                    CustomText {
+                                        objectName: "relative-capture-value-" + captureRow.index
+                                        text: captureRow.modelData[1]
+                                        numeric: true
+                                        font.pixelSize: 10
+                                        font.weight: Font.DemiBold
+                                        fontSizeMode: Text.HorizontalFit
+                                        minimumPixelSize: 8
+                                        horizontalAlignment: Text.AlignLeft
+                                        Layout.fillWidth: true
+                                        Layout.minimumWidth: 0
+                                    }
+                                }
                             }
                         }
                     }

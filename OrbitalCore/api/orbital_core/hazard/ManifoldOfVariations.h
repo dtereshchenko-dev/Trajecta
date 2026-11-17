@@ -25,6 +25,7 @@ namespace orbital_core::hazard {
 		int preliminaryNodes{40}, rangeNodes{80}, rateNodes{80};
 		double sigmaMax{5}, absoluteMagnitudeMax{34.5};
 		unsigned workers{15};
+		bool semilinearContours{false};
 	};
 
 	struct MovNode {
@@ -58,6 +59,7 @@ namespace orbital_core::hazard {
 		std::array<double, 4> attributable{};
 		std::string observerCode, bodyFixedFrame, bodyFixedModel;
 		std::optional<MovNominal> nominal;
+		SemilinearContours semilinear;
 		std::vector<MovNode> preliminary, nodes;
 		bool preliminaryLogRange{}, logRange{};
 		// Weighted quadrature on the sampled chi-limited MOV, not MC frequencies.
@@ -80,6 +82,7 @@ namespace orbital_core::hazard {
 	// as defined by the ATT chart. All nonlinear fits reuse the shared LM model.
 	// MOV tangents use the formal weighted normal inverse, not the scaled posterior
 	// covariance. Earth-bound nodes keep probability weight but are not propagated.
+	// When semilinearContours is enabled, progress(-1, total) marks its final phase.
 	ORBITAL_CORE_API MovResult computeManifoldOfVariations(std::span<const ObsNode> observations,
 	                                                       const FitConfig& forcesAndWeights, const MovConfig& config,
 	                                                       const FitResult* nominal = nullptr,

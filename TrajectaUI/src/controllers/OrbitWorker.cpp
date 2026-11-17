@@ -50,7 +50,7 @@ orbital_core::FitConfig OrbitWorker::makeFitConfig(const OptimizationSettings& s
 	cfg.nbody.useSb441 = settings.useSb441;
 	cfg.nbody.forceModel = settings.forceModel;
 	if (cfg.nbody.stepSize != settings.integratorInitialStepDays) {
-		LOG_INFO << "[NBody] invalid initial step " << settings.integratorInitialStepDays << "d; using "
+		LOG_WARN << "[NBody] invalid initial step " << settings.integratorInitialStepDays << "d; using "
 		         << cfg.nbody.stepSize << "d";
 	}
 

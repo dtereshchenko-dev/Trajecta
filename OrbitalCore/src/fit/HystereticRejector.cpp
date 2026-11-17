@@ -98,9 +98,9 @@ namespace Calculations {
 					          << " postFitChi2=" << r2 << " recoverChi2=" << recoverLimit;
 				} else if (included[i] && !allObs[i].radar && r2 > rejectLimit && r2 >= batchThreshold) {
 					if (coverage.isLast(i)) {
-						LOG_WARN << "[HystereticRejector] keeping last observation in opposition: idx=" << i
-						         << " date=" << Convertors::jdToPackedDate(allObs[i].JD)
-						         << " code=" << allObs[i].obsCode << " postFitChi2=" << r2;
+						LOG_DEBUG << "[HystereticRejector] keeping last observation in opposition: idx=" << i
+						          << " jdTdb=" << allObs[i].epochJdTdb() << " code=" << allObs[i].obsCode
+						          << " postFitChi2=" << r2;
 						continue;
 					}
 					included[i] = 0;
@@ -128,18 +128,18 @@ namespace Calculations {
 				res.nKept = static_cast<int>(nKept);
 				res.status = (flippedIn + flippedOut > 0) ? RejectStatus::Changed : RejectStatus::NoChange;
 
-				LOG_INFO << "[HystereticRejector] rejectChi2=" << rejectLimit << " recoverChi2=" << recoverLimit
-				         << " batchChi2=" << batchThreshold << ":"
-				         << " in=" << flippedIn << " out=" << flippedOut << " kept=" << nKept << "/" << allObs.size()
-				         << " span=" << tSpan << "d/" << origSpan << "d"
-				         << " status=" << (res.status == RejectStatus::Changed ? "CHANGED" : "NO_CHANGE");
+				LOG_DEBUG << "[HystereticRejector] rejectChi2=" << rejectLimit << " recoverChi2=" << recoverLimit
+				          << " batchChi2=" << batchThreshold << ":"
+				          << " in=" << flippedIn << " out=" << flippedOut << " kept=" << nKept << "/" << allObs.size()
+				          << " span=" << tSpan << "d/" << origSpan << "d"
+				          << " status=" << (res.status == RejectStatus::Changed ? "CHANGED" : "NO_CHANGE");
 				return res;
 			}
 
-			LOG_INFO << "[HystereticRejector] rejectChi2=" << rejectLimit << " safeguard fail: kept=" << nKept
-			         << " (min " << nMin << ")"
-			         << " span=" << tSpan << "d (min " << tMin << "d)"
-			         << " — rolling back, escalating";
+			LOG_DEBUG << "[HystereticRejector] rejectChi2=" << rejectLimit << " safeguard fail: kept=" << nKept
+			          << " (min " << nMin << ")"
+			          << " span=" << tSpan << "d (min " << tMin << "d)"
+			          << " — rolling back, escalating";
 			included = std::move(origMask);
 			rejectLimit *= cfg.retryScale;
 			recoverLimit *= cfg.retryScale;
@@ -149,7 +149,7 @@ namespace Calculations {
 		res.appliedRecoverChiSquared = recoverLimit;
 		res.nKept = static_cast<int>(countIncluded(included));
 		res.status = RejectStatus::SafeguardRollback;
-		LOG_INFO << "[HystereticRejector] escalation exhausted at chi2=" << rejectLimit
+		LOG_WARN << "[HystereticRejector] escalation exhausted at chi2=" << rejectLimit
 		         << " — no rejection passes safeguards, leaving mask unchanged";
 		return res;
 	}

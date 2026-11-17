@@ -25,6 +25,10 @@ string(REGEX REPLACE "(..)" "0x\\1," LEAFLET_BYTES "${LEAFLET_HEX}")
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/output/web/vendor/leaflet/leaflet.css" LEAFLET_CSS)
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/output/web/vendor/leaflet/LICENSE" LEAFLET_LICENSE)
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/output/web/viewer.html" VIEWER_HTML)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/output/web/report-common.css" REPORT_COMMON_CSS)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/output/web/viewer.css" REPORT_VIEWER_CSS)
+string(REPLACE "__REPORT_COMMON_CSS__" "${REPORT_COMMON_CSS}" VIEWER_HTML "${VIEWER_HTML}")
+string(REPLACE "__REPORT_VIEWER_CSS__" "${REPORT_VIEWER_CSS}" VIEWER_HTML "${VIEWER_HTML}")
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/output/web/viewer.js" VIEWER_HEX HEX)
 string(REGEX REPLACE "(..)" "0x\\1," VIEWER_BYTES "${VIEWER_HEX}")
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/output/web/report.js" REPORT_JS)
@@ -50,7 +54,8 @@ string(REGEX REPLACE "(..)" "0x\\1," VIEWER_HTML_BYTES "${VIEWER_HTML_HEX}")
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/output/web/vendor/plotly/plotly.min.js" PLOTLY_HEX HEX)
 string(REGEX REPLACE "(..)" "0x\\1," PLOTLY_BYTES "${PLOTLY_HEX}")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-    output/web/viewer.html output/web/viewer.js output/web/report.js output/web/print.js output/web/graticule.js output/web/vendor/plotly/plotly.min.js
+    output/web/viewer.html output/web/report-common.css output/web/viewer.css
+    output/web/viewer.js output/web/report.js output/web/print.js output/web/graticule.js output/web/vendor/plotly/plotly.min.js
     output/web/trajectory.js output/web/map-flight.js
     output/web/vendor/leaflet/leaflet.js output/web/vendor/leaflet/leaflet.css)
 configure_file(output/web/ViewerAssets.h.in generated/ViewerAssets.h @ONLY)

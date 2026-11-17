@@ -6,6 +6,10 @@ description: Explore an orbit around the Sun or its motion relative to a planet.
 Open **Orbit 3D** after solving an orbit. The page offers a heliocentric view
 and a separate calculation of motion relative to a planet.
 
+In both views, the top-view control switches to an orthographic projection
+looking down on the reference plane. Rotating away from that view or resetting
+the camera restores perspective projection.
+
 ## Heliocentric orbit
 
 **Heliocentric** shows the object's osculating orbit around the Sun alongside
@@ -83,7 +87,11 @@ counts of complete three-dimensional revolutions.
 Start and end uncertainties are displayed as linearized 3σ estimates when
 available. They describe local uncertainty for the adopted orbit and force
 model; strongly nonlinear encounters or unmodelled effects can make them
-unreliable. **Partial interval** means the event extends beyond at least one
+unreliable. The **Hill sphere** section lists passages that overlap the capture,
+including their entry and exit times even when these lie outside the capture.
+Their 3σ estimates use the same fit covariance and are calculated separately
+for each crossing. A clipped boundary or unavailable covariance has no estimate.
+**Partial interval** means the event extends beyond at least one
 edge of the requested calculation; its displayed duration is then a lower
 bound. Boundaries are interpolated between samples, so a smaller step can help
 resolve short events and their timing.

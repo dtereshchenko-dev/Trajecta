@@ -12,9 +12,9 @@
     n.status === 5
       ? n.entry
         ? '#ed5551'
-        : '#07808a'
+        : '#56c5a8'
       : [2, 4, 6, 7].includes(n.status)
-        ? '#bf8a28'
+        ? '#e5ac59'
         : '#a6b1b7';
   const chiColors = ['#fde725', '#35b779', '#8d68ab', '#9ca6ac'];
   const chiBand = (n) =>
@@ -68,6 +68,7 @@
     const c = canvas.getContext('2d');
     c.scale(dpr, dpr);
     c.font = '12px sans-serif';
+    c.fillStyle = '#9daead';
     const nodes = el('preliminary').checked ? data.preliminary : data.nodes,
       log = el('log-range').checked;
     const points = nodes
@@ -96,8 +97,8 @@
     y1 += dy * 0.04;
     const px = (x) => 72 + ((x - x0) / (x1 - x0)) * (w - 100),
       py = (y) => height - 52 - ((y - y0) / (y1 - y0)) * (height - 80);
-    c.strokeStyle = '#ced9de';
-    c.fillStyle = '#526a75';
+    c.strokeStyle = '#283333';
+    c.fillStyle = '#9daead';
     for (let i = 0; i <= 4; i++) {
       const x = x0 + ((x1 - x0) * i) / 4,
         y = y0 + ((y1 - y0) * i) / 4;
@@ -220,7 +221,8 @@
     table();
   };
   function initMap() {
-    if (map) return;
+    if (map)
+      return;
     const points = hits.map((n) => n.entry),
       profile = h.mapProfile(data.target_name, points),
       centre = h.longitudeFrame(points);
@@ -237,6 +239,15 @@
       maxZoom: 22,
       wheelDebounceTime: 120,
     });
+    const contours = L.layerGroup().addTo(map);
+    const renderContours = () => {
+      contours.clearLayers();
+      if (el('show-contours').checked)
+        h.drawContours(L, contours, data.semilinear, centre);
+    };
+    el('show-contours').onchange = renderContours;
+    el('contour-note').textContent = h.contourNote(data.semilinear);
+    h.renderContourLegend(el('contour-legend'));
     markers = L.layerGroup().addTo(map);
     [...hits]
       .sort((a, b) => chiBand(b) - chiBand(a))
@@ -254,6 +265,7 @@
           .bindPopup(content)
           .addTo(markers);
       });
+    renderContours();
     const entries = [
       [chiColors[0], 'χ < 1'],
       [chiColors[1], '1 ≤ χ < 3'],
@@ -269,13 +281,17 @@
         return item;
       }),
     );
-    el('fit').onclick = () =>
-      points.length
+    el('fit').onclick = () => {
+      const visible = [...points];
+      if (el('show-contours').checked)
+        visible.push(...h.contourPoints(data.semilinear));
+      return visible.length
         ? map.fitBounds(
-            points.map((p) => [p.latitude_deg, h.unwrap(p.longitude_deg, centre)]),
+            visible.map((p) => [p.latitude_deg, h.unwrap(p.longitude_deg, centre)]),
             { padding: [40, 40], maxZoom: 13, animate: false },
           )
         : map.setView([0, 0], 2);
+    };
     el('fit').onclick();
     const imagery = h.imageryLayer(L, profile),
       overview = profile.kind === 'wmts' ? h.imageryLayer(L, profile, true) : null;
@@ -283,7 +299,8 @@
     el('map-note').textContent = note;
     el('map-title').textContent = `${data.target_name} boundary at ${fmt(data.altitude_km)} km`;
     el('imagery').disabled = !imagery;
-    if (!imagery) el('imagery').checked = false;
+    if (!imagery)
+      el('imagery').checked = false;
     if (imagery) {
       imagery.on('tileerror', () => (el('map-note').textContent = note + ' Some imagery is unavailable.'));
       el('imagery').onchange = () => {
@@ -300,7 +317,8 @@
         imagery.addTo(map);
       }
     }
-    if (profile.radius) L.control.scale({ imperial: false }).addTo(map);
+    if (profile.radius)
+      L.control.scale({ imperial: false }).addTo(map);
     const pane = map.createPane('coordinates');
     pane.style.zIndex = 450;
     pane.style.pointerEvents = 'none';
@@ -308,7 +326,8 @@
     pane.append(canvas);
     function grid() {
       canvas.style.display = el('coordinates').checked ? 'block' : 'none';
-      if (!el('coordinates').checked) return;
+      if (!el('coordinates').checked)
+        return;
       const size = map.getSize(),
         dpr = devicePixelRatio || 1;
       canvas.width = size.x * dpr;
@@ -346,7 +365,8 @@
           initMap();
           map.invalidateSize(false);
         }
-        if (b.dataset.view === 'overview') draw();
+        if (b.dataset.view === 'overview')
+          draw();
       }),
   );
   el('print').onclick = () => window.print();

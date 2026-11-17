@@ -219,7 +219,7 @@ namespace {
 	void nutationAnglesIau1980(double jdTt, double& dpsi, double& deps) noexcept
 	{
 		constexpr double rs = 4.84813681109536e-6;
-		constexpr double twoPi = 6.2831853071795865;
+		constexpr double twoPi = Constants::TWOPI;
 		constexpr float z1 = 1.0f;
 		constexpr float z2 = 2.0f;
 

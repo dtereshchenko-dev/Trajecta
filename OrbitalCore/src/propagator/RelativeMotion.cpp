@@ -161,6 +161,47 @@ namespace orbital_core {
 		throw std::runtime_error("Trajectory refinement did not finish; shorten the interval");
 	}
 
+	std::vector<HillSpherePassage> findHillSpherePassages(const std::vector<RelativeMotionSample>& samples)
+	{
+		std::vector<HillSpherePassage> result;
+		if (samples.size() < 2)
+			return result;
+		for (std::size_t i = 0; i < samples.size(); ++i) {
+			const auto& s = samples[i];
+			if (!std::isfinite(s.mjdTdb) || !std::isfinite(s.distanceAu) || s.distanceAu <= 0 ||
+			    !std::isfinite(s.hillRadiusAu) || s.hillRadiusAu <= 0 || (i && s.mjdTdb <= samples[i - 1].mjdTdb))
+				throw std::invalid_argument("Invalid Hill-sphere samples");
+		}
+		HillSpherePassage current;
+		bool active = samples.front().distanceAu < samples.front().hillRadiusAu;
+		if (active) {
+			current.entryMjdTdb = samples.front().mjdTdb;
+			current.entryClipped = true;
+		}
+		for (std::size_t i = 1; i < samples.size(); ++i) {
+			const auto& a = samples[i - 1];
+			const auto& b = samples[i];
+			const double x = a.distanceAu - a.hillRadiusAu;
+			const double y = b.distanceAu - b.hillRadiusAu;
+			if (!active && x >= 0 && y < 0) {
+				current = {};
+				current.entryMjdTdb = a.mjdTdb + (b.mjdTdb - a.mjdTdb) * x / (x - y);
+				current.entryClipped = current.entryMjdTdb == samples.front().mjdTdb;
+				active = true;
+			} else if (active && x <= 0 && y > 0) {
+				current.exitMjdTdb = a.mjdTdb + (b.mjdTdb - a.mjdTdb) * x / (x - y);
+				result.push_back(current);
+				active = false;
+			}
+		}
+		if (active) {
+			current.exitMjdTdb = samples.back().mjdTdb;
+			current.exitClipped = true;
+			result.push_back(current);
+		}
+		return result;
+	}
+
 	std::vector<TemporaryCaptureInterval> findTemporaryCaptures(const std::vector<RelativeMotionSample>& samples)
 	{
 		std::vector<TemporaryCaptureInterval> result;

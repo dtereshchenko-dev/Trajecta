@@ -23,7 +23,7 @@ ColumnLayout {
         }
         CustomButton {
             objectName: "atmosphere-report"
-            iconName: "file-text"
+            iconName: "activity"
             enabled: view.atmosphere.reportAvailable
             accessibleLabel: qsTr("Open HTML report")
             onClicked: view.atmosphere.openResult(true)

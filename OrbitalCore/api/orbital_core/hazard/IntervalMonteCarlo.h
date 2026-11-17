@@ -5,6 +5,7 @@
 #include "orbital_core/OrbitSolution.h"
 #include "orbital_core/hazard/BoundaryCrossing.h"
 #include "orbital_core/hazard/Planet.h"
+#include "orbital_core/hazard/SemilinearContours.h"
 #include <array>
 #include <filesystem>
 #include <functional>
@@ -25,6 +26,7 @@ namespace orbital_core::hazard {
 		std::uint64_t seed{42};
 		unsigned workers{15};
 		IntegratorKind integrator{IntegratorKind::RA15};
+		bool semilinearContours{false};
 	};
 
 	struct McClone {
@@ -59,6 +61,7 @@ namespace orbital_core::hazard {
 		McClone nominal;
 		std::vector<McClone> clones;
 		std::vector<McEvent> events;
+		SemilinearContours semilinear;
 		bool cancelled{};
 		int completed{};
 		int failedFit{};
@@ -76,6 +79,7 @@ namespace orbital_core::hazard {
 	// explicit; only Complete trials enter empirical probabilities (Wilson 95%).
 	// Cancellation invalidates partial trajectories, but retains completed trials.
 	// The target is one body; this is not an all-body first-collision competition.
+	// When semilinearContours is enabled, progress(-1, samples) marks its final phase.
 	[[nodiscard]] ORBITAL_CORE_API IntervalMcResult runIntervalMonteCarlo(const FitPipelineResult& solution,
 	                                                                      const IntervalMcConfig& config,
 	                                                                      std::stop_token cancel = {},

@@ -19,6 +19,7 @@ class DataSourcesModel : public QObject {
 	QML_UNCREATABLE("Session-owned")
 	Q_PROPERTY(QVariantList entries READ entries NOTIFY changed)
 	Q_PROPERTY(bool checking READ checking NOTIFY changed)
+	Q_PROPERTY(bool updatesChecking READ updatesChecking NOTIFY changed)
 	Q_PROPERTY(bool checked READ checked NOTIFY changed)
 	Q_PROPERTY(int unavailableCount READ unavailableCount NOTIFY changed)
 	Q_PROPERTY(bool restartRequired READ restartRequired NOTIFY changed)
@@ -39,6 +40,8 @@ class DataSourcesModel : public QObject {
 	QVariantList entries() const { return m_entries; }
 
 	bool checking() const { return m_running; }
+
+	bool updatesChecking() const { return m_observatoryUpdate.checking() || m_earthPckUpdate.checking(); }
 
 	bool checked() const { return m_checked; }
 
@@ -69,6 +72,7 @@ class DataSourcesModel : public QObject {
 	EarthPckUpdate* earthPckUpdate() { return &m_earthPckUpdate; }
 
 	Q_INVOKABLE void refresh();
+	Q_INVOKABLE void checkUpdates();
 
    signals:
 	void changed();

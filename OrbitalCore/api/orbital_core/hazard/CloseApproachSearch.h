@@ -3,8 +3,10 @@
 #include "orbital_core/FitPipeline.h"
 #include "orbital_core/FitRunControl.h"
 #include "orbital_core/hazard/CloseApproach.h"
+#include <array>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace orbital_core::hazard {
 
@@ -13,6 +15,13 @@ namespace orbital_core::hazard {
 		double endMjdTdb{};
 		// Empty selects per-body reporting limits, not a force-model cutoff.
 		std::optional<double> maximumDistanceAu;
+		bool includeDistanceSamples{};
+	};
+
+	struct CloseApproachDistanceSample {
+		double mjdTdb{};
+		std::array<double, kPlanetCount> distanceAu{};
+		std::array<double, kPlanetCount> hillRadiusAu{};
 	};
 
 	struct NominalCloseApproach {
@@ -38,6 +47,7 @@ namespace orbital_core::hazard {
 		// The osculating pericentre of an impacting nominal may be reported;
 		// no later encounters are retained after its first surface entry.
 		bool stoppedAtSurface{};
+		std::vector<CloseApproachDistanceSample> distanceSamples;
 	};
 
 	[[nodiscard]] ORBITAL_CORE_API double defaultCloseApproachLimitAu(Planet planet) noexcept;

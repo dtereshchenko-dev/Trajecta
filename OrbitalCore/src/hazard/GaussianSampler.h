@@ -1,5 +1,7 @@
 #pragma once
 
+#include "orbital_core/Constants.h"
+
 #include <Eigen/Core>
 
 #include <algorithm>
@@ -25,7 +27,7 @@ namespace orbital_core::hazard::sampling {
 
 	[[nodiscard]] inline double standardNormal(uint64_t seed, int sampleIndex, int dimensionIndex) noexcept
 	{
-		constexpr double kTwoPi = 6.283185307179586476925286766559;
+		constexpr double kTwoPi = Constants::TWOPI;
 		const uint64_t base = seed ^ (static_cast<uint64_t>(sampleIndex) * 0xd1b54a32d192ed03ULL) ^
 		                      (static_cast<uint64_t>(dimensionIndex) * 0xabc98388fb8fac03ULL);
 		const double u1 = std::max(uniform01(base), 1.0e-300);

@@ -46,6 +46,18 @@ namespace orbital_core {
 		std::optional<double> end3SigmaDays;
 	};
 
+	struct HillSpherePassage {
+		double entryMjdTdb{};
+		double exitMjdTdb{};
+		bool entryClipped{};
+		bool exitClipped{};
+	};
+
+	struct RelativeMotionTimeUncertainty {
+		std::vector<CaptureTimeUncertainty> captures;
+		std::vector<CaptureTimeUncertainty> hillPassages;
+	};
+
 	// The Hill sphere and two-body energy are diagnostics, not capture decisions.
 	[[nodiscard]] ORBITAL_CORE_API std::vector<RelativeMotionSample> computeRelativeMotion(
 	    const RelativeMotionRequest& request, const FitRunControl& control = {});
@@ -60,9 +72,19 @@ namespace orbital_core {
 	[[nodiscard]] ORBITAL_CORE_API std::vector<TemporaryCaptureInterval> findTemporaryCaptures(
 	    const std::vector<RelativeMotionSample>& samples);
 
+	// Intervals inside one instantaneous Hill radius; boundaries are interpolated.
+	[[nodiscard]] ORBITAL_CORE_API std::vector<HillSpherePassage> findHillSpherePassages(
+	    const std::vector<RelativeMotionSample>& samples);
+
 	// Linearized uncertainty of the interpolated event boundaries, using the full fit covariance.
 	[[nodiscard]] ORBITAL_CORE_API std::vector<CaptureTimeUncertainty> captureTimeUncertainty(
 	    const RelativeMotionRequest& request, const std::vector<RelativeMotionSample>& samples,
 	    const std::vector<TemporaryCaptureInterval>& captures, const FitRunControl& control = {});
+
+	// Propagate the fit covariance once for capture and Hill-sphere boundaries.
+	[[nodiscard]] ORBITAL_CORE_API RelativeMotionTimeUncertainty relativeMotionTimeUncertainty(
+	    const RelativeMotionRequest& request, const std::vector<RelativeMotionSample>& samples,
+	    const std::vector<TemporaryCaptureInterval>& captures, const std::vector<HillSpherePassage>& hillPassages,
+	    const FitRunControl& control = {});
 
 }  // namespace orbital_core

@@ -231,6 +231,12 @@ void DataSourcesModel::updateReadiness()
 
 DataSourcesModel::~DataSourcesModel() { m_watcher.waitForFinished(); }
 
+void DataSourcesModel::checkUpdates()
+{
+	m_observatoryUpdate.check();
+	m_earthPckUpdate.check();
+}
+
 void DataSourcesModel::refresh()
 {
 	if (checking()) {

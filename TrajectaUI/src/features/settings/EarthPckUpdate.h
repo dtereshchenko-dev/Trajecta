@@ -24,6 +24,9 @@ class EarthPckUpdate : public QObject {
 	static void applyPending();
 	QVariantMap states() const;
 	int availableCount() const;
+
+	bool checking() const { return !m_check.isNull(); }
+
 	Q_INVOKABLE void check();
 	Q_INVOKABLE void install(const QString& id);
 

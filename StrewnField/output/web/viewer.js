@@ -6,7 +6,7 @@
     runs = data.runs;
   const format = (v) =>
     v == null ? 'n/a' : Number(v).toLocaleString('en-US', { maximumSignificantDigits: 6 });
-  const colors = ['#087f83', '#cb782a', '#5965a7', '#be525a', '#6a8f45'];
+  const colors = ['#56c5a8', '#e5ac59', '#9eabe1', '#ef7775', '#a6c77b'];
   const config = {
     responsive: true,
     displaylogo: false,
@@ -25,11 +25,11 @@
     return {
       title: { text: title, font: { size: 15 }, x: 0.08 },
       margin: { l: 75, r: 25, t: 58, b: 58 },
-      font: { family: 'system-ui, Segoe UI, sans-serif', size: 12, color: '#334a54' },
-      paper_bgcolor: '#fff',
-      plot_bgcolor: '#fff',
-      xaxis: { title: { text: x }, gridcolor: '#e3e9ec', zeroline: false, automargin: true },
-      yaxis: { title: { text: y }, gridcolor: '#e3e9ec', zeroline: false, automargin: true },
+      font: { family: 'Inter, Segoe UI, sans-serif', size: 12, color: '#9daead' },
+      paper_bgcolor: '#101415',
+      plot_bgcolor: '#101415',
+      xaxis: { title: { text: x }, gridcolor: '#283333', zeroline: false, automargin: true },
+      yaxis: { title: { text: y }, gridcolor: '#283333', zeroline: false, automargin: true },
       showlegend: false,
       ...extra,
     };
@@ -250,7 +250,7 @@
         },
       ],
       layout('Mean mass budget per realization', 'Mass destination', 'Fraction of initial mass', {
-        yaxis: { tickformat: '.0%', gridcolor: '#e3e9ec', range: [0, 1] },
+        yaxis: { tickformat: '.0%', gridcolor: '#283333', range: [0, 1] },
       }),
     );
     await bar(
@@ -369,7 +369,8 @@
       { interactive: false, pane: 'cached-imagery' },
     ).addTo(map);
   }
-  if (data.tiles.length) map.attributionControl.addAttribution('Imagery &copy; Esri (embedded tiles)');
+  if (data.tiles.length)
+    map.attributionControl.addAttribution('Imagery &copy; Esri (embedded tiles)');
   const paletteStops = [
     [68, 1, 84],
     [59, 82, 139],
@@ -401,25 +402,29 @@
     const image = ctx.createImageData(w, h),
       field = fields[q],
       peak = peaks[q];
-    if (!grid || !field || !(peak > 0)) return image;
+    if (!grid || !field || !(peak > 0))
+      return image;
     const xs = new Float64Array(w);
     for (let x = 0; x < w; x++) xs[x] = (coordinate(x + 0.5, 0).lng - grid.longitude) / grid.dlon;
     for (let y = 0; y < h; y++) {
       const gy = (coordinate(0, y + 0.5).lat - grid.latitude) / grid.dlat,
         iy = Math.floor(gy),
         fy = gy - iy;
-      if (iy < 0 || iy >= grid.rows - 1) continue;
+      if (iy < 0 || iy >= grid.rows - 1)
+        continue;
       for (let x = 0; x < w; x++) {
         const gx = xs[x],
           ix = Math.floor(gx),
           fx = gx - ix;
-        if (ix < 0 || ix >= grid.columns - 1) continue;
+        if (ix < 0 || ix >= grid.columns - 1)
+          continue;
         const i = iy * grid.columns + ix;
         const v =
           ((1 - fy) * ((1 - fx) * field[i] + fx * field[i + 1]) +
             fy * ((1 - fx) * field[i + grid.columns] + fx * field[i + grid.columns + 1])) /
           peak;
-        if (v < 2e-4) continue;
+        if (v < 2e-4)
+          continue;
         const rgb = paletteTable[Math.min(255, Math.max(0, Math.round(v * 255)))],
           p = (y * w + x) * 4;
         image.data[p] = rgb[0];
@@ -433,11 +438,13 @@
   function drawDensity() {
     scheduled = false;
     canvas.style.display = grid && el('density').checked ? 'block' : 'none';
-    if (!grid || !el('density').checked) return;
+    if (!grid || !el('density').checked)
+      return;
     const size = map.getSize(),
       w = Math.round(size.x),
       h = Math.round(size.y);
-    if (!w || !h) return;
+    if (!w || !h)
+      return;
     canvas.width = w;
     canvas.height = h;
     L.DomUtil.setPosition(canvas, map.containerPointToLayerPoint([0, 0]));
@@ -466,12 +473,14 @@
   function drawCoordinates() {
     gridScheduled = false;
     coordinateCanvas.style.display = el('coordinates').checked ? 'block' : 'none';
-    if (!el('coordinates').checked || !el('map').clientWidth || !el('map').clientHeight) return;
+    if (!el('coordinates').checked || !el('map').clientWidth || !el('map').clientHeight)
+      return;
     const size = map.getSize(),
       w = Math.round(size.x),
       h = Math.round(size.y),
       ratio = Math.min(2, window.devicePixelRatio || 1);
-    if (!w || !h) return;
+    if (!w || !h)
+      return;
     coordinateCanvas.width = Math.round(w * ratio);
     coordinateCanvas.height = Math.round(h * ratio);
     coordinateCanvas.style.width = w + 'px';
@@ -523,13 +532,14 @@
                 ? '#ead53f'
                 : data.tiles.length
                   ? '#f4ffff'
-                  : '#476670',
+                  : '#d0dcda',
           opacity: 1,
         }),
       }).addTo(contours);
     if (el('points').checked)
       for (const p of data.impacts) {
-        if (el('point-scope').value === 'selected' && p[5] !== runs[selection]?.run_id) continue;
+        if (el('point-scope').value === 'selected' && p[5] !== runs[selection]?.run_id)
+          continue;
         const popup = document.createElement('div');
         popup.textContent = `Run ${p[5]}, fragment ${p[6]} | ${format(p[2] * 1000)} g | multiplicity ${format(p[3])} | ${p[0].toFixed(6)}, ${p[1].toFixed(6)}`;
         L.circleMarker([p[0], p[1]], {
@@ -543,7 +553,7 @@
           .addTo(points);
       }
     el('map-legend').innerHTML =
-      '<strong>Ensemble probability / cell</strong><div class="gradient"></div><div class="legend-row"><span>0</span><span id="peak"></span></div><div>99% <span style="color:#e44859">&#9473;</span> &nbsp;80% <span style="color:#ba9d00">&#9473;</span> &nbsp;50% <span style="color:#516b75">&#9473;</span> HPD</div>';
+      '<strong>Ensemble probability / cell</strong><div class="gradient"></div><div class="legend-row"><span>0</span><span id="peak"></span></div><div>99% <span style="color:#f75464">&#9473;</span> &nbsp;80% <span style="color:#ead53f">&#9473;</span> &nbsp;50% <span style="color:#d0dcda">&#9473;</span> HPD</div>';
     el('peak').textContent = peaks[q].toExponential(3);
     updateMapMeta();
     scheduleDensity();
@@ -597,9 +607,11 @@
     load: async () => {
       const run = runs[selection],
         f = currentFlight;
-      if (!f?.verified) throw new Error(f?.error || 'Trajectory replay unavailable.');
+      if (!f?.verified)
+        throw new Error(f?.error || 'Trajectory replay unavailable.');
       const values = decoded ?? (await R.unpack(f.samples));
-      if (f === currentFlight) decoded = values;
+      if (f === currentFlight)
+        decoded = values;
       return {
         run,
         flight: f,
@@ -622,18 +634,22 @@
     el('fragment').replaceChildren(new Option('All fragments', 'all'));
     currentFlight = null;
     const loaded = run ? await R.readFlight(el(run.flight.element).textContent) : null;
-    if (token !== selectionRevision) return;
+    if (token !== selectionRevision)
+      return;
     currentFlight = loaded;
     el('fragment').replaceChildren(
       new Option(currentFlight?.trace_selection?.sampled ? 'All preview tracks' : 'All fragments', 'all'),
     );
     el('map-run').value = String(selection);
     await mapFlight.refresh();
-    if (token !== selectionRevision) return;
+    if (token !== selectionRevision)
+      return;
     for (const t of currentFlight?.traces ?? [])
       el('fragment').add(new Option(`#${t.id} | ${t.end_event} | x${format(t.multiplicity)}`, String(t.id)));
-    if (active === 'flight') await flight();
-    if (active === 'wind') await wind();
+    if (active === 'flight')
+      await flight();
+    if (active === 'wind')
+      await wind();
     refreshMap();
   }
   function samples(track, values) {
@@ -648,9 +664,11 @@
   async function flight() {
     const revision = ++flightRevision;
     const run = runs[selection];
-    if (!run) return;
+    if (!run)
+      return;
     const f = currentFlight;
-    if (!f) return;
+    if (!f)
+      return;
     const breakups = f.breakup_rows ?? run.breakups ?? [];
     const description = `Run ${run.run_id} | Entry ${run.entry_id} | Epoch MJD UTC ${run.entry?.epoch_mjd_utc ?? 'n/a'} | Landed ${format(run.mass_balance_kg.landed)} kg | ${format(run.ground_count)} fragments (${run.tracked_count} representatives) | ${run.breakup_count ?? breakups.length} tracked breakups`;
     el('run-meta').textContent = description;
@@ -701,7 +719,8 @@
     }
     if (!decoded) {
       const values = await R.unpack(f.samples);
-      if (revision !== flightRevision) return;
+      if (revision !== flightRevision)
+        return;
       decoded = values;
     }
     const selected = el('fragment').value,
@@ -765,14 +784,16 @@
         x: events.map((b) => b.state[0]),
         y: events.map((b) => b.state[column]),
         mode: 'markers',
-        marker: { symbol: 'x', size: 7, color: '#182c35' },
+        marker: { symbol: 'x', size: 7, color: '#e1e9e9' },
         text: events.map((b) => `Breakup #${b.fragment_id}`),
         hovertemplate: '%{text}<br>%{x:.6g} s<br>%{y:.6g}<extra></extra>',
       });
       const options = layout(title, `Time since entry / s${log ? ' (log)' : ''}`, unit);
       options.xaxis.type = log ? 'log' : 'linear';
-      if (column === 2) options.yaxis.type = 'log';
-      if (revision !== flightRevision) return;
+      if (column === 2)
+        options.yaxis.type = 'log';
+      if (revision !== flightRevision)
+        return;
       await plot(
         id,
         buckets.filter((b) => b.x.length),
@@ -782,7 +803,8 @@
   }
   async function wind() {
     const run = runs[selection];
-    if (!run || !currentFlight) return;
+    if (!run || !currentFlight)
+      return;
     const rows = currentFlight.wind ?? [];
     el('wind-meta').textContent =
       `Run ${run.run_id}, entry ${run.entry_id}. ENU wind at the entry subpoint; multiplier ${format(run.parameters.wind_scale)} applied. Direction TO, not meteorological FROM.${run.flight.verified ? '' : ' Replay unavailable.'}`;
@@ -817,12 +839,17 @@
     for (let i = 1; i < profile.length; i++) {
       const a = profile[i - 1],
         b = profile[i];
-      if (a.direction === null || b.direction === null) continue;
+      if (a.direction === null || b.direction === null)
+        continue;
       const trace = buckets[Math.min(31, Math.floor(((a.speed + b.speed) / 2 / maxSpeed) * 31))];
       trace.r.push(a.height, b.height, null);
       trace.theta.push(a.direction, b.direction, null);
     }
-    const polarTraces = buckets.filter((b) => b.r.length);
+    const coloredTraces = buckets.filter((b) => b.r.length);
+    const polarTraces = [
+      ...coloredTraces.map((trace) => ({ ...trace, line: { width: 4, color: '#9daead' }, opacity: 0.6 })),
+      ...coloredTraces,
+    ];
     polarTraces.push({
       type: 'scatterpolar',
       mode: 'markers',
@@ -855,32 +882,33 @@
           theta: [point.direction ?? (point.height === 0 ? 0 : null)],
           name: `${label} (${format(point.height)} km)`,
           showlegend: true,
-          marker: { symbol, size: 10, color: '#182c35' },
+          marker: { symbol, size: 10, color: '#e1e9e9' },
           hovertemplate: `${label}<br>Height %{r:.2f} km<extra></extra>`,
         });
       }
     await plot('wind-direction', polarTraces, {
       title: { text: 'Wind direction vs altitude (km)', x: 0.08, font: { size: 15 } },
-      font: { family: 'system-ui, Segoe UI, sans-serif', size: 12, color: '#334a54' },
-      paper_bgcolor: '#fff',
+      font: { family: 'Inter, Segoe UI, sans-serif', size: 12, color: '#9daead' },
+      paper_bgcolor: '#101415',
       margin: { l: 55, r: 100, t: 70, b: 75 },
       showlegend: true,
       legend: { orientation: 'h', x: 0, y: -0.13 },
       polar: {
-        bgcolor: '#fff',
-        radialaxis: { range: [0, top * 1.08], dtick: top > 20 ? 10 : 5, angle: 45, gridcolor: '#d7e0e4' },
+        bgcolor: '#101415',
+        radialaxis: { range: [0, top * 1.08], dtick: top > 20 ? 10 : 5, angle: 45, gridcolor: '#283333' },
         angularaxis: {
           rotation: 90,
           direction: 'clockwise',
           tickvals: [0, 45, 90, 135, 180, 225, 270, 315],
           ticktext: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
-          gridcolor: '#d7e0e4',
+          gridcolor: '#283333',
         },
       },
     });
   }
   async function view(name) {
-    if (name !== 'field') mapFlight.pause();
+    if (name !== 'field')
+      mapFlight.pause();
     active = name;
     document.querySelectorAll('.view').forEach((n) => n.classList.toggle('active', n.id === name));
     document
@@ -899,8 +927,10 @@
       refreshMap();
       mapFlight.draw();
     }
-    if (name === 'flight') await flight();
-    if (name === 'wind') await wind();
+    if (name === 'flight')
+      await flight();
+    if (name === 'wind')
+      await wind();
     for (const id of plots) if (el(id).offsetWidth) await Plotly.Plots.resize(el(id));
   }
   document.querySelectorAll('nav button').forEach((b) => (b.onclick = () => view(b.dataset.view)));
@@ -918,14 +948,17 @@
   }
   window.addEventListener('afterprint', finishPrint);
   el('print').onclick = async () => {
-    if (el('print').disabled) return;
+    if (el('print').disabled)
+      return;
     mapFlight.pause();
     el('print').disabled = true;
     el('print-error').textContent = '';
     try {
       const scope = el('print-scope').value === 'all' ? ['overview', 'field', 'flight', 'wind'] : [active];
-      if (scope.includes('flight')) await flight();
-      if (scope.includes('wind')) await wind();
+      if (scope.includes('flight'))
+        await flight();
+      if (scope.includes('wind'))
+        await wind();
       await StrewnPrint.prepare({
         data,
         scope,

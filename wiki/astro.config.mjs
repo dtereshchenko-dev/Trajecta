@@ -55,6 +55,7 @@ export default defineConfig({
           { label: 'Atmospheric model', slug: 'reference/atmospheric-model' },
           { label: 'Photometry', slug: 'reference/photometry' },
           { label: 'Files and outputs', slug: 'reference/formats' },
+          { label: 'Close-approach archive reference', slug: 'reference/close-approaches-archive' },
           { label: 'MC archive reference', slug: 'reference/mc-archive' },
           { label: 'CLI', slug: 'reference/cli' },
           { label: 'For developers', slug: 'reference/developers' },

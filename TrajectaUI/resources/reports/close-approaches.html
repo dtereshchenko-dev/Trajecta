@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Close Approaches</title>
+    <style>
+      __REPORT_COMMON_CSS__
+      __CLOSE_APPROACH_CSS__
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 id="object"></h1>
+      <span>Close Approaches</span>
+    </header>
+    <main>
+      <div class="toolbar">
+        <label>
+          Center
+          <select id="body"></select>
+        </label>
+        <label>
+          Distance units
+          <select id="units">
+            <option value="au">au</option>
+            <option value="km">km</option>
+            <option value="ld">lunar distances</option>
+          </select>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="hill" checked />
+          Hill radius
+        </label>
+        <div class="segmented" role="group" aria-label="Distance scale">
+          <button id="log" class="active">Log</button>
+          <button id="linear">Linear</button>
+        </div>
+        <div class="spacer"></div>
+        <button id="reset" title="Reset chart zoom">Reset view</button>
+      </div>
+      <div class="heading">
+        <h2 id="chart-title"></h2>
+        <span class="spacer"></span>
+        <span class="muted" id="interval"></span>
+      </div>
+      <div class="plot-wrap" id="plot-wrap">
+        <svg id="plot" viewBox="0 0 1200 340" role="img" aria-label="Nominal distance over time"></svg>
+        <div class="tooltip" id="tooltip"></div>
+      </div>
+      <div class="empty" id="empty" hidden></div>
+      <div class="legend muted">
+        <span>
+          <i></i>
+          Nominal distance
+        </span>
+        <span id="hill-legend">
+          <i class="hill-key"></i>
+          Hill radius (approx.)
+        </span>
+      </div>
+      <div class="heading">
+        <h2>Encounters</h2>
+        <span class="spacer"></span>
+        <span class="muted" id="count"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date / Time (TDB)</th>
+              <th>Body</th>
+              <th>Nominal distance</th>
+              <th>Minimum (3σ)</th>
+              <th>Maximum (3σ)</th>
+              <th>V-relative (km/s)</th>
+              <th>V-infinity (km/s)</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="muted">
+        Event distance bounds are local linearized 3σ estimates. Sampled nominal curves show no uncertainty
+        and may miss unreported minima.
+      </p>
+    </main>
+    <script type="application/json" id="report-data">
+      __REPORT_DATA__
+    </script>
+    <script>
+      __CLOSE_APPROACH_JS__;
+    </script>
+  </body>
+</html>

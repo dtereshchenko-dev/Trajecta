@@ -10,8 +10,8 @@ the observations and settings you choose.
 
 ![Data sources dialog showing connected ephemerides and observatory catalogues](../../assets/data-sources/source-status.png)
 
-The screenshots on this page show an earlier layout; the current dialog also
-lists the three Earth PCK files.
+The first screenshot shows an earlier layout. The Earth orientation section
+below shows the current PCK entries.
 
 ## Ephemerides and observatories
 
@@ -35,6 +35,8 @@ perturbations in the calculation settings when you want to use it.
 | Historical TT-UT1 | Historical time conversion. |
 | Astrometric weights: VFCC17 | Observation weights when the VFCC17 scheme is selected. |
 | Astrometric debias: FCCT14 and EFCC18 | Catalogue corrections when the corresponding debias model is selected. |
+
+![Earth orientation sources with an available recent PCK update](../../assets/data-sources/pck-update.png)
 
 The time-varying Earth gravity pole uses PCK when it covers the epoch. Outside
 PCK coverage, the gravity model falls back to C04; beyond its observed records,
@@ -62,10 +64,11 @@ dialog to see the current status.
 - **Connected** means the source is loaded by the application. A file can also
   be **Verified on disk**, **Missing** or **Invalid**. Some entries report that
   a previously loaded file is no longer on disk.
-- Use **Check again** to refresh source status and check the observatory
-  catalogues and Earth PCK files for updates. PCK updates are also checked
-  when the dialog opens. An **Update** button appears beside each available
-  update; files are downloaded only when selected.
+- Trajecta checks the observatory catalogues and Earth PCK files for updates
+  at startup. Use **Check again** to refresh source status and repeat the
+  update checks. Opening the dialog refreshes source status; it does not
+  start a new update check. An **Update** button appears beside each
+  available update; files are downloaded only when selected.
 - PCK updates are checked separately for the historical, recent and predictive
   files. A downloaded file is checked for ITRF93 coverage and prepared for
   installation when Trajecta next starts. The existing file is kept if the

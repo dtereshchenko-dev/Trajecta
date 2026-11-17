@@ -18,7 +18,7 @@ BaseDialog {
         if (id === "weights" || id.indexOf("debias_") === 0) return qsTr("Astrometric weights and corrections")
         return qsTr("Other data")
     }
-    onAboutToShow: { sources.refresh(); sources.earthPckUpdate.check() }
+    onAboutToShow: sources.refresh()
     contentItem: ColumnLayout {
         spacing: 8
         RowLayout {
@@ -29,7 +29,7 @@ BaseDialog {
                 font.pixelSize: 11
                 Layout.fillWidth: true
             }
-            CustomButton { iconName: "rotate-ccw"; flat: true; accessibleLabel: qsTr("Check again"); enabled: !dialog.sources.checking; onClicked: { dialog.sources.refresh(); dialog.sources.observatoryUpdate.check(); dialog.sources.earthPckUpdate.check() } }
+            CustomButton { iconName: "rotate-ccw"; flat: true; accessibleLabel: qsTr("Check again"); enabled: !dialog.sources.checking && !dialog.sources.updatesChecking; onClicked: { dialog.sources.refresh(); dialog.sources.checkUpdates() } }
         }
         CustomText {
             visible: dialog.sources.restartRequired

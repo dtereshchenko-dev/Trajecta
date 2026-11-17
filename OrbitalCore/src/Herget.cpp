@@ -279,7 +279,6 @@ namespace Calculations {
 			rho1 = std::max(kMinFinalRhoAU, r1New);
 			rhoN = std::max(kMinFinalRhoAU, rNNew);
 
-			LOG_DEBUG << "Herget iter " << iter << ": ρ₁=" << rho1 << ", ρₙ=" << rhoN << ", cost=" << newCost;
 
 			if (std::fabs(prevCost - newCost) < kConvergenceTol) {
 				break;

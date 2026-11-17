@@ -23,12 +23,7 @@ class RiskEventTableModel : public QAbstractTableModel {
 	void setEvents(const std::vector<orbital_core::hazard::McEvent>& events);
 
    private:
-	struct Row {
-		QStringList cells;
-		QString detail;
-	};
-
-	std::vector<Row> m_rows;
+	std::vector<QStringList> m_rows;
    signals:
 	void countChanged();
 };

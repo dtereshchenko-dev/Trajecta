@@ -2,6 +2,7 @@
 #include "orbital_core/hazard/BodyFixedFrame.h"
 #include "orbital_core/Exporter.h"
 #include "hazard/McBoundaryScan.h"
+#include "SemilinearJson.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <array>
@@ -128,6 +129,7 @@ namespace orbital_core::hazard {
 		                 {"events", Json::array()},
 		                 {"fit_parameter_covariance", Json::array()}};
 		const auto& covariance = source.fit.uncertainty.fitParameterCovariance;
+		document["semilinear"] = semilinearJson(result.semilinear);
 		for (Eigen::Index i = 0; i < covariance.rows(); ++i) {
 			Json row = Json::array();
 			for (Eigen::Index j = 0; j < covariance.cols(); ++j)

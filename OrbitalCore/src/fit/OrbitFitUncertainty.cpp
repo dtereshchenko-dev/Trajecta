@@ -528,21 +528,6 @@ namespace orbital_core::fit {
 			return;
 		}
 
-		const double termSum = metrics.termTp + metrics.termInvA;
-		const double pct_Tp = (termSum > 0.0) ? (100.0 * metrics.termTp / termSum) : 0.0;
-		const double pct_invA = (termSum > 0.0) ? (100.0 * metrics.termInvA / termSum) : 0.0;
-
-		LOG_INFO << "Orbit quality runoff decomposition:";
-		LOG_INFO << std::scientific << std::setprecision(3) << "  σ_Tp     = " << sig.sigma_Tp << " d";
-
-		LOG_INFO << std::scientific << std::setprecision(3) << "  σ(1/a)   = " << sig.sigma_inv_a << " 1/AU";
-
-		LOG_INFO << std::scientific << std::setprecision(3) << "  term σ_Tp·e          = " << metrics.termTp
-		         << std::fixed << std::setprecision(1) << "  (" << pct_Tp << "%)";
-
-		LOG_INFO << std::scientific << std::setprecision(3) << "  term 15·yr·σ(1/a)·a  = " << metrics.termInvA
-		         << std::fixed << std::setprecision(1) << "  (" << pct_invA << "%)";
-
 		LOG_INFO << std::scientific << std::setprecision(3) << "Orbit quality: runoff = " << metrics.runoff
 		         << " arcsec → U = " << std::fixed << std::setprecision(2) << metrics.u;
 	}

@@ -310,23 +310,26 @@ void RelativeMotionModel::calculateRelative(const QString& startUtc, const QStri
 			}
 			auto samples = std::make_shared<std::vector<orbital_core::RelativeMotionSample>>();
 			auto captures = std::make_shared<std::vector<orbital_core::TemporaryCaptureInterval>>();
-			auto uncertainties = std::make_shared<std::vector<orbital_core::CaptureTimeUncertainty>>();
+			auto hillPassages = std::make_shared<std::vector<orbital_core::HillSpherePassage>>();
+			auto uncertainties = std::make_shared<orbital_core::RelativeMotionTimeUncertainty>();
 			if (!stop.stop_requested()) {
 				request.epochsMjdTdb.push_back(orbital_core::time::toMjdTdb(last, scale));
 				*samples = orbital_core::computeRefinedRelativeMotion(request, {.cancel = stop});
 				if (!stop.stop_requested()) {
 					*captures = orbital_core::findTemporaryCaptures(*samples);
+					*hillPassages = orbital_core::findHillSpherePassages(*samples);
 					try {
-						*uncertainties =
-						    orbital_core::captureTimeUncertainty(request, *samples, *captures, {.cancel = stop});
+						*uncertainties = orbital_core::relativeMotionTimeUncertainty(request, *samples, *captures,
+						                                                             *hillPassages, {.cancel = stop});
 					} catch (const std::exception&) {
-						uncertainties->clear();
+						*uncertainties = {};
 					}
 				}
 			}
 			QMetaObject::invokeMethod(
 			    this,
-			    [this, generation, center, planetIndex, samples, captures, uncertainties, scale, selectedTimeScale] {
+			    [this, generation, center, planetIndex, samples, captures, hillPassages, uncertainties, scale,
+			     selectedTimeScale] {
 				    if (generation != m_relativeGeneration)
 					    return;
 				    m_relativeBusy = false;
@@ -360,8 +363,30 @@ void RelativeMotionModel::calculateRelative(const QString& startUtc, const QStri
 						    row.insert("inertialRevolutionsValid", event.inertialRevolutionsValid);
 						    row.insert("startClipped", event.startClipped);
 						    row.insert("endClipped", event.endClipped);
-						    if (i < uncertainties->size()) {
-							    const auto& uncertainty = (*uncertainties)[i];
+						    QVariantList passages;
+						    for (std::size_t j = 0; j < hillPassages->size(); ++j) {
+							    const auto& passage = (*hillPassages)[j];
+							    if (passage.exitMjdTdb <= event.startMjdTdb || passage.entryMjdTdb >= event.endMjdTdb)
+								    continue;
+							    QVariantMap crossing;
+							    crossing.insert("entry", CalculationTime::formatUtc(orbital_core::time::fromMjdTdb(
+							                                 passage.entryMjdTdb, scale)));
+							    crossing.insert("exit", CalculationTime::formatUtc(
+							                                orbital_core::time::fromMjdTdb(passage.exitMjdTdb, scale)));
+							    crossing.insert("entryClipped", passage.entryClipped);
+							    crossing.insert("exitClipped", passage.exitClipped);
+							    if (j < uncertainties->hillPassages.size()) {
+								    const auto& uncertainty = uncertainties->hillPassages[j];
+								    if (uncertainty.start3SigmaDays)
+									    crossing.insert("entry3SigmaSeconds", *uncertainty.start3SigmaDays * 86400);
+								    if (uncertainty.end3SigmaDays)
+									    crossing.insert("exit3SigmaSeconds", *uncertainty.end3SigmaDays * 86400);
+							    }
+							    passages.append(crossing);
+						    }
+						    row.insert("hillPassages", passages);
+						    if (i < uncertainties->captures.size()) {
+							    const auto& uncertainty = uncertainties->captures[i];
 							    if (uncertainty.start3SigmaDays)
 								    row.insert("start3SigmaSeconds", *uncertainty.start3SigmaDays * 86400);
 							    if (uncertainty.end3SigmaDays)

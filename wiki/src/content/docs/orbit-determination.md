@@ -53,6 +53,8 @@ Switch to **By time** to see how the residuals change across the observation
 arc. Select a point to inspect an observation. The **Residuals by station**
 table below the plot helps identify stations with larger residuals or a
 systematic offset; use **All observations** to open the observation list.
+In either plot, use the mouse wheel to zoom around the pointer and drag to pan;
+the reset control restores the initial view.
 
 ### Nominal orbit
 
@@ -99,6 +101,8 @@ The **Residuals** tab provides time plots for right ascension and declination,
 plus a residual distribution. Use them to look for trends, clusters or
 outliers that may be harder to see in the overview scatter plot. Included and
 excluded optical observations are shown separately.
+Each time plot can be zoomed with the mouse wheel and panned by dragging;
+its reset control restores the initial view independently of the other plot.
 
 ![2020 VV residuals over time and their distribution](../../assets/orbit-determination/2020vv-residuals.png)
 

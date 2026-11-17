@@ -3,6 +3,7 @@
 #include "fit/FitObservations.h"
 #include "IntervalMcAssets.h"
 #include "MovAssets.h"
+#include "SemilinearJson.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 
@@ -126,6 +127,7 @@ namespace orbital_core::hazard {
 		    {"preliminary", nodes(result.preliminary)},
 		    {"nodes", nodes(result.nodes)},
 		    {"observations", Json::array()}};
+		data["semilinear"] = semilinearJson(result.semilinear);
 		data["nominal"] = nullptr;
 		if (result.nominal) {
 			const auto& nominal = *result.nominal;

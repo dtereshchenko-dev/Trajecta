@@ -1,4 +1,5 @@
 #include "AtmosphereViewModel.h"
+#include "orbital_core/Constants.h"
 
 #include <QDateTime>
 #include <QDesktopServices>
@@ -9,7 +10,6 @@
 #include <QStandardPaths>
 #include <QUuid>
 #include <cmath>
-#include <numbers>
 
 AtmosphereViewModel::~AtmosphereViewModel()
 {
@@ -136,7 +136,7 @@ void AtmosphereViewModel::run()
 			job.maps->title = QFileInfo(source->path).absoluteDir().dirName().toStdString();
 		} else {
 			const auto n = [this](const char* key) { return m_values.value(key).toString().toDouble(); };
-			constexpr double rad = std::numbers::pi / 180;
+			constexpr double rad = Constants::DEG_TO_RAD;
 			const strewn::GeodeticPosition geo{n("latitude") * rad, n("longitude") * rad, 100000};
 			const double speed = n("speed") * 1000, heading = n("heading") * rad, slope = n("slope") * rad;
 			const auto velocity =

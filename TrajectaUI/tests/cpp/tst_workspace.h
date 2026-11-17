@@ -4,6 +4,7 @@
 #include <QElapsedTimer>
 #include <QGraphicsScene>
 #include <array>
+#include <tuple>
 #include <QAbstractItemModelTester>
 #include <QTemporaryDir>
 #include <QQmlApplicationEngine>
@@ -22,12 +23,14 @@
 #include <QDragMoveEvent>
 #include <QDragLeaveEvent>
 #include <QDropEvent>
+#include <QWheelEvent>
 #include <QFileDialog>
 #include <QIcon>
 #include <QImageReader>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QNetworkProxy>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QtCharts/QScatterSeries>
@@ -41,6 +44,7 @@
 #include "geometry/GridGeometry.h"
 #include "util/FormatUtils.h"
 #include "orbital_core/DE440Source.h"
+#include "orbital_core/RuntimeData.h"
 #include "orbital_core/SpkReader.h"
 #include <orbital_core/CometaryCoordinates.h>
 #include <orbital_core/TimeScale.h>
@@ -196,6 +200,137 @@ class TestWorkspace : public QObject {
 	}
 
    private slots:
+
+	void diagnosticResidualPlotMouseNavigation()
+	{
+		FitSettingsAggregator settings;
+		ApplicationSession session(settings);
+		QVERIFY(session.solution()->publish(fixture(), "test"));
+		QQmlApplicationEngine engine;
+		engine.setImportPathList({QLibraryInfo::path(QLibraryInfo::QmlImportsPath)});
+		engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
+		engine.load(QUrl::fromLocalFile(QStringLiteral(ORBITAL_UI_SOURCE_DIR) + "/qml/shell/WorkspaceWindow.qml"));
+		QVERIFY(!engine.rootObjects().isEmpty());
+		auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().front());
+		QVERIFY(window);
+		auto* tab = findItem(window->contentItem(), "solution-charts-tab");
+		QVERIFY(tab);
+		QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+		                  tab->mapToScene({tab->width() / 2, tab->height() / 2}).toPoint());
+		auto* ra = findItem(window->contentItem(), "ra-time-chart");
+		auto* dec = findItem(window->contentItem(), "dec-time-chart");
+		QVERIFY(ra && dec);
+		QTest::qWait(150);
+		for (const auto& [plot, other, resetName] :
+		     {std::tuple{ra, dec, "ra-reset-view"}, std::tuple{dec, ra, "dec-reset-view"}}) {
+			auto* reset = findItem(window->contentItem(), resetName);
+			QVERIFY(reset);
+			const auto original = plot->property("bounds").toRectF();
+			const auto otherOriginal = other->property("bounds").toRectF();
+			const auto area = plot->property("plotArea").toRectF();
+			QVERIFY(area.width() > 0 && area.height() > 0);
+			const auto position = plot->mapToScene(area.center());
+			QWheelEvent wheel(position, window->mapToGlobal(position.toPoint()), {}, {0, 120}, Qt::NoButton,
+			                  Qt::NoModifier, Qt::NoScrollPhase, false);
+			QCoreApplication::sendEvent(window, &wheel);
+			const auto zoomed = plot->property("bounds").toRectF();
+			QVERIFY(zoomed.width() < original.width());
+			QVERIFY(reset->isEnabled());
+			QCOMPARE(other->property("bounds").toRectF(), otherOriginal);
+			QTest::mousePress(window, Qt::LeftButton, Qt::NoModifier, position.toPoint());
+			QTest::mouseMove(window, (position + QPointF(30, 15)).toPoint(), 20);
+			QTest::mouseRelease(window, Qt::LeftButton, Qt::NoModifier, (position + QPointF(30, 15)).toPoint());
+			const auto panned = plot->property("bounds").toRectF();
+			QVERIFY(panned.x() < zoomed.x());
+			QVERIFY(panned.y() > zoomed.y());
+			QVERIFY(QMetaObject::invokeMethod(reset, "clicked"));
+			QCOMPARE(plot->property("bounds").toRectF(), original);
+			QVERIFY(!reset->isEnabled());
+			auto* series = qobject_cast<QXYSeries*>(plot->property("includedSeries").value<QObject*>());
+			QVERIFY(series && series->count() > 1 && series->chart());
+			auto* observations = session.solution()->observations();
+			observations->selectSourceRow(-1);
+			const auto point = plot->mapToScene(series->chart()->mapToPosition(series->at(1), series));
+			QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier, point.toPoint());
+			QCOMPARE(observations->selectedSourceRow(), 2);
+		}
+		QVERIFY(QMetaObject::invokeMethod(ra, "zoomAt", Q_ARG(QVariant, 100), Q_ARG(QVariant, 100),
+		                                  Q_ARG(QVariant, 0.5)));
+		QVERIFY(ra->property("viewAdjusted").toBool());
+		QVERIFY(session.solution()->publish(fixture(), "updated"));
+		QVERIFY(!ra->property("viewAdjusted").toBool());
+		QCOMPARE(ra->property("bounds").toRectF(), ra->property("dataBounds").toRectF());
+		QCOMPARE(dec->property("bounds").toRectF(), dec->property("dataBounds").toRectF());
+		window->close();
+	}
+
+	void residualPlotMouseNavigation()
+	{
+		FitSettingsAggregator settings;
+		ApplicationSession session(settings);
+		QVERIFY(session.solution()->publish(fixture(), "test"));
+		QQmlApplicationEngine engine;
+		engine.setImportPathList({QLibraryInfo::path(QLibraryInfo::QmlImportsPath)});
+		engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
+		engine.load(QUrl::fromLocalFile(QStringLiteral(ORBITAL_UI_SOURCE_DIR) + "/qml/shell/WorkspaceWindow.qml"));
+		QVERIFY(!engine.rootObjects().isEmpty());
+		auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().front());
+		QVERIFY(window);
+		auto* plot = findItem(window->contentItem(), "residual-plot");
+		auto* reset = findItem(window->contentItem(), "residual-reset-view");
+		QVERIFY(plot && reset);
+		QTest::qWait(100);
+		for (const bool timeMode : {false, true}) {
+			plot->setProperty("timeMode", timeMode);
+			QTest::qWait(50);
+			const auto original = plot->property("bounds").toRectF();
+			const auto area = plot->property("plotArea").toRectF();
+			const auto local = area.center() + QPointF(area.width() * 0.1, 0);
+			const auto position = plot->mapToScene(local);
+			QWheelEvent wheel(position, window->mapToGlobal(position.toPoint()), {}, {0, 120}, Qt::NoButton,
+			                  Qt::NoModifier, Qt::NoScrollPhase, false);
+			QCoreApplication::sendEvent(window, &wheel);
+			const auto zoomed = plot->property("bounds").toRectF();
+			QVERIFY(zoomed.width() < original.width());
+			QVERIFY(plot->property("viewAdjusted").toBool());
+			QVERIFY(reset->isEnabled());
+			const double fraction = (local.x() - area.x()) / area.width();
+			QVERIFY(std::abs((original.x() + fraction * original.width()) -
+			                 (zoomed.x() + fraction * zoomed.width())) < 1e-7);
+			QTest::mousePress(window, Qt::LeftButton, Qt::NoModifier, position.toPoint());
+			QTest::mouseMove(window, (position + QPointF(30, 15)).toPoint(), 20);
+			QTest::mouseRelease(window, Qt::LeftButton, Qt::NoModifier, (position + QPointF(30, 15)).toPoint());
+			const auto panned = plot->property("bounds").toRectF();
+			QVERIFY(panned.x() < zoomed.x());
+			QVERIFY(panned.y() > zoomed.y());
+			QVERIFY(QMetaObject::invokeMethod(reset, "clicked"));
+			QVERIFY(!plot->property("viewAdjusted").toBool());
+			const auto restored = plot->property("bounds").toRectF();
+			QVERIFY(std::abs(restored.x() - original.x()) < 1e-7);
+			QVERIFY(std::abs(restored.y() - original.y()) < 1e-7);
+			QVERIFY(std::abs(restored.width() - original.width()) < 1e-7);
+			auto* series = qobject_cast<QXYSeries*>(plot->property("raSeries").value<QObject*>());
+			QVERIFY(series && series->count() > 0 && series->chart());
+			auto* observations = session.solution()->observations();
+			observations->selectSourceRow(-1);
+			const auto point = plot->mapToScene(series->chart()->mapToPosition(series->at(0), series));
+			QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier, point.toPoint());
+			QCOMPARE(observations->selectedSourceRow(), 0);
+		}
+		window->close();
+	}
+
+	void riskEventTableHasNoCellTooltips()
+	{
+		RiskEventTableModel model;
+		orbital_core::hazard::McEvent event{};
+		event.entryClones = 12;
+		model.setEvents({event});
+		QCOMPARE(model.rowCount(), 1);
+		QCOMPARE(model.data(model.index(0, 3), Qt::DisplayRole).toString(), QStringLiteral("12"));
+		QVERIFY(!model.data(model.index(0, 3), Qt::ToolTipRole).isValid());
+		QVERIFY(!model.roleNames().contains(Qt::ToolTipRole));
+	}
 
 	void applicationUpdateParsesMaintenanceToolOutput()
 	{
@@ -919,6 +1054,44 @@ class TestWorkspace : public QObject {
 		flickable->setProperty("contentY", bottom);
 		QTest::qWait(30);
 		QVERIFY(scrollBar->property("position").toDouble() > 0);
+	}
+
+	void closeApproachesTimeScaleSelector()
+	{
+		QTemporaryDir directory;
+		QVERIFY(directory.isValid());
+		FitSettingsAggregator settings;
+		ApplicationSession session(settings);
+		auto result = fixture();
+		result.effectiveConfig.nbody.enabled = true;
+		QVERIFY(session.solution()->publish(result, directory.path()));
+		QQmlApplicationEngine engine;
+		engine.setImportPathList({QLibraryInfo::path(QLibraryInfo::QmlImportsPath)});
+		engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
+		engine.load(QUrl::fromLocalFile(QStringLiteral(ORBITAL_UI_SOURCE_DIR) + "/qml/shell/WorkspaceWindow.qml"));
+		QVERIFY(!engine.rootObjects().isEmpty());
+		auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().front());
+		QVERIFY(window);
+		window->setProperty("currentPage", 5);
+		QTest::qWait(100);
+		auto* page = findItem(window->contentItem(), "close-approaches-page");
+		QVERIFY(page);
+		auto* interval = findItem(page, "approaches-interval");
+		auto* scale = findItem(page, "approaches-time-scale");
+		QVERIFY(interval && scale);
+		QVERIFY(interval->setProperty("startUtc", "1940-01-28 09:31:13.016"));
+		QVERIFY(interval->setProperty("endUtc", "2028-01-28 21:31:13.016"));
+		QVERIFY(page->property("formError").toString().contains("Select TDB"));
+		QVERIFY(QMetaObject::invokeMethod(scale, "activated", Q_ARG(int, 1)));
+		QCOMPARE(session.approaches()->timeScale(), QStringLiteral("TDB"));
+		QCOMPARE(interval->property("startUtc").toString(), QStringLiteral("1940-01-28 09:31:13.016"));
+		QCOMPARE(interval->property("endUtc").toString(),
+		         session.approaches()->convertTimeScale("2028-01-28 21:31:13.016", "UTC", "TDB"));
+		QVERIFY2(page->property("formError").toString().isEmpty(), qPrintable(page->property("formError").toString()));
+		QVERIFY(QMetaObject::invokeMethod(scale, "activated", Q_ARG(int, 0)));
+		QCOMPARE(session.approaches()->timeScale(), QStringLiteral("UTC"));
+		QCOMPARE(interval->property("endUtc").toString(), QStringLiteral("2028-01-28 21:31:13.016"));
+		QVERIFY(page->property("formError").toString().contains("Select TDB"));
 	}
 
 	void atmosphereArchiveValidation()
@@ -1814,6 +1987,91 @@ class TestWorkspace : public QObject {
 		QVERIFY(!risk.rangeStartUtc().isEmpty());
 	}
 
+	void closeApproachesWritesDistanceReport()
+	{
+		const auto previousDirectory = orbital_core::ephemerisDataDirectory();
+		const auto testDirectory = qEnvironmentVariable("TRAJECTA_TEST_EPHEMERIS_DIR");
+		if (!testDirectory.isEmpty())
+			orbital_core::setEphemerisDataDirectory(testDirectory.toStdWString());
+		const auto restoreDirectory =
+		    qScopeGuard([previousDirectory] { orbital_core::setEphemerisDataDirectory(previousDirectory); });
+		DE440Source ephemeris;
+		if (!ephemeris.isAvailable())
+			QSKIP("DE440 kernel not present");
+		auto* old = getDefaultEphemerisSource();
+		setDefaultEphemerisSource(&ephemeris);
+		const auto restore = qScopeGuard([old] { setDefaultEphemerisSource(old); });
+		QTemporaryDir directory;
+		QVERIFY(directory.isValid());
+		auto result = fixture();
+		result.effectiveConfig.nbody.enabled = true;
+		SolutionViewModel solution;
+		CloseApproachesViewModel approaches(solution);
+		QVERIFY(solution.publish(result, directory.path()));
+		approaches.run("2023-02-25 00:00:00", "2023-02-27 00:00:00", 1e-6);
+		QTRY_VERIFY_WITH_TIMEOUT(!approaches.busy(), 30000);
+		QVERIFY2(approaches.hasResult(), qPrintable(approaches.error()));
+		QFile jsonFile(QDir(approaches.archivePath()).filePath("result.json"));
+		QVERIFY(jsonFile.open(QIODevice::ReadOnly));
+		const auto archive = QJsonDocument::fromJson(jsonFile.readAll()).object();
+		QCOMPARE(archive.value("schema").toString(), QStringLiteral("close-approaches-v2"));
+		QVERIFY(archive.value("distanceSamples").toArray().size() >= 4097);
+		QFile report(QDir(approaches.archivePath()).filePath("report.html"));
+		QVERIFY(report.open(QIODevice::ReadOnly));
+		const auto html = report.readAll();
+		QVERIFY(html.contains("\"schema\":\"close-approaches-v2\""));
+		QVERIFY(html.contains("distanceSamples"));
+		QVERIFY(!html.contains("__REPORT_DATA__"));
+		QVERIFY(!html.contains("__REPORT_COMMON_CSS__"));
+		QVERIFY(!html.contains("__CLOSE_APPROACH_CSS__"));
+		QVERIFY(!html.contains("__CLOSE_APPROACH_JS__"));
+		QVERIFY(html.contains("function drawTable()"));
+		QVERIFY(html.contains(".toolbar"));
+	}
+
+	void closeApproachesSupportsHistoricalTdb()
+	{
+		const auto previousDirectory = orbital_core::ephemerisDataDirectory();
+		const auto testDirectory = qEnvironmentVariable("TRAJECTA_TEST_EPHEMERIS_DIR");
+		if (!testDirectory.isEmpty())
+			orbital_core::setEphemerisDataDirectory(testDirectory.toStdWString());
+		const auto restoreDirectory =
+		    qScopeGuard([previousDirectory] { orbital_core::setEphemerisDataDirectory(previousDirectory); });
+		DE440Source ephemeris;
+		if (!ephemeris.isAvailable())
+			QSKIP("DE440 kernel not present");
+		auto* old = getDefaultEphemerisSource();
+		setDefaultEphemerisSource(&ephemeris);
+		const auto restore = qScopeGuard([old] { setDefaultEphemerisSource(old); });
+		QTemporaryDir directory;
+		QVERIFY(directory.isValid());
+		auto result = fixture();
+		result.effectiveConfig.nbody.enabled = true;
+		const double start = QDate(1940, 1, 28).toJulianDay() - 2400001.0 + (9 * 3600.0 + 31 * 60.0 + 13.016) / 86400.0;
+		result.fit.fitEpochOrbit->setEpochMjd(start);
+		SolutionViewModel solution;
+		CloseApproachesViewModel approaches(solution);
+		QVERIFY(solution.publish(result, directory.path()));
+		const QString first = "1940-01-28 09:31:13.016", last = "1940-01-30 09:31:13.016";
+		QVERIFY(approaches.validationError(first, last, 1e-6).contains("Select TDB"));
+		QVERIFY(approaches.convertTimeScale(first, "UTC", "TDB").isEmpty());
+		approaches.setTimeScale("TDB");
+		QVERIFY(approaches.validationError(first, last, 1e-6).isEmpty());
+		QVERIFY(approaches.convertTimeScale(first, "TDB", "UTC").isEmpty());
+		const QString modern = "2026-08-05 06:35:40.849";
+		const auto tdb = approaches.convertTimeScale(modern, "UTC", "TDB");
+		QVERIFY(!tdb.isEmpty());
+		QCOMPARE(approaches.convertTimeScale(tdb, "TDB", "UTC"), modern);
+		approaches.run(first, last, 1e-6);
+		QTRY_VERIFY_WITH_TIMEOUT(!approaches.busy(), 30000);
+		QVERIFY2(approaches.hasResult(), qPrintable(approaches.error()));
+		QFile jsonFile(QDir(approaches.archivePath()).filePath("result.json"));
+		QVERIFY(jsonFile.open(QIODevice::ReadOnly));
+		const auto archive = QJsonDocument::fromJson(jsonFile.readAll()).object();
+		QCOMPARE(archive.value("inputTimeScale").toString(), QStringLiteral("TDB"));
+		QVERIFY(std::abs(archive.value("startMjdTdb").toDouble() - start) < 1e-10);
+	}
+
 	void riskDatesResetOnlyWhenObjectChanges()
 	{
 		SolutionViewModel solution;
@@ -2152,10 +2410,35 @@ class TestWorkspace : public QObject {
 		QTRY_VERIFY(sunCameraAligned());
 		click("relative-top-view");
 		QTRY_VERIFY((origin->property("eulerRotation").value<QVector3D>() - QVector3D(-90, 0, 0)).length() < 1e-6f);
+		QTRY_VERIFY(scene->property("orthographicView").toBool());
+		auto* viewport = scene->findChild<QObject*>("relative-viewport");
+		auto* orthoCamera = scene->findChild<QObject*>("relative-orthographic-camera");
+		auto* gridCamera = scene->findChild<QObject*>("orbit-grid-orthographic-camera");
+		QVERIFY(viewport);
+		QVERIFY(orthoCamera);
+		QVERIFY(gridCamera);
+		QTRY_COMPARE(viewport->property("camera").value<QObject*>(), orthoCamera);
+		QTRY_COMPARE(gridCamera->property("verticalMagnification").toDouble(),
+		             orthoCamera->property("verticalMagnification").toDouble());
+		const double magnification = orthoCamera->property("verticalMagnification").toDouble();
+		click("relative-zoom-in");
+		QTRY_VERIFY(orthoCamera->property("verticalMagnification").toDouble() > magnification);
+		QTRY_COMPARE(gridCamera->property("verticalMagnification").toDouble(),
+		             orthoCamera->property("verticalMagnification").toDouble());
+		const auto hillRadius = static_cast<float>(sceneModel->relative()->relativeHillRadius());
+		QVector3D nearPoint, farPoint;
+		QVERIFY(QMetaObject::invokeMethod(viewport, "mapFrom3DScene", Q_RETURN_ARG(QVector3D, nearPoint),
+		                                  Q_ARG(QVector3D, QVector3D(hillRadius * 0.2f, -hillRadius * 0.3f, 0))));
+		QVERIFY(QMetaObject::invokeMethod(viewport, "mapFrom3DScene", Q_RETURN_ARG(QVector3D, farPoint),
+		                                  Q_ARG(QVector3D, QVector3D(hillRadius * 0.2f, hillRadius * 0.3f, 0))));
+		QVERIFY(std::abs(nearPoint.x() - farPoint.x()) < 0.01f);
+		QVERIFY(std::abs(nearPoint.y() - farPoint.y()) < 0.01f);
 		QTRY_VERIFY(hillFacesCamera());
 		QTRY_VERIFY(sunCameraAligned());
 		QTRY_VERIFY(arrowAligned());
 		QVERIFY(origin->setProperty("eulerRotation", QVariant::fromValue(QVector3D(-25, 120, 35))));
+		QTRY_VERIFY(!scene->property("orthographicView").toBool());
+		QTRY_COMPARE(viewport->property("camera").value<QObject*>(), camera);
 		QTRY_VERIFY(hillFacesCamera());
 		QTRY_VERIFY(sunCameraAligned());
 		QTRY_VERIFY(lagrangeAligned());
@@ -2261,14 +2544,30 @@ class TestWorkspace : public QObject {
 		QVERIFY(capture.value("angularTravel").toDouble() + 1e-12 >= std::abs(capture.value("revolutions").toDouble()));
 		QVERIFY(capture.value("startClipped").toBool());
 		QVERIFY(capture.value("endClipped").toBool());
+		const auto clippedHillPassages = capture.value("hillPassages").toList();
+		QCOMPARE(clippedHillPassages.size(), 1);
+		QVERIFY(clippedHillPassages.first().toMap().value("entryClipped").toBool());
+		QVERIFY(clippedHillPassages.first().toMap().value("exitClipped").toBool());
+		QTRY_VERIFY(findItem(window->contentItem(), "relative-capture-value-4"));
+		QTRY_VERIFY(findItem(window->contentItem(), "relative-capture-value-5"));
+		QCOMPARE(findItem(window->contentItem(), "relative-capture-value-4")->property("text").toString(),
+		         QString("Before interval"));
+		QCOMPARE(findItem(window->contentItem(), "relative-capture-value-5")->property("text").toString(),
+		         QString("After interval"));
+		for (const auto& name :
+		     {"relative-capture-section-0", "relative-capture-section-4", "relative-capture-section-6"}) {
+			auto* section = findItem(window->contentItem(), name);
+			QVERIFY(section);
+			QVERIFY(section->isVisible());
+		}
 		QVERIFY(sceneModel->relative()->relativeCaptureMarkers().isEmpty());
 		for (const auto& name : {"relative-capture-value-0", "relative-capture-value-1"}) {
 			auto* value = findItem(window->contentItem(), name);
 			QVERIFY(value);
 			QTRY_VERIFY(value->property("implicitWidth").toDouble() <= value->width());
 		}
-		for (const auto& name : {"relative-capture-value-3", "relative-capture-value-4", "relative-capture-value-5",
-		                         "relative-capture-value-6"}) {
+		for (const auto& name : {"relative-capture-value-6", "relative-capture-value-7", "relative-capture-value-8",
+		                         "relative-capture-value-9"}) {
 			auto* value = findItem(window->contentItem(), name);
 			QVERIFY(value);
 			QVERIFY(value->property("text").toString().endsWith(" turns"));
@@ -2301,6 +2600,20 @@ class TestWorkspace : public QObject {
 		QVERIFY2(sceneModel->relative()->relativeError().isEmpty(),
 		         qPrintable(sceneModel->relative()->relativeError()));
 		const auto event = sceneModel->relative()->relativeCaptures().first().toMap();
+		const auto hillPassages = event.value("hillPassages").toList();
+		QVERIFY(!hillPassages.isEmpty());
+		const auto firstHillPassage = hillPassages.first().toMap();
+		const auto lastHillPassage = hillPassages.last().toMap();
+		QVERIFY(!firstHillPassage.value("entryClipped").toBool());
+		QVERIFY(!lastHillPassage.value("exitClipped").toBool());
+		QVERIFY(firstHillPassage.contains("entry3SigmaSeconds"));
+		QVERIFY(lastHillPassage.contains("exit3SigmaSeconds"));
+		QVERIFY(firstHillPassage.value("entry").toString() < event.value("start").toString());
+		QVERIFY(lastHillPassage.value("exit").toString() > event.value("end").toString());
+		auto* hillEntry = findItem(window->contentItem(), "relative-capture-value-4");
+		QVERIFY(hillEntry);
+		QVERIFY(hillEntry->property("text").toString().contains(QChar(0x00b1)));
+		QTRY_VERIFY(hillEntry->property("paintedWidth").toDouble() <= hillEntry->width());
 		QVERIFY(event.contains("start3SigmaSeconds"));
 		QVERIFY(event.contains("end3SigmaSeconds"));
 		for (const auto& name : {"relative-capture-value-0", "relative-capture-value-1"}) {
@@ -2510,6 +2823,21 @@ class TestWorkspace : public QObject {
 		click("orbit-top-view");
 		QTest::qWait(100);
 		QCOMPARE(scene->property("cameraRotation").value<QVector3D>().x(), -90.0f);
+		QVERIFY(scene->property("orthographicView").toBool());
+		auto* orbitViewport = scene->findChild<QObject*>("orbit-viewport");
+		auto* orthoCamera = scene->findChild<QObject*>("orbit-orthographic-camera");
+		auto* gridCamera = scene->findChild<QObject*>("orbit-grid-orthographic-camera");
+		QVERIFY(orbitViewport);
+		QVERIFY(orthoCamera);
+		QVERIFY(gridCamera);
+		QTRY_COMPARE(orbitViewport->property("camera").value<QObject*>(), orthoCamera);
+		QTRY_COMPARE(gridCamera->property("verticalMagnification").toDouble(),
+		             orthoCamera->property("verticalMagnification").toDouble());
+		const double magnification = orthoCamera->property("verticalMagnification").toDouble();
+		click("orbit-zoom-in");
+		QTRY_VERIFY(orthoCamera->property("verticalMagnification").toDouble() > magnification);
+		QTRY_COMPARE(gridCamera->property("verticalMagnification").toDouble(),
+		             orthoCamera->property("verticalMagnification").toDouble());
 		QVERIFY(window->grabWindow() != before);
 		const auto center = scene->mapToScene({scene->width() * 0.5, scene->height() * 0.5}).toPoint();
 		QTest::mousePress(window, Qt::LeftButton, Qt::NoModifier, center);
@@ -2519,6 +2847,8 @@ class TestWorkspace : public QObject {
 		QTest::qWait(80);
 		QTest::mouseRelease(window, Qt::LeftButton, Qt::NoModifier, center + QPoint(180, 100));
 		QVERIFY(scene->property("cameraRotation").value<QVector3D>() != QVector3D(-90, 0, 0));
+		QVERIFY(!scene->property("orthographicView").toBool());
+		QVERIFY(orbitViewport->property("camera").value<QObject*>() != orthoCamera);
 		click("orbit-reset-view");
 		const auto initialPosition = sceneModel->objectPosition();
 		click("orbit-play");
@@ -4923,6 +5253,51 @@ class TestWorkspace : public QObject {
 		QVERIFY(!draft->valid());
 	}
 
+	void dataSourcesCheckUpdatesTogether()
+	{
+		const auto previousDirectory = orbital_core::observatoryDataDirectory();
+		const auto previousProxy = QNetworkProxy::applicationProxy();
+		const auto restore = qScopeGuard([&] {
+			orbital_core::setObservatoryDataDirectory(previousDirectory);
+			QNetworkProxy::setApplicationProxy(previousProxy);
+		});
+		orbital_core::setObservatoryDataDirectory({});
+		QTcpServer proxy;
+		QVERIFY(proxy.listen(QHostAddress::LocalHost));
+		connect(&proxy, &QTcpServer::newConnection, &proxy, [&] {
+			while (auto* socket = proxy.nextPendingConnection())
+				socket->disconnectFromHost();
+		});
+		QNetworkProxy::setApplicationProxy(QNetworkProxy(QNetworkProxy::HttpProxy, "127.0.0.1", proxy.serverPort()));
+		DataSourcesModel sources;
+		QSignalSpy observatoryChecks(sources.observatoryUpdate(), &ObservatoryUpdate::changed);
+		QSignalSpy pckChecks(sources.earthPckUpdate(), &EarthPckUpdate::changed);
+		QVERIFY(!sources.updatesChecking());
+		sources.checkUpdates();
+		QVERIFY(sources.updatesChecking());
+		QCOMPARE(observatoryChecks.size(), 1);
+		QCOMPARE(pckChecks.size(), 1);
+		QVERIFY(sources.observatoryUpdate()->states().value("observatories").toMap().value("checking").toBool());
+		QVERIFY(sources.earthPckUpdate()->states().value("earth_pck_latest").toMap().value("checking").toBool());
+		sources.checkUpdates();
+		QCOMPARE(pckChecks.size(), 1);
+		QTRY_VERIFY_WITH_TIMEOUT(!sources.updatesChecking(), 10000);
+		QVERIFY(!sources.observatoryUpdate()
+		             ->states()
+		             .value("observatories")
+		             .toMap()
+		             .value("message")
+		             .toString()
+		             .isEmpty());
+		QVERIFY(!sources.earthPckUpdate()
+		             ->states()
+		             .value("earth_pck_latest")
+		             .toMap()
+		             .value("message")
+		             .toString()
+		             .isEmpty());
+	}
+
 	void observatoryUpdateChecksBeforeWriting()
 	{
 		QTemporaryDir directory;
@@ -5142,11 +5517,13 @@ class TestWorkspace : public QObject {
 		auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().front());
 		QVERIFY(window);
 		QTRY_VERIFY(window->isVisible());
+		QSignalSpy pckChecks(session.dataSources()->earthPckUpdate(), &EarthPckUpdate::changed);
 		auto* button = findItem(window->contentItem(), "data-sources-button");
 		QVERIFY(button);
 		QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
 		                  button->mapToScene({button->width() / 2, button->height() / 2}).toPoint());
 		QTRY_VERIFY(session.dataSources()->checked());
+		QCOMPARE(pckChecks.size(), 0);
 		QTRY_VERIFY(findItem(window->contentItem(), "update-source-observatories"));
 		QVERIFY(findItem(window->contentItem(), "update-source-radar"));
 		QVERIFY(findItem(window->contentItem(), "update-source-earth_pck_historic"));

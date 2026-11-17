@@ -532,6 +532,7 @@ void RiskMonitorViewModel::run()
 		QString archive, error, stagingArchive;
 		try {
 			hz::IntervalMcConfig config;
+			config.semilinearContours = true;
 			config.method = request.method == RiskMonitorDraft::Method::Covariance ? hz::McMethod::Covariance
 			                                                                       : hz::McMethod::Observations;
 			config.target = request.target == RiskMonitorDraft::Target::Earth  ? hz::Planet::Earth
@@ -546,15 +547,17 @@ void RiskMonitorViewModel::run()
 			result = std::make_shared<hz::IntervalMcResult>(
 			    hz::runIntervalMonteCarlo(source, config, stop, [this, &lastProgress](int done, int total) {
 				    const auto now = std::chrono::steady_clock::now();
-				    if (done != total && now - lastProgress < std::chrono::milliseconds(100))
+				    if (done >= 0 && done != total && now - lastProgress < std::chrono::milliseconds(100))
 					    return;
 				    lastProgress = now;
 				    QMetaObject::invokeMethod(
 				        this,
 				        [this, done, total] {
 					        if (!m_cancelling)
-						        m_progress = tr("Monte Carlo: %1 / %2").arg(done).arg(total);
-					        m_progressFraction = double(done) / total;
+						        m_progress = done < 0 ? tr("Calculating semilinear contours...")
+						                              : tr("Monte Carlo: %1 / %2").arg(done).arg(total);
+					        if (done >= 0)
+						        m_progressFraction = double(done) / total;
 					        emit changed();
 				        },
 				        Qt::QueuedConnection);

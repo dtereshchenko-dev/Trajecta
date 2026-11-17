@@ -400,8 +400,8 @@ exhaustive low-probability detection are not implemented.
 
 ### Atmospheric MC: Form and Execution (2026-10-23)
 
-The workspace now has an Atmospheric MC tab. Its form follows the Meridian
-workbench layout: entry source, body/fragmentation, environment, sampling,
+The workspace now has an Atmospheric MC tab. Its form groups the entry source,
+body/fragmentation, environment, sampling,
 convergence and report settings, with a source-summary column. The old
 AtmosphericControls parameters are retained; material presets come from
 StrewnCore rather than a second client table. Size can be photometric H/albedo,

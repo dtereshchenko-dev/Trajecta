@@ -183,6 +183,7 @@ void MovViewModel::run(const QVariantMap& options)
 	if (!canRun())
 		return;
 	hz::MovConfig config;
+	config.semilinearContours = true;
 	auto source = std::make_shared<oc::ObservationSet>();
 	oc::FitConfig settings;
 	std::optional<oc::FitResult> nominal;
@@ -269,14 +270,15 @@ void MovViewModel::run(const QVariantMap& options)
 			    source->all, settings, config, nominal ? &*nominal : nullptr, stop,
 			    [this, revision, &lastUpdate](int done, int total) {
 				    const auto now = std::chrono::steady_clock::now();
-				    if (done < total && now - lastUpdate < std::chrono::milliseconds(150))
+				    if (done >= 0 && done < total && now - lastUpdate < std::chrono::milliseconds(150))
 					    return;
 				    lastUpdate = now;
 				    QMetaObject::invokeMethod(
 				        this,
 				        [this, revision, done, total] {
 					        if (m_revision == revision && m_busy && !m_cancelling) {
-						        m_progress = tr("MOV nodes: %1 / %2").arg(done).arg(total);
+						        m_progress = done < 0 ? tr("Calculating semilinear contours...")
+						                              : tr("MOV nodes: %1 / %2").arg(done).arg(total);
 						        emit changed();
 					        }
 				        },

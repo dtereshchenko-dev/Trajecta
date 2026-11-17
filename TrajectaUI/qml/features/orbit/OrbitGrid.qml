@@ -9,10 +9,12 @@ View3D {
     required property PerspectiveCamera sceneCamera
     required property real step
     required property vector3d center
+    property bool orthographic: false
+    property real orthographicMagnification: 1
     readonly property real visibleHalfWidth: sceneCamera.z * Math.tan(sceneCamera.fieldOfView * Math.PI / 360)
         * Math.min(8, Math.max(1, width / Math.max(1, height)))
     readonly property int halfDivisions: Math.max(8, Math.ceil(visibleHalfWidth / step) + 2)
-    camera: gridCamera
+    camera: orthographic ? orthographicGridCamera : gridCamera
     environment: SceneEnvironment {
         backgroundMode: SceneEnvironment.Color
         clearColor: AppTheme.nav
@@ -25,6 +27,16 @@ View3D {
         position: grid.sceneCamera.scenePosition
         rotation: grid.sceneCamera.sceneRotation
         fieldOfView: grid.sceneCamera.fieldOfView
+        clipNear: grid.sceneCamera.clipNear
+        clipFar: grid.sceneCamera.clipFar
+    }
+    OrthographicCamera {
+        id: orthographicGridCamera
+        objectName: "orbit-grid-orthographic-camera"
+        position: grid.sceneCamera.scenePosition
+        rotation: grid.sceneCamera.sceneRotation
+        horizontalMagnification: grid.orthographicMagnification
+        verticalMagnification: grid.orthographicMagnification
         clipNear: grid.sceneCamera.clipNear
         clipFar: grid.sceneCamera.clipFar
     }

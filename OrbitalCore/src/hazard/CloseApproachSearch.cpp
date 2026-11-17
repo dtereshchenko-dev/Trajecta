@@ -107,6 +107,65 @@ namespace orbital_core::hazard {
 			if (semiAxes.x() >= plane.point.coordsKm.norm() || threeSigmaTime > 10.0)
 				row.uncertaintyNote += "; large uncertainty, nonlinear verification required";
 		}
+
+		void sampleDistances(CloseApproachSearchResult& result, const CloseApproachSearchRequest& request,
+		                     const NBodyPropagator& prop, const NonGravModel& ng, IEphemerisSource& eph, const Vec3D& r,
+		                     const Vec3D& v, double epoch, const FitRunControl& control)
+		{
+			// The search currently retains an osculating interior pericentre, not the
+			// actual surface entry. Do not draw a trajectory beyond an impact.
+			if (result.stoppedAtSurface)
+				return;
+			constexpr int intervals = 4096;
+			std::vector<double> times;
+			times.reserve(intervals + 1 + result.events.size() * 19);
+			for (int i = 0; i <= intervals; ++i)
+				times.push_back(request.startMjdTdb + (request.endMjdTdb - request.startMjdTdb) * i / intervals);
+			constexpr std::array offsets{0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0};
+			for (const auto& row : result.events) {
+				times.push_back(row.mjdTdb);
+				const double speedAuDay = row.relativeSpeedKmS * 86400.0 / auKm;
+				if (!(speedAuDay > 0.0))
+					continue;
+				const double scale = row.encounter.distAu / speedAuDay;
+				for (const double offset : offsets) {
+					for (const int sign : {-1, 1}) {
+						const double t = row.mjdTdb + sign * offset * scale;
+						if (t > request.startMjdTdb && t < request.endMjdTdb)
+							times.push_back(t);
+					}
+				}
+			}
+			std::sort(times.begin(), times.end());
+			times.erase(std::unique(times.begin(), times.end()), times.end());
+			if (control.progress)
+				control.progress("Sampling distance curves...");
+			const auto states = prop.propagateAllWithVelocityMjd(r, v, epoch, times, ng, control.cancel);
+			checkCancelled(control);
+			if (states.size() != times.size())
+				throw std::runtime_error("Incomplete distance-curve propagation");
+			result.distanceSamples.reserve(times.size());
+			const double sunMuKm = Constants::GM_SUN * auKm * auKm * auKm / (86400.0 * 86400.0);
+			for (std::size_t i = 0; i < times.size(); ++i) {
+				checkCancelled(control);
+				CloseApproachDistanceSample sample;
+				sample.mjdTdb = times[i];
+				const auto earth = eph.queryMjd(EphemerisPlanet::Earth, times[i]);
+				for (const Planet body : kAllPlanets) {
+					const auto p = body == Planet::Earth ? earth : eph.queryMjd(toEphemerisPlanet(body), times[i]);
+					const auto index = static_cast<std::size_t>(body);
+					sample.distanceAu[index] = (states[i].R - p.R).magnitude();
+					const bool moon = body == Planet::Moon;
+					const double primaryDistance = moon ? (p.R - earth.R).magnitude() : p.R.magnitude();
+					const double primaryMu = moon ? planetMuKm3PerS2(Planet::Earth) : sunMuKm;
+					sample.hillRadiusAu[index] =
+					    primaryDistance * std::cbrt(planetMuKm3PerS2(body) / (3.0 * primaryMu));
+					if (!std::isfinite(sample.distanceAu[index]) || !std::isfinite(sample.hillRadiusAu[index]))
+						throw std::runtime_error("Invalid distance-curve sample");
+				}
+				result.distanceSamples.push_back(sample);
+			}
+		}
 	}  // namespace
 
 	double defaultCloseApproachLimitAu(Planet planet) noexcept
@@ -236,6 +295,8 @@ namespace orbital_core::hazard {
 						addUncertainty(result.events[indices[i]], states[i], *factor, prop, fit.finalNonGrav, *eph);
 				}
 			}
+			if (request.includeDistanceSamples)
+				sampleDistances(result, request, prop, fit.finalNonGrav, *eph, r, v, epoch, control);
 			checkCancelled(control);
 			return result;
 		} catch (...) {

@@ -18,6 +18,7 @@ class CloseApproachesViewModel : public QObject {
 	Q_PROPERTY(QString summary READ summary NOTIFY changed)
 	Q_PROPERTY(QString error READ error NOTIFY changed)
 	Q_PROPERTY(QString archivePath READ archivePath NOTIFY changed)
+	Q_PROPERTY(QString timeScale READ timeScale WRITE setTimeScale NOTIFY changed)
    public:
 	explicit CloseApproachesViewModel(SolutionViewModel& solution, QObject* parent = nullptr);
 	~CloseApproachesViewModel() override;
@@ -42,11 +43,17 @@ class CloseApproachesViewModel : public QObject {
 
 	QString archivePath() const { return m_archive; }
 
+	QString timeScale() const { return m_timeScale; }
+
+	void setTimeScale(const QString& value);
+
 	void setBlocked(bool value);
 	Q_INVOKABLE QString validationError(const QString& startUtc, const QString& endUtc, double maximumAu) const;
+	Q_INVOKABLE QString convertTimeScale(const QString& value, const QString& from, const QString& to) const;
 	Q_INVOKABLE void run(const QString& startUtc, const QString& endUtc, double maximumAu);
 	Q_INVOKABLE void cancel();
 	Q_INVOKABLE void openArchive();
+	Q_INVOKABLE void openReport();
    signals:
 	void changed();
 	void completed();
@@ -58,4 +65,5 @@ class CloseApproachesViewModel : public QObject {
 	quint64 m_revision{};
 	bool m_busy{}, m_cancelling{}, m_blocked{}, m_hasResult{};
 	QString m_progress, m_summary, m_error, m_archive;
+	QString m_timeScale{QStringLiteral("UTC")};
 };

@@ -3,6 +3,7 @@
 #include <QDateTime>
 #include <QDesktopServices>
 #include <QDir>
+#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -16,7 +17,7 @@
 namespace {
 	namespace hz = orbital_core::hazard;
 
-	std::optional<double> utcToTdb(const QString& value)
+	std::optional<double> calendarMjd(const QString& value)
 	{
 		static const QRegularExpression pattern(
 		    QStringLiteral("^([0-9]{4}-[0-9]{2}-[0-9]{2})[ T]([0-9]{2}:[0-9]{2}:[0-9]{2})(?:\\.([0-9]{1,9}))?$"));
@@ -28,8 +29,25 @@ namespace {
 		if (!date.isValid() || !time.isValid())
 			return {};
 		const double fraction = match.captured(3).isEmpty() ? 0.0 : ("0." + match.captured(3)).toDouble();
-		const double mjd = date.toJulianDay() - 2400001.0 + (time.msecsSinceStartOfDay() / 1000.0 + fraction) / 86400.0;
-		const double tdb = orbital_core::time::toMjdTdb(mjd, orbital_core::time::Scale::UTC);
+		return date.toJulianDay() - 2400001.0 + (time.msecsSinceStartOfDay() / 1000.0 + fraction) / 86400.0;
+	}
+
+	std::optional<orbital_core::time::Scale> timeScale(const QString& value)
+	{
+		if (value == QLatin1String("UTC"))
+			return orbital_core::time::Scale::UTC;
+		if (value == QLatin1String("TDB"))
+			return orbital_core::time::Scale::TDB;
+		return {};
+	}
+
+	std::optional<double> calendarToTdb(const QString& value, const QString& scale)
+	{
+		const auto mjd = calendarMjd(value);
+		const auto parsedScale = timeScale(scale);
+		if (!mjd || !parsedScale)
+			return {};
+		const double tdb = orbital_core::time::toMjdTdb(*mjd, *parsedScale);
 		return std::isfinite(tdb) ? std::optional<double>(tdb) : std::nullopt;
 	}
 
@@ -46,9 +64,9 @@ namespace {
 		return value && std::isfinite(*value) ? QJsonValue(*value) : QJsonValue(QJsonValue::Null);
 	}
 
-	void saveResult(const QString& directory, const QString& designation, const orbital_core::FitPipelineResult& source,
-	                const hz::CloseApproachSearchRequest& request, const hz::CloseApproachSearchResult& result,
-	                double seconds)
+	void saveResult(const QString& directory, const QString& designation, const QString& inputScale,
+	                const orbital_core::FitPipelineResult& source, const hz::CloseApproachSearchRequest& request,
+	                const hz::CloseApproachSearchResult& result, double seconds)
 	{
 		QJsonArray events;
 		for (const auto& row : result.events) {
@@ -64,6 +82,15 @@ namespace {
 			                 optionalNumber(row.encounter.vInfKmS > 0.0 ? std::optional<double>(row.encounter.vInfKmS)
 			                                                            : std::nullopt)},
 			                {"uncertaintyNote", QString::fromStdString(row.uncertaintyNote)}});
+		}
+		QJsonArray samples;
+		for (const auto& sample : result.distanceSamples) {
+			QJsonArray row{sample.mjdTdb};
+			for (double value : sample.distanceAu)
+				row.append(value);
+			for (double value : sample.hillRadiusAu)
+				row.append(value);
+			samples.append(row);
 		}
 		const auto& fit = source.fit;
 		const auto r = fit.fitEpochOrbit->getR(), v = fit.fitEpochOrbit->getV() * Constants::GAUSS_K;
@@ -81,9 +108,10 @@ namespace {
 			    request.maximumDistanceAu.value_or(hz::defaultCloseApproachLimitAu(body));
 		const auto& forces = source.effectiveConfig.nbody;
 		const QJsonObject object{
-		    {"schema", "meridian-close-approaches-v2"},
+		    {"schema", "close-approaches-v2"},
 		    {"object", designation},
 		    {"timeScale", "TDB"},
+		    {"inputTimeScale", inputScale},
 		    {"startMjdTdb", request.startMjdTdb},
 		    {"endMjdTdb", request.endMjdTdb},
 		    {"reportingLimitsAu", limits},
@@ -112,10 +140,25 @@ namespace {
 		                           {"A3", fit.finalNonGrav.A3()},
 		                           {"DT", fit.finalNonGrav.DT()},
 		                           {"ngSolveMask", static_cast<int>(fit.finalNonGrav.fitParameterMask())}}},
-		    {"events", events}};
+		    {"events", events},
+		    {"distanceSamples", samples}};
 		if (!QDir().mkpath(directory))
 			throw std::runtime_error("Cannot create close-approach archive folder");
 		writeFile(QDir(directory).filePath("result.json"), QJsonDocument(object).toJson());
+		const auto readReportAsset = [](const QString& name) {
+			QFile file(QStringLiteral(":/qt/qml/TrajectaUI/resources/reports/") + name);
+			if (!file.open(QIODevice::ReadOnly))
+				throw std::runtime_error((QStringLiteral("Cannot load report asset: ") + name).toStdString());
+			return file.readAll();
+		};
+		QByteArray html = readReportAsset(QStringLiteral("close-approaches.html"));
+		html.replace("__REPORT_COMMON_CSS__", readReportAsset(QStringLiteral("report-common.css")));
+		html.replace("__CLOSE_APPROACH_CSS__", readReportAsset(QStringLiteral("close-approaches.css")));
+		html.replace("__CLOSE_APPROACH_JS__", readReportAsset(QStringLiteral("close-approaches.js")));
+		QByteArray payload = QJsonDocument(object).toJson(QJsonDocument::Compact);
+		payload.replace("<", "\\u003c");
+		html.replace("__REPORT_DATA__", payload);
+		writeFile(QDir(directory).filePath("report.html"), html);
 		CloseApproachTableModel table;
 		table.setRows(result.events);
 		QString text =
@@ -164,16 +207,44 @@ void CloseApproachesViewModel::setBlocked(bool value)
 	emit changed();
 }
 
+void CloseApproachesViewModel::setTimeScale(const QString& value)
+{
+	if (m_busy || !::timeScale(value) || value == m_timeScale)
+		return;
+	m_timeScale = value;
+	emit changed();
+}
+
+QString CloseApproachesViewModel::convertTimeScale(const QString& value, const QString& from, const QString& to) const
+{
+	const auto target = ::timeScale(to);
+	const auto tdb = calendarToTdb(value, from);
+	if (!target || !tdb)
+		return {};
+	const double mjd = orbital_core::time::fromMjdTdb(*tdb, *target);
+	if (!std::isfinite(mjd))
+		return {};
+	const double day = std::floor(mjd);
+	const auto date = QDate::fromJulianDay(static_cast<qint64>(day) + 2400001);
+	const QDateTime result = QDateTime(date, QTime(0, 0), Qt::UTC).addMSecs(std::llround((mjd - day) * 86400000.0));
+	return result.isValid() && result.date().year() >= 1 && result.date().year() <= 9999
+	           ? result.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss.zzz"))
+	           : QString();
+}
+
 QString CloseApproachesViewModel::validationError(const QString& startUtc, const QString& endUtc,
                                                   double maximumAu) const
 {
 	if (!available())
 		return tr("A converged N-body solution is required.");
-	const auto start = utcToTdb(startUtc), end = utcToTdb(endUtc);
+	if (!calendarMjd(startUtc) || !calendarMjd(endUtc))
+		return tr("Enter valid dates as YYYY-MM-DD HH:MM:SS.");
+	const auto start = calendarToTdb(startUtc, m_timeScale), end = calendarToTdb(endUtc, m_timeScale);
 	if (!start || !end)
-		return tr("Enter valid UTC dates as YYYY-MM-DD HH:MM:SS.");
+		return m_timeScale == QLatin1String("UTC") ? tr("UTC is unavailable for these dates. Select TDB.")
+		                                           : tr("The selected time scale is unavailable for these dates.");
 	if (*end <= *start)
-		return tr("End UTC must be later than start UTC.");
+		return tr("End must be later than start.");
 	const double epoch = m_solution.snapshot()->fit.fitEpochOrbit->epochMjd();
 	if (std::max(std::abs(*start - epoch), std::abs(*end - epoch)) > 365250.0)
 		return tr("The interval must be within 1000 years of the fit epoch.");
@@ -191,14 +262,16 @@ void CloseApproachesViewModel::run(const QString& startUtc, const QString& endUt
 		emit changed();
 		return;
 	}
-	hz::CloseApproachSearchRequest request{*utcToTdb(startUtc), *utcToTdb(endUtc),
+	hz::CloseApproachSearchRequest request{*calendarToTdb(startUtc, m_timeScale), *calendarToTdb(endUtc, m_timeScale),
 	                                       maximumAu > 0 ? std::optional<double>(maximumAu) : std::nullopt};
+	request.includeDistanceSamples = true;
 	auto source = *m_solution.snapshot();
 	source.fit.fitEpochOrbit = std::make_shared<Orbit>(*source.fit.fitEpochOrbit);
 	if (source.fit.orbit)
 		source.fit.orbit = std::make_shared<Orbit>(*source.fit.orbit);
 	const auto revision = m_revision;
 	const auto designation = m_solution.objectTitle();
+	const auto inputScale = m_timeScale;
 	const auto folder =
 	    QDir(m_solution.directory().isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)
 	                                          : m_solution.directory())
@@ -207,8 +280,8 @@ void CloseApproachesViewModel::run(const QString& startUtc, const QString& endUt
 	m_cancelling = false;
 	m_progress = tr("Preparing close-approach search...");
 	emit changed();
-	m_worker = std::jthread([this, source = std::move(source), request, revision, designation, folder,
-	                         interval = startUtc + " to " + endUtc + " UTC"](std::stop_token stop) {
+	m_worker = std::jthread([this, source = std::move(source), request, revision, designation, folder, inputScale,
+	                         interval = startUtc + " to " + endUtc + " " + inputScale](std::stop_token stop) {
 		const auto started = std::chrono::steady_clock::now();
 		auto result = std::make_shared<hz::CloseApproachSearchResult>();
 		QString error, archive;
@@ -228,7 +301,7 @@ void CloseApproachesViewModel::run(const QString& startUtc, const QString& endUt
 			*result = hz::searchCloseApproaches(source, request, control);
 			if (!result->cancelled && !stop.stop_requested()) {
 				succeeded = true;
-				saveResult(folder, designation, source, request, *result,
+				saveResult(folder, designation, inputScale, source, request, *result,
 				           std::chrono::duration<double>(std::chrono::steady_clock::now() - started).count());
 				archive = folder;
 			}
@@ -280,6 +353,15 @@ void CloseApproachesViewModel::openArchive()
 {
 	if (!m_archive.isEmpty() && !QDesktopServices::openUrl(QUrl::fromLocalFile(m_archive))) {
 		m_error = tr("Cannot open the close-approach archive.");
+		emit changed();
+	}
+}
+
+void CloseApproachesViewModel::openReport()
+{
+	if (!m_archive.isEmpty() &&
+	    !QDesktopServices::openUrl(QUrl::fromLocalFile(QDir(m_archive).filePath("report.html")))) {
+		m_error = tr("Cannot open the close-approach report.");
 		emit changed();
 	}
 }

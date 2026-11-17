@@ -91,6 +91,41 @@ TEST(RelativeCaptureTest, FindsInterpolatedIntervalsAndCountsRotatingFrameTurns)
 	EXPECT_NEAR(events[0].inertialAngularTravelRevolutions, 1.5, 1e-12);
 }
 
+TEST(RelativeCaptureTest, FindsHillSpherePassagesAndClippedBoundaries)
+{
+	std::vector<oc::RelativeMotionSample> samples(9);
+	const std::array distances{0.5, 1.5, 1.5, 0.5, 1.0, 0.5, 1.5, 1.5, 0.5};
+	for (std::size_t i = 0; i < samples.size(); ++i) {
+		samples[i].mjdTdb = 60000 + i;
+		samples[i].distanceAu = distances[i];
+		samples[i].hillRadiusAu = 1;
+	}
+	const auto passages = oc::findHillSpherePassages(samples);
+	ASSERT_EQ(passages.size(), 3);
+	EXPECT_TRUE(passages[0].entryClipped);
+	EXPECT_FALSE(passages[0].exitClipped);
+	EXPECT_DOUBLE_EQ(passages[0].exitMjdTdb, 60000.5);
+	EXPECT_FALSE(passages[1].entryClipped);
+	EXPECT_FALSE(passages[1].exitClipped);
+	EXPECT_DOUBLE_EQ(passages[1].entryMjdTdb, 60002.5);
+	EXPECT_DOUBLE_EQ(passages[1].exitMjdTdb, 60005.5);
+	EXPECT_DOUBLE_EQ(passages[2].entryMjdTdb, 60007.5);
+	EXPECT_TRUE(passages[2].exitClipped);
+	samples[1].mjdTdb = samples[0].mjdTdb;
+	EXPECT_THROW((void)oc::findHillSpherePassages(samples), std::invalid_argument);
+}
+
+TEST(RelativeCaptureTest, HillSphereOutsideTouchDoesNotCreatePassage)
+{
+	std::vector<oc::RelativeMotionSample> samples(3);
+	for (std::size_t i = 0; i < samples.size(); ++i) {
+		samples[i].mjdTdb = 60000 + i;
+		samples[i].distanceAu = i == 1 ? 1 : 2;
+		samples[i].hillRadiusAu = 1;
+	}
+	EXPECT_TRUE(oc::findHillSpherePassages(samples).empty());
+}
+
 TEST(RelativeCaptureTest, AngularTravelCountsReversalsWithoutChangingNetTurns)
 {
 	std::vector<oc::RelativeMotionSample> samples;
@@ -338,6 +373,10 @@ TEST_F(EphemerisTest, RelativeMotion2026Qq8MatchesSavedGeocentricEphemeris)
 	request.solution.covariance(6, 6) = 1e-28;
 	request.solution.covariance(0, 6) = request.solution.covariance(6, 0) = 0.25e-23;
 	const auto uncertainty = oc::captureTimeUncertainty(request, trajectory, dailyCaptures);
+	const auto hillPassages = oc::findHillSpherePassages(trajectory);
+	const auto combined = oc::relativeMotionTimeUncertainty(request, trajectory, dailyCaptures, hillPassages);
+	ASSERT_EQ(combined.captures.size(), uncertainty.size());
+	ASSERT_EQ(combined.hillPassages.size(), hillPassages.size());
 	const auto eventIndex = static_cast<std::size_t>(dailyClosest - dailyCaptures.begin());
 	ASSERT_EQ(uncertainty.size(), dailyCaptures.size());
 	ASSERT_TRUE(uncertainty[eventIndex].start3SigmaDays);
@@ -367,11 +406,70 @@ TEST_F(EphemerisTest, RelativeMotion2026Qq8MatchesSavedGeocentricEphemeris)
 	};
 	EXPECT_NEAR(*uncertainty[eventIndex].start3SigmaDays, expectedSigma(true), expectedSigma(true) * 0.02);
 	EXPECT_NEAR(*uncertainty[eventIndex].end3SigmaDays, expectedSigma(false), expectedSigma(false) * 0.02);
+	ASSERT_TRUE(combined.captures[eventIndex].start3SigmaDays);
+	EXPECT_DOUBLE_EQ(*combined.captures[eventIndex].start3SigmaDays, *uncertainty[eventIndex].start3SigmaDays);
+	const auto hill = std::find_if(hillPassages.begin(), hillPassages.end(), [&](const auto& passage) {
+		return passage.entryMjdTdb < closest->mjdTdb && passage.exitMjdTdb > closest->mjdTdb;
+	});
+	ASSERT_NE(hill, hillPassages.end());
+	const auto hillIndex = static_cast<std::size_t>(hill - hillPassages.begin());
+	ASSERT_TRUE(combined.hillPassages[hillIndex].start3SigmaDays);
+	ASSERT_TRUE(combined.hillPassages[hillIndex].end3SigmaDays);
+	const auto perturbedHill = [&](int parameter, double offset) {
+		auto perturbed = request;
+		if (parameter == 0)
+			perturbed.solution.position.x += offset;
+		else
+			perturbed.solution.nonGrav.setFitParameterValue(0,
+			                                                perturbed.solution.nonGrav.fitParameterValue(0) + offset);
+		const auto passages = oc::findHillSpherePassages(oc::computeRelativeMotion(perturbed));
+		const auto match = std::find_if(passages.begin(), passages.end(), [&](const auto& passage) {
+			return passage.entryMjdTdb < closest->mjdTdb && passage.exitMjdTdb > closest->mjdTdb;
+		});
+		if (match == passages.end())
+			throw std::runtime_error("Perturbed Hill passage not found");
+		return *match;
+	};
+	const auto hxp = perturbedHill(0, 1e-8), hxm = perturbedHill(0, -1e-8);
+	const auto hap = perturbedHill(1, 1e-13), ham = perturbedHill(1, -1e-13);
+	const auto expectedHillSigma = [&](bool entry) {
+		const auto epoch = [=](const auto& passage) { return entry ? passage.entryMjdTdb : passage.exitMjdTdb; };
+		const double dx = (epoch(hxp) - epoch(hxm)) / 2e-8;
+		const double da = (epoch(hap) - epoch(ham)) / 2e-13;
+		return 3 * std::sqrt(dx * dx * 1e-18 + da * da * 1e-28 + 2 * dx * da * 0.25e-23);
+	};
+	EXPECT_NEAR(*combined.hillPassages[hillIndex].start3SigmaDays, expectedHillSigma(true),
+	            expectedHillSigma(true) * 0.02);
+	EXPECT_NEAR(*combined.hillPassages[hillIndex].end3SigmaDays, expectedHillSigma(false),
+	            expectedHillSigma(false) * 0.02);
+	auto exactSamples = trajectory;
+	const auto right = std::lower_bound(exactSamples.begin(), exactSamples.end(), hill->entryMjdTdb,
+	                                    [](const auto& sample, double epoch) { return sample.mjdTdb < epoch; });
+	ASSERT_NE(right, exactSamples.begin());
+	ASSERT_NE(right, exactSamples.end());
+	auto& boundarySample = *std::prev(right);
+	boundarySample.hillRadiusAu = boundarySample.distanceAu;
+	const auto exactPassages = oc::findHillSpherePassages(exactSamples);
+	const auto exact = std::find_if(exactPassages.begin(), exactPassages.end(),
+	                                [&](const auto& passage) { return passage.entryMjdTdb == boundarySample.mjdTdb; });
+	ASSERT_NE(exact, exactPassages.end());
+	const auto exactIndex = static_cast<std::size_t>(exact - exactPassages.begin());
+	const auto exactUncertainty = oc::relativeMotionTimeUncertainty(request, exactSamples, {}, exactPassages);
+	EXPECT_TRUE(exactUncertainty.hillPassages[exactIndex].start3SigmaDays);
+	auto clippedHill = hillPassages;
+	clippedHill[hillIndex].entryClipped = true;
+	clippedHill[hillIndex].exitClipped = true;
+	const auto clippedHillUncertainty = oc::relativeMotionTimeUncertainty(request, trajectory, {}, clippedHill);
+	EXPECT_FALSE(clippedHillUncertainty.hillPassages[hillIndex].start3SigmaDays);
+	EXPECT_FALSE(clippedHillUncertainty.hillPassages[hillIndex].end3SigmaDays);
 	auto clipped = dailyCaptures;
 	clipped[eventIndex].startClipped = true;
 	EXPECT_FALSE(oc::captureTimeUncertainty(request, trajectory, clipped)[eventIndex].start3SigmaDays);
 	request.solution.covariance.resize(0, 0);
 	EXPECT_FALSE(oc::captureTimeUncertainty(request, trajectory, dailyCaptures)[eventIndex].start3SigmaDays);
+	const auto noCovariance = oc::relativeMotionTimeUncertainty(request, trajectory, {}, hillPassages);
+	EXPECT_FALSE(noCovariance.hillPassages[hillIndex].start3SigmaDays);
+	EXPECT_FALSE(noCovariance.hillPassages[hillIndex].end3SigmaDays);
 	RecordProperty("qq8_capture_start_mjd_tdb", containingClosest->startMjdTdb);
 	RecordProperty("qq8_capture_end_mjd_tdb", containingClosest->endMjdTdb);
 	RecordProperty("qq8_capture_signed_turns", containingClosest->signedRevolutions);

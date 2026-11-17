@@ -22,7 +22,7 @@ ColumnLayout {
             Accessible.name: qsTr("MC run")
         }
         CustomButton {
-            iconName: "file-text"
+            iconName: "activity"
             enabled: root.monitor.archivePath.length > 0
             accessibleLabel: qsTr("Open HTML report")
             onClicked: root.monitor.openArchive(true)
@@ -128,7 +128,6 @@ ColumnLayout {
             delegate: Rectangle {
                 id: cell
                 required property string display
-                required property string detail
                 required property int column
                 implicitHeight: 36
                 color: AppTheme.base
@@ -141,10 +140,6 @@ ColumnLayout {
                     font.pixelSize: 11
                     horizontalAlignment: cell.column ? Text.AlignRight : Text.AlignLeft
                 }
-                HoverHandler { id: hover }
-                ToolTip.visible: hover.hovered
-                ToolTip.text: cell.detail
-                ToolTip.delay: 450
                 Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AppTheme.lineSoft }
             }
             ScrollBar.horizontal: CustomScrollBar {}

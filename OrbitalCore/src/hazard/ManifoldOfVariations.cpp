@@ -1,4 +1,5 @@
 #include "orbital_core/hazard/ManifoldOfVariations.h"
+#include "SemilinearContours.h"
 #include "mov/MovCoordinates.h"
 #include "fit/FitObservations.h"
 #include "fit/OrbitFitModel.h"
@@ -567,6 +568,20 @@ namespace orbital_core::hazard {
 			    "Propagation failures have nonzero weight; only a probability bracket is available.");
 		if (!totalWeight && !result.cancelled)
 			throw std::runtime_error("MOV has no eligible probability mass");
+		if (config.semilinearContours && !cancel.stop_requested()) {
+			if (progress)
+				progress(-1, total);
+			if (nominal && result.nominal)
+				result.semilinear = computeSemilinearContours(
+				    result.nominal->state, result.nominal->epochMjdTdb, nominal->finalNonGrav,
+				    nominal->uncertainty.fitParameterCovariance, result.nominal->entry, config.target,
+				    config.startMjdTdb, config.endMjdTdb, config.altitudeKm, config.workers, propagator, *eph, cancel);
+			else {
+				result.semilinear.status = "unavailable";
+				result.semilinear.reason = "A converged nominal orbit with covariance is required.";
+			}
+		}
+		result.cancelled = cancel.stop_requested();
 		return result;
 	}
 

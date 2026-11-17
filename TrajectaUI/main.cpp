@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 
 	ApplicationSession session(settings);
 	session.applicationUpdate()->check();
-	session.dataSources()->observatoryUpdate()->check();
+	session.dataSources()->checkUpdates();
 	QQmlApplicationEngine engine;
 	engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
 

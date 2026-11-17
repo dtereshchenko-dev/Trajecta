@@ -1,23 +1,22 @@
 #include "strewn_core/FragmentationModel.h"
 #include "strewn_core/Simulator.h"
 #include "RunDeadline.h"
+#include "VectorMath.h"
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <cmath>
 #include <fstream>
-#include <iomanip>
 #include <limits>
 #include <map>
-#include <numbers>
 #include <numeric>
 #include <stdexcept>
 #include <thread>
 
 namespace {
 	using namespace strewn;
-	constexpr double deg = std::numbers::pi / 180.0;
+	constexpr double deg = strewn::detail::deg;
 
 	EntryState entry(double height = 1000.0)
 	{
@@ -842,10 +841,6 @@ namespace {
 			tight.maxStepS = 0.05;
 			const auto refined = TrajectoryIntegrator(env, physics, tight).advance(f, RunParameters{});
 			const auto reference = test["refined_final"].get<std::array<double, 7>>();
-			std::cout << test["name"] << std::setprecision(9) << " position_difference_m="
-			          << distance(result.state.positionEcefM, {expected[0], expected[1], expected[2]})
-			          << " mass_difference_kg=" << result.state.massKg - expected[6]
-			          << " refined_mass_difference_kg=" << refined.state.massKg - reference[6] << '\n';
 			EXPECT_EQ(static_cast<int>(result.event), test["event"].get<int>());
 			EXPECT_LT(distance(result.state.positionEcefM, {expected[0], expected[1], expected[2]}), 0.1);
 			EXPECT_LT(distance(result.state.velocityEcefMps, {expected[3], expected[4], expected[5]}), 0.005);

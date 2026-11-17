@@ -1,9 +1,9 @@
 #include "Convergence.h"
+#include "VectorMath.h"
 #include "strewn_core/Simulator.h"
 #include <gtest/gtest.h>
 #include <cmath>
 #include <limits>
-#include <numbers>
 
 namespace {
 	using namespace strewn;
@@ -137,7 +137,7 @@ namespace {
 		const auto env = Environment::idealized();
 		PhysicsConfig physics;
 		physics.phase = FlightPhase::DarkFlight;
-		const GeodeticPosition p{49.8 * std::numbers::pi / 180, .8 * std::numbers::pi / 180, 0};
+		const GeodeticPosition p{49.8 * detail::deg, .8 * detail::deg, 0};
 		const std::vector<EntryState> entries{
 		    {ecefPosition(p), enuToEcef({0, 0, -30}, p.latitudeRad, p.longitudeRad), 59988}};
 		MonteCarloConfig mc;
