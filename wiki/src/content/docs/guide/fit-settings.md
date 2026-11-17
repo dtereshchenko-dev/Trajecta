@@ -95,8 +95,12 @@ default, full EIH, Earth J2/J3/J4 and the time-varying pole are enabled.
 
 These choices are used in the orbit fit and subsequent calculations based on
 that solution. After a converged fit, the solution folder includes a
-`Trajecta.ini` snapshot of the application settings at the start of the fit.
-Re-solving into the same folder replaces that snapshot.
+`Trajecta.ini` snapshot of the fit's effective calculation settings. It excludes
+interface preferences and recent file paths. Re-solving into the same folder
+replaces that snapshot. Reproducing a solution also requires the observations
+and the external data used for the calculation. Snapshots made by earlier
+versions may contain interface preferences or local paths; review them before
+sharing an existing solution folder.
 
 ## Non-gravitational forces
 
