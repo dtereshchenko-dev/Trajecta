@@ -344,10 +344,8 @@ Set-InstallerVersion -Path "$package\meta\package.xml" -Version $version -RootEl
 Write-Host '[1/6] Copying current applications and runtime data'
 foreach ($item in $binaries.GetEnumerator()) { Copy-Required $item.Value "$payload\$($item.Key)" }
 foreach ($file in $requiredData) { Copy-Required "$Repository\data\$file" "$payload\$file" }
-foreach ($directory in @('docs', 'examples')) {
-    Require-Path "$Repository\data\$directory"
-    Copy-Item -LiteralPath "$Repository\data\$directory" -Destination "$payload\$directory" -Recurse
-}
+Require-Path "$Repository\data\examples"
+Copy-Item -LiteralPath "$Repository\data\examples" -Destination "$payload\examples" -Recurse
 Copy-Required "$Repository\TrajectaUI\THIRD_PARTY.md" "$payload\THIRD_PARTY.md"
 Copy-Required "$root\config\icon.ico" "$payload\icon.ico"
 Copy-Required "$Repository\LICENSE" "$payload\licenses\GPL-3.0.txt"
