@@ -16,6 +16,44 @@ to explore possible outcomes under those assumptions, not to serve as a
 high-fidelity simulation of a body's internal structure or its full breakup
 history.
 
+### Scientific basis and attribution
+
+The atmospheric-entry and meteorite strewn-field model in Trajecta's
+StrewnField module is based in part on the framework presented by Moscati et
+al., *From orbit to ground: Pre-impact
+meteorite strewn field predictions for imminent impactors and meteorite
+recovery*, Icarus **461**, 117303 (2027),
+[doi:10.1016/j.icarus.2026.117303](https://doi.org/10.1016/j.icarus.2026.117303)
+([2026 preprint](https://arxiv.org/abs/2609.01722)). The authors are Anna
+Moscati, Marco Fenucci, Laura Faggioli, Marco Micheli, Francisco Ocaña and
+Juan Luis Cano.
+
+In particular, Trajecta adapts the paper's entry-to-ground Monte Carlo
+workflow, cascade fragmentation and fragment-mass distribution, strength
+scaling, lateral fragment velocities and momentum correction, and use of
+Jensen–Shannon divergence to assess map convergence. The paper's historical
+event results also provide context for the comparisons in this documentation.
+Sources for the underlying methods are cited alongside the relevant sections
+below.
+
+### Differences from the reference model
+
+The following differences are relevant when comparing calculations:
+
+- **Fragmentation pressure:** the paper uses `½ρv²` for breakup; the Trajecta
+  UI uses `ρv²`. For the same breakup state, the equivalent UI strength
+  threshold is twice the paper's value. The core also supports `½ρv²`.
+- **Dynamics and integration:** Trajecta uses an Earth-fixed frame with J2
+  gravity and an adaptive Dormand–Prince 5(4) integrator. The paper uses an
+  Earth-centred inertial frame, central gravity and Runge–Kutta–Fehlberg 4(5).
+- **Strength distribution:** the paper uses a bimodal distribution for
+  ordinary-chondrite strength. The Trajecta UI samples one user-specified
+  uniform range; the core also supports a two-component distribution.
+
+Atmospheric interpolation, terrain handling and other numerical choices also
+differ. Consequently, similar nominal inputs need not produce identical
+results. The following sections describe the Trajecta conventions.
+
 ### Model assumptions
 
 - **Fragmentation:** breakup uses a strength threshold and a prescribed mass
@@ -88,6 +126,9 @@ individual masses are generated in descending order, with `0 < f < 1` and
 m(k) = M [f^(-β) + k β f^(1-β) / (1-β)]^(-1/β),  k = 1, 2, ...
 ```
 
+This ranked mass distribution follows the formulation used by
+[Moscati et al., section 2.3](https://arxiv.org/html/2609.01722#S2.SS3),
+which draws on [Brykina and Egorova (2024)](https://doi.org/10.1016/j.pss.2024.105838).
 Generation stops at the minimum fragment mass or when the remaining mass is
 exhausted. The configured remainder policy determines whether an eligible
 remaining piece is retained. Mass assigned to dust, fragments below the cutoff
@@ -104,7 +145,11 @@ The strength of a child of mass `mc` from a parent of mass `mp` is
 random lateral directions around the parent's velocity. Kick magnitudes depend
 on air density, material density, relative air speed and the ratio of parent to
 child diameter. The mass-weighted mean kick is removed so the represented
-children retain the parent's mean velocity.
+children retain the parent's mean velocity. This lateral-dispersion formulation
+follows the adaptation in [Moscati et al.](https://arxiv.org/html/2609.01722#S2.SS3)
+of [Passey and Melosh (1980)](https://doi.org/10.1016/0019-1035%2880%2990072-X).
+For the observational context of ordinary-chondrite strength ranges, see
+[Borovička et al. (2020)](https://doi.org/10.3847/1538-3881/ab9608).
 
 ## Numerical integration and events
 
@@ -172,7 +217,10 @@ the chance that at least one fragment lands in a region.
 
 ## Jensen–Shannon convergence
 
-The stopping monitor is separate from the report KDE. It bins cumulative
+The stopping monitor uses Jensen–Shannon divergence introduced by
+[Lin (1991)](https://doi.org/10.1109/18.61115), following its application to
+strewn-field convergence in [Moscati et al., section 3](https://arxiv.org/html/2609.01722#S3).
+It is separate from the report KDE. It bins cumulative
 impacts by fragment multiplicity and by landed mass, applies a fixed Gaussian
 kernel, and normalizes each map. It compares successive cumulative maps with
 base-2 Jensen–Shannon divergence:

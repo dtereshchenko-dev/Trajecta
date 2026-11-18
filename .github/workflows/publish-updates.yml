@@ -117,9 +117,26 @@ jobs:
                 @($release.assets | Where-Object { $_.name -ceq $archiveName }).Count -gt 0
               } | Select-Object -First 1)[0]
               $archive = "$prefix$($release.tag_name).zip"
-              gh release download "$($release.tag_name)" --pattern "$archive" --dir "$downloads"
-              if ($LASTEXITCODE -ne 0) { throw "Missing update repository asset: $archive." }
-              Expand-Archive -LiteralPath (Join-Path $downloads $archive) -DestinationPath $repository -Force
+              $asset = @($release.assets | Where-Object { $_.name -ceq $archive })[0]
+              $archivePath = Join-Path $downloads $archive
+              $downloaded = $false
+              for ($attempt = 1; $attempt -le 4; $attempt++) {
+                gh release download "$($release.tag_name)" --pattern "$archive" --dir "$downloads" --clobber
+                if ($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $archivePath -PathType Leaf)) {
+                  $file = Get-Item -LiteralPath $archivePath
+                  $valid = $file.Length -eq $asset.size
+                  if ($valid -and $asset.digest -and $asset.digest -match '^sha256:([0-9a-fA-F]{64})$') {
+                    $valid = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash -ieq $Matches[1]
+                  }
+                  if ($valid) { $downloaded = $true; break }
+                  Write-Warning "Downloaded asset failed integrity verification: $archive."
+                } else {
+                  Write-Warning "Download attempt $attempt failed for $archive."
+                }
+                if ($attempt -lt 4) { Start-Sleep -Seconds (5 * $attempt) }
+              }
+              if (-not $downloaded) { throw "Failed to download and verify update repository asset after 4 attempts: $archive." }
+              Expand-Archive -LiteralPath $archivePath -DestinationPath $repository -Force
             }
             [xml]$updates = Get-Content -LiteralPath (Join-Path $repository 'Updates.xml') -Raw
             $components = @($updates.Updates.PackageUpdate | Where-Object { $_.Name -ceq 'com.trajecta.app' })

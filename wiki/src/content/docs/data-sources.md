@@ -10,9 +10,6 @@ the observations and settings you choose.
 
 ![Data sources dialog showing connected ephemerides and observatory catalogues](../../assets/data-sources/source-status.png)
 
-The first screenshot shows an earlier layout. The Earth orientation section
-below shows the current PCK entries.
-
 ## Ephemerides and observatories
 
 | Source | Used for |

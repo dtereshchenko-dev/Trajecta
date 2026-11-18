@@ -12,7 +12,9 @@ The calculation describes what happens **given an entry**. It is separate from
 the orbital probability of crossing the entry boundary.
 
 For the equations and numerical methods, see the
-[atmospheric model reference](../../reference/atmospheric-model/).
+[atmospheric model reference](../../reference/atmospheric-model/). The atmospheric
+implementation builds on methods described by [Moscati et al.](https://doi.org/10.1016/j.icarus.2026.117303);
+the reference explains the relationship and differences between the models.
 
 ## Choose an entry source
 

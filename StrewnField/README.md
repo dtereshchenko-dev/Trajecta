@@ -39,8 +39,9 @@ the unresolved tail is not combined into an artificial large fragment.
 With M=1000 kg, the single-breakup CC example (dust=.6, largest=.15, beta=.55)
 has 117 fragments totaling 400 kg, including a final 0.031322109851249 kg
 remainder. The iron example (.2, .45, .35) has 6 totaling 800 kg, including
-2.407719106529015 kg. These follow the residual-clipping rule in Moscati et al.
-section 2.3, not the 116/5 counts labelled in Figure 2. Counts include multiplicity,
+2.407719106529015 kg. These follow the residual-clipping rule in
+[Moscati et al., section 2.3](https://arxiv.org/html/2609.01722#S2.SS3),
+not the 116/5 counts labelled in Figure 2. Counts include multiplicity,
 not just the grouped trajectories. This verifies the mass-generation algorithm,
 not a physical reconstruction of a particular meteorite fall.
 
