@@ -20,6 +20,7 @@ Rectangle {
     implicitHeight: 36
     color: observations.selectedSourceRow === sourceRow ? AppTheme.accentSoft : hoveredSourceRow === sourceRow ? AppTheme.rowHover : AppTheme.base
     CustomText {
+        objectName: "observation-cell-text-" + cell.sourceRow + "-" + cell.column
         anchors.fill: parent
         anchors.margins: 8
         anchors.leftMargin: cell.column === 0 ? 32 : 8

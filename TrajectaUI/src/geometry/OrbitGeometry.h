@@ -17,6 +17,7 @@ class OrbitGeometry : public QQuick3DGeometry {
 	Q_PROPERTY(double argPericentre READ argPericentre WRITE setArgPericentre NOTIFY geometryChanged)
 	Q_PROPERTY(int segments READ segments WRITE setSegments NOTIFY geometryChanged)
 	Q_PROPERTY(QVector3D perihelionPos READ perihelionPos NOTIFY geometryChanged)
+	Q_PROPERTY(double maximumRadius READ maximumRadius NOTIFY geometryChanged)
 
    public:
 	explicit OrbitGeometry(QQuick3DObject* parent = nullptr);
@@ -99,11 +100,13 @@ class OrbitGeometry : public QQuick3DGeometry {
 	}
 
 	QVector3D perihelionPos() const { return m_perihelionPos; }
+	double maximumRadius() const { return m_maximumRadius; }
 
    private:
 	void rebuild();
 	QVector3D orbitalToEcliptic(double x_orb, double y_orb) const;
 	QVector3D m_perihelionPos;
+	double m_maximumRadius = 0.0;
 
 	double m_e = 3.3769;
 	double m_a = -0.8449;

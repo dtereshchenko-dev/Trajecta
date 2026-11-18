@@ -561,6 +561,13 @@ TEST_F(EphemerisTest, RelativeMotionRefines2023BuCloseApproachUsingPropagatedSta
 	request.epochsMjdTdb = {59969.0, 59969.5, 59970.0, 59970.5, 59971.0, 59971.5, 59972.0};
 	const auto refined = oc::computeRefinedRelativeMotion(request);
 	ASSERT_GT(refined.size(), request.epochsMjdTdb.size());
+	request.maxRefinedSamples = refined.size();
+	EXPECT_EQ(oc::computeRefinedRelativeMotion(request).size(), refined.size());
+	request.maxRefinedSamples = refined.size() - 1;
+	EXPECT_THROW((void)oc::computeRefinedRelativeMotion(request), std::length_error);
+	request.maxRefinedSamples = request.epochsMjdTdb.size() - 1;
+	EXPECT_THROW((void)oc::computeRefinedRelativeMotion(request), std::length_error);
+	request.maxRefinedSamples.reset();
 	for (const auto epoch : request.epochsMjdTdb) {
 		EXPECT_TRUE(std::any_of(refined.begin(), refined.end(), [epoch](const auto& s) { return s.mjdTdb == epoch; }));
 	}

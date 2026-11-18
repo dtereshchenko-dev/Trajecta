@@ -129,7 +129,7 @@ ColumnLayout {
             CustomComboBox {
                 objectName: "risk-target"
                 Layout.fillWidth: true
-                model: [qsTr("Earth"), qsTr("Moon"), qsTr("Mars")]
+                model: [qsTr("Earth"), qsTr("Moon")]
                 currentIndex: form.monitor.target
                 Accessible.name: qsTr("Target body")
                 onActivated: form.monitor.target = currentIndex

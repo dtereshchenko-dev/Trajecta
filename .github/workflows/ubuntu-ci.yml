@@ -29,7 +29,7 @@ jobs:
             qml6-module-qtquick-dialogs qml6-module-qtquick-layouts \
             qml6-module-qtquick-templates qml6-module-qtquick-window \
             qml6-module-qtquick3d qml6-module-qtquick3d-helpers \
-            qt6-wayland qt6-svg-plugins patchelf xvfb xauth 7zip zip
+            qt6-wayland qt6-svg-plugins qt6-gtk-platformtheme patchelf xvfb xauth 7zip zip
 
       - name: Identify runner image
         id: runner-image

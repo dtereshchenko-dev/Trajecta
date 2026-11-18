@@ -29,13 +29,15 @@ export QMAKE=/usr/bin/qmake6
 export QML_SOURCES_PATHS="$root/TrajectaUI/qml"
 export EXTRA_PLATFORM_PLUGINS='libqwayland.so'
 wayland_egl="$(qmake6 -query QT_INSTALL_PLUGINS)/wayland-graphics-integration-client/libqt-plugin-wayland-egl.so"
+gtk_theme="$(qmake6 -query QT_INSTALL_PLUGINS)/platformthemes/libqgtk3.so"
 [[ -f $wayland_egl ]] || { echo 'Qt Wayland EGL plugin not found' >&2; exit 1; }
+[[ -f $gtk_theme ]] || { echo 'Qt GTK platform theme plugin not found' >&2; exit 1; }
 echo 'Deploying application and dependencies'
 if ! "$linuxdeploy" --verbosity 2 --appdir "$app" --plugin qt \
     --executable "$build/TrajectaUI/Trajecta" --executable "$build/TrajectaCLI/TrajectaCLI" \
     --executable "$build/StrewnField/StrewnCLI" \
     --library "$build/OrbitalCore/libOrbitalCore.so" --library "$build/StrewnField/libStrewnCore.so" \
-    --library "$wayland_egl" \
+    --library "$wayland_egl" --library "$gtk_theme" \
     --desktop-file "$root/installer/linux/trajecta.desktop" --icon-filename trajecta \
     --icon-file "$root/TrajectaUI/resources/icons/workspace/app-logo.svg" > "$stage/linuxdeploy.log" 2>&1; then
     tail -n 100 "$stage/linuxdeploy.log" >&2
@@ -44,7 +46,9 @@ fi
 
 mkdir -p "$app/usr/plugins/wayland-graphics-integration-client"
 cp "$wayland_egl" "$app/usr/plugins/wayland-graphics-integration-client/"
-rm -f -- "$app/usr/lib/libqt-plugin-wayland-egl.so"
+mkdir -p "$app/usr/plugins/platformthemes"
+cp "$gtk_theme" "$app/usr/plugins/platformthemes/"
+rm -f -- "$app/usr/lib/libqt-plugin-wayland-egl.so" "$app/usr/lib/libqgtk3.so"
 for style in Fusion Imagine Material Universal; do
     rm -rf -- "$app/usr/qml/QtQuick/Controls/$style"
     rm -f -- "$app/usr/lib/libQt6QuickControls2${style}"*.so*

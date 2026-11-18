@@ -14,6 +14,7 @@ CustomButton {
     accessibleLabel: qsTr("Sort by %1").arg(model.display)
     contentItem: Item {
         CustomText {
+            objectName: "observation-header-text-" + cell.column
             anchors.fill: parent
             anchors.leftMargin: cell.column > 2 ? 12 : 0
             anchors.rightMargin: cell.column > 2 ? 0 : 12

@@ -7,9 +7,13 @@ test('print styles keep the heading legible and omit map action cells', () => {
   const web = path.join(__dirname, '../src/export/web');
   const shared = fs.readFileSync(path.join(web, 'map-print.css'), 'utf8');
   const mc = fs.readFileSync(path.join(web, 'interval-mc.css'), 'utf8');
+  const common = fs.readFileSync(path.join(__dirname, '../../StrewnField/output/web/report-common.css'), 'utf8');
   assert.match(shared, /body\s*>\s*header\s*\{[^}]*background:\s*white\s*;/);
   assert.match(shared, /body\s+\.table-wrap\s*\{[^}]*max-height:\s*none\s*;/);
   assert.match(mc, /#entry-table th:last-child,\s*#entry-table td:last-child\s*\{\s*display:\s*none\s*;/);
+  assert.match(common, /details:not\(\[open\]\)\s*\{\s*display:\s*none\s*;/);
+  assert.match(common, /details\[open\]\s*>\s*summary\s*\{\s*display:\s*block\s*;/);
+  assert.match(common, /details\[open\]\s+pre\s*\{[^}]*max-height:\s*none\s*;[^}]*overflow:\s*visible\s*;/);
 });
 test('UTC display preserves milliseconds and day rollover', () => {
   assert.equal(R.utc(54746 + (2 * 3600 + 45 * 60 + 29.23) / 86400), '2008-10-07 02:45:29.230');

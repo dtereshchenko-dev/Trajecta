@@ -12,6 +12,7 @@ Model {
     property real peri: 0
     property color color: AppTheme.accent
     readonly property vector3d perihelionPosition: curve.perihelionPos
+    readonly property real maximumRadius: curve.maximumRadius
     geometry: OrbitGeometry {
         id: curve
         semiMajorAxis: path.a

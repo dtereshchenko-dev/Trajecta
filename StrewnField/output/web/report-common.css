@@ -14,6 +14,28 @@
 body {
   margin: 0;
 }
+@page {
+  margin: 0 12mm;
+}
+@media print {
+  body {
+    padding: 12mm 0;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  details:not([open]) {
+    display: none;
+  }
+  details[open] > summary {
+    display: block;
+  }
+  details[open] pre {
+    max-height: none;
+    overflow: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
 header {
   padding: 18px 28px 0;
   background: #101415;

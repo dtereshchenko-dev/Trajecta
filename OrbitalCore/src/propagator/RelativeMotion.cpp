@@ -122,6 +122,9 @@ namespace orbital_core {
 	{
 		constexpr int maxRounds = 16;
 		constexpr double maxTravelOverDistance = 0.08;
+		const auto limit = request.maxRefinedSamples.value_or(request.epochsMjdTdb.max_size());
+		if (request.epochsMjdTdb.size() > limit)
+			throw std::length_error("Trajectory exceeds the point limit; shorten the interval or increase the step");
 		auto samples = computeRelativeMotion(request, control);
 		for (int round = 0; round < maxRounds && !samples.empty(); ++round) {
 			if (control.cancel.stop_requested())
@@ -131,8 +134,13 @@ namespace orbital_core {
 			refined.planet = request.planet;
 			if (samples.size() > refined.epochsMjdTdb.max_size() / 2)
 				throw std::length_error("Too many trajectory points");
-			refined.epochsMjdTdb.reserve(samples.size() * 2);
+			refined.epochsMjdTdb.reserve(std::min(samples.size() * 2, limit));
 			refined.epochsMjdTdb.push_back(samples.front().mjdTdb);
+			const auto appendEpoch = [&](double epoch) {
+				if (refined.epochsMjdTdb.size() >= limit)
+					throw std::length_error("Trajectory refinement exceeds the point limit; shorten the interval");
+				refined.epochsMjdTdb.push_back(epoch);
+			};
 			bool needsRefinement = false;
 			for (std::size_t i = 1; i < samples.size(); ++i) {
 				const auto& a = samples[i - 1];
@@ -146,11 +154,11 @@ namespace orbital_core {
 				if (travel > maxTravelOverDistance * distance) {
 					const double midpoint = a.mjdTdb + (b.mjdTdb - a.mjdTdb) / 2;
 					if (midpoint > a.mjdTdb && midpoint < b.mjdTdb) {
-						refined.epochsMjdTdb.push_back(midpoint);
+						appendEpoch(midpoint);
 						needsRefinement = true;
 					}
 				}
-				refined.epochsMjdTdb.push_back(b.mjdTdb);
+				appendEpoch(b.mjdTdb);
 			}
 			if (!needsRefinement)
 				return samples;

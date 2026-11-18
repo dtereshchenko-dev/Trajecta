@@ -31,7 +31,7 @@ Rectangle {
                     anchors.leftMargin: 14
                     anchors.rightMargin: 14
                     verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: parent.index === 0 ? Text.AlignLeft : Text.AlignRight
+                    horizontalAlignment: Text.AlignLeft
                     text: row.header ? [qsTr("Station"), qsTr("Included"), qsTr("Excluded")][parent.index]
                         : [row.station, String(row.includedCount), String(row.excludedCount)][parent.index]
                     numeric: !row.header
@@ -78,7 +78,7 @@ Rectangle {
                 anchors.leftMargin: 14
                 anchors.rightMargin: 14
                 verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignRight
+                horizontalAlignment: Text.AlignLeft
                 text: row.header ? qsTr("RMS") : UI.number(row.rms, 3)
                 numeric: !row.header
                 font.pixelSize: row.header ? 10 : 11

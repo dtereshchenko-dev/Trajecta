@@ -3,6 +3,7 @@
 #include "orbital_core/Ephemeris.h"
 #include "orbital_core/IEphemerisSource.h"
 
+#include <cstddef>
 #include <optional>
 
 namespace orbital_core {
@@ -26,6 +27,7 @@ namespace orbital_core {
 		EphemerisSolution solution;
 		EphemerisPlanet planet{EphemerisPlanet::Earth};
 		std::vector<double> epochsMjdTdb;
+		std::optional<std::size_t> maxRefinedSamples;
 	};
 
 	struct TemporaryCaptureInterval {

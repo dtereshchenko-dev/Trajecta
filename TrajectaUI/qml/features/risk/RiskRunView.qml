@@ -106,7 +106,7 @@ ColumnLayout {
                     text: heading.model.display
                     font.pixelSize: 10
                     color: AppTheme.muted
-                    horizontalAlignment: heading.column ? Text.AlignRight : Text.AlignLeft
+                    horizontalAlignment: Text.AlignLeft
                 }
                 Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AppTheme.line }
             }
@@ -138,7 +138,7 @@ ColumnLayout {
                     text: cell.display
                     numeric: true
                     font.pixelSize: 11
-                    horizontalAlignment: cell.column ? Text.AlignRight : Text.AlignLeft
+                    horizontalAlignment: Text.AlignLeft
                 }
                 Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AppTheme.lineSoft }
             }
@@ -156,14 +156,5 @@ ColumnLayout {
                 : qsTr("No boundary crossings in completed trials")
             secondary: true
         }
-    }
-    CustomText {
-        visible: root.monitor.selectedRun >= 0
-        text: qsTr("Crossing groups are separated by gaps over 24 hours. P = entries / complete trials; Wilson 95%. Zero entries is not zero risk.")
-        Layout.fillWidth: true
-        wrapMode: Text.Wrap
-        elide: Text.ElideNone
-        font.pixelSize: 10
-        secondary: true
     }
 }

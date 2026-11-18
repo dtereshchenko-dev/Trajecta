@@ -320,6 +320,70 @@ class TestWorkspace : public QObject {
 		window->close();
 	}
 
+	void residualScatterKeepsEqualScaleOnResize()
+	{
+		FitSettingsAggregator settings;
+		ApplicationSession session(settings);
+		QVERIFY(session.solution()->publish(fixture(), "test"));
+		QQmlApplicationEngine engine;
+		engine.setImportPathList({QLibraryInfo::path(QLibraryInfo::QmlImportsPath)});
+		engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
+		engine.load(QUrl::fromLocalFile(QStringLiteral(ORBITAL_UI_SOURCE_DIR) + "/qml/shell/WorkspaceWindow.qml"));
+		QVERIFY(!engine.rootObjects().isEmpty());
+		auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().front());
+		QVERIFY(window);
+		window->resize(1100, 720);
+		QTRY_VERIFY(window->isVisible());
+		auto* plot = findItem(window->contentItem(), "residual-plot");
+		QVERIFY(plot);
+		QTest::qWait(100);
+		const auto verifyScale = [&] {
+			const auto area = plot->property("plotArea").toRectF();
+			const auto bounds = plot->property("bounds").toRectF();
+			QVERIFY(area.width() > 0 && area.height() > 0);
+			QVERIFY(bounds.width() > 0 && bounds.height() > 0);
+			const double xScale = bounds.width() / area.width();
+			const double yScale = bounds.height() / area.height();
+			QVERIFY2(std::abs(xScale - yScale) <= yScale * 1e-7,
+			         qPrintable(QString("x scale=%1 y scale=%2").arg(xScale, 0, 'g', 16).arg(yScale, 0, 'g', 16)));
+		};
+		verifyScale();
+		const auto area = plot->property("plotArea").toRectF();
+		QVERIFY(QMetaObject::invokeMethod(plot, "zoomAt", Q_ARG(QVariant, area.center().x()),
+		                                  Q_ARG(QVariant, area.center().y()), Q_ARG(QVariant, 0.5)));
+		const auto zoomed = plot->property("bounds").toRectF();
+		QVERIFY(QMetaObject::invokeMethod(plot, "panFrom", Q_ARG(QVariant, QVariant::fromValue(zoomed)),
+		                                  Q_ARG(QVariant, 30), Q_ARG(QVariant, 20)));
+		QVERIFY(plot->property("viewAdjusted").toBool());
+		const auto selectedView = plot->property("bounds").toRectF();
+		for (const QSize size : {QSize(1512, 982), QSize(2554, 1312), QSize(1100, 720)}) {
+			window->resize(size);
+			QTest::qWait(100);
+			verifyScale();
+			const auto current = plot->property("bounds").toRectF();
+			QVERIFY(std::abs(current.center().x() - selectedView.center().x()) < 1e-7);
+			QVERIFY(std::abs(current.center().y() - selectedView.center().y()) < 1e-7);
+			QVERIFY(std::abs(current.height() - selectedView.height()) < 1e-7);
+			const auto captures = qEnvironmentVariable("ORBITAL_UI_CAPTURES");
+			if (!captures.isEmpty()) {
+				QVERIFY(QDir().mkpath(captures));
+				QVERIFY(window->grabWindow().save(captures + "/residual-resize-" + QString::number(size.width()) + ".png"));
+			}
+		}
+		QVERIFY(QMetaObject::invokeMethod(plot, "resetView"));
+		verifyScale();
+		window->resize(1512, 982);
+		QTest::qWait(100);
+		verifyScale();
+		plot->setProperty("timeMode", true);
+		QTest::qWait(50);
+		const auto timeBounds = plot->property("bounds").toRectF();
+		window->resize(1100, 720);
+		QTest::qWait(100);
+		QCOMPARE(plot->property("bounds").toRectF(), timeBounds);
+		window->close();
+	}
+
 	void riskEventTableHasNoCellTooltips()
 	{
 		RiskEventTableModel model;
@@ -1338,6 +1402,9 @@ class TestWorkspace : public QObject {
 					QTest::qWait(120);
 					QVERIFY(session.risk()->inputReady());
 					QVERIFY(run->isEnabled());
+					auto* target = findItem(page, "risk-target");
+					QVERIFY(target);
+					QCOMPARE(target->property("count").toInt(), 2);
 					auto* boundary = findItem(page, "risk-boundary");
 					QVERIFY(boundary);
 					QCOMPARE(boundary->property("count").toInt(), 2);
@@ -2236,6 +2303,19 @@ class TestWorkspace : public QObject {
 		QVERIFY(model.epochDisplay().startsWith("1965-04-04"));
 	}
 
+	void relativeMotionRejectsExcessiveSampling()
+	{
+		RelativeMotionModel model;
+		model.setSolution(fixture());
+		QSignalSpy status(&model, &RelativeMotionModel::statusChanged);
+		model.calculateRelative("2026-01-01", "2026-01-02", 2, 1.0 / 100000.0);
+		QVERIFY(!model.relativeBusy());
+		QVERIFY(model.relativeError().contains("100000"));
+		QVERIFY(model.relativeError().contains("step"));
+		QCOMPARE(status.size(), 1);
+		QVERIFY(!model.relativeAvailable());
+	}
+
 	void relativeSettingsDoNotInvalidateResults()
 	{
 		RelativeMotionModel model;
@@ -2713,6 +2793,77 @@ class TestWorkspace : public QObject {
 		QVERIFY((sceneModel->relative()->relativeCaptureMarkers().first().toMap().value("position").value<QVector3D>() -
 		         originalMarker)
 		            .length() > 1e-6f);
+		window->close();
+	}
+
+	void nearParabolicOrbitCameraRange()
+	{
+		if (!qEnvironmentVariableIsSet("ORBITAL_UI_3D"))
+			QSKIP("Native 3D rendering is opt-in");
+		FitSettingsAggregator settings;
+		ApplicationSession session(settings);
+		QVERIFY(session.solution()->publish(fixture(), "test"));
+		QQmlApplicationEngine engine;
+		engine.setImportPathList({QLibraryInfo::path(QLibraryInfo::QmlImportsPath)});
+		engine.setInitialProperties({{"session", QVariant::fromValue(&session)}});
+		engine.load(QUrl::fromLocalFile(QStringLiteral(ORBITAL_UI_SOURCE_DIR) + "/qml/shell/WorkspaceWindow.qml"));
+		QVERIFY(!engine.rootObjects().isEmpty());
+		auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().front());
+		QVERIFY(window);
+		QVERIFY(QTest::qWaitForWindowExposed(window));
+		auto* navigation = findItem(window->contentItem(), "navigation-page-2");
+		QVERIFY(navigation);
+		QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+		                  navigation->mapToScene({navigation->width() / 2, navigation->height() / 2}).toPoint());
+		QTRY_VERIFY(findItem(window->contentItem(), "orbit-scene"));
+		auto* scene = findItem(window->contentItem(), "orbit-scene");
+		auto* path = scene->findChild<QObject*>("orbit-target-path");
+		auto* camera = scene->findChild<QObject*>("orbit-perspective-camera");
+		QVERIFY(path && camera);
+		QVERIFY(path->setProperty("q", 2.266626154));
+		QVERIFY(path->setProperty("a", 362.576483));
+		QVERIFY(path->setProperty("e", 0.993748556));
+		QVERIFY(path->setProperty("inclination", 123.516004788));
+		QVERIFY(path->setProperty("node", 32.439822170));
+		QVERIFY(path->setProperty("peri", 311.777622141));
+		QTRY_VERIFY(path->property("maximumRadius").toDouble() > 700.0);
+		QTRY_VERIFY(camera->property("clipFar").toDouble() > path->property("maximumRadius").toDouble());
+		for (const double e : {std::nextafter(1.0, 0.0), 1.0, std::nextafter(1.0, 2.0), 1.2}) {
+			QVERIFY(path->setProperty("e", e));
+			QTRY_VERIFY(std::isfinite(camera->property("clipFar").toDouble()));
+			QTRY_VERIFY(camera->property("clipFar").toDouble() > path->property("maximumRadius").toDouble());
+		}
+		QVERIFY(path->setProperty("e", 0.993748556));
+		QTest::qWait(200);
+		const auto complete = window->grabWindow();
+		QVERIFY(!complete.isNull());
+		const auto captures = qEnvironmentVariable("ORBITAL_UI_CAPTURES");
+		if (!captures.isEmpty()) {
+			QVERIFY(QDir().mkpath(captures));
+			QVERIFY(complete.save(captures + "/orbit-near-parabolic.png"));
+		}
+		QVERIFY(camera->setProperty("clipFar", 100.0));
+		QTest::qWait(200);
+		QVERIFY(window->grabWindow() != complete);
+		const double a = 345.003531;
+		const double e = 0.999146;
+		QVERIFY(path->setProperty("q", a * (1.0 - e)));
+		QVERIFY(path->setProperty("a", a));
+		QVERIFY(path->setProperty("e", e));
+		QVERIFY(path->setProperty("inclination", 0.0));
+		QVERIFY(path->setProperty("node", 0.0));
+		QVERIFY(path->setProperty("peri", 0.0));
+		QVERIFY(camera->setProperty("clipFar", 2000.0));
+		QVERIFY(QMetaObject::invokeMethod(scene, "topView"));
+		auto* origin = scene->findChild<QObject*>("orbit-camera-origin");
+		QVERIFY(origin);
+		QVERIFY(origin->setProperty("position", QVariant::fromValue(QVector3D(-a * (1.0 + e), 0, 0))));
+		QVERIFY(camera->setProperty("z", 8.0));
+		QTest::qWait(200);
+		const auto aphelion = window->grabWindow();
+		QVERIFY(!aphelion.isNull());
+		if (!captures.isEmpty())
+			QVERIFY(aphelion.save(captures + "/orbit-aphelion.png"));
 		window->close();
 	}
 
@@ -5014,11 +5165,18 @@ class TestWorkspace : public QObject {
 				auto* rmsHeader = findItem(section, "station-rms-header");
 				QVERIFY(rms && rmsHeader);
 				QVERIFY(!rms->property("truncated").toBool());
+				QCOMPARE(rms->property("horizontalAlignment").toInt(), int(Qt::AlignLeft));
+				QCOMPARE(rmsHeader->property("horizontalAlignment").toInt(), int(Qt::AlignLeft));
 				const auto rmsBounds = rms->mapRectToScene(rms->boundingRect());
 				const auto headerBounds = rmsHeader->mapRectToScene(rmsHeader->boundingRect());
-				QVERIFY(std::abs(rmsBounds.right() - headerBounds.right()) < 0.1);
+				QVERIFY2(std::abs(rmsBounds.left() - headerBounds.left()) < 0.1,
+				         qPrintable(QString("RMS left: value=%1 header=%2 rowWidth=%3")
+				                        .arg(rmsBounds.left()).arg(headerBounds.left()).arg(row->width())));
 				const auto rowBounds = row->mapRectToScene(row->boundingRect());
-				QVERIFY(std::abs(rmsBounds.right() - (rowBounds.right() - 14)) < 0.1);
+				QVERIFY2(std::abs(rmsBounds.left() - (rowBounds.left() + rowBounds.width() * 0.88 + 14)) < 0.1,
+				         qPrintable(QString("RMS left: value=%1 expected=%2 rowWidth=%3")
+				                        .arg(rmsBounds.left()).arg(rowBounds.left() + rowBounds.width() * 0.88 + 14)
+				                        .arg(rowBounds.width())));
 				int offsetCount = 0;
 				const auto inspect = [&](const auto& self, QQuickItem* item) -> void {
 					if (item->objectName() == "residual-offset-value") {
