@@ -78,15 +78,29 @@ ColumnLayout {
         RowLayout {
             anchors.fill: parent
             spacing: 10
-            CustomText { text: qsTr("Period, days"); font.pixelSize: 11; Layout.preferredWidth: 92 }
+            CustomText { text: qsTr("Period"); font.pixelSize: 11; Layout.preferredWidth: 92 }
             CustomText {
-                text: UI.number(table.orbit.orbitalPeriod, 4)
+                text: qsTr("%1 days (%2 years)").arg(UI.number(table.orbit.orbitalPeriod, 4)).arg(UI.number(table.orbit.orbitalPeriod / 365.25, 4))
                 numeric: true
                 font.pixelSize: 11
                 Layout.fillWidth: true
+                Layout.minimumWidth: 0
                 horizontalAlignment: Text.AlignRight
+                wrapMode: Text.Wrap
+                elide: Text.ElideNone
             }
-            CustomText { text: table.solution.hasSigmas ? UI.sigma(table.orbit.sigmaPeriod) : "—"; numeric: true; secondary: true; font.pixelSize: 11; Layout.preferredWidth: 96; horizontalAlignment: Text.AlignRight }
+            CustomText {
+                text: table.solution.hasSigmas ? UI.sigma(table.orbit.sigmaPeriod) : "—"
+                numeric: true
+                secondary: true
+                font.pixelSize: 11
+                Layout.preferredWidth: 96
+                horizontalAlignment: Text.AlignRight
+                HoverHandler { id: periodSigmaHover }
+                ToolTip.visible: periodSigmaHover.hovered
+                ToolTip.delay: 500
+                ToolTip.text: qsTr("Period uncertainty in days")
+            }
         }
     }
     Rectangle {

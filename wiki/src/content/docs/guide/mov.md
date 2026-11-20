@@ -98,7 +98,8 @@ shows semilinear 1, 3 and 5 sigma contours, calculated by nonlinear propagation
 of the covariance regression directions. These are separate from the weighted
 MOV nodes and are not probability boundaries. Missing or failed impacts leave
 gaps; contours are unavailable if the nominal orbit misses, even if MOV nodes
-hit. Existing archives do not contain these calculations.
+hit. Archives created before this calculation was introduced do not contain
+contours.
 
 The grid run displays fewer crossing points because its sampling differs from
 the cobweb run. The number of crossing nodes should not be compared directly
@@ -120,18 +121,15 @@ of the sampled set. A fitted node can have zero weight; for example, the
 central cobweb point shown above is included in the table but has no quadrature
 weight.
 
-For the grid run, **Weighted nodes** shows the 131 nodes with nonzero weight:
+For the cobweb run, **Weighted nodes** shows the 4,804 nodes with nonzero weight:
 
-![Weighted nodes in the 2019 MO grid run](../../../assets/mov/2019-mo-grid-weighted-nodes.png)
+![Weighted nodes in the 2019 MO cobweb run](../../../assets/mov/2019-mo-cobweb-weighted-nodes.png)
 
-**Boundary crossings** narrows the table to the 122 crossing nodes:
+**Boundary crossings** narrows the table to the 4,632 crossing nodes:
 
-![Boundary-crossing nodes in the 2019 MO grid run](../../../assets/mov/2019-mo-grid-crossings.png)
+![Boundary-crossing nodes in the 2019 MO cobweb run](../../../assets/mov/2019-mo-cobweb-crossings.png)
 
-**All nodes** also shows nodes outside the selection. In the rows below, the
-fits are listed as `rejected` and have zero weight:
-
-![All nodes in the 2019 MO grid run, including rejected nodes](../../../assets/mov/2019-mo-grid-all-nodes.png)
+**All nodes** also shows nodes outside the selection; rejected fits have zero weight.
 
 Review the warnings before interpreting the probability. In particular:
 

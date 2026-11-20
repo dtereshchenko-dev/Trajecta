@@ -239,11 +239,14 @@
       maxZoom: 22,
       wheelDebounceTime: 120,
     });
+    const contourPane = map.createPane('mov-contours');
+    contourPane.style.zIndex = 410;
+    contourPane.style.pointerEvents = 'none';
     const contours = L.layerGroup().addTo(map);
     const renderContours = () => {
       contours.clearLayers();
       if (el('show-contours').checked)
-        h.drawContours(L, contours, data.semilinear, centre);
+        h.drawContours(L, contours, data.semilinear, centre, 'mov-contours');
     };
     el('show-contours').onchange = renderContours;
     el('contour-note').textContent = h.contourNote(data.semilinear);

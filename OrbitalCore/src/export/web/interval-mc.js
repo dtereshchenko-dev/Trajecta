@@ -74,7 +74,7 @@
       segments.push(segment);
     return segments;
   }
-  function drawContours(L, layer, semilinear, centre) {
+  function drawContours(L, layer, semilinear, centre, pane = 'overlayPane') {
     if (semilinear?.status !== 'complete')
       return;
     for (const contour of semilinear.contours || [])
@@ -84,6 +84,7 @@
           weight: 2,
           opacity: 0.95,
           interactive: false,
+          pane,
         }).addTo(layer);
   }
   function contourNote(semilinear) {
