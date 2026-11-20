@@ -20,6 +20,7 @@ done
 test ! -e "$target/usr/share/trajecta-seed"
 test ! -e "$target/usr/bin/linux_p1550p2650.440"
 test -f "$target/usr/plugins/wayland-graphics-integration-client/libqt-plugin-wayland-egl.so"
+test -f "$target/usr/plugins/platformthemes/libqgtk3.so"
 if find "$target/examples" -type d -perm -0002 -print -quit | grep -q .; then
     echo 'Example directory is writable by other users.' >&2
     exit 1
@@ -40,12 +41,17 @@ test ! -e "$target/usr/bin/work"
 test -s "$XDG_DATA_HOME/Trajecta/Trajecta/ephemerides/linux_p1550p2650.440"
 test -s "$XDG_DATA_HOME/Trajecta/Trajecta/observatories/OBSCODE.dat"
 set +e
-timeout 20s xvfb-run -a env QT_QPA_PLATFORM=xcb QT_QUICK_BACKEND=software "$target/usr/bin/trajecta" > "$tmp/ui.log" 2>&1
+timeout 20s xvfb-run -a env QT_QPA_PLATFORM=xcb QT_QPA_PLATFORMTHEME=gtk3 QT_DEBUG_PLUGINS=1 \
+    QT_QUICK_BACKEND=software "$target/usr/bin/trajecta" > "$tmp/ui.log" 2>&1
 status=$?
 set -e
 cat "$tmp/ui.log"
 if [[ $status -ne 124 ]] || grep -Eq 'Error decoding:|QQmlApplicationEngine failed to load|module .* is not installed' "$tmp/ui.log"; then
     echo "UI smoke test failed (exit: $status)" >&2
+    exit 1
+fi
+if ! grep -E 'libqgtk3\.so.*loaded library' "$tmp/ui.log" >/dev/null; then
+    echo 'Qt GTK platform theme did not load.' >&2
     exit 1
 fi
 "$target/TrajectaMaintenance" --default-answer --confirm-command purge

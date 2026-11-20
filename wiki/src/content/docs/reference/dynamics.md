@@ -41,6 +41,9 @@ calculation enables massive asteroids, SB441-N16 must also be available. Its
 asteroid point-mass terms are separate from the EIH correction. A body's
 selection in **Forces** controls its direct contribution; the Sun's
 DE440 origin acceleration is still used for the heliocentric transformation.
+For a connected DE440 file, or for SB441-N16 when enabled, propagation reports
+an error if a required state is unavailable at an evaluation epoch. It does not
+extrapolate the kernel or silently omit an enabled asteroid.
 
 The Earth zonal terms are applied only while Earth is enabled and the object
 is within 0.1 AU of its centre. Their axis can follow the modelled Earth pole at

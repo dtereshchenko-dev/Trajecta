@@ -64,7 +64,7 @@ namespace orbital_core::obs {
 	template <typename Sample>
 	DenseLightTimeSeries solveDenseLightTimeSeries(Sample&& sample, const std::vector<double>& receptionMjd,
 	                                               const std::vector<Vec3D>& observers,
-	                                               const std::vector<bool>& optical)
+	                                               const std::vector<bool>& optical, std::stop_token cancel = {})
 	{
 		const std::size_t count = receptionMjd.size();
 		if (observers.size() != count || optical.size() != count)
@@ -75,6 +75,8 @@ namespace orbital_core::obs {
 		result.light.states.resize(count);
 		result.variationalStates.resize(count);
 		for (std::size_t i = 0; i < count; ++i) {
+			if (cancel.stop_requested())
+				throw std::runtime_error("Dense light-time calculation cancelled");
 			const auto reception = sample(receptionMjd[i]);
 			if (!reception)
 				throw std::runtime_error("Reception epoch outside dense trajectory");
@@ -112,12 +114,10 @@ namespace orbital_core::obs {
 		return result;
 	}
 
-	inline DenseLightTimeSeries propagateDenseLightTimeSeries(const Vec3D& initialR, const Vec3D& initialV,
-	                                                          double epochMjd, const std::vector<double>& epochs,
-	                                                          const std::vector<Vec3D>& observers,
-	                                                          const std::vector<bool>& optical,
-	                                                          const NBodyPropagator& propagator, const NonGravModel& ng,
-	                                                          bool variational, bool sensitivities)
+	inline DenseLightTimeSeries propagateDenseLightTimeSeries(
+	    const Vec3D& initialR, const Vec3D& initialV, double epochMjd, const std::vector<double>& epochs,
+	    const std::vector<Vec3D>& observers, const std::vector<bool>& optical, const NBodyPropagator& propagator,
+	    const NonGravModel& ng, bool variational, bool sensitivities, std::stop_token cancel = {})
 	{
 		if (observers.size() != epochs.size() || optical.size() != epochs.size())
 			throw std::invalid_argument("Light-time input size mismatch");
@@ -137,17 +137,17 @@ namespace orbital_core::obs {
 				start = *first;
 		}
 		auto trajectory =
-		    propagator.propagateDenseMjd(initialR, initialV, epochMjd, start, *last, ng, variational, sensitivities);
+		    propagator.propagateDenseMjd(initialR, initialV, epochMjd, start, *last, ng, variational, sensitivities, cancel);
 		auto sample = [&](double mjd) {
 			auto state = trajectory.at(mjd);
 			if (!state && mjd < start) {
 				start = mjd - 0.25;
-				propagator.extendDenseBackwardMjd(trajectory, start, ng, variational, sensitivities);
+				propagator.extendDenseBackwardMjd(trajectory, start, ng, variational, sensitivities, cancel);
 				state = trajectory.at(mjd);
 			}
 			return state;
 		};
-		return solveDenseLightTimeSeries(sample, epochs, observers, optical);
+		return solveDenseLightTimeSeries(sample, epochs, observers, optical, cancel);
 	}
 
 	// Solve all emission epochs together so one integration covers the complete arc.
@@ -167,6 +167,8 @@ namespace orbital_core::obs {
 		result.emissionOffsetDays.resize(count);
 		std::vector<Vec3D> receptionSun(count);
 		for (std::size_t i = 0; i < count; ++i) {
+			if (cancel.stop_requested())
+				return {};
 			if (!optical[i])
 				continue;
 			receptionSun[i] = sunPositionMjd(receptionMjd[i]);
@@ -182,6 +184,8 @@ namespace orbital_core::obs {
 			else {
 				result.states.resize(count);
 				for (std::size_t i = 0; i < count; ++i) {
+					if (cancel.stop_requested())
+						return {};
 					const auto state = Calculations::propagateKeplerState(initial, result.emissionMjd[i] - epochMjd);
 					if (!state.isValid())
 						throw std::runtime_error("Light-time propagation failed");
@@ -195,6 +199,8 @@ namespace orbital_core::obs {
 			bool converged = true;
 			std::vector<double> next = result.emissionMjd;
 			for (std::size_t i = 0; i < count; ++i) {
+				if (cancel.stop_requested())
+					return {};
 				if (!optical[i])
 					continue;
 				const Vec3D ray =

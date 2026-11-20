@@ -219,6 +219,11 @@ bool SolutionViewModel::hasSigmas() const
 	                      m_snapshot->fit.uncertainty.cometaryElementCovariance.has_value());
 }
 
+double SolutionViewModel::orbitQualityU() const
+{
+	return m_snapshot ? m_snapshot->fit.uncertainty.orbitQualityU : std::numeric_limits<double>::quiet_NaN();
+}
+
 QString SolutionViewModel::epochMjd() const
 {
 	return m_snapshot ? QString::number(m_snapshot->fit.orbit->epochMjd(), 'f', 9) : QString();
@@ -269,6 +274,27 @@ QVariantList SolutionViewModel::stateVector() const
 	const auto r = m_snapshot->fit.orbit->getR();
 	const auto v = m_snapshot->fit.orbit->getV() * Constants::GAUSS_K;
 	return {r.x, r.y, r.z, v.x, v.y, v.z};
+}
+
+QVariantList SolutionViewModel::stateVectorSigmas() const
+{
+	if (!m_snapshot)
+		return {};
+	const auto& fit = m_snapshot->fit;
+	const bool sameEpoch = fit.orbit && fit.fitEpochOrbit && fit.orbit->getEpoch() == fit.fitEpochOrbit->getEpoch();
+	const auto& uncertainty = fit.uncertainty;
+	const auto* covariance =
+	    fit.orbit && uncertainty.outputStateCovariance &&
+	            uncertainty.outputStateCovarianceEpochJdTdb == fit.orbit->getEpoch()
+	        ? &*uncertainty.outputStateCovariance
+	        : (sameEpoch && uncertainty.hasStateCovariance() ? &uncertainty.cartesianStateCovariance : nullptr);
+	const double nan = std::numeric_limits<double>::quiet_NaN();
+	QVariantList values;
+	for (int i = 0; i < 6; ++i) {
+		const double variance = covariance ? (*covariance)(i, i) : nan;
+		values.append(std::isfinite(variance) && variance >= 0.0 ? std::sqrt(variance) : nan);
+	}
+	return values;
 }
 
 bool SolutionViewModel::hasGaiaObservations() const
@@ -325,6 +351,20 @@ double SolutionViewModel::absoluteMagnitude() const
 	return m_photometry.absoluteMagnitude.value_or(std::numeric_limits<double>::quiet_NaN());
 }
 
+double SolutionViewModel::absoluteMagnitudeSigma() const
+{
+	if (!m_snapshot || cometPhotometry())
+		return std::numeric_limits<double>::quiet_NaN();
+	return m_snapshot->fit.uncertainty.absoluteMagnitudeOrbitSigma.value_or(std::numeric_limits<double>::quiet_NaN());
+}
+
+double SolutionViewModel::absoluteMagnitudePhotometricSigma() const
+{
+	if (!m_snapshot || cometPhotometry())
+		return std::numeric_limits<double>::quiet_NaN();
+	return m_photometry.measurementSigma.value_or(std::numeric_limits<double>::quiet_NaN());
+}
+
 bool SolutionViewModel::cometPhotometry() const
 {
 	if (!m_snapshot)
@@ -340,6 +380,34 @@ double SolutionViewModel::cometTotalMagnitude() const
 double SolutionViewModel::cometNuclearMagnitude() const
 {
 	return m_cometPhotometry.nuclear.absoluteMagnitude.value_or(std::numeric_limits<double>::quiet_NaN());
+}
+
+double SolutionViewModel::cometTotalMagnitudeSigma() const
+{
+	return m_snapshot && cometPhotometry() ? m_snapshot->fit.uncertainty.cometTotalMagnitudeOrbitSigma.value_or(
+	                                             std::numeric_limits<double>::quiet_NaN())
+	                                       : std::numeric_limits<double>::quiet_NaN();
+}
+
+double SolutionViewModel::cometNuclearMagnitudeSigma() const
+{
+	return m_snapshot && cometPhotometry() ? m_snapshot->fit.uncertainty.cometNuclearMagnitudeOrbitSigma.value_or(
+	                                             std::numeric_limits<double>::quiet_NaN())
+	                                       : std::numeric_limits<double>::quiet_NaN();
+}
+
+double SolutionViewModel::cometTotalMagnitudePhotometricSigma() const
+{
+	return m_snapshot && cometPhotometry()
+	           ? m_cometPhotometry.total.measurementSigma.value_or(std::numeric_limits<double>::quiet_NaN())
+	           : std::numeric_limits<double>::quiet_NaN();
+}
+
+double SolutionViewModel::cometNuclearMagnitudePhotometricSigma() const
+{
+	return m_snapshot && cometPhotometry()
+	           ? m_cometPhotometry.nuclear.measurementSigma.value_or(std::numeric_limits<double>::quiet_NaN())
+	           : std::numeric_limits<double>::quiet_NaN();
 }
 
 QVariantList SolutionViewModel::sizeEstimates() const

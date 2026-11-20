@@ -68,7 +68,7 @@ namespace orbital_core::forces {
 	template <typename T>
 	concept ForceModel =
 	    requires(const T& m, ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& dadv) {
-		    { m.evaluate(ctx, a, dadr, dadv) } noexcept;
+		    { m.evaluate(ctx, a, dadr, dadv) };
 		    { m.name() } noexcept -> std::convertible_to<std::string_view>;
 	    };
 }  // namespace orbital_core::forces

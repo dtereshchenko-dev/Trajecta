@@ -3,6 +3,7 @@
 #include "orbital_core/Constants.h"
 #include "orbital_core/DE440Source.h"
 #include "orbital_core/Orbit.h"
+#include "orbital_core/SpkReader.h"
 #include "orbital_core/Types.h"
 #include "orbital_core/hazard/CloseApproach.h"
 #include "orbital_core/hazard/CloseApproachSearch.h"
@@ -12,6 +13,7 @@
 #include "orbital_core/hazard/PlanetData.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
@@ -327,11 +329,21 @@ class CloseApproachTest : public ::testing::Test {
 		m_de440 = std::make_unique<DE440Source>();
 		if (m_de440->isAvailable())
 			setDefaultEphemerisSource(m_de440.get());
+		m_sb441 = std::make_unique<SpkReader>();
+		if (!m_sb441->isAvailable())
+			if (const char* path = std::getenv("TRAJECTA_SB441"))
+				m_sb441 = std::make_unique<SpkReader>(path);
+		if (m_sb441->isAvailable())
+			setDefaultAsteroidSource(m_sb441.get());
 
 		hasDE440 = m_de440->isAvailable();
 	}
 
-	void TearDown() override { setDefaultEphemerisSource(nullptr); }
+	void TearDown() override
+	{
+		setDefaultAsteroidSource(nullptr);
+		setDefaultEphemerisSource(nullptr);
+	}
 
 	Orbit_p makeApophis() const
 	{
@@ -348,6 +360,7 @@ class CloseApproachTest : public ::testing::Test {
 	}
 
 	std::unique_ptr<DE440Source> m_de440;
+	std::unique_ptr<SpkReader> m_sb441;
 	NBodyPropagator m_propagator;
 	bool hasDE440{false};
 };
@@ -566,6 +579,8 @@ TEST_F(CloseApproachTest, SurfaceMonitoredMissPreservesGrid)
 
 TEST_F(CloseApproachTest, AA2014SameVaImpactPericentersMatchReference)
 {
+	if (!m_sb441->isAvailable())
+		GTEST_SKIP() << "SB441 test data is unavailable";
 	if (!hasDE440)
 		GTEST_SKIP() << "DE440 kernel not present";
 

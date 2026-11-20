@@ -707,6 +707,44 @@ TEST_F(ExporterRwoTest, AstrometricRejectionDoesNotDiscardPhotometryOrItsLeaveOn
 	EXPECT_EQ(result.rows[5].magSelected, 0);
 }
 
+TEST_F(ExporterRwoTest, AstrometricRejectionAloneDoesNotRejectValidMagnitude)
+{
+	for (std::size_t i = 0; i < 6; ++i) {
+		auto row = addObservation("309", 0.2);
+		row.helioDistAu = row.geoDistAu = 1.0;
+		row.magBand = observations.back().magBand = 'V';
+		row.magSigma = 1.0;
+		row.mag = observations.back().MAG = i == 5 ? 20.2 : 20.0;
+		fit.allResiduals.add(row);
+		if (i < 5) {
+			fit.residuals.add(row);
+			fit.keptObsIndices.push_back(i);
+		}
+	}
+	const auto result = save();
+	ASSERT_EQ(result.rows.size(), 6u);
+	EXPECT_EQ(result.rows[5].astSelected, 0);
+	EXPECT_EQ(result.rows[5].magSelected, 1);
+}
+
+TEST_F(ExporterRwoTest, PhotometricFlagDoesNotRejectAstrometryOrChangeMean)
+{
+	for (std::size_t i = 0; i < 5; ++i) {
+		auto row = addObservation("309", 0.2);
+		row.helioDistAu = row.geoDistAu = 1.0;
+		row.magBand = observations.back().magBand = 'V';
+		row.magSigma = 0.7;
+		row.mag = observations.back().MAG = i == 4 ? 25.0 : 20.0;
+		fit.residuals.add(row);
+	}
+	const auto result = save();
+	ASSERT_EQ(result.rows.size(), 5u);
+	EXPECT_EQ(result.rows[4].astSelected, 1);
+	EXPECT_EQ(result.rows[4].magSelected, 0);
+	ASSERT_TRUE(result.rows[4].magResidual);
+	EXPECT_DOUBLE_EQ(*result.rows[4].magResidual, 4.0);
+}
+
 TEST_F(ExporterRwoTest, CometPhotometryIncludesAstrometricallyRejectedMeasurements)
 {
 	for (std::size_t i = 0; i < 2; ++i) {
@@ -738,6 +776,33 @@ TEST_F(ExporterRwoTest, CometPhotometryIncludesAstrometricallyRejectedMeasuremen
 	EXPECT_NEAR(*result.rows[1].magResidual, 1.0, 0.0051);
 	EXPECT_EQ(result.rows[1].astSelected, 0);
 	EXPECT_EQ(result.rows[1].magSelected, 1);
+}
+
+TEST_F(ExporterRwoTest, CometPhotometricOutliersRemainInTheirComponentMean)
+{
+	for (std::size_t i = 0; i < 10; ++i) {
+		auto row = addObservation("309", 0.2);
+		row.helioDistAu = row.geoDistAu = 1.0;
+		row.nuclearMagnitude = i % 2 == 0;
+		row.magBand = observations.back().magBand = *row.nuclearMagnitude ? 'N' : 'T';
+		row.magSigma = 0.5;
+		row.mag = observations.back().MAG = i == 8 ? 20.0 : (*row.nuclearMagnitude ? 16.0 : 12.0);
+		fit.residuals.add(row);
+	}
+	ExportContext context;
+	context.objectName = "2020VV";
+	context.fitResult = &fit;
+	context.observations = observations;
+	context.rootDirectory = root;
+	context.cometPhotometry = true;
+	const auto report = Exporter::save(context, {ExportProduct::Residuals});
+	const auto result = readRwo(report.directory / "weighted_residuals_rwo.txt");
+	ASSERT_EQ(result.rows.size(), 10u);
+	EXPECT_EQ(result.rows[8].astSelected, 1);
+	EXPECT_EQ(result.rows[8].magSelected, 1);
+	ASSERT_TRUE(result.rows[8].magResidual);
+	EXPECT_NEAR(*result.rows[8].magResidual, 3.2, 0.0051);
+	EXPECT_EQ(result.rows[9].magSelected, 1);
 }
 
 TEST_F(ExporterRwoTest, PrefersFinalSelectedMetricOverFullSetDiagnosticPass)

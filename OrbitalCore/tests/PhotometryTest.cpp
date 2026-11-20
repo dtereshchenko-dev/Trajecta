@@ -55,13 +55,34 @@ TEST(Photometry, HAndResidualsUseOneSigmaWeightedSolution)
 	EXPECT_NEAR(*solution.absoluteMagnitude, expected, 1e-13);
 	double weightedResidual = 0.0;
 	for (const auto& row : rows) {
-		const auto result = photo::evaluate(row, solution);
+		const auto result = photo::evaluate(row, solution, true);
 		ASSERT_TRUE(result.residual);
 		EXPECT_TRUE(result.selected);
 		EXPECT_DOUBLE_EQ(result.sigma, row.magSigma);
 		weightedResidual += *result.residual / result.sigma;
 	}
 	EXPECT_NEAR(weightedResidual, 0.0, 1e-12);
+}
+
+TEST(Photometry, FormalMagnitudeSigmaUsesTheSameWeightsAsH)
+{
+	const std::array rows{magnitude(20.0, 'V', 0.1), magnitude(20.5, 'V', 0.2), magnitude(19.8, 'V', 0.4),
+	                      magnitude(20.2, 'V', 0.8)};
+	const auto solution = photo::fit(rows);
+	ASSERT_TRUE(solution.absoluteMagnitude);
+	EXPECT_NEAR(*solution.absoluteMagnitude, 20.12, 1e-12);
+	EXPECT_NEAR(solution.rms, 0.207165747793, 1e-12);
+	ASSERT_TRUE(solution.measurementSigma);
+	const double sumWeights = 1.0 / 0.1 + 1.0 / 0.2 + 1.0 / 0.4 + 1.0 / 0.8;
+	EXPECT_NEAR(*solution.measurementSigma, std::sqrt(4.0) / sumWeights, 1e-14);
+	const std::array equalRows{magnitude(20.0, 'V', 0.4), magnitude(21.0, 'V', 0.4)};
+	const auto equal = photo::fit(equalRows);
+	ASSERT_TRUE(equal.measurementSigma);
+	EXPECT_NEAR(*equal.measurementSigma, 0.4 / std::sqrt(2.0), 1e-14);
+	const auto single = photo::fit(std::span<const Residual>(&rows[0], 1));
+	ASSERT_TRUE(single.measurementSigma);
+	EXPECT_DOUBLE_EQ(*single.measurementSigma, 0.1);
+	EXPECT_FALSE(photo::fit({}).measurementSigma);
 }
 
 TEST(Photometry, UnsupportedBandsAreNotSilentlyInterpretedAsV)
@@ -73,7 +94,7 @@ TEST(Photometry, UnsupportedBandsAreNotSilentlyInterpretedAsV)
 		ASSERT_TRUE(solution.absoluteMagnitude);
 		EXPECT_DOUBLE_EQ(*solution.absoluteMagnitude, 20.0);
 		EXPECT_EQ(solution.count, 1u);
-		EXPECT_FALSE(photo::evaluate(rows.back(), solution).residual);
+		EXPECT_FALSE(photo::evaluate(rows.back(), solution, false).residual);
 	}
 }
 
@@ -92,6 +113,22 @@ TEST(Photometry, HgPhaseFunctionIsUnchanged)
 	EXPECT_NEAR(*solution.absoluteMagnitude, expected, 1e-13);
 }
 
+TEST(Photometry, HgPhaseDerivativeMatchesCentralDifferences)
+{
+	for (const double phase : {0.001, 0.05, 0.6, 1.5, 2.7}) {
+		for (const double g : {0.0, 0.15, 0.5, 1.0}) {
+			SCOPED_TRACE(phase);
+			SCOPED_TRACE(g);
+			const auto [value, derivative] = Calculations::hgPhaseFunctionWithDerivative(phase, g);
+			const double h = 1e-7;
+			const double reference =
+			    (Calculations::hgPhaseFunction(phase + h, g) - Calculations::hgPhaseFunction(phase - h, g)) / (2.0 * h);
+			EXPECT_DOUBLE_EQ(value, Calculations::hgPhaseFunction(phase, g));
+			EXPECT_NEAR(derivative, reference, std::max(1.0, std::abs(reference)) * 1e-7);
+		}
+	}
+}
+
 TEST(Photometry, MissingAndInvalidSamplesDoNotBiasH)
 {
 	auto invalid = magnitude(21.0);
@@ -101,7 +138,9 @@ TEST(Photometry, MissingAndInvalidSamplesDoNotBiasH)
 	ASSERT_TRUE(solution.absoluteMagnitude);
 	EXPECT_DOUBLE_EQ(*solution.absoluteMagnitude, 20.0);
 	EXPECT_EQ(solution.count, 1u);
-	EXPECT_FALSE(photo::evaluate(invalid, solution).residual);
+	ASSERT_TRUE(solution.measurementSigma);
+	EXPECT_DOUBLE_EQ(*solution.measurementSigma, 0.7);
+	EXPECT_FALSE(photo::evaluate(invalid, solution, false).residual);
 	EXPECT_FALSE(photo::fit({}).absoluteMagnitude);
 }
 
@@ -111,8 +150,39 @@ TEST(Photometry, LeaveOneOutFlagsDoNotSilentlyChangeTheMean)
 	const auto solution = photo::fit(rows);
 	ASSERT_TRUE(solution.absoluteMagnitude);
 	EXPECT_NEAR(*solution.absoluteMagnitude, 21.0, 1e-13);
+	EXPECT_EQ(solution.count, 5u);
+	ASSERT_TRUE(solution.measurementSigma);
+	EXPECT_NEAR(*solution.measurementSigma, 0.7 / std::sqrt(5.0), 1e-14);
 	EXPECT_FALSE(photo::evaluate(rows.back(), solution).selected);
 	EXPECT_TRUE(photo::evaluate(rows.front(), solution).selected);
+	const auto rejected = photo::evaluate(rows.back(), solution);
+	ASSERT_TRUE(rejected.residual);
+	EXPECT_NEAR(*rejected.residual, 4.0, 1e-13);
+}
+
+TEST(Photometry, CometTypesIncludeOutliersAndReportMeasurementSigma)
+{
+	std::vector<Residual> rows;
+	for (int i = 0; i < 5; ++i) {
+		auto total = magnitude(12.0, 'T', 0.4);
+		total.nuclearMagnitude = false;
+		rows.push_back(total);
+		auto nuclear = magnitude(i == 4 ? 20.0 : 16.0, 'N', 0.5);
+		nuclear.nuclearMagnitude = true;
+		rows.push_back(nuclear);
+	}
+	const auto result = photo::fitComet(rows);
+	ASSERT_TRUE(result.total.absoluteMagnitude && result.nuclear.absoluteMagnitude);
+	EXPECT_NEAR(*result.total.absoluteMagnitude, 12.0, 1e-13);
+	EXPECT_NEAR(*result.nuclear.absoluteMagnitude, 16.8, 1e-13);
+	EXPECT_EQ(result.total.count, 5u);
+	EXPECT_EQ(result.nuclear.count, 5u);
+	ASSERT_TRUE(result.total.measurementSigma && result.nuclear.measurementSigma);
+	EXPECT_NEAR(*result.total.measurementSigma, 0.4 / std::sqrt(5.0), 1e-14);
+	EXPECT_NEAR(*result.nuclear.measurementSigma, 0.5 / std::sqrt(5.0), 1e-14);
+	const auto outlier = photo::evaluateComet(rows[9], result);
+	ASSERT_TRUE(outlier.residual);
+	EXPECT_TRUE(outlier.selected);
 }
 
 TEST(Photometry, Mpc80AndAdesWithoutRmsMagHaveTheSameFallback)
@@ -154,10 +224,10 @@ TEST(Photometry, CometMagnitudesUseSeparateTypesAndFixedSlope)
 	const auto predicted = photo::cometMagnitude(*result.total.absoluteMagnitude, result.total.slope, 2.0, 0.5);
 	ASSERT_TRUE(predicted);
 	EXPECT_NEAR(*predicted, total.mag, 1e-12);
-	const auto evaluation = photo::evaluateComet(total, result);
+	const auto evaluation = photo::evaluateComet(total, result, true);
 	ASSERT_TRUE(evaluation.residual);
 	EXPECT_NEAR(*evaluation.residual, 0.0, 1e-12);
-	EXPECT_FALSE(photo::evaluateComet(rows.back(), result).residual);
+	EXPECT_FALSE(photo::evaluateComet(rows.back(), result, false).residual);
 }
 
 TEST(Photometry, CometMagnitudeTypeIsReadFromMpcAndAdes)
@@ -201,8 +271,8 @@ TEST(Photometry, NonDefaultCoefficientsAreUsedInReductionAndPrediction)
 	ASSERT_TRUE(solution.nuclear.absoluteMagnitude);
 	EXPECT_NEAR(*solution.total.absoluteMagnitude, 12.0, 1e-12);
 	EXPECT_NEAR(*solution.nuclear.absoluteMagnitude, 16.0, 1e-12);
-	ASSERT_TRUE(photo::evaluateComet(nuclear, solution).residual);
-	EXPECT_NEAR(*photo::evaluateComet(nuclear, solution).residual, 0.0, 1e-12);
+	ASSERT_TRUE(photo::evaluateComet(nuclear, solution, true).residual);
+	EXPECT_NEAR(*photo::evaluateComet(nuclear, solution, true).residual, 0.0, 1e-12);
 	auto asteroid = magnitude(20.0);
 	asteroid.phaseAngleRad = 0.6;
 	const auto h = photo::fit(std::span<const Residual>(&asteroid, 1), options.asteroidG);

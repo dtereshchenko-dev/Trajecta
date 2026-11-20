@@ -32,6 +32,25 @@ sum of squared weights. The fit reads the full residual collection when
 available, so inclusion in the orbital fit and inclusion in this photometric
 estimate are not equivalent.
 
+All usable magnitudes contribute to the estimate; there is no independent
+photometric outlier rejection. For asteroids, the RWO export may flag a
+photometric residual using a leave-one-out check, but that flag does not
+remove the measurement from the fitted H or its uncertainties.
+
+The displayed `σ phot.` for H is the formal contribution of the magnitude errors,
+assuming independent measurements, fixed geometry and fixed G. For the `N`
+usable magnitudes and the same `1 / σmag` weights as the H estimate, it is
+`sqrt(N) / sum(1 / σmag)`. Adopted fallback errors enter when measured errors
+are unavailable. This is not the photometric RMS and does not account for
+correlated errors, rotational variability, uncertainty in G, systematic band
+corrections or uncertainty in the observation selection.
+
+The separate orbital contribution to σH, displayed as `σ orbit`, is
+induced by the fit-epoch orbital and estimated non-gravitational parameter
+covariance. It propagates the full covariance through the photometric gradient
+using variational trajectory and light-time derivatives. The two contributions
+are not combined into a total uncertainty.
+
 ## Comets
 
 Total and nuclear magnitudes are fitted separately when their type is known.
@@ -46,10 +65,19 @@ component uses the configured phase coefficient `PHCOF` in mag/degree; the
 total component uses zero. Defaults are `K1 = 10`, `K2 = 10` and `PHCOF = 0`.
 The slopes and phase coefficient are fixed settings, not fitted parameters.
 Measurements without a known total/nuclear type do not enter these component
-estimates. Usable magnitudes are combined with `1 / σmag` weights.
+estimates. Usable magnitudes are combined with `1 / σmag` weights, without
+independent photometric outlier rejection.
 Unlike the asteroid H–G estimator, the comet estimator requires a positive,
 finite magnitude uncertainty after input processing. Measurements without one
 are skipped.
+
+The `σ phot.` values for M1 and M2 are their formal independent
+magnitude-error contributions, calculated from the usable measurements with
+the same formula as σH. They exclude correlated errors, activity, selection
+uncertainty and uncertainty in the fixed K1, K2 and PHCOF settings. The
+separate orbital contributions, displayed as `σ orbit`, propagate fit-epoch
+orbital and estimated non-gravitational parameter covariance through the
+corresponding models using variational trajectory and light-time derivatives.
 
 ## Size and atmospheric calculations
 

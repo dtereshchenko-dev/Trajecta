@@ -407,7 +407,8 @@ TEST_F(EphemerisTest, RelativeMotion2026Qq8MatchesSavedGeocentricEphemeris)
 	EXPECT_NEAR(*uncertainty[eventIndex].start3SigmaDays, expectedSigma(true), expectedSigma(true) * 0.02);
 	EXPECT_NEAR(*uncertainty[eventIndex].end3SigmaDays, expectedSigma(false), expectedSigma(false) * 0.02);
 	ASSERT_TRUE(combined.captures[eventIndex].start3SigmaDays);
-	EXPECT_DOUBLE_EQ(*combined.captures[eventIndex].start3SigmaDays, *uncertainty[eventIndex].start3SigmaDays);
+	EXPECT_NEAR(*combined.captures[eventIndex].start3SigmaDays, *uncertainty[eventIndex].start3SigmaDays,
+	            *uncertainty[eventIndex].start3SigmaDays * 1e-12);
 	const auto hill = std::find_if(hillPassages.begin(), hillPassages.end(), [&](const auto& passage) {
 		return passage.entryMjdTdb < closest->mjdTdb && passage.exitMjdTdb > closest->mjdTdb;
 	});
@@ -561,6 +562,13 @@ TEST_F(EphemerisTest, RelativeMotionRefines2023BuCloseApproachUsingPropagatedSta
 	request.epochsMjdTdb = {59969.0, 59969.5, 59970.0, 59970.5, 59971.0, 59971.5, 59972.0};
 	const auto refined = oc::computeRefinedRelativeMotion(request);
 	ASSERT_GT(refined.size(), request.epochsMjdTdb.size());
+	request.maxRefinedSamples = refined.size();
+	EXPECT_EQ(oc::computeRefinedRelativeMotion(request).size(), refined.size());
+	request.maxRefinedSamples = refined.size() - 1;
+	EXPECT_THROW((void)oc::computeRefinedRelativeMotion(request), std::length_error);
+	request.maxRefinedSamples = request.epochsMjdTdb.size() - 1;
+	EXPECT_THROW((void)oc::computeRefinedRelativeMotion(request), std::length_error);
+	request.maxRefinedSamples.reset();
 	for (const auto epoch : request.epochsMjdTdb) {
 		EXPECT_TRUE(std::any_of(refined.begin(), refined.end(), [epoch](const auto& s) { return s.mjdTdb == epoch; }));
 	}

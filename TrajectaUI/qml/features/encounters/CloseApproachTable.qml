@@ -26,12 +26,13 @@ Item {
                 anchors.margins: 6
                 spacing: 3
                 CustomText {
+                    objectName: "approach-header-text-" + heading.column
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     text: heading.model.display
                     font.pixelSize: 10
                     color: AppTheme.muted
-                    horizontalAlignment: heading.column >= 2 ? Text.AlignRight : Text.AlignLeft
+                    horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.Wrap
                 }
                 CustomIcon {
@@ -69,17 +70,19 @@ Item {
         delegate: Rectangle {
             id: cell
             required property string display
+            required property int row
             required property int column
             implicitHeight: 34
             color: AppTheme.base
             CustomText {
+                objectName: "approach-cell-text-" + cell.row + "-" + cell.column
                 anchors.fill: parent
                 anchors.leftMargin: 6
                 anchors.rightMargin: 6
                 text: cell.display
                 numeric: cell.column !== 1
                 font.pixelSize: 11
-                horizontalAlignment: cell.column >= 2 ? Text.AlignRight : Text.AlignLeft
+                horizontalAlignment: Text.AlignLeft
             }
             Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AppTheme.lineSoft }
         }

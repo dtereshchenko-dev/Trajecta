@@ -19,13 +19,15 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        Layout.bottomMargin: root.solution.nonGravEnabled ? 10 : 0
+        Layout.preferredHeight: root.detailed ? -1 : 42
+        Layout.bottomMargin: root.detailed && root.solution.nonGravEnabled ? 10 : 0
         spacing: 12
-        SectionHeading { title: qsTr("Non-gravitational"); Layout.fillWidth: !root.detailed }
+        SectionHeading { visible: root.detailed; title: qsTr("Non-gravitational") }
+        CustomText { visible: !root.detailed; text: qsTr("Non-gravitational"); font.pixelSize: 11; Layout.fillWidth: true }
         CustomText {
             objectName: "non-grav-model"
             text: root.solution.nonGravModel || "\u2014"
-            color: root.detailed && root.solution.nonGravEnabled ? AppTheme.accent : AppTheme.muted
+            color: root.solution.nonGravEnabled ? AppTheme.accent : AppTheme.muted
             font.pixelSize: 11
             Layout.maximumWidth: root.width / 2
             wrapMode: Text.Wrap

@@ -33,8 +33,6 @@ perturbations in the calculation settings when you want to use it.
 | Astrometric weights: VFCC17 | Observation weights when the VFCC17 scheme is selected. |
 | Astrometric debias: FCCT14 and EFCC18 | Catalogue corrections when the corresponding debias model is selected. |
 
-![Earth orientation sources with an available recent PCK update](../../assets/data-sources/pck-update.png)
-
 The time-varying Earth gravity pole uses PCK when it covers the epoch. Outside
 PCK coverage, the gravity model falls back to C04; beyond its observed records,
 the pole is extrapolated rather than measured. The predictive PCK also contains
@@ -75,10 +73,10 @@ dialog to see the current status.
 - Restart Trajecta when the dialog asks you to reload changed data. Also check
   date coverage: a connected file may not cover the epoch of your calculation.
 
-When an observatory catalogue has an update, its **Update** button appears in
-the corresponding row:
+When an observatory catalogue or PCK file has an update, its **Update** button
+appears in the corresponding row:
 
-![An available optical observatory catalogue update](../../assets/data-sources/observatory-update.png)
+![Earth orientation sources with an available recent PCK update](../../assets/data-sources/pck-update.png)
 
 Gaia FPR observations are separate from these runtime sources. For a suitable
 object, use **Add Gaia FPR and re-solve** on the solution page.

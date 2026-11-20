@@ -78,6 +78,11 @@ namespace orbital_core::hazard {
 		auto* eph = getDefaultEphemerisSource();
 		if (!eph || !eph->isAvailable())
 			throw std::runtime_error("Planetary ephemerides are unavailable");
+		// Reject unsupported intervals before starting worker threads, rather than
+		// producing a report in which every clone failed for the same reason.
+		(void)eph->queryMjd(EphemerisPlanet::Earth, orbit.epochMjd());
+		(void)eph->queryMjd(EphemerisPlanet::Earth, config.startMjdTdb);
+		(void)eph->queryMjd(EphemerisPlanet::Earth, config.endMjdTdb);
 		const auto rotation = bodyFixedTransformMjd(config.target, config.startMjdTdb, eph);
 		if (!rotation.valid || !bodyFixedTransformMjd(config.target, config.endMjdTdb, eph).valid)
 			throw std::runtime_error("Body-fixed orientation is unavailable for the requested interval");
@@ -108,6 +113,11 @@ namespace orbital_core::hazard {
 				propagator.nonGrav() = clone.nonGrav;
 				mc::scan(clone, config, propagator, *eph, stop);
 				clone.status = McCloneStatus::Complete;
+			} catch (const EphemerisError&) {
+				if (!stop.stop_requested())
+					throw;
+				clone.status = McCloneStatus::Cancelled;
+				clone.entry.reset();
 			} catch (const std::exception& e) {
 				clone.status = stop.stop_requested() ? McCloneStatus::Cancelled : McCloneStatus::PropagationFailed;
 				clone.error = e.what();
@@ -123,6 +133,7 @@ namespace orbital_core::hazard {
 		std::mutex progressMutex;
 		int done = 0;
 		std::exception_ptr callbackError;
+		std::exception_ptr ephemerisError;
 #pragma omp parallel for schedule(dynamic, 1) num_threads(config.workers)
 		for (int i = 0; i < config.samples; ++i) {
 			if (stop.stop_requested())
@@ -147,6 +158,15 @@ namespace orbital_core::hazard {
 					initialize(clone, *fit.fitEpochOrbit, fit.finalNonGrav);
 				}
 				propagate(clone, stop.get_token());
+			} catch (const EphemerisError& e) {
+				clone.status = McCloneStatus::PropagationFailed;
+				clone.error = e.what();
+				{
+					std::lock_guard lock(progressMutex);
+					if (!ephemerisError)
+						ephemerisError = std::current_exception();
+				}
+				stop.request_stop();
 			} catch (const std::exception& e) {
 				clone.status = stop.stop_requested()                     ? McCloneStatus::Cancelled
 				               : config.method == McMethod::Observations ? McCloneStatus::FitFailed
@@ -166,6 +186,8 @@ namespace orbital_core::hazard {
 		}
 		if (callbackError)
 			std::rethrow_exception(callbackError);
+		if (ephemerisError)
+			std::rethrow_exception(ephemerisError);
 		result.cancelled = cancel.stop_requested();
 		mc::summarize(result);
 		if (config.semilinearContours && !result.cancelled) {

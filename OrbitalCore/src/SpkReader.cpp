@@ -272,7 +272,11 @@ struct SpkReader::Impl {
 		for (auto& [tid, vec] : segByTarget) {
 			std::sort(vec.begin(), vec.end(), [](const Segment& a, const Segment& b) { return a.etStart < b.etStart; });
 			totalSegs += vec.size();
-			for (const auto& seg : vec) {
+			for (auto& seg : vec) {
+				if (!ensureTail(seg)) {
+					source.reset();
+					return false;
+				}
 				if (seg.center == NAIF_SUN_ID)
 					++nSun;
 				else if (seg.center == NAIF_SSB_ID)
@@ -327,10 +331,9 @@ struct SpkReader::Impl {
 		return true;
 	}
 
-	bool evaluate(const Segment& segIn, orbital_core::detail::SplitTime et, Vec3D& R_km, Vec3D* V_km_s) const
+	bool evaluate(const Segment& seg, orbital_core::detail::SplitTime et, Vec3D& R_km, Vec3D* V_km_s) const
 	{
-		Segment& seg = const_cast<Segment&>(segIn);
-		if (!ensureTail(seg))
+		if (!seg.tailRead)
 			return false;
 
 		if (!et.atOrAfter(seg.etStart) || !et.atOrBefore(seg.etEnd))
@@ -441,6 +444,8 @@ std::string SpkReader::sourcePath() const { return d->available ? d->sourcePath 
 std::vector<int> SpkReader::targetIds() const
 {
 	std::vector<int> ids;
+	if (!d->available)
+		return ids;
 	ids.reserve(d->segByTarget.size());
 
 	for (const auto& [tid, _] : d->segByTarget)
@@ -492,24 +497,31 @@ Vec3D SpkReader::getPositionMjd(int naifId, double mjdTdb) const { return getPos
 
 Vec3D SpkReader::getPositionOffsetMjd(int naifId, double epochMjd, double offsetDays) const
 {
+	Vec3D result;
+	return queryPositionOffsetMjd(naifId, epochMjd, offsetDays, result) ? result : Vec3D{0.0, 0.0, 0.0};
+}
+
+bool SpkReader::queryPositionOffsetMjd(int naifId, double epochMjd, double offsetDays, Vec3D& result) const
+{
 	if (!d->available)
-		return {0.0, 0.0, 0.0};
+		return false;
 
 	const auto et = orbital_core::detail::SplitTime::sum(epochMjd, offsetDays).shifted(51544.5).scaled(86400.0);
 	const auto* seg = d->pickSegment(naifId, et);
 	if (!seg)
-		return {0.0, 0.0, 0.0};
+		return false;
 
 	Vec3D R_km;
 	if (!d->evaluate(*seg, et, R_km, nullptr))
-		return {0.0, 0.0, 0.0};
+		return false;
 
 	Vec3D R = rotateEqToEcl(R_km.x / AU_KM, R_km.y / AU_KM, R_km.z / AU_KM);
 
 	if (seg->center == NAIF_SSB_ID)
 		R = R - sunFromSsbEclAu(epochMjd + offsetDays + 2400000.5);
 
-	return R;
+	result = R;
+	return true;
 }
 
 static SpkReader* s_defaultAsteroidSource = nullptr;

@@ -7,7 +7,7 @@ ColumnLayout {
     id: summary
     required property SolutionViewModel solution
     spacing: 12
-    Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: AppTheme.line }
+    SectionHeading { title: qsTr("Earth geometry"); Layout.fillWidth: true; Layout.topMargin: 4 }
     RowLayout {
         Layout.fillWidth: true
         visible: summary.solution.phaStatus.length > 0
@@ -22,6 +22,6 @@ ColumnLayout {
         CustomText { text: qsTr("Earth MOID"); secondary: true; font.pixelSize: 11; Layout.fillWidth: true }
         InlineValue { objectName: "earth-moid"; value: UI.groupedNumber(summary.solution.earthMoidKm, 1); valueSize: 13; unit: "km" }
     }
-    CustomTextLink { objectName: "all-moids-link"; text: qsTr("All planets"); implicitHeight: 16; onClicked: details.open() }
+    CustomTextLink { objectName: "all-moids-link"; text: qsTr("All planets"); alwaysUnderline: true; implicitHeight: 16; onClicked: details.open() }
     MoidDetailsDialog { id: details; solution: summary.solution }
 }

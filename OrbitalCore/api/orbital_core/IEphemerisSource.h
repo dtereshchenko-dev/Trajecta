@@ -1,9 +1,17 @@
 #pragma once
 
 #include "orbital_core/Vec3D.h"
+#include "orbital_core/OrbitalCoreExport.h"
 #include <vector>
 #include <string>
 #include <optional>
+#include <stdexcept>
+
+// Ephemeris data are unavailable for a requested body or epoch.
+class ORBITAL_CORE_API EphemerisError : public std::runtime_error {
+   public:
+	using std::runtime_error::runtime_error;
+};
 
 struct EphemerisRecord {
 	double jd;  // JD TDB

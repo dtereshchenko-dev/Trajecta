@@ -28,6 +28,7 @@ void OrbitGeometry::rebuild()
 {
 	clear();
 	m_perihelionPos = QVector3D();
+	m_maximumRadius = 0.0;
 	setBounds(QVector3D(), QVector3D());
 
 	const double e = m_e;
@@ -38,13 +39,16 @@ void OrbitGeometry::rebuild()
 		return;
 	}
 
-	const double p = m_q > 0.0 ? m_q * (1.0 + e) : std::abs(a) * std::abs(e * e - 1.0);
+	const double p = m_q > 0.0 ? m_q * (1.0 + e) : std::abs(a) * std::abs(e - 1.0) * (e + 1.0);
 	if (!std::isfinite(p) || p <= 0.0) {
 		update();
 		return;
 	}
 
-	bool isElliptical = (e < 1.0);
+	const bool isElliptical = e < 1.0;
+	const double q = p / (1.0 + e);
+	const double ellipseA = isElliptical ? q / (1.0 - e) : 0.0;
+	const double ellipseShape = isElliptical ? std::sqrt((1.0 - e) * (1.0 + e)) : 0.0;
 
 	double nuMin, nuMax;
 	if (isElliptical) {
@@ -67,13 +71,30 @@ void OrbitGeometry::rebuild()
 	auto* vptr = reinterpret_cast<float*>(vertexData.data());
 
 	float minDist = std::numeric_limits<float>::max();
+	double maxRadius = 0.0;
 	QVector3D boundsMin(minDist, minDist, minDist);
 	QVector3D boundsMax(-minDist, -minDist, -minDist);
 
 	for (int i = 0; i < numPoints; ++i) {
-		double nu = nuMin + i * step;
-		double r = p / (1.0 + e * std::cos(nu));
-		QVector3D pt = orbitalToEcliptic(r * std::cos(nu), r * std::sin(nu));
+		double x, y;
+		if (isElliptical) {
+			// Uniform tangent direction resolves both ends of a highly eccentric ellipse.
+			const double angle = nuMin + i * step;
+			const double eccentricAnomaly = std::atan2(ellipseShape * std::sin(angle), std::cos(angle));
+			const double halfSin = std::sin(eccentricAnomaly * 0.5);
+			x = q - 2.0 * ellipseA * halfSin * halfSin;
+			y = ellipseA * ellipseShape * std::sin(eccentricAnomaly);
+			if (i == N) {
+				x = q;
+				y = 0.0;
+			}
+		} else {
+			const double nu = nuMin + i * step;
+			const double r = p / (1.0 + e * std::cos(nu));
+			x = r * std::cos(nu);
+			y = r * std::sin(nu);
+		}
+		QVector3D pt = orbitalToEcliptic(x, y);
 		if (!std::isfinite(pt.x()) || !std::isfinite(pt.y()) || !std::isfinite(pt.z())) {
 			m_perihelionPos = QVector3D();
 			update();
@@ -85,6 +106,7 @@ void OrbitGeometry::rebuild()
 		boundsMax.setX(std::max(boundsMax.x(), pt.x()));
 		boundsMax.setY(std::max(boundsMax.y(), pt.y()));
 		boundsMax.setZ(std::max(boundsMax.z(), pt.z()));
+		maxRadius = std::max(maxRadius, std::hypot(x, y));
 		*vptr++ = pt.x();
 		*vptr++ = pt.y();
 		*vptr++ = pt.z();
@@ -116,6 +138,7 @@ void OrbitGeometry::rebuild()
 	setPrimitiveType(QQuick3DGeometry::PrimitiveType::Lines);
 
 	setBounds(boundsMin, boundsMax);
+	m_maximumRadius = maxRadius;
 
 	update();
 }

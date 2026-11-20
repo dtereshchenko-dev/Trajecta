@@ -3,6 +3,7 @@
 #include "orbital_core/hazard/ManifoldOfVariations.h"
 #include "hazard/McBoundaryScan.h"
 #include "hazard/BoundaryScan.h"
+#include "hazard/GaussianSampler.h"
 #include "orbital_core/TimeScale.h"
 #include "orbital_core/hazard/SurfaceGeometry.h"
 #include "orbital_core/hazard/BodyFixedFrame.h"
@@ -71,6 +72,8 @@ namespace {
 		const auto second = hz::runIntervalMonteCarlo(source, config);
 		ASSERT_EQ(second.completed, 8);
 		for (int i = 0; i < 8; ++i) {
+			EXPECT_DOUBLE_EQ(first.clones[i].state[0],
+			                 first.nominal.state[0] + 1e-11 * hz::sampling::standardNormal(config.seed, i, 0));
 			EXPECT_EQ(first.clones[i].state, second.clones[i].state);
 			ASSERT_TRUE(first.clones[i].entry.has_value());
 			const auto& entry = *first.clones[i].entry;
@@ -85,6 +88,87 @@ namespace {
 		config.startMjdTdb = 234166.0;
 		config.endMjdTdb = 234166.002;
 		EXPECT_THROW((void)hz::runIntervalMonteCarlo(source, config), std::runtime_error);
+	}
+
+	TEST_F(IntervalMonteCarloTest, RejectsEpochOrIntervalOutsideEphemerisCoverage)
+	{
+		class LimitedEphemeris final : public FixedEarthMc {
+		   public:
+			double rejectedMjd{};
+			bool rejected{false};
+
+			EphemerisRecord queryMjd(EphemerisPlanet planet, double mjd) override
+			{
+				if (mjd == rejectedMjd) {
+					rejected = true;
+					throw std::runtime_error("outside ephemeris coverage");
+				}
+				return FixedEarthMc::queryMjd(planet, mjd);
+			}
+		} limited;
+
+		setDefaultEphemerisSource(&limited);
+		config.startMjdTdb = 60000.0005;
+		for (double rejectedMjd : {source.fit.fitEpochOrbit->epochMjd(), config.startMjdTdb, config.endMjdTdb}) {
+			limited.rejectedMjd = rejectedMjd;
+			limited.rejected = false;
+			EXPECT_THROW((void)hz::runIntervalMonteCarlo(source, config), std::runtime_error);
+			EXPECT_TRUE(limited.rejected);
+		}
+	}
+
+	TEST_F(IntervalMonteCarloTest, StopsWhenEphemerisFailsDuringNominalPropagation)
+	{
+		class FailingDuringScan final : public FixedEarthMc {
+		   public:
+			bool failed = false;
+
+			EphemerisRecord queryMjd(EphemerisPlanet planet, double mjd) override
+			{
+				if (mjd > 60000.00001 && mjd < 60000.00199) {
+					failed = true;
+					throw EphemerisError("missing ephemeris during propagation");
+				}
+				return FixedEarthMc::queryMjd(planet, mjd);
+			}
+		} failing;
+
+		setDefaultEphemerisSource(&failing);
+		int progressCalls = 0;
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(source, config, {}, [&](int, int) { ++progressCalls; }),
+		             EphemerisError);
+		EXPECT_TRUE(failing.failed);
+		EXPECT_EQ(progressCalls, 0);
+	}
+
+	TEST_F(IntervalMonteCarloTest, StopsWhenEphemerisFailsDuringClonePropagation)
+	{
+		class FailingAfterFirstClone final : public FixedEarthMc {
+		   public:
+			bool fail = false;
+			bool failed = false;
+
+			EphemerisRecord queryJD(EphemerisPlanet planet, double jd) override
+			{
+				if (fail) {
+					failed = true;
+					throw EphemerisError("missing ephemeris during clone propagation");
+				}
+				return FixedEarthMc::queryJD(planet, jd);
+			}
+		} failing;
+
+		setDefaultEphemerisSource(&failing);
+		int progressCalls = 0;
+		config.workers = 1;
+		EXPECT_THROW((void)hz::runIntervalMonteCarlo(source, config, {},
+		                                             [&](int, int) {
+			                                             ++progressCalls;
+			                                             failing.fail = true;
+		                                             }),
+		             EphemerisError);
+		EXPECT_TRUE(failing.failed);
+		EXPECT_GE(progressCalls, 1);
 	}
 
 	TEST_F(IntervalMonteCarloTest, SharedBoundarySearchMatchesNominal)
@@ -310,6 +394,8 @@ namespace {
 		source.fit.finalNonGrav.setParams(0, -3e-13, 0);
 		source.fit.uncertainty.fitParameterCovariance = Eigen::MatrixXd::Identity(7, 7) * 1e-22;
 		source.fit.uncertainty.fitParameterCovariance(6, 6) = 1e-32;
+		source.fit.uncertainty.fitParameterCovariance(0, 6) = 5e-28;
+		source.fit.uncertainty.fitParameterCovariance(6, 0) = 5e-28;
 		const auto result = hz::runIntervalMonteCarlo(source, config);
 		ASSERT_EQ(result.completed, 8);
 		EXPECT_DOUBLE_EQ(source.fit.finalNonGrav.A2(), -3e-13);

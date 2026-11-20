@@ -16,8 +16,8 @@ BaseDialog {
         RowLayout {
             Layout.fillWidth: true
             CustomText { text: qsTr("Planet"); secondary: true; Layout.fillWidth: true }
-            CustomText { text: "AU"; secondary: true; Layout.preferredWidth: 140; horizontalAlignment: Text.AlignRight }
-            CustomText { text: "km"; secondary: true; Layout.preferredWidth: 130; horizontalAlignment: Text.AlignRight }
+            CustomText { text: "AU"; secondary: true; Layout.preferredWidth: 140; horizontalAlignment: Text.AlignLeft }
+            CustomText { text: "km"; secondary: true; Layout.preferredWidth: 130; horizontalAlignment: Text.AlignLeft }
         }
         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: AppTheme.line }
         Repeater {
@@ -27,8 +27,8 @@ BaseDialog {
                 required property var modelData
                 Layout.fillWidth: true
                 CustomText { text: row.modelData.planet; Layout.fillWidth: true; font.pixelSize: 12 }
-                CustomText { text: UI.number(row.modelData.au, 10); numeric: true; font.pixelSize: 11; Layout.preferredWidth: 140; horizontalAlignment: Text.AlignRight }
-                CustomText { text: UI.number(row.modelData.km, 1); numeric: true; font.pixelSize: 11; Layout.preferredWidth: 130; horizontalAlignment: Text.AlignRight }
+                CustomText { text: UI.number(row.modelData.au, 10); numeric: true; font.pixelSize: 11; Layout.preferredWidth: 140; horizontalAlignment: Text.AlignLeft }
+                CustomText { text: UI.number(row.modelData.km, 1); numeric: true; font.pixelSize: 11; Layout.preferredWidth: 130; horizontalAlignment: Text.AlignLeft }
             }
         }
     }

@@ -65,7 +65,7 @@ Item {
             text: UI.signedNumber(offset.value, 3)
             numeric: true
             font.pixelSize: 11
-            horizontalAlignment: Text.AlignRight
+            horizontalAlignment: Text.AlignLeft
             color: Number.isFinite(offset.value) ? AppTheme.ink : AppTheme.muted
         }
     }

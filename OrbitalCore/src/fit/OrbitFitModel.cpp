@@ -1,4 +1,5 @@
 #include "fit/OrbitFitModel.h"
+#include "fit/FitCancellation.h"
 #include "TwoBodyPropagation.h"
 #include "orbital_core/Types.h"
 #include "obs/LightDeflection.h"
@@ -37,20 +38,21 @@ namespace orbital_core::fit {
 
 		obs::DenseLightTimeSeries denseEmissionStates(const Orbit& orbit, const LightTimeInputs& inputs,
 		                                              const NBodyPropagator& propagator, const NonGravModel& ng,
-		                                              bool variational, bool sensitivities)
+		                                              bool variational, bool sensitivities, std::stop_token cancel = {})
 		{
 			return obs::propagateDenseLightTimeSeries(orbit.getR(), orbit.getV() * Constants::GAUSS_K, orbit.epochMjd(),
 			                                          inputs.epochs, inputs.observers, inputs.optical, propagator, ng,
-			                                          variational, sensitivities);
+			                                          variational, sensitivities, cancel);
 		}
 
 		obs::LightTimeSeries emissionStates(const Orbit& orbit, const LightTimeInputs& inputs,
 		                                    const std::vector<NBodyPropagator::StateVel>& reception, bool nBody,
-		                                    const NBodyPropagator& propagator, const NonGravModel& ng)
+		                                    const NBodyPropagator& propagator, const NonGravModel& ng,
+		                                    std::stop_token cancel = {})
 		{
 			const Vec3D velocity = orbit.getV() * Constants::GAUSS_K;
 			return obs::solveLightTimeSeries(orbit.getR(), velocity, orbit.epochMjd(), inputs.epochs, reception,
-			                                 inputs.observers, inputs.optical, nBody, propagator, ng);
+			                                 inputs.observers, inputs.optical, nBody, propagator, ng, cancel);
 		}
 
 	}  // namespace
@@ -300,7 +302,7 @@ namespace orbital_core::fit {
 	}
 
 	std::vector<NBodyPropagator::StateVel> OrbitFitModel::receptionStates(const std::vector<double>& params,
-	                                                                      const NonGravModel& ng) const
+	                                                                      const NonGravModel& ng, std::stop_token cancel) const
 	{
 		auto orbit = orbitFromStateVector(params);
 
@@ -312,13 +314,14 @@ namespace orbital_core::fit {
 		if (useNBody_) {
 			const Vec3D velocityAuPerDay = orbit->getV() * Constants::GAUSS_K;
 			receptionStates = nbody_.propagateAllWithVelocityMjd(orbit->getR(), velocityAuPerDay, orbit->epochMjd(),
-			                                                     receptionMjds, ng);
+			                                                     receptionMjds, ng, cancel);
 		}
 
 		else {
 			receptionStates.resize(observations_.size());
 			const StateVectors initial(orbit->getR(), orbit->getV());
 			for (size_t i = 0; i < observations_.size(); ++i) {
+				checkCancellation(cancel);
 				const StateVectors state =
 				    Calculations::propagateKeplerState(initial, receptionMjds[i] - orbit->epochMjd());
 				if (!state.isValid())
@@ -356,6 +359,74 @@ namespace orbital_core::fit {
 			                                             observations_[i].mjdTdb, emission.emissionOffsetDays[i]);
 		}
 		return positions;
+	}
+
+	OrbitFitModel::PhotometricPositionDerivatives OrbitFitModel::computePhotometricPositionDerivatives(
+	    const std::vector<double>& params, std::stop_token cancel) const
+	{
+		checkCancellation(cancel);
+		PhotometricPositionDerivatives out;
+		if (params.size() < 6)
+			return out;
+		auto orbit = orbitFromStateVector(params);
+		NonGravModel ng = nbody_.nonGrav();
+		NonGravProfile::updateFromParams(ng, params, 6);
+		if (params.size() - 6 != static_cast<std::size_t>(ng.numFitParams()))
+			return out;
+		const auto inputs = lightTimeInputs(observations_);
+		obs::LightTimeSeries emission;
+		std::vector<IntegratedStateFull> variational;
+		if (useNBody_) {
+			const auto dense = denseEmissionStates(*orbit, inputs, nbody_, ng, true, params.size() > 6, cancel);
+			emission = dense.light;
+			variational = dense.variationalStates;
+		} else {
+			const auto reception = receptionStates(params, ng, cancel);
+			if (reception.size() != observations_.size())
+				return {};
+			emission = emissionStates(*orbit, inputs, reception, false, nbody_, ng, cancel);
+			checkCancellation(cancel);
+		}
+		out.positions.resize(observations_.size());
+		out.jacobians.resize(observations_.size());
+		const StateVectors initial(orbit->getR(), orbit->getV());
+		for (std::size_t i = 0; i < observations_.size(); ++i) {
+			checkCancellation(cancel);
+			if (observations_[i].radar)
+				continue;
+			const auto& state = emission.states[i];
+			const Vec3D position = obs::apparentEmissionPosition(
+			    state, emission.emissionMjd[i], observations_[i].mjdTdb, emission.emissionOffsetDays[i]);
+			out.positions[i] = position;
+			Eigen::MatrixXd jac = Eigen::MatrixXd::Zero(3, static_cast<Eigen::Index>(params.size()));
+			if (useNBody_) {
+				jac.leftCols<6>() = variational[i].Phi.topRows<3>();
+				jac.middleCols<3>(3) *= Constants::GAUSS_K;
+				for (std::size_t col = 6; col < params.size(); ++col)
+					jac.col(static_cast<Eigen::Index>(col)) =
+					    variational[i]
+					        .Sens.col(ng.sensitivityColumnForFitParameter(static_cast<int>(col - 6)))
+					        .head<3>();
+			} else {
+				for (int col = 0; col < 6; ++col) {
+					Vec3D r(0., 0., 0.), v(0., 0., 0.);
+					if (col < 3)
+						r[col] = 1.;
+					else
+						v[col - 3] = 1.;
+					const auto rate = Calculations::propagateKeplerStateRate(
+					    initial, emission.emissionMjd[i] + emission.emissionOffsetDays[i] - orbit->epochMjd(),
+					    StateVectors(r, v), 0.0);
+					if (!rate.isValid())
+						return {};
+					jac.col(col) = Eigen::Vector3d(rate.first.x, rate.first.y, rate.first.z);
+				}
+			}
+			const Vec3D ray = position - inputs.observers[i];
+			out.jacobians[i] =
+			    obs::emissionPositionFactor(ray, state.V + obs::sunVelocityMjd(emission.emissionMjd[i])) * jac;
+		}
+		return out;
 	}
 
 	double OrbitFitModel::computeCost(const std::vector<double>& params) const

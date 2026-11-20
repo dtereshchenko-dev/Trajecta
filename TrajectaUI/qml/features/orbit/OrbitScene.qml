@@ -114,9 +114,11 @@ Rectangle {
                 }
                 PerspectiveCamera {
                     id: camera
+                    objectName: "orbit-perspective-camera"
                     fieldOfView: 38
                     clipNear: Math.min(0.001, scene.sceneModel.frameRadius * 0.001)
-                    clipFar: Math.max(100, scene.sceneModel.frameRadius * 150)
+                    clipFar: Math.max(100, scene.sceneModel.frameRadius * 150,
+                                      (targetOrbit.maximumRadius + camera.z + scene.cameraCenter.length()) * 1.01)
                     onZChanged: {
                         const bounded = Math.max(scene.sceneModel.frameRadius * 0.15, Math.min(scene.sceneModel.frameRadius * 80, z))
                         if (bounded !== z) z = bounded
@@ -160,6 +162,7 @@ Rectangle {
         }
         OrbitPath {
             id: targetOrbit
+            objectName: "orbit-target-path"
             a: scene.solution.orbit.semiMajorAxis
             e: scene.solution.orbit.eccentricity
             q: scene.solution.orbit.perigee

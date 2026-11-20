@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <locale>
 #include <sstream>
+#include <vector>
 
 namespace orbital_core::photometry {
 	namespace {
@@ -83,6 +84,46 @@ namespace orbital_core::photometry {
 			return positiveFinite(obs.magSigma) ? obs.magSigma : 0.7;
 		}
 
+		struct ReducedMagnitude {
+			double value;
+			double sigma;
+		};
+
+		struct ReducedFit {
+			std::optional<double> mean;
+			std::optional<double> measurementSigma;
+			double rms{-1.0};
+			double weightSum{0.0};
+			std::size_t count{0};
+		};
+
+		ReducedFit fitReduced(std::span<const ReducedMagnitude> samples)
+		{
+			ReducedFit result;
+			double weightedSum = 0.0;
+			for (const auto& sample : samples) {
+				const double weight = 1.0 / sample.sigma;
+				result.weightSum += weight;
+				weightedSum += weight * sample.value;
+				++result.count;
+			}
+			if (result.count == 0 || !positiveFinite(result.weightSum))
+				return result;
+			result.mean = weightedSum / result.weightSum;
+			const double sigma = std::sqrt(static_cast<double>(result.count)) / result.weightSum;
+			if (positiveFinite(sigma))
+				result.measurementSigma = sigma;
+			double residualSum = 0.0, squaredWeightSum = 0.0;
+			for (const auto& sample : samples) {
+				const double weight = 1.0 / sample.sigma;
+				const double residual = (sample.value - *result.mean) * weight;
+				residualSum += residual * residual;
+				squaredWeightSum += weight * weight;
+			}
+			result.rms = std::sqrt(residualSum / squaredWeightSum);
+			return result;
+		}
+
 	}  // namespace
 
 	double resolveSigma(std::string_view magnitudeText, double reportedSigma) noexcept
@@ -108,37 +149,20 @@ namespace orbital_core::photometry {
 		result.slopeG = slopeG;
 		if (!std::isfinite(slopeG))
 			return result;
-		double hsum = 0.0;
+		std::vector<ReducedMagnitude> samples;
+		samples.reserve(observations.size());
 		for (const auto& obs : observations) {
 			const auto h = individualMagnitude(obs, slopeG);
 			if (!h)
 				continue;
-
-			const double weight = 1.0 / effectiveSigma(obs);
-			hsum += *h * weight;
-			result.weightSum += weight;
-			++result.count;
+			samples.push_back({*h, effectiveSigma(obs)});
 		}
-
-		if (result.count == 0)
-			return result;
-
-		result.absoluteMagnitude = hsum / result.weightSum;
-		double residualSum = 0.0;
-		double squaredWeightSum = 0.0;
-		for (const auto& obs : observations) {
-			const auto h = individualMagnitude(obs, slopeG);
-			if (!h)
-				continue;
-
-			const double weight = 1.0 / effectiveSigma(obs);
-			const double residual = (*h - *result.absoluteMagnitude) * weight;
-
-			residualSum += residual * residual;
-			squaredWeightSum += weight * weight;
-		}
-
-		result.rms = std::sqrt(residualSum / squaredWeightSum);
+		const auto reduced = fitReduced(samples);
+		result.absoluteMagnitude = reduced.mean;
+		result.measurementSigma = reduced.measurementSigma;
+		result.rms = reduced.rms;
+		result.weightSum = reduced.weightSum;
+		result.count = reduced.count;
 		return result;
 	}
 
@@ -158,7 +182,7 @@ namespace orbital_core::photometry {
 		if (!std::isfinite(options.cometK1) || !std::isfinite(options.cometK2) ||
 		    !std::isfinite(options.cometNuclearPhaseCoefficient))
 			return result;
-		double sums[2]{}, weights[2]{};
+		std::vector<ReducedMagnitude> samples[2];
 		for (const auto& obs : observations) {
 			if (!std::isfinite(obs.mag) || !positiveFinite(obs.magSigma) || !positiveFinite(obs.helioDistAu) ||
 			    !positiveFinite(obs.geoDistAu))
@@ -178,15 +202,15 @@ namespace orbital_core::photometry {
 			if (!geometry)
 				continue;
 			const auto reduced = obs.mag + *correction - *geometry;
-			const double weight = 1.0 / obs.magSigma;
-			sums[index] += reduced * weight;
-			weights[index] += weight;
-			++(index ? result.nuclear.count : result.total.count);
+			samples[index].push_back({reduced, obs.magSigma});
 		}
-		if (weights[0] > 0.0)
-			result.total.absoluteMagnitude = sums[0] / weights[0];
-		if (weights[1] > 0.0)
-			result.nuclear.absoluteMagnitude = sums[1] / weights[1];
+		for (int i = 0; i < 2; ++i) {
+			const auto fit = fitReduced(samples[i]);
+			auto& component = i ? result.nuclear : result.total;
+			component.absoluteMagnitude = fit.mean;
+			component.measurementSigma = fit.measurementSigma;
+			component.count = fit.count;
+		}
 		return result;
 	}
 
@@ -234,16 +258,13 @@ namespace orbital_core::photometry {
 
 		result.residual = *h - *solution.absoluteMagnitude;
 		result.selected = true;
-
 		if (solution.count > 4) {
 			double checkResidual = *result.residual;
-
 			if (includedInFit) {
 				const double remainingWeight = solution.weightSum - 1.0 / result.sigma;
 				if (remainingWeight > 0.0)
 					checkResidual *= solution.weightSum / remainingWeight;
 			}
-
 			result.selected = std::pow(checkResidual / result.sigma, 2.0) <= 8.0;
 		}
 

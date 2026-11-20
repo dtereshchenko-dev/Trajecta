@@ -251,7 +251,6 @@ add_library(OrbitalCore SHARED
     api/orbital_core/OrbitalCoreExport.h
     api/orbital_core/Vec3D.h
     api/orbital_core/Constants.h
-    api/orbital_core/Matrix2D.h
     api/orbital_core/Orbit.h
     api/orbital_core/ObsNode.h
     api/orbital_core/StateVectors.h
@@ -530,7 +529,7 @@ target_compile_definitions(OrbitalCore PUBLIC
 #
 # The macros pinned just above fix the ABI half of the directory-scope split.
 # They do not fix the arithmetic half: much of this library is header-only --
-# Vec3D's inline operators, Matrix2D, the ForceModel templates under
+# Vec3D's inline operators, the ForceModel templates under
 # api/orbital_core/forces/, the orbit factory in Orbit.h -- and those bodies
 # are compiled INSIDE each consumer.  Without these flags the CLI and the UI
 # evaluated them with no FMA and a different packet width than the DLL did.
@@ -640,7 +639,6 @@ add_executable(OrbitalCoreTests
     tests/TestMain.cpp
     tests/TypesTest.cpp
     tests/Vec3DTest.cpp
-    tests/Matrix2DTest.cpp
     tests/OrbitTest.cpp
     tests/CometaryCoordinatesTest.cpp
     tests/OrbitFitCometaryUncertaintyTest.cpp
@@ -648,6 +646,7 @@ add_executable(OrbitalCoreTests
     src/obs/RadarPrediction.cpp
     src/fit/OrbitFitProblem.cpp
     src/fit/OrbitFitUncertainty.cpp
+    src/fit/OrbitFitOutput.cpp
     tests/MPECParserTest.cpp
     tests/RadarObservationTest.cpp
     tests/LightDeflectionTest.cpp

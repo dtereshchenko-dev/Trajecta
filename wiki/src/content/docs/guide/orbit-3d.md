@@ -96,6 +96,12 @@ edge of the requested calculation; its displayed duration is then a lower
 bound. Boundaries are interpolated between samples, so a smaller step can help
 resolve short events and their timing.
 
+Relative motion is limited to 100,000 trajectory points, including points added
+automatically to refine fast motion. If the requested sampling exceeds the
+limit, increase the step or shorten the interval. If automatic refinement
+reaches the limit, shorten the interval. The calculation reports an error
+rather than displaying a truncated trajectory.
+
 ### Apophis: Earth flyby
 
 Apophis passes close to Earth in April 2029. In the calculation shown here,

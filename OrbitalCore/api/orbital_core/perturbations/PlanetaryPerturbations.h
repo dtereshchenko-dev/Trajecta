@@ -31,17 +31,17 @@ namespace orbital_core::forces {
 		inline constexpr double GM_PLUTO = 2.1750964648933581e-12;
 
 		struct PerturbingBody {
-			EphemerisPlanet planet;
 			double gm;
+			EphemerisPlanet planet;
 			int naifId;
 		};
 
 		inline constexpr PerturbingBody kPerturbers[] = {
-		    {EphemerisPlanet::Mercury, GM_MERCURY, 199}, {EphemerisPlanet::Venus, GM_VENUS, 299},
-		    {EphemerisPlanet::Earth, GM_EARTH, 399},     {EphemerisPlanet::Mars, GM_MARS, 499},
-		    {EphemerisPlanet::Jupiter, GM_JUPITER, 599}, {EphemerisPlanet::Saturn, GM_SATURN, 699},
-		    {EphemerisPlanet::Uranus, GM_URANUS, 799},   {EphemerisPlanet::Neptune, GM_NEPTUNE, 899},
-		    {EphemerisPlanet::Moon, GM_MOON, 301},       {EphemerisPlanet::Pluto, GM_PLUTO, 999},
+		    {GM_MERCURY, EphemerisPlanet::Mercury, 199}, {GM_VENUS, EphemerisPlanet::Venus, 299},
+		    {GM_EARTH, EphemerisPlanet::Earth, 399},     {GM_MARS, EphemerisPlanet::Mars, 499},
+		    {GM_JUPITER, EphemerisPlanet::Jupiter, 599}, {GM_SATURN, EphemerisPlanet::Saturn, 699},
+		    {GM_URANUS, EphemerisPlanet::Uranus, 799},   {GM_NEPTUNE, EphemerisPlanet::Neptune, 899},
+		    {GM_MOON, EphemerisPlanet::Moon, 301},       {GM_PLUTO, EphemerisPlanet::Pluto, 999},
 		};
 
 		[[nodiscard]] inline const Vec3D& bodyPosition(const ForceContext& ctx, std::size_t index) noexcept
@@ -72,7 +72,7 @@ namespace orbital_core::forces {
 
 	class PlanetaryPerturbations {
 	   public:
-		void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& /*dadv*/) const noexcept
+		void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& /*dadv*/) const
 		{
 			if (!ctx.ephemerisSource || !ctx.ephemerisSource->isAvailable())
 				return;

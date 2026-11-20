@@ -12,6 +12,7 @@
 #include "settings/PerturbationsSettings.h"
 #include <orbital_core/IEphemerisSource.h>
 #include <orbital_core/DE440Source.h>
+#include <orbital_core/SpkReader.h>
 #include <cmath>
 #include <limits>
 
@@ -119,6 +120,27 @@ class TestOrbitEngine : public QObject {
 		engine.cancel();
 		QTRY_COMPARE_WITH_TIMEOUT(failed.count(), 2, 10000);
 		QCOMPARE(completed.count(), 0);
+	}
+
+	void selectedSb441MustBeAvailableBeforeFit()
+	{
+		auto* previous = getDefaultAsteroidSource();
+		setDefaultAsteroidSource(nullptr);
+		const auto restore = qScopeGuard([&] { setDefaultAsteroidSource(previous); });
+		FitSettingsAggregator settings;
+		settings.perturbations()->setProperty("enabled", true);
+		settings.perturbations()->setUseSb441(true);
+		OrbitEngine engine(settings);
+		QSignalSpy failed(&engine, &OrbitEngine::errorMessageChanged);
+		QSignalSpy completed(&engine, &OrbitEngine::solutionReady);
+		engine.loadFile("nonexistent-observations.xml");
+		QCOMPARE(failed.count(), 1);
+		QVERIFY(engine.errorMessage().contains("SB441"));
+		QCOMPARE(completed.count(), 0);
+		settings.perturbations()->setProperty("enabled", false);
+		engine.loadFile("nonexistent-observations.xml");
+		QTRY_COMPARE_WITH_TIMEOUT(failed.count(), 2, 10000);
+		QVERIFY(!engine.errorMessage().contains("SB441"));
 	}
 };
 

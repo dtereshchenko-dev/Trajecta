@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import TrajectaUI
-import "../../shared/UI.js" as UI
 
 ColumnLayout {
     id: root
@@ -13,17 +12,15 @@ ColumnLayout {
     spacing: 12
     SectionHeading {
         title: qsTr("Estimated size")
-        detail: "H " + UI.number(root.solution.absoluteMagnitude, 3) + " mag \u00B7 "
-            + qsTr("%1 magnitudes").arg(root.solution.magnitudeCount)
         Layout.fillWidth: true
     }
     ParameterTable {
         Layout.fillWidth: true
         rowPrefix: "size"
         parameterTitle: qsTr("Geometric albedo")
-        parameterShare: 0.72
-        unitShare: 0.06
-        rows: root.solution.sizeEstimates
+        showSigma: true
+        sigmaTitle: ""
+        rows: root.solution.sizeEstimates.map(row => ({label: row.label, value: row.value, sigma: "", unit: row.unit}))
     }
     InlineValue {
         objectName: "typical-size"

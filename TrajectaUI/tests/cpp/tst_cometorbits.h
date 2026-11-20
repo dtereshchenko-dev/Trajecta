@@ -32,6 +32,9 @@ class TestCometOrbits : public QObject {
 				QVERIFY(point[axis] >= minimum[axis]);
 				QVERIFY(point[axis] <= maximum[axis]);
 			}
+			const double radius = std::hypot(static_cast<double>(point[0]), static_cast<double>(point[1]),
+			                                 static_cast<double>(point[2]));
+			QVERIFY(radius <= geometry.maximumRadius() * (1.0 + 1e-6));
 		}
 	}
 
@@ -80,6 +83,53 @@ class TestCometOrbits : public QObject {
 		}
 	}
 
+	void highEccentricityExtentCoversAphelion()
+	{
+		OrbitGeometry geometry;
+		geometry.setSegments(512);
+		geometry.setPerigeeAu(2.2666);
+		geometry.setEccentricity(0.993748556);
+		const double aphelion = geometry.perigeeAu() * (1.0 + geometry.eccentricity()) /
+		                        (1.0 - geometry.eccentricity());
+		QVERIFY(std::abs(geometry.maximumRadius() - aphelion) < 1e-8 * aphelion);
+		verifyFiniteGeometry(geometry);
+	}
+
+	void highEccentricityEllipseHasSmoothEnds()
+	{
+		OrbitGeometry geometry;
+		geometry.setSegments(512);
+		geometry.setInclination(0.0);
+		geometry.setAscendingNode(0.0);
+		geometry.setArgPericentre(0.0);
+		const double a = 345.003531;
+		const double e = 0.999146;
+		geometry.setSemiMajorAxis(a);
+		geometry.setEccentricity(e);
+		geometry.setPerigeeAu(a * (1.0 - e));
+		const QByteArray vertices = geometry.vertexData();
+		const auto point = [&](int index) {
+			float coords[3];
+			std::memcpy(coords, vertices.constData() + index * 3 * sizeof(float), sizeof(coords));
+			return QVector3D(coords[0], coords[1], coords[2]);
+		};
+		QCOMPARE(point(0), point(512));
+		const auto smoothTurn = [](const QVector3D& before, const QVector3D& at, const QVector3D& after) {
+			const QVector3D incoming = (at - before).normalized();
+			const QVector3D outgoing = (after - at).normalized();
+			return QVector3D::dotProduct(incoming, outgoing);
+		};
+		QVERIFY(smoothTurn(point(255), point(256), point(257)) > 0.99f);
+		QVERIFY(smoothTurn(point(511), point(0), point(1)) > 0.99f);
+		const double b = a * std::sqrt((1.0 - e) * (1.0 + e));
+		for (int i = 0; i <= 512; ++i) {
+			const auto vertex = point(i);
+			const double u = (vertex.x() + a * e) / a;
+			const double v = vertex.z() / b;
+			QVERIFY(std::abs(u * u + v * v - 1.0) < 1e-5);
+		}
+	}
+
 	void missingPerigeeKeepsConventionalGeometry()
 	{
 		OrbitGeometry conventional;
@@ -103,6 +153,7 @@ class TestCometOrbits : public QObject {
 		QVERIFY(!geometry.vertexData().isEmpty());
 		geometry.setPerigeeAu(0.0);
 		QVERIFY(geometry.vertexData().isEmpty());
+		QCOMPARE(geometry.maximumRadius(), 0.0);
 		QCOMPARE(geometry.perihelionPos(), QVector3D());
 		for (const double q :
 		     {-1.0, std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()}) {

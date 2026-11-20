@@ -5,6 +5,11 @@
 #include <span>
 
 namespace orbital_core::fit {
+	struct PhotometricOrbitSigmas {
+		std::optional<double> asteroid;
+		std::optional<double> cometTotal;
+		std::optional<double> cometNuclear;
+	};
 
 	// Builds an owning result; diagnostics reuse the accepted linearization.
 	class OrbitFitOutput {
@@ -22,6 +27,11 @@ namespace orbital_core::fit {
 		PostFitDiagnostics diagnostics(const FitResult& result, const FitParameterCovariance& formalCovariance,
 		                               std::span<const std::uint8_t> included) const;
 		[[nodiscard]] std::vector<double> selectionChiSquares(const std::vector<double>& params) const;
+		// Covariance uses the optimizer's canonical parameter units.
+		[[nodiscard]] PhotometricOrbitSigmas photometricOrbitSigmas(const Residuals& nominal,
+		                                                            const std::vector<double>& params,
+		                                                            const Eigen::MatrixXd& covariance,
+		                                                            std::stop_token cancel) const;
 
 	   private:
 		// Match Residuals::rms units and summation order without constructing report rows.

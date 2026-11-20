@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <cmath>
 #include <exception>
-#include <limits>
 #include <QDate>
 #include <QMetaObject>
 #include "util/FormatUtils.h"
@@ -284,14 +283,20 @@ void RelativeMotionModel::calculateRelative(const QString& startUtc, const QStri
 		emit statusChanged();
 		return;
 	}
-	// Qt Quick 3D draws two vertices per segment using a signed vertex count.
-	const double maxPoints = static_cast<double>(std::numeric_limits<int>::max() / 2);
+	constexpr std::size_t maxPoints = 100000;
 	const double estimated = std::ceil((last - first) / stepDays) + 1;
-	if (!std::isfinite(estimated) || estimated > maxPoints || first + stepDays <= first) {
+	if (!std::isfinite(estimated) || first + stepDays <= first) {
 		m_relativeError = tr("The step is too small to represent this trajectory.");
 		emit statusChanged();
 		return;
 	}
+	if (estimated > static_cast<double>(maxPoints)) {
+		m_relativeError = tr("The trajectory exceeds the %1-point limit. Increase the step or shorten the interval.")
+		                      .arg(maxPoints);
+		emit statusChanged();
+		return;
+	}
+	request.maxRefinedSamples = maxPoints;
 	const quint64 generation = ++m_relativeGeneration;
 	m_relativeBusy = true;
 	m_relativeError.clear();

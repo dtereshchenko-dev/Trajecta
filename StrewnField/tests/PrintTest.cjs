@@ -4,6 +4,10 @@ const path = require('node:path');
 const P = require('../output/web/print.js');
 const G = require('../output/web/graticule.js');
 const style = fs.readFileSync(path.join(__dirname, '../output/web/viewer.css'), 'utf8');
+const commonStyle = fs.readFileSync(path.join(__dirname, '../output/web/report-common.css'), 'utf8');
+assert.match(commonStyle, /@page\s*\{\s*margin:\s*0\s+12mm\s*;/);
+assert.match(commonStyle, /@media print\s*\{\s*body\s*\{[^}]*padding:\s*12mm\s+0\s*;[^}]*box-decoration-break:\s*clone\s*;/);
+assert.match(style, /@page\s*\{\s*size:\s*A4 landscape\s*;\s*\}/);
 assert.match(style, /@media print\s*\{\s*:root\s*\{[^}]*background:\s*white\s*;/);
 let grids = 0;
 global.StrewnGraticule = {

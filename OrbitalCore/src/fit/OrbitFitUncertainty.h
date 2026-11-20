@@ -28,6 +28,7 @@ namespace orbital_core::fit {
 		struct ElementDerivatives {
 			Eigen::Matrix<double, 6, Eigen::Dynamic> elemJ;
 			Eigen::Matrix<double, 9, Eigen::Dynamic> qualityElemJ;
+			Eigen::Matrix<double, 6, Eigen::Dynamic> stateJ;
 		};
 
 		// Local element conversion is differentiated only in the six Cartesian
@@ -44,6 +45,7 @@ namespace orbital_core::fit {
 		struct CometaryDerivatives {
 			Eigen::Matrix<double, 6, Eigen::Dynamic> cotJ;
 			Eigen::Matrix<double, 3, Eigen::Dynamic> regularQualityJ;
+			Eigen::Matrix<double, 6, Eigen::Dynamic> stateJ;
 			double epochJdTdb{std::numeric_limits<double>::quiet_NaN()};
 			bool valid{false};
 		};

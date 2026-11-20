@@ -177,6 +177,17 @@ ChartView {
                 && Math.abs(bounds.width - 2 * x) < 1e-9 && Math.abs(bounds.height - 2 * y) < 1e-9) return
         bounds = Qt.rect(-x, -y, 2 * x, 2 * y)
     }
+    function resizeBounds() {
+        if (timeMode || (!viewAdjusted && !externalData)) {
+            updateBounds()
+            return
+        }
+        const area = plotArea
+        if (area.width <= 0 || area.height <= 0 || bounds.height <= 0) return
+        const nextWidth = bounds.height * area.width / area.height
+        if (!Number.isFinite(nextWidth) || nextWidth <= 0 || Math.abs(bounds.width - nextWidth) < 1e-9) return
+        bounds = Qt.rect(bounds.x + (bounds.width - nextWidth) / 2, bounds.y, nextWidth, bounds.height)
+    }
     function refresh() {
         clearHover()
         if (externalData || !observations) { refreshSelection(); return }
@@ -313,7 +324,7 @@ ChartView {
     onTimeOriginMjdChanged: refreshSelection()
     onBoundsChanged: refreshReferences()
     onReferenceRmsChanged: updateBounds()
-    onPlotAreaChanged: { clearHover(); updateBounds() }
+    onPlotAreaChanged: { clearHover(); resizeBounds() }
     Connections {
         target: chart.observations
         function onCountChanged() { chart.refresh() }

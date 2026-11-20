@@ -202,7 +202,7 @@ BasePage {
                             text: headerCell.model.display
                             color: AppTheme.muted
                             font.pixelSize: 10
-                            horizontalAlignment: headerCell.column > 0 ? Text.AlignRight : Text.AlignLeft
+                            horizontalAlignment: Text.AlignLeft
                         }
                         Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AppTheme.line }
                     }
@@ -245,7 +245,7 @@ BasePage {
                             text: cell.display === undefined || cell.display === null ? "—" : cell.display
                             numeric: true
                             font.pixelSize: 11
-                            horizontalAlignment: cell.column > 0 ? Text.AlignRight : Text.AlignLeft
+                            horizontalAlignment: Text.AlignLeft
                         }
                         Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AppTheme.lineSoft }
                     }

@@ -347,7 +347,7 @@ EphemerisRecord DE440Source::queryJD(EphemerisPlanet planet, double jd)
 	if (planet == EphemerisPlanet::Sun) {
 
 		if (jpl_pleph(ephem, jd, kJplTargetSun, kJplCenterEMB, rrd.data(), kJplWithVelocities) != 0)
-			return record;
+			throw EphemerisError("Planetary ephemeris query failed or epoch is outside coverage");
 
 		record.R = Vec3D(rrd[0], rrd[1], rrd[2]);
 		record.V = Vec3D(rrd[3], rrd[4], rrd[5]);
@@ -356,7 +356,7 @@ EphemerisRecord DE440Source::queryJD(EphemerisPlanet planet, double jd)
 
 	const int target = kPlanetToTarget[static_cast<std::size_t>(planet)];
 	if (jpl_pleph(ephem, jd, target, kJplCenterSun, rrd.data(), kJplWithVelocities) != 0)
-		return record;
+		throw EphemerisError("Planetary ephemeris query failed or epoch is outside coverage");
 
 	record.R = rotateEqToEcl(rrd[0], rrd[1], rrd[2]);
 	record.V = rotateEqToEcl(rrd[3], rrd[4], rrd[5]);
@@ -517,19 +517,8 @@ void DE440Source::getAllPlanetStatesOffsetMjd(double epochMjd, double offsetDays
 	const auto jplElapsed =
 	    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - jplStarted).count();
 	s_jplStateNanoseconds.fetch_add(static_cast<std::uint64_t>(jplElapsed), std::memory_order_relaxed);
-	if (rval != 0) {
-		for (int i = 0; i < 8; ++i) {
-			outPositions[i] = Vec3D(0.0, 0.0, 0.0);
-			outVelocities[i] = Vec3D(0.0, 0.0, 0.0);
-		}
-
-		if (outMoonPosition)
-			*outMoonPosition = Vec3D(0.0, 0.0, 0.0);
-		if (outMoonVelocity)
-			*outMoonVelocity = Vec3D(0.0, 0.0, 0.0);
-
-		return;
-	}
+	if (rval != 0)
+		throw EphemerisError("Planetary ephemeris query failed or epoch is outside coverage");
 
 	{
 		const double inv = p_impl->invOnePlusEmrat;
@@ -600,7 +589,7 @@ Vec3D DE440Source::getPlanetPosition(EphemerisPlanet planet, double jd) const
 	const int target = kPlanetToTarget[static_cast<std::size_t>(planet)];
 
 	if (jpl_pleph(ephem, jd, target, kJplCenterSun, rrd.data(), kJplPositionOnly) != 0)
-		return {0.0, 0.0, 0.0};
+		throw EphemerisError("Planetary ephemeris query failed or epoch is outside coverage");
 
 	return rotateEqToEcl(rrd[0], rrd[1], rrd[2]);
 }

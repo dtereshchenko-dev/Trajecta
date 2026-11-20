@@ -57,6 +57,16 @@ TEST(MoidTest, ApophisVsEarth_PhaScale)
 	EXPECT_GT(r.moidAu, 0.0);
 }
 
+TEST(MoidTest, ApophisMatchesReferenceForIdenticalElements)
+{
+	// Both orbits use rounded elements, not independently fitted states.
+	auto apophis = makeKepler(0.9224, 0.1914, 3.339, 204.024, 126.728);
+	auto earth = makeKepler(1.0000, 0.0167, 0.000, 0.000, 102.937);
+	const auto result = computeMoid(*apophis, *earth);
+	ASSERT_TRUE(result.isValid());
+	EXPECT_NEAR(result.moidAu, 0.000153725718307393, 1.0e-12);
+}
+
 TEST(MoidTest, HyperbolicReturnsNan)
 {
 	auto borisov = makeKepler(-1.0, 3.36, 44.0, 308.2, 209.1);

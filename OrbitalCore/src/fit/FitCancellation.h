@@ -8,7 +8,7 @@
 namespace orbital_core::fit {
 
 	// Internal unwinding only; all fit entry points return empty cancelled results.
-	// Cancellation is cooperative between evaluations, not inside the integrator.
+	// Cancellation is cooperative at phase boundaries and within supported integrators.
 	class FitCancelled final : public std::exception {
 	   public:
 		const char* what() const noexcept override { return "Fit cancelled"; }

@@ -53,6 +53,56 @@ namespace {
 	}
 }  // namespace
 
+TEST(OrbitFitUncertaintyTest, CartesianCovarianceProjectionMatchesReference)
+{
+	// Central differences, ECLM J2000, AU and AU/day.
+	const Vec3D r(1.0, 0.4, 0.1);
+	const Vec3D v(-0.006, 0.014, 0.002);
+	const auto orbit = make_orbit_from_states_vectors(StateVectors(r, v / Constants::GAUSS_K), fitEpoch);
+	ASSERT_TRUE(orbit);
+	OrbitOptimizerConfig config;
+	OrbitFitModel model(orbit, {}, config);
+	OrbitFitProblem problem(model);
+	OrbitFitUncertainty calculator(model, problem, fitEpoch);
+	const auto derivatives =
+	    calculator.computeElementDerivatives(OrbitFitModel::stateVectorFromOrbit(*orbit), *orbit, {});
+	Eigen::Matrix<double, 6, 6> physicalCovariance = Eigen::Matrix<double, 6, 6>::Zero();
+	for (int i = 0; i < 6; ++i)
+		physicalCovariance(i, i) = std::pow((i + 1) * 1e-7, 2);
+	physicalCovariance(0, 3) = physicalCovariance(3, 0) =
+	    0.2 * std::sqrt(physicalCovariance(0, 0) * physicalCovariance(3, 3));
+	Eigen::Matrix<double, 6, 6> toCanonical = Eigen::Matrix<double, 6, 6>::Identity();
+	toCanonical.bottomRightCorner<3, 3>() /= Constants::GAUSS_K;
+	const Eigen::Matrix<double, 6, 6> fitCovariance = toCanonical * physicalCovariance * toCanonical.transpose();
+	const auto elementCovariance = (derivatives.elemJ * fitCovariance * derivatives.elemJ.transpose()).eval();
+	const auto qualityCovariance =
+	    (derivatives.qualityElemJ * fitCovariance * derivatives.qualityElemJ.transpose()).eval();
+	const auto sigmas =
+	    calculator.computeDerivedSigmasFromQualityCovariance(*orbit, elementCovariance, qualityCovariance);
+	const std::array actual{sigmas.sigma_a,     sigmas.sigma_e, sigmas.sigma_i, sigmas.sigma_Om,
+	                        sigmas.sigma_w,     sigmas.sigma_M, sigmas.sigma_q, sigmas.sigma_Q,
+	                        sigmas.sigma_inv_a, sigmas.sigma_n, sigmas.sigma_P};
+	const std::array reference{4.582062813339154e-5, 5.502181230434525e-5, 3.180696226636009e-5, 1.394507166240840e-4,
+	                           2.118232921715669e-4, 2.186792277002813e-4, 9.181340400227244e-5, 2.176601310791625e-6,
+	                           5.065848274913463e-5, 1.340363718863219e-6, 2.448234081537255e-2};
+	for (std::size_t i = 0; i < actual.size(); ++i) {
+		SCOPED_TRACE(i);
+		EXPECT_NEAR(actual[i], reference[i], reference[i] * 2e-5);
+	}
+	OrbitFitUncertainty transportedCalculator(model, problem, fitEpoch + 100.0);
+	const auto transported =
+	    transportedCalculator.computeElementDerivatives(OrbitFitModel::stateVectorFromOrbit(*orbit), *orbit, {});
+	auto physicalJ = transported.stateJ;
+	physicalJ.bottomRows<3>() *= Constants::GAUSS_K;
+	const auto outputCovariance = (physicalJ * fitCovariance * physicalJ.transpose()).eval();
+	const std::array outputReference{3.858372981912220e-5, 8.956729145027635e-5, 3.923511413667360e-5,
+	                                 1.249375521275674e-7, 2.157176961039403e-6, 3.507218790981208e-7};
+	for (int i = 0; i < 6; ++i) {
+		SCOPED_TRACE(i);
+		EXPECT_NEAR(std::sqrt(outputCovariance(i, i)), outputReference[i], outputReference[i] * 2e-5);
+	}
+}
+
 TEST(OrbitFitModelTest, EncounterControlCoversGravityAndNonGravButNotKepler)
 {
 	struct RestoreEphemeris {
@@ -273,6 +323,27 @@ TEST(OrbitFitCometaryUncertaintyTest, BorisovOutputTransportIsStableAndResolvesD
 	ASSERT_TRUE(display);
 	const auto reference = calculator.computeCometaryDerivatives(params, *orbit, *display, {});
 	ASSERT_TRUE(reference.valid);
+	const auto stateVector = [](const Orbit& value) {
+		Eigen::Matrix<double, 6, 1> state;
+		const auto r = value.getR();
+		const auto v = value.getV();
+		state << r.x, r.y, r.z, v.x, v.y, v.z;
+		return state;
+	};
+	for (int col : {0, 3, 6, 7, 8, 9}) {
+		SCOPED_TRACE(::testing::Message() << "state transport column=" << col);
+		const double step = col < 6 ? 1e-6 : (col == 9 ? 0.01 : 1e-9);
+		auto plus = params, minus = params;
+		plus[col] += step;
+		minus[col] -= step;
+		const auto plusOrbit = sample(plus);
+		const auto minusOrbit = sample(minus);
+		ASSERT_TRUE(plusOrbit);
+		ASSERT_TRUE(minusOrbit);
+		const Eigen::Matrix<double, 6, 1> numerical =
+		    (stateVector(*plusOrbit) - stateVector(*minusOrbit)) / (2.0 * step);
+		EXPECT_LT((reference.stateJ.col(col) - numerical).norm(), std::max(numerical.norm(), 1e-7) * 1e-3);
+	}
 	Eigen::VectorXd parameterSigmas(10);
 	parameterSigmas << 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 3.66e-7, 1.72e-7, 5.64e-8, 8.93;
 	const Eigen::VectorXd expectedSigmas = (reference.cotJ * parameterSigmas.asDiagonal()).rowwise().norm();

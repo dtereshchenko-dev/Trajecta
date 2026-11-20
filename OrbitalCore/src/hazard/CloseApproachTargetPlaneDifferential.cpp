@@ -7,6 +7,7 @@
 #include "hazard/EncounterPlane.h"
 #include "hazard/HazardAudit.h"
 #include "orbital_core/Constants.h"
+#include "orbital_core/IEphemerisSource.h"
 #include "orbital_core/hazard/PlanetData.h"
 #include "orbital_core/nongrav/NonGravModel.h"
 #include "orbital_core/nongrav/NonGravProfile.h"
@@ -124,6 +125,8 @@ namespace orbital_core::hazard {
 						frame.ok = true;
 					}
 				}
+			} catch (const EphemerisError&) {
+				throw;
 			} catch (...) {
 				for (PropagatedFrame& frame : out)
 					frame.ok = false;
@@ -374,6 +377,8 @@ namespace orbital_core::hazard {
 				event.vTarget = frame.vTarget;
 				refreshCloseApproachKinematics(event);
 				return true;
+			} catch (const EphemerisError&) {
+				throw;
 			} catch (...) {
 				return false;
 			}
@@ -450,6 +455,8 @@ namespace orbital_core::hazard {
 						    << " encounterRestarts=" << input.integrationReport->encounterRestarts
 						    << " unconverged=" << input.integrationReport->unconvergedEncounterSteps;
 				});
+			} catch (const EphemerisError&) {
+				throw;
 			} catch (const std::exception& error) {
 				audit::write("interior-stm-failed", [&](auto& log) { log << " error=" << error.what(); });
 				return std::nullopt;
