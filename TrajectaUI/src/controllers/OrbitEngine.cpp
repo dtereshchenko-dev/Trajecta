@@ -175,6 +175,12 @@ void OrbitEngine::downloadGaiaFpr(orbital_core::ObservationSet observations,
 
 void OrbitEngine::submit(OrbitFitInput input)
 {
+	const auto* perturbations = m_settings.perturbations();
+	if (perturbations->enabled() && perturbations->useSb441() && !orbital_core::asteroidEphemerisAvailable()) {
+		m_errorMessage = tr("SB441 asteroid ephemeris is unavailable.");
+		emit errorMessageChanged();
+		return;
+	}
 	m_settings.save();
 	m_fitRunning = true;
 	m_fitCancel = std::stop_source{};

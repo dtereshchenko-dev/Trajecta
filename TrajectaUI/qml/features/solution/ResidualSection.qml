@@ -8,6 +8,7 @@ ColumnLayout {
     id: section
     required property SolutionViewModel solution
     property real viewportWidth: 1440
+    property real viewportHeight: 700
     property bool timeMode: false
     spacing: 0
     RowLayout {
@@ -45,7 +46,8 @@ ColumnLayout {
         ResidualPlot {
             id: plot
             x: 1; y: 33; width: parent.width - 2
-            height: section.viewportWidth >= 1700 ? 420 : section.viewportWidth <= 1200 ? 325 : 358
+            height: Math.max(section.viewportWidth >= 1700 ? 420 : section.viewportWidth <= 1200 ? 325 : 358,
+                             Math.min(660, section.viewportHeight - 280))
             observations: section.solution.observations
             referenceRms: section.solution.rms
             timeMode: section.timeMode

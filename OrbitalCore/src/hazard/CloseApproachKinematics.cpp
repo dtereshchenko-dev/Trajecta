@@ -96,7 +96,6 @@ namespace orbital_core::hazard {
 			}
 
 			double psi = 0.0;
-			double deltaDays = 0.0;
 			const double a = -mu / alpha;
 			const double eccentricity = 1.0 - pericenter / a;
 			if (alpha <= 0.0) {
@@ -105,17 +104,12 @@ namespace orbital_core::hazard {
 				const double cosE = std::clamp((1.0 - r0 / a) / eccentricity, -1.0, 1.0);
 				const double eccentricAnomaly = std::acos(cosE);
 				psi = -std::copysign(1.0, sigma0) * eccentricAnomaly / std::sqrt(-alpha);
-				double meanAnomaly = eccentricAnomaly - eccentricity * std::sin(eccentricAnomaly);
-				meanAnomaly = std::remainder(meanAnomaly, 2.0 * Constants::PI);
-				deltaDays = meanAnomaly / (std::sqrt(-alpha * -alpha * -alpha) / mu);
 			} else {
 				if (!(eccentricity > 1.0))
 					return {};
 				const double coshF = (1.0 - r0 / a) / eccentricity;
 				const double hyperbolicAnomaly = coshF > 1.0 ? std::acosh(coshF) : 0.0;
 				psi = -std::copysign(1.0, sigma0) * hyperbolicAnomaly / std::sqrt(alpha);
-				deltaDays = (eccentricity * std::sinh(hyperbolicAnomaly) - hyperbolicAnomaly) /
-				            (std::sqrt(alpha * alpha * alpha) / mu);
 			}
 
 			for (int iteration = 0; iteration < kMaxIterations; ++iteration) {
@@ -138,7 +132,7 @@ namespace orbital_core::hazard {
 			const StumpffValues s = stumpffSeries(psi, alpha);
 			if (!s.valid)
 				return {};
-			deltaDays = r0 * s.s1 + sigma0 * s.s2 + mu * s.s3;
+			const double deltaDays = r0 * s.s1 + sigma0 * s.s2 + mu * s.s3;
 			return {psi, deltaDays, std::isfinite(psi) && std::isfinite(deltaDays)};
 		}
 	}  // namespace

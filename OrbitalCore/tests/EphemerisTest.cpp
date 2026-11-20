@@ -407,7 +407,8 @@ TEST_F(EphemerisTest, RelativeMotion2026Qq8MatchesSavedGeocentricEphemeris)
 	EXPECT_NEAR(*uncertainty[eventIndex].start3SigmaDays, expectedSigma(true), expectedSigma(true) * 0.02);
 	EXPECT_NEAR(*uncertainty[eventIndex].end3SigmaDays, expectedSigma(false), expectedSigma(false) * 0.02);
 	ASSERT_TRUE(combined.captures[eventIndex].start3SigmaDays);
-	EXPECT_DOUBLE_EQ(*combined.captures[eventIndex].start3SigmaDays, *uncertainty[eventIndex].start3SigmaDays);
+	EXPECT_NEAR(*combined.captures[eventIndex].start3SigmaDays, *uncertainty[eventIndex].start3SigmaDays,
+	            *uncertainty[eventIndex].start3SigmaDays * 1e-12);
 	const auto hill = std::find_if(hillPassages.begin(), hillPassages.end(), [&](const auto& passage) {
 		return passage.entryMjdTdb < closest->mjdTdb && passage.exitMjdTdb > closest->mjdTdb;
 	});

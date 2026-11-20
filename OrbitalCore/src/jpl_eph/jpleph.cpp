@@ -914,6 +914,9 @@ void * DLL_FUNC jpl_init_ephemeris_from_view( const void *view_data,
    else if( view_read( header, JPL_HEADER_SIZE, 1, &temp_data) != 1)
       init_err_code = JPL_INIT_FREAD2_FAILED;
 
+   if( init_err_code)
+      return( NULL);
+
    temp_data.ephem_start = get_double( header);
    temp_data.ephem_end   = get_double( header + 8);
    temp_data.ephem_step  = get_double( header + 16);
@@ -923,9 +926,6 @@ void * DLL_FUNC jpl_init_ephemeris_from_view( const void *view_data,
    temp_data.pvsun_t = -1e+80;   /* a time we can't use anyway */
    for( i = 0; i < 40; i++)
       temp_data.ipt[i / 3][i % 3] = get32bits( header + 44 + i * 4);
-
-   if( init_err_code)
-      return( NULL);
 
    if( !memcmp( title, "INPOP", 5))
       {

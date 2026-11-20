@@ -58,7 +58,10 @@ BasePage {
                 contentWidth: width
                 contentHeight: summary.implicitHeight + 56
                 boundsBehavior: Flickable.StopAtBounds
-                ScrollBar.vertical: CustomScrollBar {}
+                ScrollBar.vertical: CustomScrollBar {
+                    interactive: true
+                    policy: overview.contentHeight > overview.height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                }
                 SolutionSummary {
                     id: summary
                     x: UI.pageMargin(page.viewportWidth)
@@ -66,6 +69,7 @@ BasePage {
                     width: overview.width - 2 * x
                     solution: page.solution
                     viewportWidth: page.viewportWidth
+                    viewportHeight: overview.height
                     onObservationsRequested: function(station) { page.observationsRequested(station) }
                 }
             }

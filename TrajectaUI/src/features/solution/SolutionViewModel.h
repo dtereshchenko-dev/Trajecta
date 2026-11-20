@@ -39,17 +39,25 @@ class SolutionViewModel : public QObject {
 	Q_PROPERTY(double arcDays READ arcDays NOTIFY changed)
 	Q_PROPERTY(bool cometary READ cometary NOTIFY changed)
 	Q_PROPERTY(bool hasSigmas READ hasSigmas NOTIFY changed)
+	Q_PROPERTY(double orbitQualityU READ orbitQualityU NOTIFY changed)
 	Q_PROPERTY(QString epochMjd READ epochMjd NOTIFY changed)
 	Q_PROPERTY(QString fitEpochUtc READ fitEpochUtc NOTIFY changed)
 	Q_PROPERTY(QString calculationStartUtc READ calculationStartUtc NOTIFY changed)
 	Q_PROPERTY(QString arcRange READ arcRange NOTIFY changed)
 	Q_PROPERTY(int stationCount READ stationCount NOTIFY changed)
 	Q_PROPERTY(QVariantList stateVector READ stateVector NOTIFY changed)
+	Q_PROPERTY(QVariantList stateVectorSigmas READ stateVectorSigmas NOTIFY changed)
 	Q_PROPERTY(double absoluteMagnitude READ absoluteMagnitude NOTIFY changed)
+	Q_PROPERTY(double absoluteMagnitudeSigma READ absoluteMagnitudeSigma NOTIFY changed)
+	Q_PROPERTY(double absoluteMagnitudePhotometricSigma READ absoluteMagnitudePhotometricSigma NOTIFY changed)
 	Q_PROPERTY(double asteroidSlopeG READ asteroidSlopeG NOTIFY changed)
 	Q_PROPERTY(bool cometPhotometry READ cometPhotometry NOTIFY changed)
 	Q_PROPERTY(double cometTotalMagnitude READ cometTotalMagnitude NOTIFY changed)
 	Q_PROPERTY(double cometNuclearMagnitude READ cometNuclearMagnitude NOTIFY changed)
+	Q_PROPERTY(double cometTotalMagnitudeSigma READ cometTotalMagnitudeSigma NOTIFY changed)
+	Q_PROPERTY(double cometNuclearMagnitudeSigma READ cometNuclearMagnitudeSigma NOTIFY changed)
+	Q_PROPERTY(double cometTotalMagnitudePhotometricSigma READ cometTotalMagnitudePhotometricSigma NOTIFY changed)
+	Q_PROPERTY(double cometNuclearMagnitudePhotometricSigma READ cometNuclearMagnitudePhotometricSigma NOTIFY changed)
 	Q_PROPERTY(double cometK1 READ cometK1 NOTIFY changed)
 	Q_PROPERTY(double cometK2 READ cometK2 NOTIFY changed)
 	Q_PROPERTY(double cometNuclearPhaseCoefficient READ cometNuclearPhaseCoefficient NOTIFY changed)
@@ -108,19 +116,27 @@ class SolutionViewModel : public QObject {
 
 	bool cometary() const;
 	bool hasSigmas() const;
+	double orbitQualityU() const;
 	QString epochMjd() const;
 	QString fitEpochUtc() const;
 	QString calculationStartUtc() const;
 	QString arcRange() const;
 	int stationCount() const;
 	QVariantList stateVector() const;
+	QVariantList stateVectorSigmas() const;
 	double absoluteMagnitude() const;
+	double absoluteMagnitudeSigma() const;
+	double absoluteMagnitudePhotometricSigma() const;
 
 	double asteroidSlopeG() const { return m_photometry.slopeG; }
 
 	bool cometPhotometry() const;
 	double cometTotalMagnitude() const;
 	double cometNuclearMagnitude() const;
+	double cometTotalMagnitudeSigma() const;
+	double cometNuclearMagnitudeSigma() const;
+	double cometTotalMagnitudePhotometricSigma() const;
+	double cometNuclearMagnitudePhotometricSigma() const;
 
 	double cometK1() const { return m_cometPhotometry.total.slope; }
 

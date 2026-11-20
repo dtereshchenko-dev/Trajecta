@@ -2,14 +2,32 @@
 #include "fit/FitCancellation.h"
 #include "fit/PostFitResidual.h"
 #include "orbital_core/CometaryCoordinates.h"
+#include "orbital_core/Photometry.h"
 #include "logger/Logger.h"
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <limits>
+#include <numbers>
 
 namespace orbital_core::fit {
 	namespace {
+		void setPhotometricGeometry(Residual& row, const Vec3D& position, const Vec3D& observerHelio)
+		{
+			const Vec3D topo = position - observerHelio;
+			row.helioDistAu = position.magnitude();
+			row.geoDistAu = topo.magnitude();
+			row.phaseAngleRad = std::numeric_limits<double>::quiet_NaN();
+			if (row.helioDistAu > 1.0e-12 && row.geoDistAu > 1.0e-12) {
+				const double observerDistance = observerHelio.magnitude();
+				const double denom = 2.0 * row.helioDistAu * row.geoDistAu;
+				const double cosine = (row.helioDistAu * row.helioDistAu + row.geoDistAu * row.geoDistAu -
+				                       observerDistance * observerDistance) /
+				                      denom;
+				row.phaseAngleRad = std::acos(std::clamp(cosine, -1.0, 1.0));
+			}
+		}
+
 		std::vector<double> postFitChiSquares(const OrbitFitModel& model,
 		                                      const WeightedObservationLinearization& linear,
 		                                      const Eigen::MatrixXd& covariance, std::span<const std::uint8_t> included)
@@ -133,20 +151,7 @@ namespace orbital_core::fit {
 
 			if (i < positions.size()) {
 				const Vec3D observerHelio = obs.earthR + obs.observerOffsetEclAu;
-				const Vec3D topo = positions[i] - observerHelio;
-
-				row.helioDistAu = positions[i].magnitude();
-				row.geoDistAu = topo.magnitude();
-
-				const double obsSunDistAu = observerHelio.magnitude();
-				if (row.helioDistAu > 1.0e-12 && row.geoDistAu > 1.0e-12) {
-					const double denom = 2.0 * row.helioDistAu * row.geoDistAu;
-					double cosPhase = (row.helioDistAu * row.helioDistAu + row.geoDistAu * row.geoDistAu -
-					                   obsSunDistAu * obsSunDistAu) /
-					                  denom;
-					cosPhase = std::clamp(cosPhase, -1.0, 1.0);
-					row.phaseAngleRad = std::acos(cosPhase);
-				}
+				setPhotometricGeometry(row, positions[i], observerHelio);
 			}
 
 			residuals.add(row);
@@ -243,6 +248,133 @@ namespace orbital_core::fit {
 		checkCancellation(cancel);
 	}
 
+	PhotometricOrbitSigmas OrbitFitOutput::photometricOrbitSigmas(const Residuals& nominal,
+	                                                              const std::vector<double>& params,
+	                                                              const Eigen::MatrixXd& covariance,
+	                                                              std::stop_token cancel) const
+	{
+		PhotometricOrbitSigmas result;
+		const auto n = static_cast<Eigen::Index>(params.size());
+		const auto& observations = model_.observations();
+		if (n < 6 || covariance.rows() != n || covariance.cols() != n || !covariance.allFinite() ||
+		    nominal.count() != observations.size())
+			return result;
+
+		const auto asteroid = photometry::fit(nominal.data(), config_.photometry.asteroidG);
+		const auto comet = photometry::fitComet(nominal.data(), config_.photometry);
+		if (!asteroid.absoluteMagnitude && !comet.total.absoluteMagnitude && !comet.nuclear.absoluteMagnitude)
+			return result;
+
+		try {
+			checkCancellation(cancel);
+			const auto derivatives = model_.computePhotometricPositionDerivatives(params, cancel);
+			if (derivatives.positions.size() != observations.size() ||
+			    derivatives.jacobians.size() != observations.size())
+				return result;
+
+			struct Gradient {
+				Eigen::VectorXd value;
+				double weightSum{0.0};
+				std::size_t count{0};
+				bool valid{true};
+			};
+
+			Gradient h{Eigen::VectorXd::Zero(n)}, m1{Eigen::VectorXd::Zero(n)}, m2{Eigen::VectorXd::Zero(n)};
+			const auto& rows = nominal.data();
+			constexpr double invLog10 = 1.0 / std::numbers::ln10;
+			for (std::size_t i = 0; i < rows.size(); ++i) {
+				checkCancellation(cancel);
+				const auto hp = asteroid.absoluteMagnitude ? photometry::evaluate(rows[i], asteroid, true)
+				                                           : photometry::Evaluation{};
+				const auto cp = rows[i].nuclearMagnitude ? photometry::evaluateComet(rows[i], comet, true)
+				                                         : photometry::Evaluation{};
+				Gradient* cg = cp.residual ? (*rows[i].nuclearMagnitude ? &m2 : &m1) : nullptr;
+				if (!hp.residual && !cg)
+					continue;
+				const auto fail = [&] {
+					if (hp.residual)
+						h.valid = false;
+					if (cg)
+						cg->valid = false;
+				};
+				if (observations[i].radar || derivatives.jacobians[i].rows() != 3 ||
+				    derivatives.jacobians[i].cols() != n) {
+					fail();
+					continue;
+				}
+
+				const auto& p = derivatives.positions[i];
+				const Vec3D observer = observations[i].earthR + observations[i].observerOffsetEclAu;
+				const Eigen::Vector3d r(p.x, p.y, p.z);
+				const Eigen::Vector3d d(p.x - observer.x, p.y - observer.y, p.z - observer.z);
+				const double rnorm = r.norm(), dnorm = d.norm();
+				if (!(rnorm > 0.0) || !(dnorm > 0.0) || !std::isfinite(rnorm) || !std::isfinite(dnorm)) {
+					fail();
+					continue;
+				}
+				const Eigen::Vector3d rGradient = r / (rnorm * rnorm);
+				const Eigen::Vector3d dGradient = d / (dnorm * dnorm);
+				const double alpha = rows[i].phaseAngleRad;
+				const double sine = std::sin(alpha);
+				const auto cosineGradient = [&]() -> Eigen::Vector3d {
+					return (r + d) / (rnorm * dnorm) - std::cos(alpha) * (rGradient + dGradient);
+				};
+				if (hp.residual) {
+					if (!std::isfinite(alpha) || !(sine > 1e-12)) {
+						h.valid = false;
+					} else {
+						const auto [phase, phaseRate] =
+						    Calculations::hgPhaseFunctionWithDerivative(alpha, config_.photometry.asteroidG);
+						if (!(phase > 0.0) || !std::isfinite(phaseRate)) {
+							h.valid = false;
+						} else {
+							const Eigen::Vector3d gradient =
+							    -5.0 * invLog10 * (rGradient + dGradient) -
+							    2.5 * invLog10 * phaseRate / (phase * sine) * cosineGradient();
+							h.value += derivatives.jacobians[i].transpose() * gradient / hp.sigma;
+							h.weightSum += 1.0 / hp.sigma;
+							++h.count;
+						}
+					}
+				}
+				if (cg) {
+					const auto& component = *rows[i].nuclearMagnitude ? comet.nuclear : comet.total;
+					Eigen::Vector3d gradient = -invLog10 * (component.slope * rGradient + 5.0 * dGradient);
+					if (component.phaseCoefficient != 0.0) {
+						if (!std::isfinite(alpha) || !(sine > 1e-12)) {
+							cg->valid = false;
+							continue;
+						}
+						gradient += component.phaseCoefficient * Constants::RAD_TO_DEG / sine * cosineGradient();
+					}
+					cg->value += derivatives.jacobians[i].transpose() * gradient / cp.sigma;
+					cg->weightSum += 1.0 / cp.sigma;
+					++cg->count;
+				}
+			}
+
+			const auto sigma = [&](const Gradient& gradient, std::size_t expected) -> std::optional<double> {
+				if (!gradient.valid || expected == 0 || gradient.count != expected || !(gradient.weightSum > 0.0))
+					return std::nullopt;
+				const Eigen::VectorXd mean = gradient.value / gradient.weightSum;
+				const double variance = mean.dot(covariance * mean);
+				return std::isfinite(variance) && variance >= 0.0 ? std::optional<double>{std::sqrt(variance)}
+				                                                  : std::nullopt;
+			};
+			result.asteroid = sigma(h, asteroid.count);
+			result.cometTotal = sigma(m1, comet.total.count);
+			result.cometNuclear = sigma(m2, comet.nuclear.count);
+			return result;
+		} catch (const FitCancelled&) {
+			throw;
+		} catch (const EphemerisError&) {
+			throw;
+		} catch (const std::exception& e) {
+			checkCancellation(cancel);
+			LOG_WARN << "[Photometry] Orbit uncertainty unavailable: " << e.what();
+			return result;
+		}
+	}
 	void OrbitFitOutput::populateUncertainty(FitResult& result, const std::vector<double>& params,
 	                                         const std::vector<double>& rawRes, std::stop_token cancel) const
 	{
@@ -271,20 +403,40 @@ namespace orbital_core::fit {
 		result.uncertainty.covarianceObjectiveScale =
 		    (std::isfinite(fitCov.varianceFactor) && fitCov.varianceFactor > 0.0) ? fitCov.varianceFactor : 1.0;
 
+		const auto photometrySigmas = photometricOrbitSigmas(
+		    result.allResiduals.count() == model_.observations().size() ? result.allResiduals : result.residuals,
+		    params, fitCov.fullCovariance, cancel);
+		result.uncertainty.absoluteMagnitudeOrbitSigma = photometrySigmas.asteroid;
+		result.uncertainty.cometTotalMagnitudeOrbitSigma = photometrySigmas.cometTotal;
+		result.uncertainty.cometNuclearMagnitudeOrbitSigma = photometrySigmas.cometNuclear;
+
 		auto orbit = propagateToTargetEpoch(params, *result.fitEpochOrbit);
 		checkCancellation(cancel);
 		if (!orbit)
 			orbit = result.fitEpochOrbit;
 
+		auto saveOutputStateCovariance = [&](const Eigen::Matrix<double, 6, Eigen::Dynamic>& stateJ) {
+			if (stateJ.cols() != fitCov.fullCovariance.rows() || !stateJ.allFinite())
+				return;
+			Eigen::Matrix<double, 6, Eigen::Dynamic> physicalJ = stateJ;
+			physicalJ.bottomRows<3>() *= Constants::GAUSS_K;
+			const StateCov6x6 covariance = physicalJ * fitCov.fullCovariance * physicalJ.transpose();
+			if (covariance.allFinite()) {
+				result.uncertainty.outputStateCovariance = covariance;
+				result.uncertainty.outputStateCovarianceEpochJdTdb = orbit->getEpoch();
+			}
+		};
 		const bool useCometaryElements = cometary::usesCometaryElements(orbit->getExcentricity());
 		if (useCometaryElements) {
 			const auto derivatives =
 			    uncertainty_.computeCometaryDerivatives(params, *result.fitEpochOrbit, *orbit, cancel);
 			checkCancellation(cancel);
+			saveOutputStateCovariance(derivatives.stateJ);
 			uncertainty_.populateCometaryUncertainty(result.uncertainty, derivatives, fitCov, *orbit);
 		} else {
 			const auto derivs = uncertainty_.computeElementDerivatives(params, *result.fitEpochOrbit, cancel);
 			checkCancellation(cancel);
+			saveOutputStateCovariance(derivs.stateJ);
 			const Eigen::Matrix<double, 6, 6> covOrb = derivs.elemJ * fitCov.fullCovariance * derivs.elemJ.transpose();
 			const Eigen::MatrixXd qualityElementCov =
 			    derivs.qualityElemJ * fitCov.fullCovariance * derivs.qualityElemJ.transpose();

@@ -148,7 +148,9 @@ namespace orbital_core::hazard {
 				runDirection(std::vector<double>(split, grid.end()));
 			}
 
-			catch (const std::exception& error) {
+			catch (const EphemerisError&) {
+				throw;
+			} catch (const std::exception& error) {
 				if (control)
 					throw;
 				audit::write("grid-failed", [&](auto& log) { log << " error=" << std::quoted(error.what()); });
@@ -197,6 +199,8 @@ namespace orbital_core::hazard {
 				        : nonGrav ? propagator.propagateAllWithVelocity(anchor.rTarget, anchor.vTarget, anchorJd, grid,
 				                                                        *nonGrav)
 				                  : propagator.propagateAllWithVelocity(anchor.rTarget, anchor.vTarget, anchorJd, grid);
+			} catch (const EphemerisError&) {
+				throw;
 			} catch (...) {
 				if (control)
 					throw;
@@ -209,6 +213,8 @@ namespace orbital_core::hazard {
 			EphemerisRecord planetState;
 			try {
 				planetState = eph->queryJD(ephPlanet, targetJd);
+			} catch (const EphemerisError&) {
+				throw;
 			} catch (...) {
 				if (control)
 					throw;

@@ -9,11 +9,14 @@
 #include "orbital_core/hazard/PlanetData.h"
 #include "orbital_core/hazard/BodyFixedFrame.h"
 #include "orbital_core/hazard/IntervalMonteCarlo.h"
+#include "orbital_core/hazard/LineOfVariationImpact.h"
 #include "orbital_core/perturbations/PlanetaryPerturbations.h"
 #include "orbital_core/perturbations/AsteroidPerturbations.h"
 #include "hazard/CloseApproachKinematics.h"
 #include <array>
+#include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <future>
@@ -110,6 +113,9 @@ class NBodyPropagatorTest : public ::testing::Test {
 			setDefaultEphemerisSource(de440.get());
 
 		sb441 = std::make_unique<SpkReader>();
+		if (!sb441->isAvailable())
+			if (const char* path = std::getenv("TRAJECTA_SB441"))
+				sb441 = std::make_unique<SpkReader>(path);
 		if (sb441->isAvailable())
 			setDefaultAsteroidSource(sb441.get());
 	}
@@ -124,6 +130,111 @@ class NBodyPropagatorTest : public ::testing::Test {
 	std::unique_ptr<SpkReader> sb441;
 	NBodyPropagator propagator;
 };
+
+TEST_F(NBodyPropagatorTest, StopsWhenPropagationLeavesPlanetaryEphemerisCoverage)
+{
+	if (!de440->isAvailable())
+		GTEST_SKIP() << "DE440 unavailable";
+	const Vec3D r(1.0, 0.0, 0.0), v(0.0, 0.017, 0.0);
+	for (const auto kind : {IntegratorKind::RA15, IntegratorKind::IAS15}) {
+		for (const auto [epoch, target] : {std::pair{-112815.0, -112820.0}, std::pair{288975.0, 288980.0}}) {
+			SCOPED_TRACE(static_cast<int>(kind));
+			SCOPED_TRACE(epoch);
+			NBodyPropagator p(kind);
+			EXPECT_THROW((void)p.propagateAllWithVelocityMjd(r, v, epoch, {target}, NonGravModel{}),
+			             std::runtime_error);
+		}
+	}
+}
+
+TEST_F(NBodyPropagatorTest, LovReportsEphemerisCoverageFailureInsteadOfEmptyRisks)
+{
+	if (!de440->isAvailable())
+		GTEST_SKIP() << "DE440 unavailable";
+	constexpr double epochMjd = 288975.0;
+	ASSERT_NO_THROW(de440->queryMjd(EphemerisPlanet::Earth, epochMjd));
+	Orbit orbit;
+	orbit.setEpochMjd(epochMjd);
+	orbit.setR({1.5, 0.2, 0.1});
+	orbit.setV(Vec3D(-0.003, 0.013, 0.001) / Constants::GAUSS_K);
+	orbital_core::StateCov6x6 covariance = orbital_core::StateCov6x6::Identity() * 1e-12;
+	covariance(0, 0) = 1e-10;
+	orbital_core::hazard::LineOfVariationImpactConfig cfg;
+	cfg.sigmaMax = 0.1;
+	cfg.sigmaStepMax = 0.1;
+	cfg.maxPositiveSamples = 1;
+	cfg.encounterStepPoints = 0;
+	cfg.closeApproach.lookbackYears = 0.0;
+	cfg.closeApproach.horizonYears = 0.05;
+	EXPECT_THROW(
+	    (void)orbital_core::hazard::traceLineOfVariationImpacts(orbit, covariance, propagator, cfg, de440.get()),
+	    EphemerisError);
+	DE440Source missing("trajecta-missing-ephemeris-for-test.440");
+	ASSERT_FALSE(missing.isAvailable());
+	EXPECT_THROW((void)orbital_core::hazard::traceLineOfVariationImpacts(orbit, covariance, propagator, cfg, &missing),
+	             EphemerisError);
+}
+
+TEST_F(NBodyPropagatorTest, DensePropagationHonorsCancellationInAllModes)
+{
+	if (!de440->isAvailable())
+		GTEST_SKIP() << "DE440 unavailable";
+	using namespace std::chrono_literals;
+	constexpr double epoch = 60000.0;
+	const Vec3D r(1.5, 0.2, 0.1), v(-0.003, 0.013, 0.001);
+	for (const auto kind : {IntegratorKind::RA15, IntegratorKind::IAS15}) {
+		for (int mode = 0; mode < 3; ++mode) {
+			for (const int direction : {-1, 1}) {
+				SCOPED_TRACE(static_cast<int>(kind));
+				SCOPED_TRACE(mode);
+				SCOPED_TRACE(direction);
+				NBodyPropagator p(kind);
+				std::stop_source cancel;
+				std::promise<void> started;
+				auto startedFuture = started.get_future();
+				auto result = std::async(std::launch::async, [&] {
+					started.set_value();
+					const double target = epoch + direction * 36525.0;
+					return p.propagateDenseMjd(r, v, epoch, std::min(epoch, target), std::max(epoch, target),
+					                           NonGravModel{}, mode > 0, mode == 2, cancel.get_token());
+				});
+				startedFuture.wait();
+				EXPECT_EQ(result.wait_for(20ms), std::future_status::timeout);
+				cancel.request_stop();
+				EXPECT_THROW((void)result.get(), std::runtime_error);
+			}
+		}
+	}
+}
+
+TEST_F(NBodyPropagatorTest, CancelledDenseExtensionPreservesExistingTrajectory)
+{
+	if (!de440->isAvailable())
+		GTEST_SKIP() << "DE440 unavailable";
+	using namespace std::chrono_literals;
+	constexpr double epoch = 60000.0;
+	NBodyPropagator p;
+	auto trajectory = p.propagateDenseMjd({1.5, 0.2, 0.1}, {-0.003, 0.013, 0.001}, epoch, epoch - 2.0, epoch + 2.0,
+	                                      NonGravModel{}, true, false);
+	const auto originalSize = trajectory.steps.size();
+	const auto original = trajectory.at(epoch - 1.0);
+	ASSERT_TRUE(original);
+	std::stop_source cancel;
+	std::promise<void> started;
+	auto startedFuture = started.get_future();
+	auto result = std::async(std::launch::async, [&] {
+		started.set_value();
+		p.extendDenseBackwardMjd(trajectory, epoch - 36525.0, NonGravModel{}, true, false, cancel.get_token());
+	});
+	startedFuture.wait();
+	EXPECT_EQ(result.wait_for(20ms), std::future_status::timeout);
+	cancel.request_stop();
+	EXPECT_THROW(result.get(), std::runtime_error);
+	EXPECT_EQ(trajectory.steps.size(), originalSize);
+	const auto restored = trajectory.at(epoch - 1.0);
+	ASSERT_TRUE(restored);
+	EXPECT_DOUBLE_EQ((restored->R - original->R).magnitude(), 0.0);
+}
 
 TEST_F(NBodyPropagatorTest, DenseVariationsMatchPropagationAcrossEarthEncounter)
 {

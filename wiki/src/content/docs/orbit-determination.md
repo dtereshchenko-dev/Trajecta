@@ -69,7 +69,16 @@ the same orbit in another element set. For cometary solutions, the alternative
 
 Below the elements, **Non-gravitational** shows whether that model is enabled
 and, when applicable, its parameters. **All parameters and vectors** opens
-the detailed orbital elements and state vectors.
+the detailed orbital elements, derived quantities and Cartesian state vector.
+Where available, the detailed tables show uncertainties at the displayed
+solution epoch, including those propagated to the output state. A dash means
+that an uncertainty is unavailable or not estimated.
+
+The **Photometry** section shows H and G for asteroids, or M1, M2 and the
+adopted model parameters for comets. The `σ phot.` and `σ orbit` columns are
+separate formal contributions from magnitude errors and orbital covariance;
+neither is a complete physical uncertainty. See
+[Photometry](../reference/photometry/) for the assumptions and measurement selection.
 
 **Earth MOID** is the minimum distance between the osculating orbit curves;
 it is not the predicted distance at a future encounter. **PHA status** is a

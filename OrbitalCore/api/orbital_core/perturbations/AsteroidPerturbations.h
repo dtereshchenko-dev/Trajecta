@@ -61,7 +61,7 @@ namespace orbital_core::forces {
 		}};
 
 		// Fixed Keplerian elements for major asteroids (J2000 ecliptic, epoch JD 2460000.5).
-		// Used as Kepler-3 fallback when SB441 SPK is not available.
+		// Used for the explicitly selected Kepler-3 asteroid model.
 		struct AsteroidElements {
 			double epoch;
 			double a;  // AU
@@ -94,16 +94,21 @@ namespace orbital_core::forces {
 
 	class AsteroidPerturbations {
 	   public:
-		void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& /*dadv*/) const noexcept
+		void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& /*dadv*/) const
 		{
-			const bool useSpk = ctx.useSb441 && ctx.asteroidSource && ctx.asteroidSource->isAvailable();
+			if (ctx.useSb441 && (!ctx.asteroidSource || !ctx.asteroidSource->isAvailable()))
+				throw EphemerisError("SB441 asteroid ephemeris is unavailable");
 			const double sunGm = ctx.sunGm > 0.0 ? ctx.sunGm : Constants::GM_SUN;
 
-			if (useSpk) {
+			if (ctx.useSb441) {
 				for (const auto& ast : detail::kSb441Asteroids) {
 					if (ast.naifId == ctx.targetNaifId)
 						continue;
-					Vec3D rAst = ctx.asteroidSource->getPositionOffsetMjd(ast.naifId, ctx.epochMjd, ctx.offsetDays);
+					Vec3D rAst;
+					if (!ctx.asteroidSource->queryPositionOffsetMjd(ast.naifId, ctx.epochMjd, ctx.offsetDays, rAst))
+						throw EphemerisError("Asteroid ephemeris query failed or epoch is outside coverage for NAIF " +
+						                     std::to_string(ast.naifId) + " at MJD TDB " +
+						                     std::to_string(ctx.epochMjd + ctx.offsetDays));
 					const double kernelGm =
 					    ctx.ephemerisSource ? ctx.ephemerisSource->asteroidGravitationalParameter(ast.naifId) : 0.0;
 					const double gm = kernelGm > 0.0 ? kernelGm : ast.gm * (sunGm / Constants::GM_SUN);

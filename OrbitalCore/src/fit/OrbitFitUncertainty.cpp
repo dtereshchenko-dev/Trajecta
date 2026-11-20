@@ -241,6 +241,8 @@ namespace orbital_core::fit {
 		out.epochJdTdb = displayOrbit.getEpoch();
 		if (nParams < 6)
 			return out;
+		const auto transport = outputTransport(params, fitOrbit.getEpoch(), out.epochJdTdb, cancel);
+		out.stateJ = transport.jacobian;
 
 		cometary::Vector6 nominalCot;
 		nominalCot << displayOrbit.getPerigee(), displayOrbit.getExcentricity(), displayOrbit.getInclination(),
@@ -260,7 +262,6 @@ namespace orbital_core::fit {
 			return out;
 		}
 
-		const auto transport = outputTransport(params, fitOrbit.getEpoch(), out.epochJdTdb, cancel);
 		cometary::Matrix6 localCanonicalJacobian = *localCotJacobian;
 		localCanonicalJacobian.rightCols<3>() *= Constants::GAUSS_K;
 		out.cotJ = localCanonicalJacobian * transport.jacobian;
@@ -366,6 +367,7 @@ namespace orbital_core::fit {
 		const double targetEpochTdb =
 		    outputEpochTdb_ > 0.0 && std::abs(outputEpochTdb_ - fitEpochTdb) > 1e-6 ? outputEpochTdb_ : fitEpochTdb;
 		const auto transport = outputTransport(params, fitEpochTdb, targetEpochTdb, cancel);
+		out.stateJ = transport.jacobian;
 		Eigen::Matrix<double, 6, 6> localElementJ;
 		Eigen::Matrix<double, 9, 6> localQualityJ;
 		auto convert = [&](const std::vector<double>& state) -> std::pair<std::vector<double>, std::vector<double>> {

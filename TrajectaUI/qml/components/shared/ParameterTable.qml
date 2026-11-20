@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import TrajectaUI
+import "../../shared/UI.js" as UI
 
 ColumnLayout {
     id: table
@@ -9,12 +10,15 @@ ColumnLayout {
     property string parameterTitle: qsTr("Parameter")
     property string rowPrefix: "parameter"
     property bool showSigma: false
+    property bool showOrbitSigma: false
+    property string sigmaTitle: "\u03c3"
     property bool showStatus: false
     property bool showSignificance: false
+    property bool selectableValues: false
     property real columnSpacing: 12
     property real parameterShare: showSigma || showStatus ? 0.16 : 0.26
     property real unitShare: showSigma || showStatus ? 0.14 : 0.18
-    property real sigmaShare: 0.20
+    property real sigmaShare: 0.30
     property real statusShare: 0.20
     property real significanceShare: 0.13
     readonly property real columnSpace: Math.max(0, width - 24 - columnSpacing * (2 + Number(showSigma) + Number(showStatus) + Number(showSignificance)))
@@ -37,7 +41,14 @@ ColumnLayout {
             spacing: table.columnSpacing
             CustomText { text: table.parameterTitle; width: table.parameterWidth; height: parent.height; font.pixelSize: 10; secondary: true }
             CustomText { text: qsTr("Value"); width: table.valueWidth; height: parent.height; font.pixelSize: 10; secondary: true; horizontalAlignment: Text.AlignRight }
-            CustomText { visible: table.showSigma; text: "\u03c3"; width: table.sigmaWidth; height: parent.height; font.pixelSize: 10; secondary: true; horizontalAlignment: Text.AlignRight }
+            Row {
+                visible: table.showSigma
+                width: table.sigmaWidth
+                height: parent.height
+                spacing: table.showOrbitSigma ? 8 : 0
+                CustomText { text: table.showOrbitSigma ? qsTr("σ phot.") : table.sigmaTitle; width: table.showOrbitSigma ? (table.sigmaWidth - 8) / 2 : table.sigmaWidth; height: parent.height; font.pixelSize: 10; secondary: true; horizontalAlignment: Text.AlignRight }
+                CustomText { visible: table.showOrbitSigma; text: qsTr("σ orbit"); width: (table.sigmaWidth - 8) / 2; height: parent.height; font.pixelSize: 10; secondary: true; horizontalAlignment: Text.AlignRight }
+            }
             CustomText { visible: table.showSignificance; text: qsTr("|value| / σ"); width: table.significanceWidth; height: parent.height; font.pixelSize: 10; secondary: true; horizontalAlignment: Text.AlignRight }
             CustomText { text: qsTr("Unit"); width: table.unitWidth; height: parent.height; font.pixelSize: 10; secondary: true }
             CustomText { visible: table.showStatus; text: qsTr("Status"); width: table.statusWidth; height: parent.height; font.pixelSize: 10; secondary: true; horizontalAlignment: Text.AlignRight }
@@ -62,6 +73,7 @@ ColumnLayout {
                 CustomText { text: row.modelData.label; width: table.parameterWidth; height: parent.height; font.pixelSize: 12 }
                 CustomText {
                     objectName: table.rowPrefix + "-value"
+                    visible: !table.selectableValues
                     text: row.modelData.value
                     width: table.valueWidth
                     height: parent.height
@@ -70,16 +82,51 @@ ColumnLayout {
                     font.weight: Font.DemiBold
                     horizontalAlignment: Text.AlignRight
                 }
-                CustomText {
-                    objectName: table.rowPrefix + "-sigma"
+                TextEdit {
+                    objectName: table.rowPrefix + "-selectable-value"
+                    visible: table.selectableValues
+                    text: row.modelData.value
+                    width: table.valueWidth
+                    height: parent.height
+                    color: AppTheme.ink
+                    font.family: UI.monoFont
+                    font.pixelSize: 12
+                    font.weight: Font.DemiBold
+                    horizontalAlignment: Text.AlignRight
+                    verticalAlignment: Text.AlignVCenter
+                    readOnly: true
+                    selectByMouse: true
+                    selectionColor: AppTheme.accent
+                    selectedTextColor: AppTheme.accentText
+                }
+                Row {
                     visible: table.showSigma
-                    text: table.showSigma ? row.modelData.sigma : ""
                     width: table.sigmaWidth
                     height: parent.height
-                    numeric: true
-                    secondary: true
-                    font.pixelSize: 11
-                    horizontalAlignment: Text.AlignRight
+                    spacing: table.showOrbitSigma ? 8 : 0
+                    CustomText {
+                        objectName: table.rowPrefix + "-sigma"
+                        text: table.showSigma ? row.modelData.sigma : ""
+                        width: table.showOrbitSigma ? (table.sigmaWidth - 8) / 2 : table.sigmaWidth
+                        height: parent.height
+                        numeric: true
+                        secondary: true
+                        font.pixelSize: table.showOrbitSigma && width < 65 ? 9 : 11
+                        horizontalAlignment: Text.AlignRight
+                        elide: Text.ElideLeft
+                    }
+                    CustomText {
+                        objectName: table.rowPrefix + "-orbit-sigma"
+                        visible: table.showOrbitSigma
+                        text: table.showOrbitSigma ? row.modelData.orbitSigma : ""
+                        width: (table.sigmaWidth - 8) / 2
+                        height: parent.height
+                        numeric: true
+                        secondary: true
+                        font.pixelSize: width < 65 ? 9 : 11
+                        horizontalAlignment: Text.AlignRight
+                        elide: Text.ElideLeft
+                    }
                 }
                 CustomText {
                     objectName: table.rowPrefix + "-significance"

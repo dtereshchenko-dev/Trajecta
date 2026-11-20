@@ -14,7 +14,7 @@ namespace Constants {
 
 	static constexpr const double GAUSS_K = 0.01720209895;  /// Gaussian gravitational constant (rad/day)
 	static constexpr const double EARTH_RADIUS = 6371.0;    /// km
-	// Scale for MPC observatory parallax constants, matching OrbFit's reau.
+
 	static constexpr const double EARTH_PARALLAX_RADIUS_KM = 6378.1363;
 	static constexpr const double EARTH_RADIUS_IN_METERS = 6371000.0;  /// m
 	static constexpr const double EARTH_LOCAL_DYNAMICS_AU = 0.1;

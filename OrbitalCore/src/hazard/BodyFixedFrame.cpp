@@ -17,13 +17,16 @@ namespace orbital_core::hazard {
 
 	std::string earthBodyFixedFrameModel()
 	{
-		const char* profile = "unknown";
+		const char* profile;
 		switch (orbital_core::earthOrientation().profile()) {
 			case EarthOrientationProfile::IAU1980:
 				profile = "IAU1980";
 				break;
 			case EarthOrientationProfile::FullC04:
 				profile = "full-C04";
+				break;
+			default:
+				profile = "unknown";
 				break;
 		}
 		return std::string("Earth PCK ITRF93; C04 or historical UT1/IAU1976/1980 fallback; EOP profile: ") + profile;

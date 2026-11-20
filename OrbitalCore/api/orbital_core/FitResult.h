@@ -58,20 +58,21 @@ namespace orbital_core {
 		// unscaled (JᵀWJ)⁻¹ covariance. Impact MC and LOV use the same
 		// final objective-scaled covariance; samplers never rescale it internally.
 		//
-		// Rationale: state-space covariance is only meaningful at the
-		// epoch where the fit lives.  STM-
-		// propagating it to the user's display epoch via linear cov
-		// propagation amplifies the V·Δt cross-coupling by up to ×25-50
-		// for 30-60 day extrapolations, breaking downstream impact-risk /
-		// b-plane consumers. Downstream pipelines that need uncertainty at a later
-		// epoch should either (a) draw samples here and integrate them
-		// non-linearly through N-body to the target time, or
-		// (b) chain-rule through to orbital
-		// elements at the display epoch (already provided in
-		// `elementCovariance`).
+		// Risk samplers start at the fit epoch and propagate samples nonlinearly;
+		// they must not substitute a linearized display-epoch covariance here.
 		StateCov6x6 cartesianStateCovariance{StateCov6x6::Zero()};
 		StateCov6x6 cartesianStateCovarianceFormal{StateCov6x6::Zero()};
+		// Objective-scaled Cartesian covariance transported to orbit's output epoch.
+		// Kept separate from the fit-epoch covariance used by samplers.
+		std::optional<StateCov6x6> outputStateCovariance;
+		double outputStateCovarianceEpochJdTdb{std::numeric_limits<double>::quiet_NaN()};
 		double covarianceObjectiveScale{1.0};
+
+		// Uncertainty due to fit-epoch orbit and fitted force-parameter covariance;
+		// photometric errors and fixed-model systematics are excluded.
+		std::optional<double> absoluteMagnitudeOrbitSigma;
+		std::optional<double> cometTotalMagnitudeOrbitSigma;
+		std::optional<double> cometNuclearMagnitudeOrbitSigma;
 
 		// Full marginal covariance at fitEpochOrbit->getEpoch() in physical
 		// parameter layout:

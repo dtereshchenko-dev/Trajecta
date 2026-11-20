@@ -28,6 +28,11 @@ namespace orbital_core::fit {
 			std::vector<obs::AstrometricResidualTransform> transforms;
 		};
 
+		struct PhotometricPositionDerivatives {
+			std::vector<Vec3D> positions;
+			std::vector<Eigen::MatrixXd> jacobians;
+		};
+
 		[[nodiscard]] const auto& observations() const noexcept { return observations_; }
 
 		[[nodiscard]] int residualOffset(std::size_t i) const { return residualOffsets_.at(i); }
@@ -54,6 +59,8 @@ namespace orbital_core::fit {
 		[[nodiscard]] ResidualsAndStateJac computeResidualsAndStateJac(const std::vector<double>& params) const;
 		[[nodiscard]] std::vector<Vec3D> computeLightTimePositions(const std::vector<double>& params,
 		                                                           const NonGravModel& nonGrav) const;
+		[[nodiscard]] PhotometricPositionDerivatives computePhotometricPositionDerivatives(
+		    const std::vector<double>& params, std::stop_token cancel = {}) const;
 		[[nodiscard]] Eigen::MatrixXd computeJacobian(const std::vector<double>& params) const;
 		[[nodiscard]] double computeCost(const std::vector<double>& params) const;
 		[[nodiscard]] double computeCostWeighted(const std::vector<double>& params) const;
@@ -62,7 +69,8 @@ namespace orbital_core::fit {
 
 	   private:
 		std::vector<NBodyPropagator::StateVel> receptionStates(const std::vector<double>& params,
-		                                                       const NonGravModel& nonGrav) const;
+		                                                       const NonGravModel& nonGrav,
+		                                                       std::stop_token cancel = {}) const;
 		void configureDynamics(const OrbitOptimizerConfig& config);
 		std::vector<double> computeResiduals(const std::vector<double>& params, const NonGravModel& nonGrav) const;
 		Vec3D toTopocentric(const Vec3D& position, const obs::PreparedObservation& observation) const;

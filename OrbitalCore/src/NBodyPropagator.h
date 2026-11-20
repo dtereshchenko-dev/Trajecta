@@ -125,8 +125,8 @@ class ORBITAL_CORE_API NBodyPropagator {
 	};
 
 	struct DenseTrajectory {
-		double epochMjd{};
 		IntegratedStateFull initial;
+		double epochMjd{};
 		std::vector<DenseIntegratedStep> steps;
 
 		[[nodiscard]] ORBITAL_CORE_API std::optional<IntegratedStateFull> at(double mjd) const;
@@ -134,9 +134,9 @@ class ORBITAL_CORE_API NBodyPropagator {
 
 	[[nodiscard]] DenseTrajectory propagateDenseMjd(const Vec3D& R0, const Vec3D& V0, double epochMjd, double firstMjd,
 	                                                double lastMjd, const NonGravModel& ng, bool variational,
-	                                                bool sensitivities) const;
+	                                                bool sensitivities, std::stop_token cancel = {}) const;
 	void extendDenseBackwardMjd(DenseTrajectory& trajectory, double firstMjd, const NonGravModel& ng, bool variational,
-	                            bool sensitivities) const;
+	                            bool sensitivities, std::stop_token cancel = {}) const;
 
 	struct PropagationWithStmSurfaceStop {
 		PropagationResultFull state;
@@ -230,7 +230,8 @@ class ORBITAL_CORE_API NBodyPropagator {
    private:
 	[[nodiscard]] IntegrationOptions integrationOptions() const;
 	void integrateDenseSegment(DenseTrajectory& trajectory, const IntegratedStateFull& initial, double epochMjd,
-	                           double targetMjd, const NonGravModel& ng, bool variational, bool sensitivities) const;
+	                           double targetMjd, const NonGravModel& ng, bool variational, bool sensitivities,
+	                           std::stop_token cancel) const;
 
 	double m_stepSize = 10.0;
 

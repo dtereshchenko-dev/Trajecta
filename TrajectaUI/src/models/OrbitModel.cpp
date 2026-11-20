@@ -126,6 +126,9 @@ void OrbitModel::setFromFit(const Orbit_p& orbit, const orbital_core::uncertaint
 
 	m_sigmaM = hasDerivedSigmas ? radiansToDegrees(derivedSigmas.sigma_M) : 0.0;
 	m_sigmaPeriod = hasDerivedSigmas ? derivedSigmas.sigma_P : 0.0;
+	m_sigmaApogee = hasDerivedSigmas ? derivedSigmas.sigma_Q : 0.0;
+	m_sigmaInvA = hasDerivedSigmas ? derivedSigmas.sigma_inv_a : 0.0;
+	m_sigmaMeanMotion = hasDerivedSigmas ? radiansToDegrees(derivedSigmas.sigma_n) : 0.0;
 
 	emit changed();
 }
@@ -141,5 +144,6 @@ void OrbitModel::clear()
 	m_sigmaE = m_sigmaA = m_sigmaI = m_sigmaNode = 0.0;
 	m_sigmaW = m_sigmaNu = m_sigmaM = m_sigmaQ = 0.0;
 	m_sigmaPeriod = 0.0;
+	m_sigmaApogee = m_sigmaInvA = m_sigmaMeanMotion = 0.0;
 	emit changed();
 }

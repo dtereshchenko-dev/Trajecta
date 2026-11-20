@@ -17,9 +17,7 @@ using namespace Convertors;
 
 ObsNode::ObsNode()
     : JD{0.0},
-      utcMjdDay{0},
       utcSecondsOfDay{0.0},
-      hasSplitUtc{false},
       RA{0.0},
       DEC{0.0},
       MAG{0.0},
@@ -27,28 +25,26 @@ ObsNode::ObsNode()
       cosPhi{0.0},
       sinPhi{0.0},
       LST{0.0},
+      timeAccuracyDays{1.0e-6},
+      raAccuracyArcsec{1.5e-2},
+      decAccuracyArcsec{1.0e-2},
+      obsVector{0.0, 0.0, 0.0},
+      vector{0.0, 0.0, 0.0},
+      magString{},
+      obsName{},
+      utcMjdDay{0},
+      hasSplitUtc{false},
       note1{' '},
       note2{' '},
       isInterstellar{false},
       magBand{' '},
-      magString{},
-      catalogCode{' '},
-      timeAccuracyDays{1.0e-6},
-      raAccuracyArcsec{1.5e-2},
-      decAccuracyArcsec{1.0e-2},
-      obsName{},
-      vector{0.0, 0.0, 0.0},
-      obsVector{0.0, 0.0, 0.0}
+      catalogCode{' '}
 {
 }
 
 ObsNode::ObsNode(const orbital_core::obs::ParsedObservation& data, const ObservatoryRecord& observatory)
-    : id{data.id.empty() ? orbital_core::newObservationId() : data.id},
-      JD{data.jd},
-      timeScale{data.timeScale},
-      utcMjdDay{data.utcMjdDay},
+    : JD{data.jd},
       utcSecondsOfDay{data.utcSecondsOfDay},
-      hasSplitUtc{data.hasSplitUtc},
       RA{0.0},
       DEC{0.0},
       MAG{0.0},
@@ -56,30 +52,34 @@ ObsNode::ObsNode(const orbital_core::obs::ParsedObservation& data, const Observa
       cosPhi{observatory.cosPhi},
       sinPhi{observatory.sinPhi},
       LST{0.0},
+      rmsMag{data.rmsMag},
+      timeAccuracyDays{data.timeAccuracyDays},
+      raAccuracyArcsec{data.raAccuracyArcsec},
+      decAccuracyArcsec{data.decAccuracyArcsec},
+      obsVector{0.0, 0.0, 0.0},
+      vector{0.0, 0.0, 0.0},
+      id{data.id.empty() ? orbital_core::newObservationId() : data.id},
+      adesProgramCode{data.adesProgramCode},
+      notes{data.notes},
+      magString{data.magnitudeText},
+      astCat{data.astCat},
+      obsCode{observatory.code},
+      obsName{observatory.name},
+      utcMjdDay{data.utcMjdDay},
+      astrometricConvention{data.astrometricConvention},
+      timeScale{data.timeScale},
+      hasSplitUtc{data.hasSplitUtc},
       note1{data.programCode != ' ' ? data.programCode : (data.notes.empty() ? ' ' : data.notes.front())},
       note2{data.rovingObserver ? 'V'
             : data.isSatellite && !orbital_core::obs::techniqueOverridesGeometry(data.technique)
                 ? 'S'
                 : orbital_core::obs::mpcNote2(data.technique)},
       programCode{data.programCode},
-      adesProgramCode{data.adesProgramCode},
-      notes{data.notes},
       isInterstellar{data.isInterstellar},
       magBand{data.magBand},
-      nuclearMagnitude{data.nuclearMagnitude},
-      magString{data.magnitudeText},
-      rmsMag{data.rmsMag},
       catalogCode{data.catalogCode},
-      astCat{data.astCat},
-      astrometricConvention{data.astrometricConvention},
       hasTimeAccuracy{data.hasTimeAccuracy},
-      timeAccuracyDays{data.timeAccuracyDays},
-      raAccuracyArcsec{data.raAccuracyArcsec},
-      decAccuracyArcsec{data.decAccuracyArcsec},
-      obsCode{observatory.code},
-      obsName{observatory.name},
-      vector{0.0, 0.0, 0.0},
-      obsVector{0.0, 0.0, 0.0}
+      nuclearMagnitude{data.nuclearMagnitude}
 {
 	if (observatory.code != data.obsCode) {
 		throw std::string("Observatory record mismatch: expected '") + data.obsCode + "', got '" + observatory.code +

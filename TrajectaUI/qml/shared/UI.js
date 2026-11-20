@@ -180,6 +180,10 @@ function sigma(value) {
     return Number.isFinite(value) && value > 0 ? value.toExponential(3) : "—"
 }
 
+function fullPrecision(value) {
+    return Number.isFinite(value) ? String(value) : "—"
+}
+
 function signedNumber(value, digits) {
     if (!Number.isFinite(value)) return "\u2014"
     var rounded = Number(value.toFixed(digits))

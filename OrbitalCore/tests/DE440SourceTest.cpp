@@ -8,8 +8,10 @@
 #include "orbital_core/forces/SunGravity.h"
 #include "orbital_core/perturbations/PlanetaryPerturbations.h"
 #include <atomic>
+#include <chrono>
 #include <cmath>
 #include <filesystem>
+#include <fstream>
 #include <thread>
 #include <vector>
 
@@ -83,6 +85,20 @@ TEST_F(DE440SourceTest, IsAvailableWithFile)
 		GTEST_SKIP() << "DE440 file not found";
 	EXPECT_TRUE(source->isAvailable());
 	EXPECT_EQ(source->name(), "DE440");
+}
+
+TEST_F(DE440SourceTest, OutOfCoverageQueriesFailInsteadOfReturningZeroStates)
+{
+	if (!source->isAvailable())
+		GTEST_SKIP() << "DE440 file not found";
+	for (const double mjd : {-200000.0, 400000.0}) {
+		SCOPED_TRACE(mjd);
+		Vec3D positions[8], velocities[8];
+		EXPECT_THROW(source->getAllPlanetStatesMjd(mjd, positions, velocities), EphemerisError);
+		EXPECT_THROW(source->queryMjd(EphemerisPlanet::Earth, mjd), EphemerisError);
+		EXPECT_THROW(source->queryJD(EphemerisPlanet::Earth, mjd + 2400000.5), EphemerisError);
+		EXPECT_THROW((void)source->getPlanetPosition(EphemerisPlanet::Jupiter, mjd + 2400000.5), EphemerisError);
+	}
 }
 
 TEST_F(DE440SourceTest, DoesNotLoadFromExecutableDirectoryWhenConfiguredDataIsMissing)

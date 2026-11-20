@@ -580,7 +580,6 @@ namespace Calculations {
 						const double rho1 = topocentricRhoFromState(current.state, current.epoch, subarc.front());
 						const double rhoN = topocentricRhoFromState(current.state, current.epoch, subarc.back());
 						if (rho1 <= 0.0 || rhoN <= 0.0) {
-							errorOccurred = true;
 							break;
 						}
 
@@ -588,7 +587,6 @@ namespace Calculations {
 						const StateVectors rawHerget = herget(subarc, rho1, rhoN);
 						trial = fixedDistanceFitter.adjust(rawHerget, trial.epoch, subarc);
 						if (!trial.changed) {
-							errorOccurred = true;
 							break;
 						}
 					} else {
@@ -596,7 +594,6 @@ namespace Calculations {
 					}
 
 					if (!trial.state.isValid() || !std::isfinite(trial.rawScore) || trial.rawScore >= kBadScore) {
-						errorOccurred = true;
 						break;
 					}
 

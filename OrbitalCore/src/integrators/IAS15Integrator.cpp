@@ -435,9 +435,8 @@ namespace {
 					DenseIntegratedStep dense;
 					dense.beginMjd = tini + stepOffset - timeCorrection;
 					dense.endMjd = dense.beginMjd + step;
-					dense.evaluate = [stepStartX, stepStartV, posCorrection, velCorrection, acceleration, coefficients,
-					                  tini, stepOffset, timeCorrection, step, denseAccumulated,
-					                  composeVariations](double mjd) {
+					dense.evaluate = [denseAccumulated, stepStartX, stepStartV, posCorrection, velCorrection, acceleration,
+					                  coefficients, tini, stepOffset, timeCorrection, step, composeVariations](double mjd) {
 						const double fraction = ((mjd - tini - stepOffset) + timeCorrection) / step;
 						RadauVector<N> outputX, outputV;
 						predictIas15State(stepStartX, stepStartV, posCorrection, velCorrection, coefficients,

@@ -38,6 +38,9 @@ class OrbitModel : public QObject {
 	Q_PROPERTY(double sigmaNu READ sigmaNu NOTIFY changed)
 	Q_PROPERTY(double sigmaM READ sigmaM NOTIFY changed)
 	Q_PROPERTY(double sigmaQ READ sigmaQ NOTIFY changed)
+	Q_PROPERTY(double sigmaApogee READ sigmaApogee NOTIFY changed)
+	Q_PROPERTY(double sigmaReciprocalSemiMajorAxis READ sigmaReciprocalSemiMajorAxis NOTIFY changed)
+	Q_PROPERTY(double sigmaMeanMotion READ sigmaMeanMotion NOTIFY changed)
 	Q_PROPERTY(double sigmaPeriod READ sigmaPeriod NOTIFY changed)
 
    public:
@@ -102,6 +105,12 @@ class OrbitModel : public QObject {
 
 	[[nodiscard]] double sigmaQ() const noexcept { return m_sigmaQ; }
 
+	[[nodiscard]] double sigmaApogee() const noexcept { return m_sigmaApogee; }
+
+	[[nodiscard]] double sigmaReciprocalSemiMajorAxis() const noexcept { return m_sigmaInvA; }
+
+	[[nodiscard]] double sigmaMeanMotion() const noexcept { return m_sigmaMeanMotion; }
+
 	[[nodiscard]] double sigmaPeriod() const noexcept { return m_sigmaPeriod; }
 
    signals:
@@ -118,4 +127,5 @@ class OrbitModel : public QObject {
 	double m_sigmaE{}, m_sigmaA{}, m_sigmaI{}, m_sigmaNode{};
 	double m_sigmaW{}, m_sigmaNu{}, m_sigmaM{}, m_sigmaQ{};
 	double m_sigmaPeriod{};
+	double m_sigmaApogee{}, m_sigmaInvA{}, m_sigmaMeanMotion{};
 };

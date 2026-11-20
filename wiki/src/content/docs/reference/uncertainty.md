@@ -83,7 +83,10 @@ For a six-parameter fit, `A` contains the state transition matrix. When the fit
 includes non-gravitational parameters, it also contains the corresponding
 sensitivities, so their cross-covariances contribute to the propagated state.
 Transformations from Cartesian state to orbital elements use the appropriate
-local Jacobian as well.
+local Jacobian as well. The detailed solution view shows the resulting
+one-standard-deviation values for the output Cartesian state and available
+derived quantities at that same output epoch. These are distinct from the
+fit-epoch matrix in the covariance view.
 
 This describes the local behaviour around the nominal trajectory. A strongly
 nonlinear encounter can distort an uncertainty region beyond what one linear

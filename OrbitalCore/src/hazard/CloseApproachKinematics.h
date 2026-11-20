@@ -18,10 +18,10 @@ namespace orbital_core::hazard {
 	void refreshCloseApproachKinematics(CloseApproachEvent& event) noexcept;
 
 	struct InteriorPericenterMapping {
-		Vec3D relativePosition;
-		Vec3D relativeVelocity;
 		Eigen::Matrix<double, 6, 6> stateTransition{Eigen::Matrix<double, 6, 6>::Identity()};
 		double deltaDays{};
+		Vec3D relativePosition;
+		Vec3D relativeVelocity;
 		bool valid{false};
 
 		// Derivative of each input's own pericenter state, not a fixed-time STM.

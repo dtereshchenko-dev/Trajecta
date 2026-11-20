@@ -7,31 +7,31 @@ ColumnLayout {
     id: summary
     required property SolutionViewModel solution
     property real viewportWidth: 1440
+    property real viewportHeight: 700
     signal observationsRequested(string station)
     spacing: 0
     GridLayout {
         id: metrics
         Layout.fillWidth: true
         Layout.bottomMargin: 21
-        columns: width < 1000 ? 3 : 6
+        columns: summary.width < 760 ? 2 : 4
         columnSpacing: summary.viewportWidth <= 1200 ? 26 : summary.viewportWidth >= 1700 ? 60 : 38
         rowSpacing: 18
         MetricValue { objectName: "solution-optical-rms"; label: summary.solution.observations.radarCount ? qsTr("Optical RMS") : qsTr("RMS"); value: UI.number(summary.solution.rms, 5); context: qsTr("Unweighted · arcsec"); valueSize: summary.viewportWidth <= 1200 ? 18 : 21 }
         MetricValue { objectName: "solution-normalized-rms"; label: qsTr("Normalized RMS"); value: UI.number(summary.solution.normalizedRms, 5); context: qsTr("Weighted · dimensionless"); valueSize: summary.viewportWidth <= 1200 ? 18 : 21 }
         MetricValue { label: qsTr("Observations"); value: String(summary.solution.included); suffix: "/ " + summary.solution.total; context: qsTr("%1 stations").arg(summary.solution.stationCount); valueSize: summary.viewportWidth <= 1200 ? 18 : 21 }
         MetricValue { label: qsTr("Observation arc"); value: UI.number(summary.solution.arcDays, 2); suffix: qsTr("days"); context: summary.solution.arcRange; valueSize: summary.viewportWidth <= 1200 ? 18 : 21 }
-        Item { visible: metrics.columns === 6; Layout.fillWidth: true }
-        MetricValue { label: qsTr("Solution epoch · TDB"); value: summary.solution.epochMjd; context: "MJD · ECLM J2000"; valueSize: 17 }
     }
     Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: AppTheme.line; Layout.bottomMargin: 24 }
     RowLayout {
         id: columns
         Layout.fillWidth: true
         spacing: summary.viewportWidth <= 1200 ? 22 : summary.viewportWidth >= 1700 ? 40 : 30
-        readonly property real orbitWidth: Math.max(summary.viewportWidth <= 1200 ? 280 : 300, (width - spacing) / (summary.viewportWidth <= 1200 ? 2.3 : summary.viewportWidth >= 1700 ? 2.8 : 2.6))
+        readonly property real orbitWidth: Math.min(590, Math.max(summary.viewportWidth <= 1200 ? 280 : 300, (width - spacing) / (summary.viewportWidth <= 1200 ? 2.3 : summary.viewportWidth >= 1700 ? 2.8 : 2.6)))
         ResidualSection {
             solution: summary.solution
             viewportWidth: summary.viewportWidth
+            viewportHeight: summary.viewportHeight
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
         }

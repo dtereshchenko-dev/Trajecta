@@ -12,8 +12,9 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
+#include <Eigen/Core>
 #include "orbital_core/Vec3D.h"
-#include "orbital_core/Matrix2D.h"
 #include "orbital_core/OrbitalCoreExport.h"
 #include "orbital_core/Constants.h"
 
@@ -58,29 +59,29 @@ namespace Helpers {
 		return std::string(name);
 	}
 
-	inline Vec3D matrix3x1ToVec3D(const Matrix2D<double, 3, 1>& mat) noexcept
+	inline Vec3D matrix3x1ToVec3D(const Eigen::Vector3d& mat) noexcept
 	{
-		return Vec3D(mat(0, 0), mat(1, 0), mat(2, 0));
+		return Vec3D(mat.x(), mat.y(), mat.z());
 	}
 
-	inline Matrix2D<double, 3, 1> vec3DToMatrix3x1(const Vec3D& vec) noexcept
+	inline Eigen::Vector3d vec3DToMatrix3x1(const Vec3D& vec) noexcept
 	{
-		return Matrix2D<double, 3, 1>({{vec.x}, {vec.y}, {vec.z}});
+		return Eigen::Vector3d(vec.x, vec.y, vec.z);
 	}
 
 	inline Vec3D eclToEcv(const Vec3D& ecl) noexcept
 	{
-		const Matrix2D<double, 3, 3> rotateMatrix(
+		const Eigen::Matrix3d rotateMatrix(
 		    {{1, 0, 0},
 		     {0, std::cos(Constants::EARTH_INCL), std::sin(Constants::EARTH_INCL)},
 		     {0, -std::sin(Constants::EARTH_INCL), std::cos(Constants::EARTH_INCL)}});
 
-		return matrix3x1ToVec3D(rotateMatrix.inverse() * vec3DToMatrix3x1(ecl));
+		return matrix3x1ToVec3D(rotateMatrix.transpose() * vec3DToMatrix3x1(ecl));
 	}
 
 	inline Vec3D ecvToEcl(const Vec3D& ecv) noexcept
 	{
-		const Matrix2D<double, 3, 3> rotateMatrix(
+		const Eigen::Matrix3d rotateMatrix(
 		    {{1, 0, 0},
 		     {0, std::cos(Constants::EARTH_INCL), std::sin(Constants::EARTH_INCL)},
 		     {0, -std::sin(Constants::EARTH_INCL), std::cos(Constants::EARTH_INCL)}});
@@ -726,11 +727,33 @@ namespace Calculations {
 	 * H-G phase function (1 - G) Phi1 + G Phi2 (Bowell et al. 1989) for the
 	 * phase angle in radians.  Magnitudes use -2.5 log10 of this value.
 	 */
+	namespace detail {
+		template <bool WithDerivative>
+		inline std::pair<double, double> hgPhaseEvaluation(double phaseRad, double slopeG) noexcept
+		{
+			constexpr double a1 = 3.33, b1 = 0.63, a2 = 1.87, b2 = 1.22;
+			const double tanHalf = std::tan(0.5 * phaseRad);
+			const double phi1 = std::exp(-a1 * std::pow(tanHalf, b1));
+			const double phi2 = std::exp(-a2 * std::pow(tanHalf, b2));
+			const double phase = (1.0 - slopeG) * phi1 + slopeG * phi2;
+			double derivative = 0.0;
+			if constexpr (WithDerivative) {
+				derivative = -0.5 * (1.0 + tanHalf * tanHalf) *
+				             ((1.0 - slopeG) * phi1 * a1 * b1 * std::pow(tanHalf, b1 - 1.0) +
+				              slopeG * phi2 * a2 * b2 * std::pow(tanHalf, b2 - 1.0));
+			}
+			return {phase, derivative};
+		}
+	}  // namespace detail
+
 	inline double hgPhaseFunction(double phaseRad, double slopeG) noexcept
 	{
-		const double tanHalf = std::tan(0.5 * phaseRad);
-		const double phi1 = std::exp(-3.33 * std::pow(tanHalf, 0.63));
-		const double phi2 = std::exp(-1.87 * std::pow(tanHalf, 1.22));
-		return (1.0 - slopeG) * phi1 + slopeG * phi2;
+		return detail::hgPhaseEvaluation<false>(phaseRad, slopeG).first;
+	}
+
+	// The angular derivative is singular at zero phase for the H-G law.
+	inline std::pair<double, double> hgPhaseFunctionWithDerivative(double phaseRad, double slopeG) noexcept
+	{
+		return detail::hgPhaseEvaluation<true>(phaseRad, slopeG);
 	}
 }  // namespace Calculations

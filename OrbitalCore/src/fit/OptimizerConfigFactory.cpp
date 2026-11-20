@@ -6,6 +6,7 @@ namespace orbital_core::fit {
 		OrbitOptimizerConfig result;
 		result.nbody = config.nbody;
 		result.nonGrav = config.nonGrav;
+		result.photometry = config.photometry;
 		result.useWeights = config.useWeights;
 		result.weightProfile = config.weightProfile;
 		result.obsWeighting = config.obsWeighting;

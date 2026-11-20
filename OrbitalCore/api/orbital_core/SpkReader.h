@@ -47,6 +47,8 @@ class ORBITAL_CORE_API SpkReader {
 	bool queryState(int naifId, double jdTdb, Vec3D& R, Vec3D& V) const;
 	bool queryStateMjd(int naifId, double mjdTdb, Vec3D& R, Vec3D& V) const;
 	bool queryStateOffsetMjd(int naifId, double epochMjd, double offsetDays, Vec3D& R, Vec3D& V) const;
+	// Position-only query; false leaves R untouched.
+	bool queryPositionOffsetMjd(int naifId, double epochMjd, double offsetDays, Vec3D& R) const;
 
 	// Position-only fast path (velocity recurrence skipped). Returns zero
 	// vector on failure — same convention as DE440Source::getPlanetPosition.

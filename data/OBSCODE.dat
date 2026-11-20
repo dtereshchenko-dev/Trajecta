@@ -2249,6 +2249,7 @@ R16 343.46464 0.880457 +0.472653 Tafuriaste, La Orotava
 R17 343.48969 0.881484 +0.471430 ATLAS-TDO
 R18 343.49025 0.881483 +0.471432 Two-meter Twin Telescope, TTT4
 R20 344.57711 0.882360 +0.469022 LaMelira, Las Palmas de Gran Canaria
+R26 346.52429 0.874047 +0.484298 Observatorio Lanzarote, Haria
 R37 353.01175 0.741817 +0.668659 NEObserver Trevinca, Trevinca Skies
 R38 357.35656 0.791876 +0.608856 PixelSkiesAstro
 R39 352.30683 0.798224 +0.600382 Dobsonian Power, Algarve
@@ -2296,6 +2297,7 @@ R80 4.41089 0.708799 +0.703289 Observatoire International de Beauvert
 R81 2.08700 0.749353 +0.660015 Obs Vallespir, Sabadell
 R82 5.48831 0.720627 +0.691259 SIRENE Castor, SIRENE Observatory
 R83 5.64647 0.720583 +0.691196 Observatoire Banon La Tuilerie, Banon
+R84 0.74397 0.744130 +0.665983 Deep Field Remote Observatory, Ager
 R85 7.07181 0.725295 +0.686171 Telescope Leonard de Vinci, GAPRA, Antibes
 R86 6.98947 0.681270 +0.729861 Mont-Soleil, Saint-Imier
 R87 6.92294 0.723628 +0.688176 Observatoire de la Cote d'Azur
@@ -2312,6 +2314,7 @@ S03 12.92156 0.670725 +0.739321 Stierlingwald, Buermoos
 S04 12.71285 0.744787 +0.665093 Osservatorio Astronomico Narciso Spuntoni
 S05 12.83332 0.668165 +0.741616 Sternwarte Burghausen
 S06 13.07584 0.744332 +0.665855 ASTRIS Osservatorio Astronomico Claudio Del Sole
+S11 14.97457 0.792510 +0.608271 APT2 - Serra La Nave, INAF OACT
 S15 16.36147 0.919630 -0.392205 Namibia1/HAKOS, Hakos, Namibia, Hakos
 S16 16.70500 0.759851 +0.648047 ASI Matera Flyeye
 S24 19.54683 0.671902 +0.738204 Szilard Leo Observatory, Bujak
@@ -2439,6 +2442,7 @@ V62 261.05661 0.858216 +0.511726 Live Oak Observatory, Pontotoc
 V63 261.05728 0.858219 +0.511721 Tara Observatory, Cherokee
 V70 263.33572 0.870056 +0.491332 Starry Night Observatory, Columbus
 V72 263.89000 0.752697 +0.656235 JDP Observatory, Omaha
+V73 263.95072 0.753773 +0.655017 Star Hopper Observatory, La Vista
 V74 264.15689 0.869320 +0.492598 Katy Observatory, Katy
 V75 264.56578 0.874931 +0.482617 Live Oak Observatory, Lake Jackson
 V78 265.10780 0.700141 +0.711688 Spirit Marsh Observatory. Sauk Centre

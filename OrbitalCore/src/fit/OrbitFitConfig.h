@@ -7,6 +7,7 @@
 struct OrbitOptimizerConfig {
 	orbital_core::NBodySettings nbody;
 	orbital_core::NonGravSettings nonGrav;
+	orbital_core::PhotometryOptions photometry;
 	// Compatible NG warm start or numerical gravity ready for the next stage.
 	bool skipNonGravBootstrap{false};
 	bool useWeights{false};

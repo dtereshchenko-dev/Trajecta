@@ -86,7 +86,7 @@ namespace orbital_core::forces::detail {
 }  // namespace orbital_core::forces::detail
 
 namespace orbital_core::forces {
-	void EarthJ2::evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d&) const noexcept
+	void EarthJ2::evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d&) const
 	{
 		constexpr uint16_t kEarthBodyMask = static_cast<uint16_t>(1u << 2);
 		if (!ctx.forceModel.earthJ2 && !ctx.forceModel.earthJ3 && !ctx.forceModel.earthJ4)

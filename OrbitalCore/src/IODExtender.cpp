@@ -882,8 +882,7 @@ namespace Calculations {
 		double bestRMS = 1.0e30;
 		uint16_t carriedAutomaticMask = 0;
 		const double initialArcDays = allObs[subarcEnd].JD - allObs[subarcStart].JD;
-		double carriedArcDays = initialArcDays;
-		PerturberSelection bestPerturberSelection = perturberSelector.select(carriedArcDays, carriedAutomaticMask);
+		PerturberSelection bestPerturberSelection = perturberSelector.select(initialArcDays, carriedAutomaticMask);
 		bool currentArcNeedsActiveForceFit = (baseCfg.nbody.enabled && bestPerturberSelection.effectiveMask != 0);
 		std::optional<ResidualEval> nextResiduals;
 		uint16_t nextResidualsMask = 0;
@@ -1092,7 +1091,6 @@ namespace Calculations {
 				bestFirstIdx = firstIdx;
 				bestLastIdx = lastIdx;
 				bestPerturberSelection = fitSelection;
-				carriedArcDays = arcDays;
 				nextResiduals = std::move(latestRes);
 				nextResidualsMask = mask;
 			} else {

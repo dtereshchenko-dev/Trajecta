@@ -96,6 +96,7 @@ BaseDialog {
                                 enabled: !dialog.sources.checking
                                 text: qsTr("Update")
                                 iconName: "download"
+                                primary: true
                                 onClicked: row.pck ? dialog.sources.earthPckUpdate.install(row.modelData.id) : dialog.sources.observatoryUpdate.install(row.modelData.id)
                             }
                             CustomText { visible: !!row.updateState.checking; text: qsTr("Checking for updates..."); secondary: true; font.pixelSize: 10 }

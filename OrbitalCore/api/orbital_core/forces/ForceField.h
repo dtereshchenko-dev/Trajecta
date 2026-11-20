@@ -16,14 +16,14 @@ namespace orbital_core::forces {
 		{
 		}
 
-		void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& dadv) const noexcept
+		void evaluate(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& dadv) const
 		{
-			std::apply([&ctx, &a, &dadr, &dadv](const auto&... f) noexcept { (f.evaluate(ctx, a, dadr, dadv), ...); },
+			std::apply([&ctx, &a, &dadr, &dadv](const auto&... f) { (f.evaluate(ctx, a, dadr, dadv), ...); },
 			           m_forces);
 		}
 
 		// Convenience: zero outputs first, then accumulate.
-		void evaluateZeroed(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& dadv) const noexcept
+		void evaluateZeroed(ForceContext& ctx, Vec3D& a, Eigen::Matrix3d& dadr, Eigen::Matrix3d& dadv) const
 		{
 			a = Vec3D(0.0, 0.0, 0.0);
 			dadr = Eigen::Matrix3d::Zero();

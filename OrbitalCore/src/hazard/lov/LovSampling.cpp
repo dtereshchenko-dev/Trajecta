@@ -183,6 +183,8 @@ namespace orbital_core::hazard::lov_detail {
 			ScopedTiming timing(ctx.timings ? &ctx.timings->closeApproachScan : nullptr);
 			events = findCloseApproachesFromState(Vec3D(x(0), x(1), x(2)), Vec3D(x(3), x(4), x(5)), epoch,
 			                                      ctx.propagator, ng, localCfg, &ctx.eph, passages);
+		} catch (const EphemerisError&) {
+			throw;
 		} catch (const std::exception&) {
 			return std::nullopt;
 		} catch (...) {
@@ -252,6 +254,8 @@ namespace orbital_core::hazard::lov_detail {
 			ScopedTiming timing(ctx.timings ? &ctx.timings->closeApproachScan : nullptr);
 			events = findCloseApproachesFromState(Vec3D(x(0), x(1), x(2)), Vec3D(x(3), x(4), x(5)),
 			                                      ctx.nominalOrbit.getEpoch(), ctx.propagator, ng, localCfg, &ctx.eph);
+		} catch (const EphemerisError&) {
+			throw;
 		} catch (const std::exception& error) {
 			audit::write("scan-exception", [&](auto& log) { log << " error=" << std::quoted(error.what()); });
 			return out;
@@ -345,6 +349,8 @@ namespace orbital_core::hazard::lov_detail {
 			events = findCloseApproachesFromState(Vec3D(parameters(0), parameters(1), parameters(2)),
 			                                      Vec3D(parameters(3), parameters(4), parameters(5)), epoch,
 			                                      ctx.propagator, ng, localCfg, &ctx.eph);
+		} catch (const EphemerisError&) {
+			throw;
 		} catch (...) {
 			return std::nullopt;
 		}

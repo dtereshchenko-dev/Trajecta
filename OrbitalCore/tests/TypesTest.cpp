@@ -180,6 +180,21 @@ TEST(Helpers, EcvToEclPreservesXAxis)
 	EXPECT_NEAR(result.z, 0.0, 1e-15);
 }
 
+TEST(Helpers, EclipticEquatorialRotationDirections)
+{
+	const Vec3D yAxis(0.0, 1.0, 0.0);
+	const double c = std::cos(Constants::EARTH_INCL);
+	const double s = std::sin(Constants::EARTH_INCL);
+	const Vec3D ecliptic = Helpers::ecvToEcl(yAxis);
+	const Vec3D equatorial = Helpers::eclToEcv(yAxis);
+	EXPECT_NEAR(ecliptic.x, 0.0, 1e-15);
+	EXPECT_NEAR(ecliptic.y, c, 1e-15);
+	EXPECT_NEAR(ecliptic.z, -s, 1e-15);
+	EXPECT_NEAR(equatorial.x, 0.0, 1e-15);
+	EXPECT_NEAR(equatorial.y, c, 1e-15);
+	EXPECT_NEAR(equatorial.z, s, 1e-15);
+}
+
 TEST(Helpers, EcvToEclPreservesMagnitude)
 {
 	Vec3D v(3.0, 4.0, 5.0);

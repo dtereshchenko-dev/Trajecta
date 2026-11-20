@@ -4,6 +4,8 @@
 #include "orbital_core/FitPipeline.h"
 #include "fit/FitObservations.h"
 #include "fit/OrbitFitProblem.h"
+#include "fit/OrbitFitOutput.h"
+#include "fit/FitCancellation.h"
 #include "fit/OrbitFitUncertainty.h"
 #include "orbital_core/CometaryCoordinates.h"
 #include "orbital_core/optimizers/EigenLevenbergMarquardt.h"
@@ -26,6 +28,7 @@
 
 #include <array>
 #include <algorithm>
+#include <cstdlib>
 #include <filesystem>
 #include <limits>
 #include <memory>
@@ -259,6 +262,9 @@ class FitSessionTest : public ::testing::Test {
 		setDefaultEphemerisSource(m_de440.get());
 
 		m_sb441 = std::make_unique<SpkReader>();
+		if (!m_sb441->isAvailable())
+			if (const char* path = std::getenv("TRAJECTA_SB441"))
+				m_sb441 = std::make_unique<SpkReader>(path);
 		if (m_sb441->isAvailable())
 			setDefaultAsteroidSource(m_sb441.get());
 	}
@@ -317,6 +323,8 @@ namespace {
 
 TEST_F(FitSessionTest, OpticalFitJacobianAndCovarianceMatchIndependentResidualPerturbations)
 {
+	if (!m_sb441->isAvailable())
+		GTEST_SKIP() << "SB441 is required for this force-model test";
 	for (int scenario = 0; scenario < 4; ++scenario) {
 		SCOPED_TRACE(scenario);
 		OrbitOptimizerConfig config;
@@ -416,6 +424,399 @@ TEST_F(FitSessionTest, OpticalFitJacobianAndCovarianceMatchIndependentResidualPe
 				              std::sqrt(reference(i, i) * reference(j, j)),
 				          scenario == 0 ? 2e-5 : 1e-6);
 	}
+}
+
+TEST_F(FitSessionTest, AbsoluteMagnitudeOrbitSigmaMatchesReference2020Vv)
+{
+	auto data = fitContractCase();
+	int matchedWeights = 0;
+	int excludedMagnitudes = 0;
+	for (auto& obs : data.observations.all) {
+		obs.rmsMag = 0.5;
+		if (std::abs(obs.JD - 2459165.693472) < 1e-5) {
+			obs.rmsMag = 0.1;
+			++matchedWeights;
+		}
+		if (std::abs(obs.JD - 2459171.581042) < 1e-5) {
+			obs.rmsMag = 0.329;
+			++matchedWeights;
+		}
+		if (std::abs(obs.JD - 2459187.567087) < 1e-5) {
+			obs.rmsMag = 0.2;
+			++matchedWeights;
+		}
+		if (std::abs(obs.JD - 2459168.766950) < 1e-5) {
+			obs.MAG = 0.0;
+			++excludedMagnitudes;
+		}
+	}
+	ASSERT_EQ(matchedWeights, 3);
+	ASSERT_EQ(excludedMagnitudes, 1);
+	OrbitOptimizerConfig config;
+	config.nbody.enabled = true;
+	config.nbody.planetMask = 0x834;
+	config.nbody.forceModel.earthJ2 = false;
+	config.nbody.forceModel.earthJ3 = false;
+	config.nbody.forceModel.earthJ4 = false;
+	config.computeUncertainty = false;
+	config.useWeights = true;
+	config.logDiagnostics = false;
+	auto orbit = make_orbit_from_states_vectors(
+	    StateVectors(
+	        Vec3D(0.624360736064974109, 0.833929603409281572, 0.00347211922652987566),
+	        Vec3D(-0.0128531188653113262, 0.011751159154943935, 0.0000930823256082089618) / Constants::GAUSS_K),
+	    2459170.271533);
+	ASSERT_TRUE(orbit);
+	oc::fit::OrbitFitModel model(orbit, oc::fit::prepareFitObservations(data.observations.all, config), config);
+	oc::fit::OrbitFitProblem problem(model);
+	const auto params = oc::fit::OrbitFitModel::stateVectorFromOrbit(*orbit);
+	oc::fit::OrbitFitOutput output(model, problem, config);
+	const auto result = output.build(params, {.converged = true}, {});
+	Eigen::Matrix<double, 6, 6> covariance;
+	covariance << 6.4295189707e-12, 3.5428432118e-12, 4.43959989403e-13, 1.82129376726e-13, 2.34037445395e-13,
+	    1.19518139723e-14, 3.5428432118e-12, 1.95224463693e-12, 2.44635869861e-13, 1.00357957056e-13, 1.28964323171e-13,
+	    6.58584620888e-15, 4.43959989403e-13, 2.44635869861e-13, 3.06685017603e-14, 1.2576064436e-14, 1.61604201048e-14,
+	    8.26644581909e-16, 1.82129376726e-13, 1.00357957056e-13, 1.2576064436e-14, 5.15973444812e-15, 6.62951101502e-15,
+	    3.38583147512e-16, 2.34037445395e-13, 1.28964323171e-13, 1.61604201048e-14, 6.62951101502e-15,
+	    8.51990550567e-15, 4.35067125084e-16, 1.19518139723e-14, 6.58584620888e-15, 8.26644581909e-16,
+	    3.38583147512e-16, 4.35067125084e-16, 2.25235973675e-17;
+	for (int i = 3; i < 6; ++i) {
+		covariance.row(i) /= Constants::GAUSS_K;
+		covariance.col(i) /= Constants::GAUSS_K;
+	}
+	const auto sigma = output.photometricOrbitSigmas(result.residuals, params, covariance, {}).asteroid;
+	ASSERT_TRUE(sigma);
+	EXPECT_NEAR(*sigma, 0.0001106563576, 1e-9);
+	const auto doubled = output.photometricOrbitSigmas(result.residuals, params, 4.0 * covariance, {}).asteroid;
+	ASSERT_TRUE(doubled);
+	EXPECT_NEAR(*doubled, 2.0 * *sigma, *sigma * 1e-9);
+	covariance(0, 0) = std::numeric_limits<double>::quiet_NaN();
+	EXPECT_FALSE(output.photometricOrbitSigmas(result.residuals, params, covariance, {}).asteroid);
+	EXPECT_FALSE(output.photometricOrbitSigmas({}, params, Eigen::MatrixXd::Identity(6, 6), {}).asteroid);
+	std::stop_source cancel;
+	cancel.request_stop();
+	covariance(0, 0) = 6.4295189707e-12;
+	EXPECT_THROW((void)output.photometricOrbitSigmas(result.residuals, params, covariance, cancel.get_token()),
+	             oc::fit::FitCancelled);
+}
+
+TEST_F(FitSessionTest, OrdinaryFitPublishesAbsoluteMagnitudeOrbitSigma)
+{
+	const auto data = fitContractCase();
+	const auto fit =
+	    oc::FitSession(data.config).optimize({.initialOrbit = data.initial, .observations = data.observations.all});
+	ASSERT_TRUE(fit.converged);
+	ASSERT_TRUE(fit.uncertainty.absoluteMagnitudeOrbitSigma);
+	EXPECT_GT(*fit.uncertainty.absoluteMagnitudeOrbitSigma, 0.0);
+	EXPECT_TRUE(std::isfinite(*fit.uncertainty.absoluteMagnitudeOrbitSigma));
+}
+
+TEST_F(FitSessionTest, AbsoluteMagnitudeOrbitSigmaIncludesNonGravParameter)
+{
+	const auto data = fitContractCase();
+	OrbitOptimizerConfig config;
+	config.nbody = data.config.nbody;
+	config.nonGrav.enabled = true;
+	config.nonGrav.model = oc::NonGravModelKind::Yarkovsky;
+	config.nonGrav.solveMask = static_cast<std::uint8_t>(NgParameterMask::A2);
+	config.computeUncertainty = false;
+	config.logDiagnostics = false;
+	oc::fit::OrbitFitModel model(data.initial, oc::fit::prepareFitObservations(data.observations.all, config), config);
+	oc::fit::OrbitFitProblem problem(model);
+	auto params = oc::fit::OrbitFitModel::stateVectorFromOrbit(*data.initial);
+	model.nonGravProfile().extendParams(params, model.differenceSteps());
+	ASSERT_EQ(params.size(), 7u);
+	oc::fit::OrbitFitOutput output(model, problem, config);
+	const auto result = output.build(params, {.converged = true}, {});
+	Eigen::MatrixXd covariance = Eigen::MatrixXd::Zero(7, 7);
+	covariance(6, 6) = 1e-18;
+	const auto sigma = output.photometricOrbitSigmas(result.residuals, params, covariance, {}).asteroid;
+	ASSERT_TRUE(sigma);
+	EXPECT_GT(*sigma, 0.0);
+	const auto missing =
+	    output.photometricOrbitSigmas(result.residuals, params, Eigen::MatrixXd::Identity(6, 6), {}).asteroid;
+	EXPECT_FALSE(missing);
+}
+
+TEST_F(FitSessionTest, OutlierMagnitudeContributesToOrbitSigma)
+{
+	auto data = fitContractCase();
+	std::size_t outlier = data.observations.all.size();
+	for (std::size_t i = 0; i < data.observations.all.size(); ++i) {
+		auto& obs = data.observations.all[i];
+		if (!obs.radar && obs.MAG > 0.1) {
+			obs.MAG += 10.0;
+			obs.magBand = 'V';
+			obs.rmsMag = 0.5;
+			outlier = i;
+			break;
+		}
+	}
+	ASSERT_LT(outlier, data.observations.all.size());
+	OrbitOptimizerConfig config;
+	config.nbody = data.config.nbody;
+	config.computeUncertainty = false;
+	config.logDiagnostics = false;
+	oc::fit::OrbitFitModel model(data.initial, oc::fit::prepareFitObservations(data.observations.all, config), config);
+	oc::fit::OrbitFitProblem problem(model);
+	const auto params = oc::fit::OrbitFitModel::stateVectorFromOrbit(*data.initial);
+	oc::fit::OrbitFitOutput output(model, problem, config);
+	const auto nominal = output.build(params, {.converged = true}, {});
+	Residuals withoutOutlier;
+	for (std::size_t i = 0; i < nominal.residuals.count(); ++i) {
+		auto row = nominal.residuals.data()[i];
+		if (i == outlier)
+			row.mag = 0.0;
+		withoutOutlier.add(row);
+	}
+	const Eigen::MatrixXd covariance = Eigen::MatrixXd::Identity(6, 6) * 1e-12;
+	const auto included = output.photometricOrbitSigmas(nominal.residuals, params, covariance, {}).asteroid;
+	const auto omitted = output.photometricOrbitSigmas(withoutOutlier, params, covariance, {}).asteroid;
+	ASSERT_TRUE(included && omitted);
+	EXPECT_NE(*included, *omitted);
+}
+
+TEST_F(FitSessionTest, AbsoluteMagnitudeVariationalSigmaMatchesFiniteDifferences)
+{
+	const auto data = fitContractCase();
+	for (int mode = 0; mode < 4; ++mode) {
+		SCOPED_TRACE(mode);
+		OrbitOptimizerConfig config;
+		config.nbody = data.config.nbody;
+		config.nbody.enabled = mode != 0;
+		config.computeUncertainty = false;
+		config.logDiagnostics = false;
+		if (mode >= 2) {
+			config.nonGrav.enabled = true;
+			config.nonGrav.model = mode == 2 ? oc::NonGravModelKind::Yarkovsky : oc::NonGravModelKind::InverseSquare;
+			config.nonGrav.solveMask =
+			    static_cast<std::uint8_t>(mode == 2 ? NgParameterMask::A2 : NgParameterMask::A1 | NgParameterMask::A2);
+		}
+		oc::fit::OrbitFitModel model(data.initial, oc::fit::prepareFitObservations(data.observations.all, config),
+		                             config);
+		oc::fit::OrbitFitProblem problem(model);
+		auto params = oc::fit::OrbitFitModel::stateVectorFromOrbit(*data.initial);
+		if (mode >= 2)
+			model.nonGravProfile().extendParams(params, model.differenceSteps());
+		ASSERT_EQ(params.size(), static_cast<std::size_t>(mode == 3 ? 8 : mode == 2 ? 7 : 6));
+		oc::fit::OrbitFitOutput output(model, problem, config);
+		const auto result = output.build(params, {.converged = true}, {});
+		const Eigen::Index n = static_cast<Eigen::Index>(params.size());
+		Eigen::MatrixXd covariance = Eigen::MatrixXd::Identity(n, n) * 1e-12;
+		for (Eigen::Index i = 6; i < n; ++i)
+			covariance(i, i) = 1e-20;
+		const auto evaluate = [&](const std::vector<double>& trial) {
+			NonGravModel ng = model.propagator().nonGrav();
+			NonGravProfile::updateFromParams(ng, trial, 6);
+			const auto positions = model.computeLightTimePositions(trial, ng);
+			auto rows = result.residuals.data();
+			for (std::size_t i = 0; i < rows.size(); ++i) {
+				if (model.observations()[i].radar)
+					continue;
+				const auto observer = model.observations()[i].earthR + model.observations()[i].observerOffsetEclAu;
+				const auto topocentric = positions[i] - observer;
+				const double r = positions[i].magnitude(), d = topocentric.magnitude(), o = observer.magnitude();
+				rows[i].helioDistAu = r;
+				rows[i].geoDistAu = d;
+				rows[i].phaseAngleRad = std::acos(std::clamp((r * r + d * d - o * o) / (2.0 * r * d), -1.0, 1.0));
+			}
+			return oc::photometry::fit(rows, config.photometry.asteroidG).absoluteMagnitude;
+		};
+		Eigen::VectorXd gradient(n);
+		double coarseSigma = 0.0;
+		for (double scale : {1.0, 0.5}) {
+			for (Eigen::Index i = 0; i < n; ++i) {
+				const double h = std::max(std::abs(model.differenceSteps()[i]), std::abs(params[i]) * 1e-8) * scale;
+				auto plus = params, minus = params;
+				plus[i] += h;
+				minus[i] -= h;
+				const auto hp = evaluate(plus), hm = evaluate(minus);
+				ASSERT_TRUE(hp && hm);
+				gradient[i] = (*hp - *hm) / (plus[i] - minus[i]);
+			}
+			if (scale == 1.0)
+				coarseSigma = std::sqrt(gradient.dot(covariance * gradient));
+		}
+		const double oldSigma = std::sqrt(gradient.dot(covariance * gradient));
+		EXPECT_NEAR(oldSigma, coarseSigma, std::max(1e-12, oldSigma * 0.02));
+		const auto sigma = output.photometricOrbitSigmas(result.residuals, params, covariance, {}).asteroid;
+		ASSERT_TRUE(sigma);
+		EXPECT_NEAR(*sigma, oldSigma, std::max(1e-11, oldSigma * 2e-3));
+		for (Eigen::Index i = 6; i < n; ++i) {
+			Eigen::MatrixXd onlyNg = Eigen::MatrixXd::Zero(n, n);
+			onlyNg(i, i) = covariance(i, i);
+			const auto ngSigma = output.photometricOrbitSigmas(result.residuals, params, onlyNg, {}).asteroid;
+			ASSERT_TRUE(ngSigma);
+			const double reference = std::abs(gradient[i]) * std::sqrt(onlyNg(i, i));
+			EXPECT_GT(reference, 0.0);
+			EXPECT_NEAR(*ngSigma, reference, std::max(1e-14, reference * 2e-3));
+		}
+	}
+}
+
+TEST_F(FitSessionTest, CometMagnitudeOrbitSigmasMatchFiniteDifferences)
+{
+	auto data = fitContractCase();
+	for (std::size_t i = 0; i < data.observations.all.size(); ++i) {
+		auto& obs = data.observations.all[i];
+		obs.MAG = 18.0 + 0.01 * static_cast<double>(i % 10);
+		if (i == 2)
+			obs.MAG += 10.0;
+		obs.magBand = i % 13 == 0 ? '?' : 'V';
+		obs.rmsMag = 0.1 + 0.05 * static_cast<double>(i % 5);
+		obs.nuclearMagnitude = i % 7 == 0 ? std::nullopt : std::optional<bool>(i % 2 == 0);
+	}
+	for (int mode = 0; mode < 3; ++mode) {
+		SCOPED_TRACE(mode);
+		OrbitOptimizerConfig config;
+		config.nbody = data.config.nbody;
+		config.nbody.enabled = mode != 0;
+		config.photometry.cometK1 = 7.0;
+		config.photometry.cometK2 = 4.5;
+		config.photometry.cometNuclearPhaseCoefficient = 0.04;
+		config.computeUncertainty = false;
+		config.logDiagnostics = false;
+		if (mode == 2) {
+			config.nonGrav.enabled = true;
+			config.nonGrav.model = oc::NonGravModelKind::InverseSquare;
+			config.nonGrav.solveMask = static_cast<std::uint8_t>(NgParameterMask::A1 | NgParameterMask::A2);
+		}
+		oc::fit::OrbitFitModel model(data.initial, oc::fit::prepareFitObservations(data.observations.all, config),
+		                             config);
+		oc::fit::OrbitFitProblem problem(model);
+		auto params = oc::fit::OrbitFitModel::stateVectorFromOrbit(*data.initial);
+		if (mode == 2)
+			model.nonGravProfile().extendParams(params, model.differenceSteps());
+		oc::fit::OrbitFitOutput output(model, problem, config);
+		const auto nominal = output.build(params, {.converged = true}, {});
+		const auto n = static_cast<Eigen::Index>(params.size());
+		Eigen::MatrixXd covariance = Eigen::MatrixXd::Identity(n, n) * 1e-12;
+		covariance(0, 1) = covariance(1, 0) = 2.5e-13;
+		for (Eigen::Index i = 6; i < n; ++i)
+			covariance(i, i) = 1e-20;
+		const auto evaluate = [&](const std::vector<double>& trial) {
+			NonGravModel ng = model.propagator().nonGrav();
+			NonGravProfile::updateFromParams(ng, trial, 6);
+			const auto positions = model.computeLightTimePositions(trial, ng);
+			auto rows = nominal.residuals.data();
+			for (std::size_t i = 0; i < rows.size(); ++i) {
+				if (model.observations()[i].radar)
+					continue;
+				const auto observer = model.observations()[i].earthR + model.observations()[i].observerOffsetEclAu;
+				const auto topocentric = positions[i] - observer;
+				const double r = positions[i].magnitude(), d = topocentric.magnitude(), o = observer.magnitude();
+				rows[i].helioDistAu = r;
+				rows[i].geoDistAu = d;
+				rows[i].phaseAngleRad = std::acos(std::clamp((r * r + d * d - o * o) / (2.0 * r * d), -1.0, 1.0));
+			}
+			return oc::photometry::fitComet(rows, config.photometry);
+		};
+		Eigen::VectorXd m1(n), m2(n);
+		for (Eigen::Index i = 0; i < n; ++i) {
+			const double h =
+			    std::max(std::abs(model.differenceSteps()[i]), std::abs(params[i]) * 1e-8) * (i >= 6 ? 100.0 : 0.5);
+			auto plus = params, minus = params;
+			plus[i] += h;
+			minus[i] -= h;
+			const auto p = evaluate(plus), m = evaluate(minus);
+			ASSERT_TRUE(p.total.absoluteMagnitude && m.total.absoluteMagnitude);
+			ASSERT_TRUE(p.nuclear.absoluteMagnitude && m.nuclear.absoluteMagnitude);
+			m1[i] = (*p.total.absoluteMagnitude - *m.total.absoluteMagnitude) / (plus[i] - minus[i]);
+			m2[i] = (*p.nuclear.absoluteMagnitude - *m.nuclear.absoluteMagnitude) / (plus[i] - minus[i]);
+			if (i >= 6) {
+				plus[i] = params[i] + h * 0.5;
+				minus[i] = params[i] - h * 0.5;
+				const auto pHalf = evaluate(plus), mHalf = evaluate(minus);
+				ASSERT_TRUE(pHalf.total.absoluteMagnitude && mHalf.total.absoluteMagnitude);
+				ASSERT_TRUE(pHalf.nuclear.absoluteMagnitude && mHalf.nuclear.absoluteMagnitude);
+				const double half1 =
+				    (*pHalf.total.absoluteMagnitude - *mHalf.total.absoluteMagnitude) / (plus[i] - minus[i]);
+				const double half2 =
+				    (*pHalf.nuclear.absoluteMagnitude - *mHalf.nuclear.absoluteMagnitude) / (plus[i] - minus[i]);
+				EXPECT_NEAR(m1[i], half1, std::max(1e-4, std::abs(half1) * 1e-3));
+				EXPECT_NEAR(m2[i], half2, std::max(1e-4, std::abs(half2) * 1e-3));
+			}
+		}
+		const double reference1 = std::sqrt(m1.dot(covariance * m1));
+		const double reference2 = std::sqrt(m2.dot(covariance * m2));
+		const auto sigmas = output.photometricOrbitSigmas(nominal.residuals, params, covariance, {});
+		ASSERT_TRUE(sigmas.cometTotal && sigmas.cometNuclear);
+		EXPECT_NEAR(*sigmas.cometTotal, reference1, std::max(1e-11, reference1 * 2e-3));
+		EXPECT_NEAR(*sigmas.cometNuclear, reference2, std::max(1e-11, reference2 * 2e-3));
+		for (Eigen::Index i = 6; i < n; ++i) {
+			Eigen::MatrixXd onlyNg = Eigen::MatrixXd::Zero(n, n);
+			onlyNg(i, i) = covariance(i, i);
+			const auto ng = output.photometricOrbitSigmas(nominal.residuals, params, onlyNg, {});
+			ASSERT_TRUE(ng.cometTotal && ng.cometNuclear);
+			const double ng1 = std::abs(m1[i]) * std::sqrt(onlyNg(i, i));
+			const double ng2 = std::abs(m2[i]) * std::sqrt(onlyNg(i, i));
+			EXPECT_GT(ng1, 0.0);
+			EXPECT_GT(ng2, 0.0);
+			EXPECT_NEAR(*ng.cometTotal, ng1, std::max(1e-14, ng1 * 2e-3));
+			EXPECT_NEAR(*ng.cometNuclear, ng2, std::max(1e-14, ng2 * 2e-3));
+		}
+		const auto doubled = output.photometricOrbitSigmas(nominal.residuals, params, 4.0 * covariance, {});
+		ASSERT_TRUE(doubled.cometTotal && doubled.cometNuclear);
+		EXPECT_NEAR(*doubled.cometTotal, 2.0 * *sigmas.cometTotal, *sigmas.cometTotal * 1e-9);
+		EXPECT_NEAR(*doubled.cometNuclear, 2.0 * *sigmas.cometNuclear, *sigmas.cometNuclear * 1e-9);
+		Residuals onlyTotal;
+		for (auto row : nominal.residuals.data()) {
+			if (row.nuclearMagnitude && *row.nuclearMagnitude)
+				row.nuclearMagnitude.reset();
+			onlyTotal.add(row);
+		}
+		const auto partial = output.photometricOrbitSigmas(onlyTotal, params, covariance, {});
+		ASSERT_TRUE(partial.cometTotal);
+		EXPECT_FALSE(partial.cometNuclear);
+		EXPECT_NEAR(*partial.cometTotal, *sigmas.cometTotal, *sigmas.cometTotal * 1e-9);
+		Residuals zeroPhase;
+		for (auto row : nominal.residuals.data()) {
+			row.phaseAngleRad = 0.0;
+			zeroPhase.add(row);
+		}
+		const auto singular = output.photometricOrbitSigmas(zeroPhase, params, covariance, {});
+		EXPECT_TRUE(singular.cometTotal);
+		EXPECT_FALSE(singular.cometNuclear);
+		const auto missing = output.photometricOrbitSigmas(nominal.residuals, params, Eigen::MatrixXd::Zero(2, 2), {});
+		EXPECT_FALSE(missing.cometTotal || missing.cometNuclear);
+		std::stop_source cancel;
+		cancel.request_stop();
+		EXPECT_THROW((void)output.photometricOrbitSigmas(nominal.residuals, params, covariance, cancel.get_token()),
+		             oc::fit::FitCancelled);
+	}
+}
+
+TEST_F(FitSessionTest, FitPublishesCometMagnitudeOrbitSigmasWithConfiguredSlopes)
+{
+	auto data = fitContractCase();
+	for (std::size_t i = 0; i < data.observations.all.size(); ++i) {
+		auto& obs = data.observations.all[i];
+		obs.MAG = 18.0 + 0.01 * static_cast<double>(i % 10);
+		obs.magBand = 'V';
+		obs.rmsMag = 0.2;
+		obs.nuclearMagnitude = i % 2 == 0;
+	}
+	data.config.photometry.cometK1 = 1.0;
+	data.config.photometry.cometK2 = 4.5;
+	data.config.photometry.cometNuclearPhaseCoefficient = 0.04;
+	const auto first =
+	    oc::FitSession(data.config).optimize({.initialOrbit = data.initial, .observations = data.observations.all});
+	ASSERT_TRUE(first.converged);
+	ASSERT_TRUE(first.uncertainty.cometTotalMagnitudeOrbitSigma);
+	ASSERT_TRUE(first.uncertainty.cometNuclearMagnitudeOrbitSigma);
+	EXPECT_GT(*first.uncertainty.cometTotalMagnitudeOrbitSigma, 0.0);
+	EXPECT_GT(*first.uncertainty.cometNuclearMagnitudeOrbitSigma, 0.0);
+	data.config.photometry.cometK1 = 7.0;
+	const auto second =
+	    oc::FitSession(data.config).optimize({.initialOrbit = data.initial, .observations = data.observations.all});
+	ASSERT_TRUE(second.converged);
+	ASSERT_TRUE(second.uncertainty.cometTotalMagnitudeOrbitSigma);
+	ASSERT_TRUE(second.uncertainty.cometNuclearMagnitudeOrbitSigma);
+	EXPECT_GT(
+	    std::abs(*first.uncertainty.cometTotalMagnitudeOrbitSigma - *second.uncertainty.cometTotalMagnitudeOrbitSigma),
+	    1e-12);
+	EXPECT_NEAR(*first.uncertainty.cometNuclearMagnitudeOrbitSigma, *second.uncertainty.cometNuclearMagnitudeOrbitSigma,
+	            *first.uncertainty.cometNuclearMagnitudeOrbitSigma * 1e-9);
 }
 
 TEST_F(FitSessionTest, ExtensionDoesNotRepeatConvergedFitsForUnchangedForceModel)
@@ -622,12 +1023,20 @@ TEST_F(FitSessionTest, OutputEpochBelongsToRequestAndRetainsFitStateAndCovarianc
 		ASSERT_TRUE(reference.orbit);
 		ASSERT_TRUE(reference.fitEpochOrbit);
 		ASSERT_TRUE(reference.uncertainty.hasStateCovariance());
+		ASSERT_TRUE(reference.uncertainty.outputStateCovariance);
+		EXPECT_TRUE(reference.uncertainty.outputStateCovariance->isApprox(
+		    reference.uncertainty.cartesianStateCovariance, 1e-12));
 		EXPECT_DOUBLE_EQ(reference.orbit->getEpoch(), reference.fitEpochOrbit->getEpoch());
 
 		request.outputEpochJdTdb = reference.fitEpochOrbit->getEpoch() + 5.0;
 		const auto transported = session.optimize(request);
 		ASSERT_TRUE(transported.orbit);
 		ASSERT_TRUE(transported.fitEpochOrbit);
+		ASSERT_TRUE(transported.uncertainty.outputStateCovariance);
+		EXPECT_DOUBLE_EQ(transported.uncertainty.outputStateCovarianceEpochJdTdb, transported.orbit->getEpoch());
+		EXPECT_TRUE(transported.uncertainty.outputStateCovariance->allFinite());
+		EXPECT_TRUE(transported.uncertainty.outputStateCovariance->isApprox(
+		    transported.uncertainty.outputStateCovariance->transpose(), 1e-12));
 		EXPECT_DOUBLE_EQ(transported.orbit->getEpoch(), *request.outputEpochJdTdb);
 		EXPECT_NE(transported.orbit->getR().x, transported.fitEpochOrbit->getR().x);
 
@@ -1224,6 +1633,8 @@ TEST_F(FitSessionTest, SelectionPassLimitPreservesTheLastFittedMaskWhenUnstable)
 
 TEST_F(FitSessionTest, ShortArcRejectionDoesNotRequireTwentyObservations)
 {
+	if (!m_sb441->isAvailable())
+		GTEST_SKIP() << "SB441 is required for this force-model test";
 	auto observations = oc::loadObservations(getExecutableDir() / "examples/NEO/impacts/2018_LA.xml");
 	ASSERT_EQ(observations.all.size(), 18u);
 	oc::prepareObservations(observations, {.debias = true});
@@ -1721,6 +2132,8 @@ TEST_F(FitSessionTest, FixedRequestPreservesMaskAndNonGravWarmStart)
 
 TEST_F(FitSessionTest, BorisovPipelineStartsFreshNonGravSelection)
 {
+	if (!m_sb441->isAvailable())
+		GTEST_SKIP() << "SB441 is required for this force-model test";
 	const auto path = getExecutableDir() / "examples/comets/2I_Borisov.xml";
 	ASSERT_TRUE(std::filesystem::exists(path));
 	auto loaded = oc::loadObservations(path);
@@ -1766,6 +2179,8 @@ TEST_F(FitSessionTest, BorisovPipelineStartsFreshNonGravSelection)
 
 TEST_F(FitSessionTest, BorisovSelectionChecksEveryCompletedCorrection)
 {
+	if (!m_sb441->isAvailable())
+		GTEST_SKIP() << "SB441 is required for this force-model test";
 	const auto path = getExecutableDir() / "examples/comets/2I_Borisov.xml";
 	ASSERT_TRUE(std::filesystem::exists(path));
 	for (const auto [sigma, nonGrav] : {std::pair{2.0, true}, {3.0, true}, {3.0, false}}) {

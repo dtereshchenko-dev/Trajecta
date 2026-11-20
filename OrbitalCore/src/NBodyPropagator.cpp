@@ -717,8 +717,10 @@ std::optional<IntegratedStateFull> NBodyPropagator::DenseTrajectory::at(double m
 NBodyPropagator::DenseTrajectory NBodyPropagator::propagateDenseMjd(const Vec3D& R0, const Vec3D& V0, double epochMjd,
                                                                     double firstMjd, double lastMjd,
                                                                     const NonGravModel& ng, bool variational,
-                                                                    bool sensitivities) const
+                                                                    bool sensitivities, std::stop_token cancel) const
 {
+	if (cancel.stop_requested())
+		throw std::runtime_error("Dense trajectory propagation cancelled");
 	if (!std::isfinite(epochMjd) || !std::isfinite(firstMjd) || !std::isfinite(lastMjd) || firstMjd > lastMjd ||
 	    (sensitivities && !variational))
 		throw std::invalid_argument("Invalid dense trajectory interval");
@@ -727,9 +729,9 @@ NBodyPropagator::DenseTrajectory NBodyPropagator::propagateDenseMjd(const Vec3D&
 	result.initial.R = R0;
 	result.initial.V = V0;
 	if (firstMjd < epochMjd)
-		integrateDenseSegment(result, result.initial, epochMjd, firstMjd, ng, variational, sensitivities);
+		integrateDenseSegment(result, result.initial, epochMjd, firstMjd, ng, variational, sensitivities, cancel);
 	if (lastMjd > epochMjd)
-		integrateDenseSegment(result, result.initial, epochMjd, lastMjd, ng, variational, sensitivities);
+		integrateDenseSegment(result, result.initial, epochMjd, lastMjd, ng, variational, sensitivities, cancel);
 	std::sort(result.steps.begin(), result.steps.end(), [](const DenseIntegratedStep& a, const DenseIntegratedStep& b) {
 		return std::min(a.beginMjd, a.endMjd) < std::min(b.beginMjd, b.endMjd);
 	});
@@ -738,29 +740,35 @@ NBodyPropagator::DenseTrajectory NBodyPropagator::propagateDenseMjd(const Vec3D&
 
 void NBodyPropagator::integrateDenseSegment(DenseTrajectory& trajectory, const IntegratedStateFull& initial,
                                             double epochMjd, double targetMjd, const NonGravModel& ng, bool variational,
-                                            bool sensitivities) const
+                                            bool sensitivities, std::stop_token cancel) const
 {
 	auto options = integrationOptions();
+	options.cancel = cancel;
 	options.denseStepObserver = [&trajectory](DenseIntegratedStep step) {
 		trajectory.steps.push_back(std::move(step));
 	};
 	const std::array targets{targetMjd};
+	IntegrationReport report;
 	if (sensitivities) {
 		std::array<IntegratedStateFull, 1> output;
-		m_integrator->integrateStateWithStmAndSens(m_dynamics, ng, initial, epochMjd, targets, output, options);
+		report = m_integrator->integrateStateWithStmAndSens(m_dynamics, ng, initial, epochMjd, targets, output, options);
 	} else if (variational) {
 		IntegratedStateWithStm state{initial.R, initial.V, initial.Phi};
 		std::array<IntegratedStateWithStm, 1> output;
-		m_integrator->integrateStateWithStm(m_dynamics, ng, state, epochMjd, targets, output, options);
+		report = m_integrator->integrateStateWithStm(m_dynamics, ng, state, epochMjd, targets, output, options);
 	} else {
 		std::array<IntegratedState, 1> output;
-		m_integrator->integrateState(m_dynamics, ng, {initial.R, initial.V}, epochMjd, targets, output, options);
+		report = m_integrator->integrateState(m_dynamics, ng, {initial.R, initial.V}, epochMjd, targets, output, options);
 	}
+	if (report.cancelled || cancel.stop_requested())
+		throw std::runtime_error("Dense trajectory propagation cancelled");
 }
 
 void NBodyPropagator::extendDenseBackwardMjd(DenseTrajectory& trajectory, double firstMjd, const NonGravModel& ng,
-                                             bool variational, bool sensitivities) const
+                                             bool variational, bool sensitivities, std::stop_token cancel) const
 {
+	if (cancel.stop_requested())
+		throw std::runtime_error("Dense trajectory propagation cancelled");
 	const double current = trajectory.steps.empty()
 	                           ? trajectory.epochMjd
 	                           : std::min(trajectory.steps.front().beginMjd, trajectory.steps.front().endMjd);
@@ -769,7 +777,13 @@ void NBodyPropagator::extendDenseBackwardMjd(DenseTrajectory& trajectory, double
 	const auto state = trajectory.at(current);
 	if (!state)
 		throw std::runtime_error("Dense trajectory has no initial state for extension");
-	integrateDenseSegment(trajectory, *state, current, firstMjd, ng, variational, sensitivities);
+	const std::size_t previousSize = trajectory.steps.size();
+	try {
+		integrateDenseSegment(trajectory, *state, current, firstMjd, ng, variational, sensitivities, cancel);
+	} catch (...) {
+		trajectory.steps.resize(previousSize);
+		throw;
+	}
 	std::sort(trajectory.steps.begin(), trajectory.steps.end(),
 	          [](const DenseIntegratedStep& a, const DenseIntegratedStep& b) {
 		          return std::min(a.beginMjd, a.endMjd) < std::min(b.beginMjd, b.endMjd);

@@ -366,8 +366,8 @@ namespace orbital_core::hazard {
 
 		if (!eph)
 			eph = getDefaultEphemerisSource();
-		if (!eph)
-			return rows;
+		if (!eph || !eph->isAvailable())
+			throw EphemerisError("Planetary ephemerides are unavailable");
 
 		LovCoordinateChart chart =
 		    makeAutomaticLovChart(nominalOrbit, parameterCovariance, nominalNonGrav, cfg.coordinateSystem);
@@ -455,6 +455,8 @@ namespace orbital_core::hazard {
 		std::vector<std::vector<TraceRecord>> buckets(sigmas.size());
 		std::atomic<int> vaDone{0};
 		std::atomic<std::uint64_t> coarseRecords{0};
+		std::exception_ptr propagationError;
+		std::atomic<bool> propagationFailed{false};
 		PhaseProgressLogger vaProgress("VA-propagation", static_cast<int>(validCatalogIndices.size()), vaDone, nullptr,
 		                               &coarseRecords, &timingCounters);
 
@@ -467,14 +469,27 @@ namespace orbital_core::hazard {
 #endif
 #pragma omp for schedule(dynamic, 1)
 			for (int workIndex = 0; workIndex < static_cast<int>(validCatalogIndices.size()); ++workIndex) {
+				if (propagationFailed.load(std::memory_order_relaxed))
+					continue;
 				const int i = validCatalogIndices[static_cast<std::size_t>(workIndex)];
 				auto& bucket = buckets[static_cast<std::size_t>(i)];
-				bucket = evaluateSigma(traceCtx, catalog[static_cast<std::size_t>(i)]);
+				try {
+					bucket = evaluateSigma(traceCtx, catalog[static_cast<std::size_t>(i)]);
+				} catch (...) {
+#pragma omp critical(lov_propagation_error)
+					{
+						if (!propagationError)
+							propagationError = std::current_exception();
+					}
+					propagationFailed.store(true, std::memory_order_relaxed);
+				}
 				coarseRecords.fetch_add(bucket.size(), std::memory_order_relaxed);
 				vaDone.fetch_add(1, std::memory_order_relaxed);
 			}
 		}
 		vaProgress.finish();
+		if (propagationError)
+			std::rethrow_exception(propagationError);
 
 		std::vector<TraceRecord> records;
 		for (auto& bucket : buckets) {
@@ -524,7 +539,7 @@ namespace orbital_core::hazard {
 #endif
 #pragma omp for schedule(dynamic, 1)
 			for (int i = 0; i < totalReturns; ++i) {
-				if (cancelled.load(std::memory_order_relaxed))
+				if (cancelled.load(std::memory_order_relaxed) || propagationFailed.load(std::memory_order_relaxed))
 					continue;
 
 				std::vector<TraceRecord>& ret = returns[static_cast<std::size_t>(i)];
@@ -697,6 +712,16 @@ namespace orbital_core::hazard {
 
 					slots[static_cast<std::size_t>(i)] = std::move(returnRows);
 					refinedRows.fetch_add(slots[static_cast<std::size_t>(i)].size(), std::memory_order_relaxed);
+				} catch (const EphemerisError&) {
+#pragma omp critical(lov_propagation_error)
+					{
+						if (!propagationError)
+							propagationError = std::current_exception();
+					}
+					propagationFailed.store(true, std::memory_order_relaxed);
+					activeReturns.fetch_sub(1, std::memory_order_relaxed);
+					markReturnDone();
+					continue;
 				} catch (const std::exception& ex) {
 					LOG_ERROR << "[LineOfVariation] return failed"
 					          << "  return=" << i << "  firstSample=" << ret.front().sampleIndex
@@ -720,6 +745,8 @@ namespace orbital_core::hazard {
 			}
 		}
 		returnProgress.finish();
+		if (propagationError)
+			std::rethrow_exception(propagationError);
 
 		for (auto& slot : slots)
 			for (auto& row : slot)
