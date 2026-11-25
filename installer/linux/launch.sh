@@ -10,6 +10,9 @@ export PROJ_DATA="$app_dir/../share/proj"
 case "$(basename "$0")" in
     trajecta-cli) executable=TrajectaCLI ;;
     strewn-cli) executable=StrewnCLI ;;
-    *) executable=Trajecta ;;
+    *)
+        executable=Trajecta
+        export OMP_WAIT_POLICY="${OMP_WAIT_POLICY-PASSIVE}"
+        ;;
 esac
 exec "$app_dir/$executable" "$@"

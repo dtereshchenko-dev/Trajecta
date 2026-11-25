@@ -20,6 +20,10 @@
 
 int main(int argc, char* argv[])
 {
+#if defined(Q_OS_WIN) && defined(_MSC_VER)
+	if (!qEnvironmentVariableIsSet("OMP_WAIT_POLICY"))
+		qputenv("OMP_WAIT_POLICY", "PASSIVE");
+#endif
 	QApplication app(argc, argv);
 	app.setOrganizationName("Trajecta");
 	app.setApplicationName("Trajecta");

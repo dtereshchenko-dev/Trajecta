@@ -335,6 +335,11 @@ target_link_libraries(TrajectaUI PRIVATE
     StrewnCore
 )
 
+if(MSVC)
+    target_link_libraries(TrajectaUI PRIVATE delayimp)
+    target_link_options(TrajectaUI PRIVATE "/DELAYLOAD:OrbitalCore.dll")
+endif()
+
 # Updating the DLL need not relink the UI when its import library is unchanged.
 if(WIN32)
     target_sources(TrajectaUI PRIVATE src/app/TaskbarProgress.h src/app/TaskbarProgress.cpp)
