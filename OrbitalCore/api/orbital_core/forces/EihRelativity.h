@@ -53,6 +53,9 @@ namespace orbital_core::forces {
 			std::array<double, kMaxBodies> inverseAsteroidDistance3{};
 			std::array<Vec3D, kMaxBodies> barycentricVelocities{};
 			std::array<Vec3D, kMaxBodies> newtonianAccelerations{};
+			// The upper triangle is filled before its mirrored entries are read.
+			std::array<std::array<double, kMaxBodies>, kMaxBodies> pairDistances;
+			std::array<std::array<double, kMaxBodies>, kMaxBodies> pairInverseDistance3;
 
 			for (std::size_t body = 0; body < bodyCount; ++body) {
 				heliocentricDistances[body] = positions[body].magnitude();
@@ -87,12 +90,21 @@ namespace orbital_core::forces {
 					if (other == body)
 						continue;
 					const Vec3D separation = positions[other] - positions[body];
-					const double separationDistance = separation.magnitude();
-					if (separationDistance < kMinDistance)
-						return;
+					double separationDistance;
+					double inverseSeparationDistance3;
+					if (other < body) {
+						separationDistance = pairDistances[other][body];
+						inverseSeparationDistance3 = pairInverseDistance3[other][body];
+					} else {
+						separationDistance = separation.magnitude();
+						if (separationDistance < kMinDistance)
+							return;
+						inverseSeparationDistance3 =
+						    1.0 / (separationDistance * separationDistance * separationDistance);
+						pairDistances[body][other] = separationDistance;
+						pairInverseDistance3[body][other] = inverseSeparationDistance3;
+					}
 					term -= gms[other] / separationDistance;
-					const double inverseSeparationDistance3 =
-					    1.0 / (separationDistance * separationDistance * separationDistance);
 					bodyAcceleration += separation * (gms[other] * inverseSeparationDistance3);
 				}
 				newtonianAccelerations[body] = bodyAcceleration;

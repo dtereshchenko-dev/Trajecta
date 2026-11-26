@@ -23,6 +23,7 @@ ChartView {
     property rect dataBounds: Qt.rect(-1, -1, 2, 2)
     property var hoveredSeries: null
     property bool viewAdjusted: false
+    property int selectionRevision: 0
     antialiasing: true
     backgroundColor: AppTheme.surface
     plotAreaColor: AppTheme.surface
@@ -132,9 +133,14 @@ ChartView {
         }
     }
     function refreshSelection() {
-        if (!observations) { selected.clear(); selectedDec.clear(); return }
-        observations.fillSeries(selected, true, timeMode, false, true, timeOriginMjd)
-        observations.fillSeries(selectedDec, true, timeMode, true, true, timeOriginMjd)
+        if (!observations) {
+            selected.clear()
+            selectedDec.clear()
+        } else {
+            observations.fillSeries(selected, true, timeMode, false, true, timeOriginMjd)
+            observations.fillSeries(selectedDec, true, timeMode, true, true, timeOriginMjd)
+        }
+        ++selectionRevision
     }
     function clearHover() {
         hoveredSeries = null
@@ -312,12 +318,43 @@ ChartView {
     ScatterSeries {
         id: selected
         visible: !chart.timeMode || chart.timeComponent !== 1
-        axisX: horizontal; axisY: vertical; color: "transparent"; borderColor: AppTheme.accent; markerSize: 15
+        axisX: horizontal; axisY: vertical; color: "transparent"; borderColor: "transparent"; markerSize: 15
     }
     ScatterSeries {
         id: selectedDec
         visible: chart.timeMode && chart.timeComponent !== 0
-        axisX: horizontal; axisY: vertical; color: "transparent"; borderColor: chart.uniformColor ? AppTheme.accent : AppTheme.blue; markerSize: 15
+        axisX: horizontal; axisY: vertical; color: "transparent"; borderColor: "transparent"; markerSize: 15
+    }
+    component SelectionRing: Rectangle {
+        required property var series
+        property color ringColor: AppTheme.accent
+        readonly property point center: {
+            // Mapping changes when the plot area or axes change, even if the point does not.
+            const area = chart.plotArea
+            const currentBounds = chart.bounds
+            const revision = chart.selectionRevision
+            if (!series || series.count === 0 || area.width <= 0 || area.height <= 0
+                    || currentBounds.width <= 0 || currentBounds.height <= 0)
+                return Qt.point(-1, -1)
+            const point = series.at(0)
+            return Qt.point(area.x + (point.x - currentBounds.x) * area.width / currentBounds.width,
+                            area.y + (1 - (point.y - currentBounds.y) / currentBounds.height) * area.height)
+        }
+        width: 15; height: 15; radius: width / 2
+        x: center.x - width / 2; y: center.y - height / 2
+        color: "transparent"
+        border.color: ringColor
+        border.width: 1
+        visible: series && series.visible && chart.containsPlotPoint(center.x, center.y)
+    }
+    SelectionRing {
+        objectName: "selected-residual-ring"
+        series: selected
+    }
+    SelectionRing {
+        objectName: "selected-dec-residual-ring"
+        series: selectedDec
+        ringColor: chart.uniformColor ? AppTheme.accent : AppTheme.blue
     }
     Component.onCompleted: refresh()
     onTimeModeChanged: refresh()

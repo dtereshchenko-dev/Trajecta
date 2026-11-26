@@ -387,27 +387,36 @@ struct SpkReader::Impl {
 
 		const double tau = et.since(mid) / radius;
 
-		auto evalAxis = [&](const double* C, double& pos, double& velTau) {
+		auto evalAxis = [&]<bool NeedVelocity>(const double* C, double& pos, double& velTau) {
 			double b1 = 0.0, b2 = 0.0;
 			double bp1 = 0.0, bp2 = 0.0;
 			const double twoTau = 2.0 * tau;
 			for (int k = nc - 1; k >= 1; --k) {
 				const double bk_new = twoTau * b1 - b2 + C[k];
-				const double bpk_new = twoTau * bp1 - bp2 + 2.0 * b1;
+				if constexpr (NeedVelocity) {
+					const double bpk_new = twoTau * bp1 - bp2 + 2.0 * b1;
+					bp2 = bp1;
+					bp1 = bpk_new;
+				}
 				b2 = b1;
 				b1 = bk_new;
-				bp2 = bp1;
-				bp1 = bpk_new;
 			}
 
 			pos = tau * b1 - b2 + C[0];
-			velTau = tau * bp1 - bp2 + b1;
+			if constexpr (NeedVelocity)
+				velTau = tau * bp1 - bp2 + b1;
 		};
 
 		double px, py, pz, vTauX, vTauY, vTauZ;
-		evalAxis(CX, px, vTauX);
-		evalAxis(CY, py, vTauY);
-		evalAxis(CZ, pz, vTauZ);
+		if (V_km_s) {
+			evalAxis.operator()<true>(CX, px, vTauX);
+			evalAxis.operator()<true>(CY, py, vTauY);
+			evalAxis.operator()<true>(CZ, pz, vTauZ);
+		} else {
+			evalAxis.operator()<false>(CX, px, vTauX);
+			evalAxis.operator()<false>(CY, py, vTauY);
+			evalAxis.operator()<false>(CZ, pz, vTauZ);
+		}
 
 		R_km = Vec3D(px, py, pz);
 

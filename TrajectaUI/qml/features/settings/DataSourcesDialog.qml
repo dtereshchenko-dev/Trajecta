@@ -40,21 +40,23 @@ BaseDialog {
             elide: Text.ElideNone
             Layout.fillWidth: true
         }
-        ScrollView {
+        Flickable {
             id: sourceList
+            objectName: "data-sources-list"
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            contentWidth: availableWidth
+            contentWidth: width
+            contentHeight: sourceContent.implicitHeight
+            interactive: true
+            flickableDirection: Flickable.VerticalFlick
+            boundsBehavior: Flickable.StopAtBounds
             ScrollBar.vertical: CustomScrollBar {
-                parent: sourceList
-                x: sourceList.width - width
-                y: sourceList.topPadding
-                height: sourceList.availableHeight
                 policy: ScrollBar.AlwaysOn
             }
             ColumnLayout {
-                width: Math.max(0, sourceList.availableWidth - 16)
+                id: sourceContent
+                width: Math.max(0, sourceList.width - 16)
                 spacing: 0
                 Repeater {
                     model: dialog.sources.entries
